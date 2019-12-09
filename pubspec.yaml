@@ -1,9 +1,8 @@
 name: flutter_curiosity
-description: A new Flutter plugin.
+description: A new Flutter plugin about flutter curiosity
 version: 0.0.1
-author:
-homepage:
-
+author: Wayaer
+homepage: https://github.com/Wayaer/flutter-curiosity.git
 environment:
   sdk: ">=2.1.0 <3.0.0"
 
