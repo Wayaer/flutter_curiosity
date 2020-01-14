@@ -25,10 +25,44 @@ android {
     compileSdkVersion 28
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 21
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         disable 'InvalidPackage'
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    buildToolsVersion = '28.0.3'
+}
+dependencies {
+    def camera_version = "1.0.0-alpha05"
+    implementation "androidx.camera:camera-core:${camera_version}"
+    implementation "androidx.camera:camera-camera2:${camera_version}"
+    implementation 'com.google.zxing:core:3.3.3'
+}
+afterEvaluate {
+    def containsEmbeddingDependencies = false
+    for (def configuration : configurations.all) {
+        for (def dependency : configuration.dependencies) {
+            if (dependency.group == 'io.flutter' &&
+                    dependency.name.startsWith('flutter_embedding') &&
+                    dependency.isTransitive())
+            {
+                containsEmbeddingDependencies = true
+                break
+            }
+        }
+    }
+    if (!containsEmbeddingDependencies) {
+        android {
+            dependencies {
+                def lifecycle_version = "2.1.0"
+                api "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
+                api "androidx.lifecycle:lifecycle-runtime:$lifecycle_version"
+            }
+        }
     }
 }
