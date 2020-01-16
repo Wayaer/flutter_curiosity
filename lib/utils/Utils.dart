@@ -1,1 +1,1 @@
-import 'package:flutter/cupertino.dart';log(String content) {  Utils.log(content);}class Utils {  static log(String content) {    debugPrint('======Flutter Cuiosity Log Start======');    debugPrint(content);    debugPrint('======Flutter Cuiosity Log End======');  }}
+import 'package:flutter/cupertino.dart';class Utils {}

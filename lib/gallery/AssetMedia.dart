@@ -1,7 +1,6 @@
 import 'dart:convert' show json;
 
-import 'package:flutter/foundation.dart';
-import 'package:flutter_curiosity/utils/Utils.dart';
+import 'package:flutter_curiosity/utils/LogUtils.dart';
 
 dynamic convertValueByType(value, Type type, {String stack: ""}) {
   if (value == null) {
@@ -58,26 +57,28 @@ class AssetMedia {
     this.width,
   });
 
-  factory AssetMedia.fromJson(jsonRes) => jsonRes == null
-      ? null
-      : AssetMedia(
-          compressPath: convertValueByType(jsonRes['compressPath'], String,
-              stack: "AssetMedia-compressPath"),
-          cropPath: convertValueByType(jsonRes['cutPath'], String,
-              stack: "AssetMedia-cutPath"),
-          duration: convertValueByType(jsonRes['duration'], int,
-              stack: "AssetMedia-duration"),
-          height: convertValueByType(jsonRes['height'], int,
-              stack: "AssetMedia-height"),
-          path: convertValueByType(jsonRes['path'], String,
-              stack: "AssetMedia-path"),
-          size: convertValueByType(jsonRes['size'], int,
-              stack: "AssetMedia-size"),
-          width: convertValueByType(jsonRes['width'], int,
-              stack: "AssetMedia-width"),
-        );
+  factory AssetMedia.fromJson(jsonRes) =>
+      jsonRes == null
+          ? null
+          : AssetMedia(
+        compressPath: convertValueByType(jsonRes['compressPath'], String,
+            stack: "AssetMedia-compressPath"),
+        cropPath: convertValueByType(jsonRes['cutPath'], String,
+            stack: "AssetMedia-cutPath"),
+        duration: convertValueByType(jsonRes['duration'], int,
+            stack: "AssetMedia-duration"),
+        height: convertValueByType(jsonRes['height'], int,
+            stack: "AssetMedia-height"),
+        path: convertValueByType(jsonRes['path'], String,
+            stack: "AssetMedia-path"),
+        size: convertValueByType(jsonRes['size'], int,
+            stack: "AssetMedia-size"),
+        width: convertValueByType(jsonRes['width'], int,
+            stack: "AssetMedia-width"),
+      );
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson() =>
+      {
         'compressPath': compressPath,
         'cutPath': cropPath,
         'duration': duration,

@@ -1,16 +1,13 @@
-import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_curiosity/appinfo/AppInfoModel.dart';
 import 'package:flutter_curiosity/constant/Constant.dart';
-import 'package:flutter_curiosity/utils/Utils.dart';
 
 class PackageInfo {
 
   static Future<AppInfoModel> getPackageInfo() async {
     Map<String, dynamic> map =
     await channel.invokeMapMethod<String, dynamic>('getAppInfo');
-    log(jsonEncode(map));
     return AppInfoModel.fromJson(map);
   }
 

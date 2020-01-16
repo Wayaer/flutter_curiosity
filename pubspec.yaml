@@ -24,6 +24,9 @@ flutter:
         pluginClass: CuriosityPlugin
       ios:
         pluginClass: CuriosityPlugin
-#  plugin:
-#    androidPackage: flutter.curiosity
-#    pluginClass: FlutterCuriosityPlugin
+#      macos:
+#        pluginClass: HelloPlugin
+#      web:
+#        pluginClass: HelloPlugin
+#        fileName: hello_web.dart
+

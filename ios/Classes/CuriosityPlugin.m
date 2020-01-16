@@ -6,9 +6,14 @@
 }
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
-                                     methodChannelWithName:@"CuriosityPlugin"
+                                     methodChannelWithName:@"Curiosity"
                                      binaryMessenger:[registrar messenger]];
-    CuriosityPlugin* instance = [[CuriosityPlugin alloc] init];
+//    CuriosityPlugin* instance = [[CuriosityPlugin alloc] init];
+//    [registrar addMethodCallDelegate:instance channel:channel];
+//
+    UIViewController *viewController =
+        [UIApplication sharedApplication].delegate.window.rootViewController;
+    CuriosityPlugin* instance = [[CuriosityPlugin alloc] initWithViewController:viewController];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -37,8 +42,6 @@
         result( @"openCamera");
     } else if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
         [PicturePicker deleteCacheDirFile];
-    } else{
-        result(FlutterMethodNotImplemented);
     }
 }
 -(void)scanQR:(FlutterResult)result{

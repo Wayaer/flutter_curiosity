@@ -1,7 +1,7 @@
 import 'package:flutter_curiosity/constant/Constant.dart';
 import 'package:flutter_curiosity/gallery/AssetMedia.dart';
 import 'package:flutter_curiosity/gallery/PicturePickerOptions.dart';
-import 'package:flutter_curiosity/utils/Utils.dart';
+import 'package:flutter_curiosity/utils/LogUtils.dart';
 
 class PicturePicker {
 
