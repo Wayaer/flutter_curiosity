@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_curiosity/appinfo/AppInfo.dart';
 
-void main() {
+void main() async {
+  await AppInfo.getPackageInfo();
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     home: App(),
@@ -20,13 +23,9 @@ class App extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Center(),
-          RaisedButton(
-              onPressed: () {},
-              child: Text('按钮'))
+          RaisedButton(onPressed: () {}, child: Text('按钮'))
         ],
       ),
     );
   }
-
-
 }
