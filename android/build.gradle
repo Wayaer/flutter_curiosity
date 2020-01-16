@@ -14,6 +14,8 @@ buildscript {
 
 rootProject.allprojects {
     repositories {
+        maven { url "https://jitpack.io" }
+        mavenCentral()
         google()
         jcenter()
     }
@@ -26,6 +28,7 @@ android {
 
     defaultConfig {
         minSdkVersion 21
+        multiDexEnabled true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -35,13 +38,16 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
-    buildToolsVersion = '28.0.3'
+    buildToolsVersion = '29.0.2'
 }
 dependencies {
     def camera_version = "1.0.0-alpha05"
     implementation "androidx.camera:camera-core:${camera_version}"
     implementation "androidx.camera:camera-camera2:${camera_version}"
     implementation 'com.google.zxing:core:3.3.3'
+    implementation 'com.github.LuckSiege.PictureSelector:picture_library:v2.3.4'
+    implementation 'com.github.bumptech.glide:glide:4.10.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
 }
 afterEvaluate {
     def containsEmbeddingDependencies = false

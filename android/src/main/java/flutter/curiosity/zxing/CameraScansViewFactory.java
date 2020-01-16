@@ -7,16 +7,16 @@ import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
 
-public class ScanViewFactory extends PlatformViewFactory {
+public class   CameraScansViewFactory extends PlatformViewFactory {
     private final BinaryMessenger messenger;
 
-    public ScanViewFactory(BinaryMessenger messenger) {
+    public CameraScansViewFactory(BinaryMessenger messenger) {
         super(StandardMessageCodec.INSTANCE);
         this.messenger=messenger;
     }
 
     @Override
     public PlatformView create(Context context, int i, Object o) {
-        return new ScanView(context,messenger,i,o);
+        return new CameraScansView(context,messenger,i,o);
     }
 }

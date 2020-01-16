@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/curiosity.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -22,17 +21,12 @@ class App extends StatelessWidget {
         children: <Widget>[
           Center(),
           RaisedButton(
-              onPressed: () {
-                getVersion(context);
-              },
+              onPressed: () {},
               child: Text('按钮'))
         ],
       ),
     );
   }
 
-  getVersion(context) async {
-    var version = await FlutterCuriosity.platformVersion;
-    debugPrint(version);
-  }
+
 }

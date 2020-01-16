@@ -13,8 +13,17 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-flutter:
 
+
+
+flutter:
   plugin:
-    androidPackage: flutter.curiosity
-    pluginClass: FlutterCuriosityPlugin
+    platforms:
+      android:
+        package: flutter.curiosity
+        pluginClass: CuriosityPlugin
+#      ios:
+#        pluginClass: FLTPathProviderPlugin
+#  plugin:
+#    androidPackage: flutter.curiosity
+#    pluginClass: FlutterCuriosityPlugin

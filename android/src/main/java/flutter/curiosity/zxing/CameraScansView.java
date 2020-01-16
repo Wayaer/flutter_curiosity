@@ -31,41 +31,38 @@ import com.google.zxing.common.HybridBinarizer;
 import java.nio.ByteBuffer;
 import java.util.Map;
 
-import flutter.curiosity.Utils;
+import flutter.curiosity.CuriosityPlugin;
+import flutter.curiosity.utils.Utils;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 
-public class ScanView implements PlatformView, LifecycleOwner, EventChannel.StreamHandler, MethodChannel.MethodCallHandler {
-    private static final String TAG = "ScanView";
+public class CameraScansView implements PlatformView, LifecycleOwner, EventChannel.StreamHandler, MethodChannel.MethodCallHandler {
+//    private static final String TAG = "CameraScansView";
 
     private LifecycleRegistry lifecycleRegistry;
     private TextureView textureView;
     private boolean isPlay;
-    private static final String scanViewType = "FlutterCuriosityView";
     private EventChannel.EventSink eventSink;
     private long lastCurrentTimestamp = 0L;//最后一次的扫描
-    private MethodChannel methodChannel;
     private Preview mPreview;
 
-    ScanView(Context context, BinaryMessenger messenger, int i, Object o) {
-        Map map = (Map) o;
-        Boolean _isPlay = (Boolean) map.get("isPlay");
-        isPlay = _isPlay == Boolean.TRUE;
-
-        new EventChannel(messenger, scanViewType + "_" + i + "/event")
+    CameraScansView(Context context, BinaryMessenger messenger, int i, Object object) {
+        Map map = (Map) object;
+        isPlay = (Boolean) map.get("isPlay");
+//        isPlay = _isPlay == Boolean.TRUE;
+        new EventChannel(messenger, CuriosityPlugin.cameraScansView + "_" + i + "/event")
                 .setStreamHandler(this);
-        methodChannel = new MethodChannel(messenger, scanViewType + "_" + i + "/method");
+        MethodChannel methodChannel = new MethodChannel(messenger, CuriosityPlugin.cameraScansView + "_" + i + "/method");
         methodChannel.setMethodCallHandler(this);
         textureView = new TextureView(context);
         lifecycleRegistry = new LifecycleRegistry(this);
         DisplayMetrics outMetrics = new DisplayMetrics();
-
         WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         manager.getDefaultDisplay().getMetrics(outMetrics);
-        Log.d(TAG, "ScanView: " + outMetrics.toString());
+//        Log.d(TAG, "CameraScansView: " + outMetrics.toString());
         mPreview = buildPreView(outMetrics.widthPixels, outMetrics.heightPixels);
         CameraX.bindToLifecycle(this, mPreview, buildImageAnalysis());
 
@@ -183,12 +180,9 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
                 try {
                     final Result decode = reader.decode(binaryBitmap);
                     if (decode != null && eventSink != null) {
-                        textureView.post(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (eventSink != null)
-                                    eventSink.success(Utils.toMap(decode));
-                            }
+                        textureView.post(() -> {
+                            if (eventSink != null)
+                                eventSink.success(Utils.toMap(decode));
                         });
                     }
                 } catch (Exception e) {

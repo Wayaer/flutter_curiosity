@@ -1,0 +1,1 @@
+/// barcode typeenum CameraScansBarType {  azetc,  codabar, // ios not found  code_39,  code_93,  code_128,  data_matrix,  ean_8,  ean_13, // ios include upc_a  itf,  maxicode, // ios not found  pdf_417,  qr_code,  rss_14, // ios not found  rss_expanded, // ios not found  upc_a, // ios not found  upc_e,  upc_ean_extension, // ios not found}

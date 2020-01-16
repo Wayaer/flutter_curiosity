@@ -1,13 +1,9 @@
-import 'dart:async';
+library flutter_curiosity;
 
-import 'package:flutter/services.dart';
+//const MethodChannel channel = const MethodChannel('FlutterCuriosity');
 
-class FlutterCuriosity {
-  static const MethodChannel _channel =
-      const MethodChannel('FlutterCuriosity');
-
-  static Future<String> get platformVersion async {
-    final String version = await _channel.invokeMethod('getPlatformVersion');
-    return version;
-  }
-}
+export 'appinfo/AppInfo.dart';
+export 'gallery/AssetMedia.dart';
+export 'gallery/PicturePicker.dart';
+export 'gallery/PicturePickerOptions.dart';
+export 'utils/NativeUtils.dart';
