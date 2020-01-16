@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
 import java.util.Map;
 
 import flutter.curiosity.CuriosityPlugin;
-import flutter.curiosity.utils.Utils;
+import flutter.curiosity.utils.NativeUtils;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodCall;
@@ -182,7 +182,7 @@ public class CameraScansView implements PlatformView, LifecycleOwner, EventChann
                     if (decode != null && eventSink != null) {
                         textureView.post(() -> {
                             if (eventSink != null)
-                                eventSink.success(Utils.toMap(decode));
+                                eventSink.success(NativeUtils.toMap(decode));
                         });
                     }
                 } catch (Exception e) {

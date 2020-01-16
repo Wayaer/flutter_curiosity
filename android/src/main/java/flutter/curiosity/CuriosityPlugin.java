@@ -11,10 +11,9 @@ import androidx.annotation.NonNull;
 import flutter.curiosity.gallery.PicturePicker;
 import flutter.curiosity.utils.AppInfo;
 import flutter.curiosity.utils.FileUtils;
-import flutter.curiosity.utils.Utils;
+import flutter.curiosity.utils.NativeUtils;
 import flutter.curiosity.zxing.CameraScansViewFactory;
 import flutter.curiosity.zxing.ImageScanHelper;
-import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -94,9 +93,9 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
     }
 
     @Override
-    public void onMethodCall(@NonNull MethodCall c, @NonNull Result res) {
-        result = res;
-        call = c;
+    public void onMethodCall(@NonNull MethodCall _call, @NonNull Result _result) {
+        result = _result;
+        call = _call;
         scanQR();
         getAppInfo();
         gallery();
@@ -106,16 +105,16 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
     private void utils() {
         switch (call.method) {
             case "clearAllCookie":
-                Utils.clearAllCookie();
+                NativeUtils.clearAllCookie();
                 break;
             case "installApp":
-                Utils.installApp(call.argument("apkPath"));
+                NativeUtils.installApp(call.argument("apkPath"));
                 break;
             case "getAllCookie":
-                result.success(Utils.getAllCookie(call.argument("url")));
+                result.success(NativeUtils.getAllCookie(call.argument("url")));
                 break;
             case "getFilePathSize":
-                result.success(Utils.getFilePathSize(call.argument("filePath")));
+                result.success(NativeUtils.getFilePathSize(call.argument("filePath")));
                 break;
             case "deleteFolder":
                 FileUtils.deleteFolder(call.argument("folderPath"));
@@ -124,13 +123,13 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
                 FileUtils.deleteFile(call.argument("filePath"));
                 break;
             case "goToMarket":
-                Utils.goToMarket(call.argument("packageName"), call.argument("marketPackageName"));
+                NativeUtils.goToMarket(call.argument("packageName"), call.argument("marketPackageName"));
                 break;
             case "isInstallApp":
-                result.success(Utils.isInstallApp(call.argument("packageName")));
+                result.success(NativeUtils.isInstallApp(call.argument("packageName")));
                 break;
             case "exitApp":
-                Utils.exitApp();
+                NativeUtils.exitApp();
                 break;
         }
     }
@@ -138,14 +137,13 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
     private void gallery() {
         switch (call.method) {
             case "openSelect":
-                Log.i("进来了", "应该进来了");
-                PicturePicker.openSelect( call);
+                PicturePicker.openSelect(call);
                 break;
             case "openCamera":
-                PicturePicker.openCamera( call);
+                PicturePicker.openCamera(call);
                 break;
             case "deleteCacheDirFile":
-                PicturePicker.deleteCacheDirFile( call);
+                PicturePicker.deleteCacheDirFile(call);
                 break;
         }
     }

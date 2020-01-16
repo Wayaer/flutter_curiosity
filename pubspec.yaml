@@ -22,8 +22,8 @@ flutter:
       android:
         package: flutter.curiosity
         pluginClass: CuriosityPlugin
-#      ios:
-#        pluginClass: FLTPathProviderPlugin
+      ios:
+        pluginClass: CuriosityPlugin
 #  plugin:
 #    androidPackage: flutter.curiosity
 #    pluginClass: FlutterCuriosityPlugin

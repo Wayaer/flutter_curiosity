@@ -31,7 +31,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
-import flutter.curiosity.utils.Utils;
+import flutter.curiosity.utils.NativeUtils;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -66,7 +66,7 @@ public class ImageScanHelper extends ContextWrapper {
                     BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
                     final Result decode = reader.decode(binaryBitmap, hints);
                     Log.d("result", "analyze: decode:" + decode.toString());
-                    handler.post(() -> result.success(Utils.toMap(decode)));
+                    handler.post(() -> result.success(NativeUtils.toMap(decode)));
                 } catch (Exception e) {
                     Log.d("result", "analyze: error");
                     handler.post(() -> result.success(null));
@@ -117,7 +117,7 @@ public class ImageScanHelper extends ContextWrapper {
                 BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
                 final Result decode = reader.decode(binaryBitmap, hints);
                 Log.d("result", "analyze: decode:" + decode.toString());
-                handler.post(() -> result.success(Utils.toMap(decode)));
+                handler.post(() -> result.success(NativeUtils.toMap(decode)));
             } catch (Exception e) {
                 Log.d("result", "analyze: error");
                 handler.post(() -> result.success(null));
@@ -146,7 +146,7 @@ public class ImageScanHelper extends ContextWrapper {
                 BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
                 final Result decode = reader.decode(binaryBitmap, hints);
                 Log.d("result", "analyze: decode:" + decode.toString());
-                handler.post(() -> result.success(Utils.toMap(decode)));
+                handler.post(() -> result.success(NativeUtils.toMap(decode)));
             } catch (Exception e) {
                 Log.d("result", "analyze: error");
                 handler.post(() -> result.success(null));
