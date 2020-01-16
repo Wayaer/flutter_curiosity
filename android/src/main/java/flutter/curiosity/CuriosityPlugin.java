@@ -14,7 +14,10 @@ import flutter.curiosity.utils.FileUtils;
 import flutter.curiosity.utils.Utils;
 import flutter.curiosity.zxing.CameraScansViewFactory;
 import flutter.curiosity.zxing.ImageScanHelper;
+import io.flutter.Log;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -27,25 +30,49 @@ import static android.app.Activity.RESULT_OK;
 /**
  * CuriosityPlugin
  */
-public class CuriosityPlugin implements MethodCallHandler, FlutterPlugin, PluginRegistry.ActivityResultListener {
+public class CuriosityPlugin implements MethodCallHandler, ActivityAware, FlutterPlugin, PluginRegistry.ActivityResultListener {
     private static ImageScanHelper imageScanHelper;
     @SuppressLint("StaticFieldLeak")
     public static Context context;
+    @SuppressLint("StaticFieldLeak")
+    public static Activity activity;
     public static String cameraScansView = "CuriosityCameraScansView";
-    public String methodChannelName = "Curiosity";
-    private Activity activity;
+    private String methodChannelName = "Curiosity";
+
     private Result result;
 
     private MethodCall call;
     private MethodChannel methodChannel;
 
+
     public void registerWith(Registrar registrar) {
-        activity = registrar.activity();
         CuriosityPlugin plugin = new CuriosityPlugin();
         plugin.methodChannel = new MethodChannel(registrar.messenger(), methodChannelName);
         context = registrar.context();
+        activity = registrar.activity();
         methodChannel.setMethodCallHandler(plugin);
         registrar.addActivityResultListener(plugin);
+    }
+
+    @Override
+    public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
+        activity = binding.getActivity();
+    }
+
+    @Override
+    public void onDetachedFromActivityForConfigChanges() {
+        activity = null;
+
+    }
+
+    @Override
+    public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
+
+    }
+
+    @Override
+    public void onDetachedFromActivity() {
+
     }
 
     @Override
@@ -61,6 +88,7 @@ public class CuriosityPlugin implements MethodCallHandler, FlutterPlugin, Plugin
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         context = null;
+        activity = null;
         methodChannel.setMethodCallHandler(null);
         methodChannel = null;
     }
@@ -92,7 +120,7 @@ public class CuriosityPlugin implements MethodCallHandler, FlutterPlugin, Plugin
             case "deleteFolder":
                 FileUtils.deleteFolder(call.argument("folderPath"));
                 break;
-            case "filePath":
+            case "deleteFile":
                 FileUtils.deleteFile(call.argument("filePath"));
                 break;
             case "goToMarket":
@@ -110,13 +138,14 @@ public class CuriosityPlugin implements MethodCallHandler, FlutterPlugin, Plugin
     private void gallery() {
         switch (call.method) {
             case "openSelect":
-                PicturePicker.openSelect(activity, call);
+                Log.i("进来了", "应该进来了");
+                PicturePicker.openSelect( call);
                 break;
             case "openCamera":
-                PicturePicker.openCamera(activity, call);
+                PicturePicker.openCamera( call);
                 break;
             case "deleteCacheDirFile":
-                PicturePicker.deleteCacheDirFile(activity, call);
+                PicturePicker.deleteCacheDirFile( call);
                 break;
         }
     }

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import flutter.curiosity.CuriosityPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
@@ -97,9 +98,9 @@ public class PicturePicker {
         }
     }
 
-    public static void openSelect(Activity activity, MethodCall call) {
+    public static void openSelect(MethodCall call) {
         setValue(call);
-        PictureSelector.create(activity)
+        PictureSelector.create(CuriosityPlugin.activity)
                 .openGallery(pictureMimeType)//全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
                 .loadImageEngine(GlideEngine.createGlideEngine())
                 .maxSelectNum(maxSelectNum) // 最大图片选择数量 int
@@ -140,9 +141,9 @@ public class PicturePicker {
     }
 
 
-    public static void openCamera(Activity activity, MethodCall call) {
+    public static void openCamera(MethodCall call) {
         setValue(call);
-        PictureSelector.create(activity)
+        PictureSelector.create(CuriosityPlugin.activity)
                 .openCamera(pictureMimeType)
                 .imageFormat(PictureMimeType.PNG)// 拍照保存图片格式后缀,默认jpeg
                 .enableCrop(enableCrop)// 是否裁剪 true or false
@@ -175,7 +176,7 @@ public class PicturePicker {
 
     }
 
-    public static void deleteCacheDirFile(Activity activity, MethodCall call) {
+    public static void deleteCacheDirFile(MethodCall call) {
         int selectValueType = call.argument("selectValueType");
         int pictureMimeType = 0;
         if (selectValueType == 1) {
@@ -187,7 +188,7 @@ public class PicturePicker {
         } else {
             pictureMimeType = PictureMimeType.ofAll();
         }
-        PictureFileUtils.deleteCacheDirFile(activity, pictureMimeType);
+        PictureFileUtils.deleteCacheDirFile(CuriosityPlugin.activity, pictureMimeType);
     }
 
     public static void onChooseResult(int requestCode, Intent intent, Activity activity, MethodChannel.Result result) {
