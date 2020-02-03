@@ -9,7 +9,6 @@ class AppInfo {
   static Future<AppInfoModel> getPackageInfo() async {
     Map<String, dynamic> map =
         await channel.invokeMapMethod<String, dynamic>('getAppInfo');
-    log(jsonEncode(map));
     return AppInfoModel.fromJson(map);
   }
 
