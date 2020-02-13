@@ -1,7 +1,7 @@
 name: flutter_curiosity
 description: A new Flutter plugin about flutter curiosity
 version: 0.0.1
-author: Wayaer
+author: Wayaer <Wayaer@foxmail.com>
 homepage: https://github.com/Wayaer/flutter-curiosity.git
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -14,8 +14,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
-
 flutter:
   plugin:
     platforms:
@@ -25,8 +23,8 @@ flutter:
       ios:
         pluginClass: CuriosityPlugin
 #      macos:
-#        pluginClass: HelloPlugin
+#        pluginClass: CuriosityPlugin
 #      web:
-#        pluginClass: HelloPlugin
-#        fileName: hello_web.dart
+#        pluginClass: CuriosityPlugin
+#        fileName: CuriosityPlugin.dart
 
