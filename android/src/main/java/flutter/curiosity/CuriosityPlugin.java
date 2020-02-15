@@ -149,14 +149,20 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
     }
 
     private void getAppInfo() {
-        if (call.method.equals("getAppInfo")) {//获取包名信息
-            try {
-                result.success(AppInfo.getAppInfo(context));
-            } catch (PackageManager.NameNotFoundException e) {
-                result.error("Name not found", e.getMessage(), null);
-            }
+        switch (call.method) {
+            case "getAppInfo":
+                try {
+                    result.success(AppInfo.getAppInfo(context));
+                } catch (PackageManager.NameNotFoundException e) {
+                    result.error("Name not found", e.getMessage(), null);
+                }
+                break;
+            case "getDirectoryAllName":
+                result.success(FileUtils.getDirectoryAllName(call));
+                break;
         }
     }
+
 
     private void scanQR() {
         switch (call.method) {

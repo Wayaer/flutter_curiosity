@@ -7,6 +7,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+import io.flutter.plugin.common.MethodCall;
 
 public class FileUtils {
 
@@ -208,6 +213,29 @@ public class FileUtils {
                 FileUtils.deleteDirWithFile(dir[i]);
             }
         }
+    }
+
+    /**
+     * 获取路径下所有文件及文件夹名
+     *
+     * @return
+     */
+    public static List<String> getDirectoryAllName(MethodCall call) {
+        String path = call.argument("path");
+        String isAbsolutePath = Objects.requireNonNull(call.argument("isAbsolutePath")).toString();
+        List<String> nameList = new ArrayList<>();
+        if (isFolderExists(path)) {
+            File file = new File(path);
+            if (file.isDirectory()) {
+                File[] files = file.listFiles();
+                if (files != null && files.length > 0) {
+                    for (File value : files) {
+                        nameList.add(isAbsolutePath.equals("true") ? value.getAbsolutePath() : value.getAbsolutePath());
+                    }
+                }
+            }
+        }
+        return nameList;
     }
 
 }
