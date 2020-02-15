@@ -43,7 +43,7 @@ class AppInfo {
   static getRootDirectory() async {
     if (Platform.isIOS || Platform.isAndroid) {
       AppInfoModel appInfoModel = await getPackageInfo();
-      return Platform.isAndroid ? appInfoModel.externalStorageDirectory : '';
+      return Platform.isAndroid ? appInfoModel.externalStorageDirectory : appInfoModel.homeDirectory;
     }
   }
 
@@ -52,6 +52,15 @@ class AppInfo {
     if (Platform.isIOS || Platform.isAndroid) {
       List<String> pathNameList =
           await channel.invokeListMethod('getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
+      if (Platform.isIOS && isAbsolutePath) {
+        List<String> list = List();
+        if (pathNameList.length > 0) {
+          pathNameList.map((value) {
+            list.add(path + '/' + value);
+          }).toList();
+          return list;
+        }
+      }
       return pathNameList;
     }
   }

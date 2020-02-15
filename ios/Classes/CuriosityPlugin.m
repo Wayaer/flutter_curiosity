@@ -8,11 +8,11 @@
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:@"Curiosity"
                                      binaryMessenger:[registrar messenger]];
-//    CuriosityPlugin* instance = [[CuriosityPlugin alloc] init];
-//    [registrar addMethodCallDelegate:instance channel:channel];
-//
+    //    CuriosityPlugin* instance = [[CuriosityPlugin alloc] init];
+    //    [registrar addMethodCallDelegate:instance channel:channel];
+    //
     UIViewController *viewController =
-        [UIApplication sharedApplication].delegate.window.rootViewController;
+    [UIApplication sharedApplication].delegate.window.rootViewController;
     CuriosityPlugin* instance = [[CuriosityPlugin alloc] initWithViewController:viewController];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -58,6 +58,8 @@
 -(void)getAppInfo:(FlutterResult)result{
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([AppInfo getAppInfo]);
+    }else if([@"getDirectoryAllName" isEqualToString:call.method]){
+        result([FileUtils getDirectoryAllName:call.arguments]);
     }
 }
 -(void)utils:(FlutterResult)result{
@@ -67,12 +69,12 @@
     } else if ([@"getAllCookie" isEqualToString:call.method]) {
         result([NativeUtils getAllCookie]);
     } else if ([@"getFilePathSize" isEqualToString:call.method]) {
-        result([NativeUtils getFilePathSize:call.arguments[@"filePath"]]);
-    } else if ([@"deleteFolder" isEqualToString:call.method]) {
-        [NativeUtils deleteFolder:call.arguments[@"folderPath"]];
+        result([FileUtils getFilePathSize:call.arguments[@"filePath"]]);
+    } else if ([@"deleteDirectory" isEqualToString:call.method]) {
+        [FileUtils deleteDirectory:call.arguments[@"directoryPath"]];
         result( @"success");
     } else if ([@"deleteFile" isEqualToString:call.method]) {
-        [NativeUtils deleteFile:call.arguments[@"filePath"]];
+        [FileUtils deleteFile:call.arguments[@"filePath"]];
         result( @"success");
     } else if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeUtils goToMarket:call.arguments[@"packageName"]];

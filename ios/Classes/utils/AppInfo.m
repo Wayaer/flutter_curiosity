@@ -1,4 +1,3 @@
-
 #import "AppInfo.h"
 
 @implementation AppInfo
@@ -33,4 +32,5 @@
     
     return  info;
 }
+
 @end

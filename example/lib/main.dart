@@ -14,7 +14,7 @@ class App extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Flutter Curiosity Plugin example app'),
+        title: const Text('Flutter Curiosity Plugin app'),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -33,9 +33,7 @@ class App extends StatelessWidget {
 
   getPackageInfo() async {
     String rootDirectory = await AppInfo.getRootDirectory();
-    print(rootDirectory);
-    List<String> data = await AppInfo.getDirectoryAllName(rootDirectory);
-    print(data);
+    List<String> data = await AppInfo.getDirectoryAllName(rootDirectory, isAbsolutePath: true);
     data.map((v) {
       print(v);
     }).toList();

@@ -116,8 +116,8 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
             case "getFilePathSize":
                 result.success(NativeUtils.getFilePathSize(call.argument("filePath")));
                 break;
-            case "deleteFolder":
-                FileUtils.deleteFolder(call.argument("folderPath"));
+            case "deleteDirectory":
+                FileUtils.deleteDirectory(call.argument("directoryPath"));
                 break;
             case "deleteFile":
                 FileUtils.deleteFile(call.argument("filePath"));

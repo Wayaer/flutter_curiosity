@@ -163,7 +163,7 @@ public class FileUtils {
      * @return
      */
 
-    public static boolean isFolderExists(String path) {
+    public static boolean isDirectoryExist(String path) {
         File file = new File(path);
         if (!file.exists()) {
             return false;
@@ -176,11 +176,11 @@ public class FileUtils {
     /**
      * 判断是否有该路径,如果没有就创建,传入路径
      *
-     * @param folder
+     * @param directory
      * @return
      */
-    public static boolean createFolder(String folder) {
-        File file = new File(folder);
+    public static boolean createDirectory(String directory) {
+        File file = new File(directory);
         if (!file.exists()) {
             if (file.mkdirs()) {
                 return true;
@@ -204,7 +204,7 @@ public class FileUtils {
      *
      * @param path
      */
-    public static void deleteFolder(String path) {
+    public static void deleteDirectory(String path) {
         File[] dir = new File(path).listFiles();
         for (int i = 0; i < dir.length; i++) {
             if (dir[i].isFile()) {
@@ -224,17 +224,22 @@ public class FileUtils {
         String path = call.argument("path");
         boolean isAbsolutePath = Objects.requireNonNull(call.argument("isAbsolutePath"));
         List<String> nameList = new ArrayList<>();
-        if (isFolderExists(path)) {
-            File file = new File(path);
-            if (file.isDirectory()) {
-                File[] files = file.listFiles();
-                if (files != null && files.length > 0) {
-                    for (File value : files) {
-                        nameList.add(isAbsolutePath ? value.getAbsolutePath() : value.getName());
-                    }
-                }
+        if (!isDirectoryExist(path)) {
+            nameList.add("path not exist");
+            return nameList;
+        }
+        File file = new File(path);
+        if (!file.isDirectory()) {
+            nameList.add("path is not Directory");
+            return nameList;
+        }
+        File[] files = file.listFiles();
+        if (files != null && files.length > 0) {
+            for (File value : files) {
+                nameList.add(isAbsolutePath ? value.getAbsolutePath() : value.getName());
             }
         }
+
         return nameList;
     }
 
