@@ -50,14 +50,14 @@ class AppInfo {
   //目录下所有文件夹以及文件名字  isAbsolutePath true 目录下文件的完整路径
   static getDirectoryAllName(String path, {bool isAbsolutePath: false}) async {
     if (Platform.isIOS || Platform.isAndroid) {
-      List<String> pathNameList = await channel.invokeListMethod(
-          'getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
+      List<String> pathNameList =
+          await channel.invokeListMethod('getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
       return pathNameList;
     }
   }
 
-/// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
-/// The package name. `bundleIdentifier` on iOS, `getPackageName` on Android.
-/// The package version. `CFBundleShortVersionString` on iOS, `versionName` on Android.
-/// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
+  /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
+  /// The package name. `bundleIdentifier` on iOS, `getPackageName` on Android.
+  /// The package version. `CFBundleShortVersionString` on iOS, `versionName` on Android.
+  /// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
 }

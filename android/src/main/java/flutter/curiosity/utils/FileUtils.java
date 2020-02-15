@@ -222,7 +222,7 @@ public class FileUtils {
      */
     public static List<String> getDirectoryAllName(MethodCall call) {
         String path = call.argument("path");
-        String isAbsolutePath = Objects.requireNonNull(call.argument("isAbsolutePath")).toString();
+        boolean isAbsolutePath = Objects.requireNonNull(call.argument("isAbsolutePath"));
         List<String> nameList = new ArrayList<>();
         if (isFolderExists(path)) {
             File file = new File(path);
@@ -230,7 +230,7 @@ public class FileUtils {
                 File[] files = file.listFiles();
                 if (files != null && files.length > 0) {
                     for (File value : files) {
-                        nameList.add(isAbsolutePath.equals("true") ? value.getAbsolutePath() : value.getAbsolutePath());
+                        nameList.add(isAbsolutePath ? value.getAbsolutePath() : value.getName());
                     }
                 }
             }

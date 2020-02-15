@@ -34,7 +34,7 @@ class App extends StatelessWidget {
   getPackageInfo() async {
     String rootDirectory = await AppInfo.getRootDirectory();
     print(rootDirectory);
-    List<String> data = await AppInfo.getDirectoryAllName(rootDirectory, isAbsolutePath: true);
+    List<String> data = await AppInfo.getDirectoryAllName(rootDirectory);
     print(data);
     data.map((v) {
       print(v);
