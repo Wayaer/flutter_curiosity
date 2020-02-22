@@ -9,11 +9,11 @@ import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
 
 import flutter.curiosity.gallery.PicturePicker;
+import flutter.curiosity.scan.ScanHelper;
 import flutter.curiosity.utils.AppInfo;
 import flutter.curiosity.utils.FileUtils;
 import flutter.curiosity.utils.NativeUtils;
-import flutter.curiosity.zxing.CameraScansViewFactory;
-import flutter.curiosity.zxing.ImageScanHelper;
+import flutter.curiosity.scan.ScanViewFactory;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
@@ -30,12 +30,12 @@ import static android.app.Activity.RESULT_OK;
  * CuriosityPlugin
  */
 public class CuriosityPlugin implements MethodCallHandler, ActivityAware, FlutterPlugin, PluginRegistry.ActivityResultListener {
-    private static ImageScanHelper imageScanHelper;
+    private static ScanHelper scanUtils;
     @SuppressLint("StaticFieldLeak")
     public static Context context;
     @SuppressLint("StaticFieldLeak")
     public static Activity activity;
-    public static String cameraScansView = "CuriosityCameraScansView";
+    public static String scanView = "scanView";
     private String methodChannelName = "Curiosity";
 
     private Result result;
@@ -79,8 +79,8 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
         methodChannel = new MethodChannel(binding.getBinaryMessenger(), methodChannelName);
         context = binding.getApplicationContext();
         methodChannel.setMethodCallHandler(this);
-        imageScanHelper = new ImageScanHelper(binding.getApplicationContext());
-        binding.getPlatformViewRegistry().registerViewFactory(cameraScansView, new CameraScansViewFactory(binding.getBinaryMessenger()));
+        scanUtils = new ScanHelper(binding.getApplicationContext());
+        binding.getPlatformViewRegistry().registerViewFactory(scanView, new ScanViewFactory(binding.getBinaryMessenger()));
     }
 
 
@@ -96,7 +96,7 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
     public void onMethodCall(@NonNull MethodCall _call, @NonNull Result _result) {
         result = _result;
         call = _call;
-        scanQR();
+        scan();
         getAppInfo();
         gallery();
         utils();
@@ -164,16 +164,16 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
     }
 
 
-    private void scanQR() {
+    private void scan() {
         switch (call.method) {
             case "scanImagePath"://扫描本地二维码
-                imageScanHelper.scanImagePath(call, result);
+                scanUtils.scanImagePath(call, result);
                 break;
             case "scanImageUrl"://识别url 二维码
-                imageScanHelper.scanImageUrl(call, result);
+                scanUtils.scanImageUrl(call, result);
                 break;
             case "scanImageMemory"://扫描二维码
-                imageScanHelper.scanImageMemory(call, result);
+                scanUtils.scanImageMemory(call, result);
                 break;
         }
     }

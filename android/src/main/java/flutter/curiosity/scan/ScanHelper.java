@@ -1,4 +1,4 @@
-package flutter.curiosity.zxing;
+package flutter.curiosity.scan;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -8,9 +8,7 @@ import android.graphics.BitmapFactory;
 import android.os.Handler;
 import android.util.Log;
 
-import com.google.zxing.BarcodeFormat;
 import com.google.zxing.BinaryBitmap;
-import com.google.zxing.DecodeHintType;
 import com.google.zxing.RGBLuminanceSource;
 import com.google.zxing.Result;
 import com.google.zxing.common.HybridBinarizer;
@@ -20,8 +18,6 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.cert.X509Certificate;
-import java.util.EnumMap;
-import java.util.Map;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -35,15 +31,16 @@ import flutter.curiosity.utils.NativeUtils;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-public class ImageScanHelper extends ContextWrapper {
+public class ScanHelper extends ContextWrapper {
 
     private QRCodeReader reader = new QRCodeReader();
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler();
 
-    public ImageScanHelper(Context base) {
+    public ScanHelper(Context base) {
         super(base);
     }
+
 
     public void scanImagePath(MethodCall call, final MethodChannel.Result result) {
         final String path = call.argument("path");
@@ -51,30 +48,31 @@ public class ImageScanHelper extends ContextWrapper {
         if (file.isFile()) {
             executor.execute(() -> {
                 Bitmap bitmap = BitmapFactory.decodeFile(path);
-                int height = bitmap.getHeight();
-                int width = bitmap.getWidth();
-                try {
-                    Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-                    hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
-                    hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
-                    hints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
-                    int[] pixels = new int[width * height];
-                    bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-                    RGBLuminanceSource source = new RGBLuminanceSource(
-                            width,
-                            height, pixels);
-                    BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
-                    final Result decode = reader.decode(binaryBitmap, hints);
-                    Log.d("result", "analyze: decode:" + decode.toString());
-                    handler.post(() -> result.success(NativeUtils.toMap(decode)));
-                } catch (Exception e) {
-                    Log.d("result", "analyze: error");
-                    handler.post(() -> result.success(null));
-                }
+                scan(bitmap, result);
             });
         } else {
             result.success("");
         }
+    }
+
+    public void scan(Bitmap bitmap, final MethodChannel.Result result) {
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
+        try {
+            int[] pixels = new int[width * height];
+            bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+            RGBLuminanceSource source = new RGBLuminanceSource(
+                    width,
+                    height, pixels);
+            BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
+            final Result decode = reader.decode(binaryBitmap, NativeUtils.getHints());
+            Log.d("result", "analyze: decode:" + decode.toString());
+            handler.post(() -> result.success(NativeUtils.scanDataToMap(decode)));
+        } catch (Exception e) {
+            Log.d("result", "analyze: error");
+            handler.post(() -> result.success(null));
+        }
+
     }
 
     public void scanImageUrl(MethodCall call, final MethodChannel.Result result) {
@@ -103,21 +101,9 @@ public class ImageScanHelper extends ContextWrapper {
                     connection.connect();
                     bitmap = BitmapFactory.decodeStream(connection.getInputStream());
                 }
-                int height = bitmap.getHeight();
-                int width = bitmap.getWidth();
-                Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-                hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
-                hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
-                hints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
-                int[] pixels = new int[width * height];
-                bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-                RGBLuminanceSource source = new RGBLuminanceSource(
-                        width,
-                        height, pixels);
-                BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
-                final Result decode = reader.decode(binaryBitmap, hints);
-                Log.d("result", "analyze: decode:" + decode.toString());
-                handler.post(() -> result.success(NativeUtils.toMap(decode)));
+                scan(bitmap, result);
+
+
             } catch (Exception e) {
                 Log.d("result", "analyze: error");
                 handler.post(() -> result.success(null));
@@ -132,21 +118,7 @@ public class ImageScanHelper extends ContextWrapper {
                 assert unit8List != null;
                 Bitmap bitmap;
                 bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List.length);
-                int height = bitmap.getHeight();
-                int width = bitmap.getWidth();
-                Map<DecodeHintType, Object> hints = new EnumMap<>(DecodeHintType.class);
-                hints.put(DecodeHintType.CHARACTER_SET, "utf-8");
-                hints.put(DecodeHintType.TRY_HARDER, Boolean.TRUE);
-                hints.put(DecodeHintType.POSSIBLE_FORMATS, BarcodeFormat.QR_CODE);
-                int[] pixels = new int[width * height];
-                bitmap.getPixels(pixels, 0, width, 0, 0, width, height);
-                RGBLuminanceSource source = new RGBLuminanceSource(
-                        width,
-                        height, pixels);
-                BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source));
-                final Result decode = reader.decode(binaryBitmap, hints);
-                Log.d("result", "analyze: decode:" + decode.toString());
-                handler.post(() -> result.success(NativeUtils.toMap(decode)));
+                scan(bitmap, result);
             } catch (Exception e) {
                 Log.d("result", "analyze: error");
                 handler.post(() -> result.success(null));

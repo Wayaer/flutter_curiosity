@@ -2,28 +2,26 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_curiosity/constant/Constant.dart';
-import 'package:flutter_curiosity/scan/CameraScansController.dart';
-import 'package:flutter_curiosity/scan/CameraScansResult.dart';
+import 'package:flutter_curiosity/scan/ScanController.dart';
 
 /// qr scan view , it need to  require camera permission.
-class CameraScansWidget extends StatefulWidget {
-  final CameraScansController controller;
+class Scan extends StatefulWidget {
+  final ScanController controller;
+  final int width;
+  final int height;
 
-  const CameraScansWidget({this.controller}) : assert(controller != null);
+  const Scan({this.controller, this.width, this.height}) : assert(controller != null);
 
   @override
-  State<StatefulWidget> createState() => CameraScansState();
+  State<StatefulWidget> createState() => ScanState();
 }
-const cameraScansViewType = 'CuriosityCameraScansView';
-class CameraScansState extends State<CameraScansWidget> {
-  CameraScansController controller;
+
+class ScanState extends State<Scan> {
+  ScanController controller;
 
   void onPlatformViewCreated(int id) {
     controller.attach(id);
@@ -32,7 +30,7 @@ class CameraScansState extends State<CameraScansWidget> {
   @override
   void initState() {
     super.initState();
-    controller = widget.controller ?? CameraScansController();
+    controller = widget.controller ?? ScanController();
   }
 
   @override
@@ -43,19 +41,17 @@ class CameraScansState extends State<CameraScansWidget> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic params = {
-      "isPlay": controller.isPlay,
-    };
+    dynamic params = {"isPlay": controller.isPlay, "width": widget.width, "height": widget.height};
     if (Platform.isAndroid) {
       return AndroidView(
-        viewType: cameraScansViewType,
+        viewType: scanView,
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: params,
         creationParamsCodec: StandardMessageCodec(),
       );
     } else if (Platform.isIOS) {
       return UiKitView(
-        viewType: cameraScansViewType,
+        viewType: scanView,
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: params,
         creationParamsCodec: StandardMessageCodec(),
@@ -67,4 +63,3 @@ class CameraScansState extends State<CameraScansWidget> {
     }
   }
 }
-

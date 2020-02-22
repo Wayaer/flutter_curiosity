@@ -25,6 +25,7 @@ import io.flutter.plugin.common.MethodChannel;
 
 @SuppressWarnings("ALL")
 public class PicturePicker {
+
     static int maxSelectNum;
     static int minSelectNum;
     static int imageSpanCount;

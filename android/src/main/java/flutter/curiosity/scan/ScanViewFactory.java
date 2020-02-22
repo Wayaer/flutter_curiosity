@@ -1,4 +1,4 @@
-package flutter.curiosity.zxing;
+package flutter.curiosity.scan;
 
 import android.content.Context;
 
@@ -7,16 +7,16 @@ import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
 
-public class   CameraScansViewFactory extends PlatformViewFactory {
+public class ScanViewFactory extends PlatformViewFactory {
     private final BinaryMessenger messenger;
 
-    public CameraScansViewFactory(BinaryMessenger messenger) {
+    public ScanViewFactory(BinaryMessenger messenger) {
         super(StandardMessageCodec.INSTANCE);
-        this.messenger=messenger;
+        this.messenger = messenger;
     }
 
     @Override
-    public PlatformView create(Context context, int i, Object o) {
-        return new CameraScansView(context,messenger,i,o);
+    public PlatformView create(Context context, int i, Object object) {
+        return new ScanView(context, messenger, i, object);
     }
 }
