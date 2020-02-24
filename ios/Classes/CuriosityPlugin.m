@@ -1,4 +1,6 @@
 #import "CuriosityPlugin.h"
+#import "ScanUtils.h"
+#import "ScanViewFactory.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
@@ -8,13 +10,13 @@
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:@"Curiosity"
                                      binaryMessenger:[registrar messenger]];
-    //    CuriosityPlugin* instance = [[CuriosityPlugin alloc] init];
-    //    [registrar addMethodCallDelegate:instance channel:channel];
-    //
     UIViewController *viewController =
     [UIApplication sharedApplication].delegate.window.rootViewController;
     CuriosityPlugin* instance = [[CuriosityPlugin alloc] initWithViewController:viewController];
     [registrar addMethodCallDelegate:instance channel:channel];
+      ScanViewFactory * scanView=[[ScanViewFactory alloc]initWithMessenger:[registrar messenger]];
+    
+      [registrar registerViewFactory:scanView withId:@"scanView"];
 }
 
 - (instancetype)initWithViewController:(UIViewController *)_viewController {
@@ -27,7 +29,7 @@
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)result {
     call=_call;
     [self gallery:result];
-    [self scanQR:result];
+    [self scan:result];
     [self getAppInfo:result];
     [self utils:result];
     
@@ -44,16 +46,14 @@
         [PicturePicker deleteCacheDirFile];
     }
 }
--(void)scanQR:(FlutterResult)result{
+-(void)scan:(FlutterResult)result{
     if ([@"scanImagePath" isEqualToString:call.method]) {
-        [PicturePicker openSelect:call.arguments viewController:viewController];
-        result( @"success");
-    } else if ([@"scanImageUrl" isEqualToString:call.method]) {
-        [PicturePicker openCamera:call.arguments];
-        result( @"success");
-    } else if ([@"scanImageMemory" isEqualToString:call.method]) {
-        [PicturePicker deleteCacheDirFile];
-    }
+          [ScanUtils scanImagePath:call result:result];
+      }else if ([@"scanImageUrl" isEqualToString:call.method]) {
+          [ScanUtils scanImageUrl:call result:result];
+      }if ([@"scanImageMemory" isEqualToString:call.method]) {
+          [ScanUtils scanImageMemory:call result:result];
+      }
 }
 -(void)getAppInfo:(FlutterResult)result{
     if ([@"getAppInfo" isEqualToString:call.method]) {

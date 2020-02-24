@@ -31,13 +31,13 @@ import flutter.curiosity.utils.NativeUtils;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 
-public class ScanHelper extends ContextWrapper {
+public class ScanUtils extends ContextWrapper {
 
     private QRCodeReader reader = new QRCodeReader();
     private Executor executor = Executors.newSingleThreadExecutor();
     private Handler handler = new Handler();
 
-    public ScanHelper(Context base) {
+    public ScanUtils(Context base) {
         super(base);
     }
 

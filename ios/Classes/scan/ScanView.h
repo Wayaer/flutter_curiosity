@@ -1,24 +1,19 @@
-//
-//  RScanView.h
-//  r_scan
-//
-//  Created by rhymelph on 2019/11/23.
-//
 
 #import <UiKit/UiKit.h>
 #import <Flutter/Flutter.h>
+#import <AVFoundation/AVFoundation.h>
 
-@interface RScanView : UIView
+@interface ScanView : UIView
 
 -(instancetype)initWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 
 
 @end
 
-@interface FlutterRScanViewEventChannel : NSObject<FlutterStreamHandler>
+@interface ScanViewEventChannel : NSObject<FlutterStreamHandler>
 
 @property(nonatomic , strong)FlutterEventSink events;
-@property(nonatomic , strong)RScanView* rsView;
+@property(nonatomic , strong)ScanView* scanView;
 
 -(void)getResult:(NSDictionary *)msg;
 

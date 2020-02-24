@@ -9,7 +9,7 @@ import android.content.pm.PackageManager;
 import androidx.annotation.NonNull;
 
 import flutter.curiosity.gallery.PicturePicker;
-import flutter.curiosity.scan.ScanHelper;
+import flutter.curiosity.scan.ScanUtils;
 import flutter.curiosity.utils.AppInfo;
 import flutter.curiosity.utils.FileUtils;
 import flutter.curiosity.utils.NativeUtils;
@@ -30,7 +30,7 @@ import static android.app.Activity.RESULT_OK;
  * CuriosityPlugin
  */
 public class CuriosityPlugin implements MethodCallHandler, ActivityAware, FlutterPlugin, PluginRegistry.ActivityResultListener {
-    private static ScanHelper scanUtils;
+    private static ScanUtils scanUtils;
     @SuppressLint("StaticFieldLeak")
     public static Context context;
     @SuppressLint("StaticFieldLeak")
@@ -79,7 +79,7 @@ public class CuriosityPlugin implements MethodCallHandler, ActivityAware, Flutte
         methodChannel = new MethodChannel(binding.getBinaryMessenger(), methodChannelName);
         context = binding.getApplicationContext();
         methodChannel.setMethodCallHandler(this);
-        scanUtils = new ScanHelper(binding.getApplicationContext());
+        scanUtils = new ScanUtils(binding.getApplicationContext());
         binding.getPlatformViewRegistry().registerViewFactory(scanView, new ScanViewFactory(binding.getBinaryMessenger()));
     }
 

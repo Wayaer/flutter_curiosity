@@ -1,15 +1,10 @@
-//
-//  FlutterRScanView.m
-//  r_scan
-//
-//  Created by rhymelph on 2019/11/21.
-//
 
-#import "FlutterRScanView.h"
-#import "RScanView.h"
-static NSString * scanViewType=@"com.rhyme/r_scan_view";
+#import "ScanViewFactory.h"
+#import "ScanView.h"
 
-@implementation FlutterRScanViewFactory{
+static NSString * scanView=@"scanView";
+
+@implementation ScanViewFactory{
  
     NSObject<FlutterBinaryMessenger>* _messenger;
 }
@@ -26,24 +21,24 @@ static NSString * scanViewType=@"com.rhyme/r_scan_view";
     return [FlutterStandardMessageCodec sharedInstance];
 }
 - (NSObject<FlutterPlatformView> *)createWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args{
-    FlutterRScanView * scanView=[[FlutterRScanView alloc]initWithFrame:frame viewindentifier:viewId arguments:args binaryMessenger:_messenger];
+    ScanPlatformView * scanView=[[ScanPlatformView alloc]initWithFrame:frame viewindentifier:viewId arguments:args binaryMessenger:_messenger];
     return scanView;
     
 }
 @end
 
-@interface FlutterRScanView()
-@property(nonatomic , strong)RScanView * view;
+@interface ScanPlatformView()
+@property(nonatomic , strong)ScanView * view;
 
 
 @end
-@implementation FlutterRScanView{
+@implementation ScanPlatformView{
 
 }
 
 - (instancetype)initWithFrame:(CGRect)frame viewindentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger{
     if(self = [super init]){
-        _view=[[RScanView alloc]initWithFrame:frame viewIdentifier:viewId arguments:args binaryMessenger:messenger];
+        _view=[[ScanView alloc]initWithFrame:frame viewIdentifier:viewId arguments:args binaryMessenger:messenger];
         _view.backgroundColor=[UIColor clearColor];
         _view.frame=frame;
         

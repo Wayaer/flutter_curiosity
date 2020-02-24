@@ -1,18 +1,11 @@
-//
-//  RScanView.m
-//  r_scan
-//
-//  Created by 李鹏辉 on 2019/11/23.
-//
 
-#import "RScanView.h"
-#import <AVFoundation/AVFoundation.h>
-#import "RScanResult.h"
-@interface RScanView()<AVCaptureMetadataOutputObjectsDelegate>
+#import "ScanView.h"
+#import "ScanUtils.h"
+@interface ScanView()<AVCaptureMetadataOutputObjectsDelegate>
 
 @property(nonatomic , strong)AVCaptureSession * session;
 @property(nonatomic , strong)FlutterMethodChannel * _channel;
-@property(nonatomic , strong)FlutterRScanViewEventChannel * _event;
+@property(nonatomic , strong)ScanViewEventChannel * _event;
 @property(nonatomic , strong)AVCaptureVideoPreviewLayer * captureLayer;
 @property(nonatomic , strong)AVCaptureDevice * _device;
 
@@ -20,7 +13,7 @@
 
 @end
 
-@implementation RScanView
+@implementation ScanView
 
 - (AVCaptureSession *)session{
     if(!_session){
@@ -32,16 +25,16 @@
 - (instancetype)initWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger{
     if(self = [super initWithFrame:frame]){
         
-       NSString * channelName=[NSString stringWithFormat:@"r_scan/com.rhyme/r_scan_view_%lld/method",viewId];
+       NSString * channelName=[NSString stringWithFormat:@"scanView%lld/method",viewId];
         self._channel=[FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
         __weak __typeof__(self) weakSelf = self;
         [weakSelf._channel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
             [weakSelf onMethodCall:call result:result];
         }];
         
-        NSString * eventChannelName=[NSString stringWithFormat:@"r_scan/com.rhyme/r_scan_view_%lld/event",viewId];
+        NSString * eventChannelName=[NSString stringWithFormat:@"scanView%lld/event",viewId];
         FlutterEventChannel * _evenChannel = [FlutterEventChannel eventChannelWithName:eventChannelName binaryMessenger:messenger];
-        self._event=[FlutterRScanViewEventChannel new];
+        self._event=[ScanViewEventChannel new];
 //        [self._event setRsView:self];
         [_evenChannel setStreamHandler:self._event];
         
@@ -135,7 +128,7 @@
         AVMetadataMachineReadableCodeObject * metaObject=metadataObjects[0];
         NSString * value=metaObject.stringValue;
         if(value.length&&self._event){
-            [self._event getResult:[RScanResult toMap:metaObject]];
+            [self._event getResult:[ScanUtils toMap:metaObject]];
         }
     }
 }
@@ -143,17 +136,17 @@
 
 
 
-@implementation FlutterRScanViewEventChannel
+@implementation ScanViewEventChannel
 
 - (FlutterError *)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)events{
     self.events = events;
-    if(self.rsView){
+    if(self.scanView){
         NSNumber * isPlay=[arguments valueForKey:@"isPlay"];
         if(isPlay){
             if (isPlay.boolValue) {
-                [self.rsView resume];
+                [self.scanView resume];
             }else{
-                [self.rsView pause];
+                [self.scanView pause];
             }
         }
     }
@@ -161,8 +154,8 @@
 }
 
 - (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
-    if(self.rsView){
-        [self.rsView pause];
+    if(self.scanView){
+        [self.scanView pause];
     }
     return nil;
 }
