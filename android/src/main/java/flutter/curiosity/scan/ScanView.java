@@ -3,12 +3,11 @@ package flutter.curiosity.scan;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.ImageFormat;
-import android.graphics.SurfaceTexture;
-import android.util.DisplayMetrics;
+import android.graphics.Point;
 import android.util.Log;
-import android.util.Rational;
 import android.util.Size;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
@@ -50,12 +49,11 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 
 
-public class ScanView implements PlatformView, LifecycleOwner, EventChannel.StreamHandler, CameraXConfig.Provider, MethodChannel.MethodCallHandler {
+public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler,
+        MethodChannel.MethodCallHandler {
 
-    //    private LifecycleOwner lifecycleOwner;
     private LifecycleRegistry lifecycleRegistry;
-    //    private TextureView textureView;
-    private SurfaceTexture surfaceTexture;
+    private PreviewView previewView;
     private boolean isPlay;
     private EventChannel.EventSink eventSink;
     private long lastCurrentTimestamp = 0L;//最后一次的扫描
@@ -66,88 +64,52 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
     private CameraControl cameraControl;
     private CameraInfo cameraInfo;
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private int width;
-    private int height;
-    private PreviewView previewView;
     private Context context;
 
     ScanView(Context ctx, BinaryMessenger messenger, int i, Object object) {
         context = ctx;
         Map map = (Map) object;
         isPlay = (Boolean) map.get("isPlay");
-        width = (int) map.get("width");
-        height = (int) map.get("height");
         new EventChannel(messenger, CuriosityPlugin.scanView + "_" + i + "/event")
                 .setStreamHandler(this);
         MethodChannel methodChannel = new MethodChannel(messenger, CuriosityPlugin.scanView + "_" + i + "/method");
         methodChannel.setMethodCallHandler(this);
         lifecycleRegistry = new LifecycleRegistry(this);
-
-
-//        textureView = new TextureView(context);
-
-//        textureView.post(() -> startCamera(context, i));
-
-
-    }
-
-    @Override
-    public void onCancel(Object o) {
-        eventSink = null;
         multiFormatReader = new MultiFormatReader();
         multiFormatReader.setHints(NativeUtils.getHints());
-        previewView = new PreviewView(context);
         cameraProviderFuture = ProcessCameraProvider.getInstance(context);
-        previewView.post(() -> startCamera(context));
+        previewView = new PreviewView(context);
+        //获取屏幕宽高
+        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        Point point = new Point();
+        manager.getDefaultDisplay().getRealSize(point);
+        int width = point.x;
+        int height = point.y;
+        Log.i("宽高2", width + "=" + height);
+        previewView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
+//        previewView.setImplementationMode(PreviewView.ImplementationMode.TEXTURE_VIEW);
+        previewView.post(() -> startCamera(context, width, height));
+
     }
 
-    private void startCamera(Context context) {
 
-//        textureView.setSurfaceTexture( new SurfaceTexture( ));
-//        textureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
-//            @Override
-//            public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-//                Log.i("宽高1", "surface可用");
-//                surfaceTexture = surface;
-//            }
-//
-//            @Override
-//            public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-//            }
-//
-//            @Override
-//            public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-//            }
-//        });
-
-//        Preview.SurfaceProvider surfaceProvider = request -> request.setSurface(new Surface(surfaceTexture));
+    private void startCamera(Context context, int widthPixels, int heightPixels) {
+        Log.i("宽高2", "初始化相机");
         CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
-        //获取屏幕宽高
-        DisplayMetrics outMetrics = new DisplayMetrics();
-        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        manager.getDefaultDisplay().getMetrics(outMetrics);
-//        Log.i("宽高", outMetrics.widthPixels + "=" + outMetrics.heightPixels);
-        Log.i("宽高2", width + "=" + height);
         //设置预览
         @SuppressLint("RestrictedApi") Preview preview = new Preview.Builder()
-                .setTargetAspectRatioCustom(Rational.parseRational(outMetrics.widthPixels + ":" + outMetrics.heightPixels))
-                .setTargetResolution(new Size(outMetrics.widthPixels, outMetrics.heightPixels))
+//                .setTargetAspectRatioCustom(Rational.parseRational(widthPixels + ":" + heightPixels))
+                .setTargetResolution(new Size(widthPixels, heightPixels))
                 .build();
         preview.setSurfaceProvider(executor, previewView.getPreviewSurfaceProvider());
-
+        Log.i("宽高2", "初始化相机Preview");
         //设置分析
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
                 .setImageQueueDepth(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetResolution(new Size(outMetrics.widthPixels, outMetrics.heightPixels))
+                .setTargetResolution(new Size(widthPixels, heightPixels))
                 .build();
-        imageAnalysis.setAnalyzer(executor, new QRCodeAnalyzer());
-
-
+        imageAnalysis.setAnalyzer(executor, new Analysis());
+        Log.i("宽高2", "初始化相机ImageAnalysis");
         cameraProviderFuture.addListener(() -> {
             try {
                 cameraProvider = cameraProviderFuture.get();
@@ -158,24 +120,7 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
             } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
-
         }, ContextCompat.getMainExecutor(context));
-    }
-
-
-    @Override
-    public View getView() {
-        if (lifecycleRegistry.getCurrentState() != Lifecycle.State.RESUMED) {
-            lifecycleRegistry.markState(Lifecycle.State.RESUMED);
-        }
-        return previewView;
-    }
-
-
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycleRegistry;
     }
 
     @NonNull
@@ -183,63 +128,20 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
     public CameraXConfig getCameraXConfig() {
         return Camera2Config.defaultConfig();
     }
-//
-//    private Preview buildPreView(Context context) {
-//        //获取屏幕宽高
-//        DisplayMetrics outMetrics = new DisplayMetrics();
-//        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-//        manager.getDefaultDisplay().getMetrics(outMetrics);
-//
-//        Log.i("宽高", outMetrics.widthPixels + "=" + outMetrics.heightPixels);
-//
-//
-//        //初始化 Preview 配置
-////        PreviewConfig config = new PreviewConfig.Builder()
 
-//////                .build();
-////        mPreview = new Preview(config);
-////        mPreview.setSurfaceProvider();
-////        mPreview.setOnPreviewOutputUpdateListener(output -> {
-////            if (textureView != null) {
-////                textureView.setSurfaceTexture(output.getSurfaceTexture());
-////            }
-////        });
-////        return mPreview;
-//    }
-//
-//    private UseCase buildImageAnalysis() {
-////        ImageAnalysisConfig config = new ImageAnalysisConfig.Builder()
-////                .setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-////                .build();
-//
-//        ImageAnalysisConfig imageAnalysisConfig = new ImageAnalysisConfig.Builder<>();
-//        OptionsBundle optionsBundle = new OptionsBundle();
-//
-////        analysis.setAnalyzer(new QRCodeAnalyzer());
-//
-//        return analysis;
-//    }
-
-
-    private class QRCodeAnalyzer implements ImageAnalysis.Analyzer {
-
+    private class Analysis implements ImageAnalysis.Analyzer {
         @Override
-        public void analyze(@NonNull ImageProxy imageProxy) {
-//             @SuppressLint("UnsafeExperimentalUsageError") Image image = imageProxy.getImage();
-//            if (image != null) {
-//                Log.i("Imagessssss", image.getWidth() + "," + image.getHeight());
-//            }
-
+        public void analyze(@NonNull ImageProxy image) {
             long currentTimestamp = System.currentTimeMillis();
             if (currentTimestamp - lastCurrentTimestamp >= 1L && isPlay == Boolean.TRUE) {
-                if (ImageFormat.YUV_420_888 != imageProxy.getFormat()) {
+                if (ImageFormat.YUV_420_888 != image.getFormat()) {
                     return;
                 }
-                ByteBuffer buffer = imageProxy.getPlanes()[0].getBuffer();
+                ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 byte[] array = new byte[buffer.remaining()];
                 buffer.get(array);
-                int height = imageProxy.getHeight();
-                int width = imageProxy.getWidth();
+                int height = image.getHeight();
+                int width = image.getWidth();
 
                 Log.i("宽高3", width + "===" + height);
                 PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(array,
@@ -250,7 +152,6 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
                         width,
                         height,
                         false);
-
                 try {
                     final Result result = multiFormatReader.decode(new BinaryBitmap(new HybridBinarizer(source)));
                     Log.i("扫码出来的数据", result.getText());
@@ -266,6 +167,26 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
                 lastCurrentTimestamp = currentTimestamp;
             }
         }
+    }
+
+    @Override
+    public void onCancel(Object object) {
+        eventSink = null;
+    }
+
+    @Override
+    public View getView() {
+        if (lifecycleRegistry.getCurrentState() != Lifecycle.State.RESUMED) {
+            lifecycleRegistry.markState(Lifecycle.State.RESUMED);
+        }
+        return previewView;
+    }
+
+
+    @NonNull
+    @Override
+    public Lifecycle getLifecycle() {
+        return lifecycleRegistry;
     }
 
 
@@ -303,6 +224,5 @@ public class ScanView implements PlatformView, LifecycleOwner, EventChannel.Stre
                 break;
         }
     }
-
 
 }
