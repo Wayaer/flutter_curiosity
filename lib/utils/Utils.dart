@@ -1,1 +1,1 @@
-import 'package:flutter/cupertino.dart';class Utils {}
+import 'dart:ui';import 'package:flutter/cupertino.dart';class Utils {  //size → Size 设备尺寸信息，如屏幕的大小，单位 pixels  static Size getSize() {    return MediaQueryData        .fromWindow(window)        .size;  }  //devicePixelRatio → double 单位逻辑像素的设备像素数量，即设备像素比。这个数字可能不是2的幂，实际上它甚至也可能不是整数。例如，Nexus 6的设备像素比为3.5。  static double getDevicePixelRatio() {    return MediaQueryData        .fromWindow(window)        .devicePixelRatio;  }}

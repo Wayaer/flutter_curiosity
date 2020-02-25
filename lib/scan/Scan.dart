@@ -7,14 +7,24 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/scan/ScanController.dart';
+import 'package:flutter_curiosity/utils/Utils.dart';
 
-/// qr scan view , it need to  require camera permission.
 class Scan extends StatefulWidget {
   final ScanController controller;
-  final int width;
-  final int height;
+  int width;
+  int height;
 
-  const Scan({this.controller, this.width, this.height}) : assert(controller != null);
+  Scan({this.controller, this.width, this.height}) {
+    assert(controller != null);
+    if (width == null) {
+      width = (Utils
+          .getSize()
+          .width * Utils.getDevicePixelRatio()).toInt();
+      height = (Utils
+          .getSize()
+          .height * Utils.getDevicePixelRatio()).toInt();
+    }
+  }
 
   @override
   State<StatefulWidget> createState() => ScanState();
@@ -45,9 +55,17 @@ class ScanState extends State<Scan> {
     if (Platform.isAndroid) {
       return AndroidView(
         viewType: scanView,
+        //与原生交互时唯一标识符，常见形式是包名+自定义名；
         onPlatformViewCreated: onPlatformViewCreated,
+        //创建视图后的回调
+//        hitTestBehavior: null,
+        // 渗透点击事件，接收范围 opaque > translucent > transparent；
         creationParams: params,
+        //向视图传递参数，常为 PlatformViewFactory；
+//        layoutDirection: null,
+        // 嵌入视图文本方向；
         creationParamsCodec: StandardMessageCodec(),
+        //编解码器类型
       );
     } else if (Platform.isIOS) {
       return UiKitView(

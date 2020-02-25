@@ -1,16 +1,15 @@
 package flutter.curiosity.scan;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.ImageFormat;
-import android.graphics.Point;
+import android.os.Build;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.camera.camera2.Camera2Config;
 import androidx.camera.core.Camera;
 import androidx.camera.core.CameraControl;
@@ -37,7 +36,6 @@ import com.google.zxing.common.HybridBinarizer;
 import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import flutter.curiosity.CuriosityPlugin;
@@ -49,7 +47,9 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 
 
-public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler,
+@RequiresApi(api = Build.VERSION_CODES.O)
+public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Provider,
+        EventChannel.StreamHandler,
         MethodChannel.MethodCallHandler {
 
     private LifecycleRegistry lifecycleRegistry;
@@ -57,59 +57,58 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
     private boolean isPlay;
     private EventChannel.EventSink eventSink;
     private long lastCurrentTimestamp = 0L;//最后一次的扫描
-    private MultiFormatReader multiFormatReader;
+
     private ListenableFuture<ProcessCameraProvider> cameraProviderFuture;
     private ProcessCameraProvider cameraProvider;
-
     private CameraControl cameraControl;
     private CameraInfo cameraInfo;
-    private ExecutorService executor = Executors.newSingleThreadExecutor();
     private Context context;
 
     ScanView(Context ctx, BinaryMessenger messenger, int i, Object object) {
         context = ctx;
         Map map = (Map) object;
         isPlay = (Boolean) map.get("isPlay");
+        int width = (int) map.get("width");
+        int height = (int) map.get("height");
         new EventChannel(messenger, CuriosityPlugin.scanView + "_" + i + "/event")
                 .setStreamHandler(this);
         MethodChannel methodChannel = new MethodChannel(messenger, CuriosityPlugin.scanView + "_" + i + "/method");
         methodChannel.setMethodCallHandler(this);
-        lifecycleRegistry = new LifecycleRegistry(this);
-        multiFormatReader = new MultiFormatReader();
-        multiFormatReader.setHints(NativeUtils.getHints());
-        cameraProviderFuture = ProcessCameraProvider.getInstance(context);
-        previewView = new PreviewView(context);
-        //获取屏幕宽高
-        WindowManager manager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        Point point = new Point();
-        manager.getDefaultDisplay().getRealSize(point);
-        int width = point.x;
-        int height = point.y;
-        Log.i("宽高2", width + "=" + height);
-        previewView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
-//        previewView.setImplementationMode(PreviewView.ImplementationMode.TEXTURE_VIEW);
-        previewView.post(() -> startCamera(context, width, height));
-
+        previewView = initPreviewView(width, height);
+        previewView.post(() -> startCamera(context, initPreview(width, height), initImageAnalysis(width, height)));
     }
 
 
-    private void startCamera(Context context, int widthPixels, int heightPixels) {
-        Log.i("宽高2", "初始化相机");
-        CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
-        //设置预览
-        @SuppressLint("RestrictedApi") Preview preview = new Preview.Builder()
-//                .setTargetAspectRatioCustom(Rational.parseRational(widthPixels + ":" + heightPixels))
-                .setTargetResolution(new Size(widthPixels, heightPixels))
-                .build();
-        preview.setSurfaceProvider(executor, previewView.getPreviewSurfaceProvider());
-        Log.i("宽高2", "初始化相机Preview");
+    private PreviewView initPreviewView(int width, int height) {
+        lifecycleRegistry = new LifecycleRegistry(this);
+        cameraProviderFuture = ProcessCameraProvider.getInstance(context);
+        previewView = new PreviewView(context);
+        previewView.setLayoutParams(new ViewGroup.LayoutParams(width, height));
+        previewView.setImplementationMode(PreviewView.ImplementationMode.TEXTURE_VIEW);
+        return previewView;
+    }
+
+
+    private ImageAnalysis initImageAnalysis(int width, int height) {
         //设置分析
         ImageAnalysis imageAnalysis = new ImageAnalysis.Builder()
-                .setImageQueueDepth(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                .setTargetResolution(new Size(widthPixels, heightPixels))
+                .setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
+                .setTargetResolution(new Size(width, height))
                 .build();
-        imageAnalysis.setAnalyzer(executor, new Analysis());
-        Log.i("宽高2", "初始化相机ImageAnalysis");
+        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), new ScanImageAnalysis());
+        return imageAnalysis;
+    }
+
+    private Preview initPreview(int width, int height) {
+        Preview preview = new Preview.Builder()
+                .setTargetResolution(new Size(width, height))
+                .build();
+        preview.setSurfaceProvider(previewView.getPreviewSurfaceProvider());
+        return preview;
+    }
+
+    private void startCamera(Context context, Preview preview, ImageAnalysis imageAnalysis) {
+        CameraSelector cameraSelector = new CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build();
         cameraProviderFuture.addListener(() -> {
             try {
                 cameraProvider = cameraProviderFuture.get();
@@ -129,7 +128,10 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
         return Camera2Config.defaultConfig();
     }
 
-    private class Analysis implements ImageAnalysis.Analyzer {
+
+    private class ScanImageAnalysis implements ImageAnalysis.Analyzer {
+        private MultiFormatReader multiFormatReader = new MultiFormatReader();
+
         @Override
         public void analyze(@NonNull ImageProxy image) {
             long currentTimestamp = System.currentTimeMillis();
@@ -139,11 +141,10 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
                 }
                 ByteBuffer buffer = image.getPlanes()[0].getBuffer();
                 byte[] array = new byte[buffer.remaining()];
-                buffer.get(array);
+
+                buffer.get(array, 0, array.length);
                 int height = image.getHeight();
                 int width = image.getWidth();
-
-                Log.i("宽高3", width + "===" + height);
                 PlanarYUVLuminanceSource source = new PlanarYUVLuminanceSource(array,
                         width,
                         height,
@@ -152,9 +153,13 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
                         width,
                         height,
                         false);
+                BinaryBitmap binaryBitmap = new BinaryBitmap(new HybridBinarizer(source.invert()));
+//                multiFormatReader.setHints(NativeUtils.getHints());
+                final Result result;
                 try {
-                    final Result result = multiFormatReader.decode(new BinaryBitmap(new HybridBinarizer(source)));
-                    Log.i("扫码出来的数据", result.getText());
+                    result = multiFormatReader.decode(binaryBitmap, NativeUtils.getHints());
+//                    Log.i("扫码出来的数据", result.getText());
+                    Log.i("扫码出来的数据", "");
                     if (result != null && eventSink != null) {
                         previewView.post(() -> {
                             if (eventSink != null)
@@ -162,10 +167,12 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
                         });
                     }
                 } catch (Exception e) {
+                    Log.i("无二维码数据", "无二维码数据");
                     buffer.clear();
                 }
                 lastCurrentTimestamp = currentTimestamp;
             }
+            image.close();
         }
     }
 
@@ -182,7 +189,6 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
         return previewView;
     }
 
-
     @NonNull
     @Override
     public Lifecycle getLifecycle() {
@@ -193,7 +199,7 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
     @Override
     public void dispose() {
         lifecycleRegistry.markState(Lifecycle.State.DESTROYED);
-        cameraProvider.unbindAll();
+        if (cameraProvider != null) cameraProvider.unbindAll();
     }
 
     @Override
