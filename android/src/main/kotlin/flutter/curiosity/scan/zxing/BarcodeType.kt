@@ -1,6 +1,6 @@
-package flutter.curiosity.scan.zxing;
+package flutter.curiosity.scan.zxing
 
-public enum BarcodeType {
+enum class BarcodeType {
     /**
      * 所有格式
      */

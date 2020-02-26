@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/appinfo/AppInfo.dart';
-import 'package:flutter_curiosity_example/ScanPage.dart';
+import './ScanPage.dart';
 
 void main() async {
   runApp(MaterialApp(
@@ -25,7 +24,6 @@ class App extends StatelessWidget {
           Center(),
           RaisedButton(
               onPressed: () {
-                getPackageInfo();
               },
               child: Text('按钮'))
         ],
@@ -33,11 +31,4 @@ class App extends StatelessWidget {
     );
   }
 
-  getPackageInfo() async {
-    String rootDirectory = await AppInfo.getRootDirectory();
-    List<String> data = await AppInfo.getDirectoryAllName(rootDirectory, isAbsolutePath: true);
-    data.map((v) {
-      print(v);
-    }).toList();
-  }
 }
