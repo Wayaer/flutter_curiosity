@@ -10,10 +10,10 @@ import androidx.annotation.NonNull;
 
 import flutter.curiosity.gallery.PicturePicker;
 import flutter.curiosity.scan.ScanUtils;
+import flutter.curiosity.scan.ScanViewFactory;
 import flutter.curiosity.utils.AppInfo;
 import flutter.curiosity.utils.FileUtils;
 import flutter.curiosity.utils.NativeUtils;
-import flutter.curiosity.scan.ScanViewFactory;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;

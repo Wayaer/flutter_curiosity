@@ -47,7 +47,6 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.platform.PlatformView;
 
 
-@RequiresApi(api = Build.VERSION_CODES.O)
 public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Provider,
         EventChannel.StreamHandler,
         MethodChannel.MethodCallHandler {
@@ -184,7 +183,7 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
     @Override
     public View getView() {
         if (lifecycleRegistry.getCurrentState() != Lifecycle.State.RESUMED) {
-            lifecycleRegistry.markState(Lifecycle.State.RESUMED);
+            lifecycleRegistry.setCurrentState(Lifecycle.State.RESUMED);
         }
         return previewView;
     }
@@ -212,7 +211,7 @@ public class ScanView implements PlatformView, LifecycleOwner, CameraXConfig.Pro
         switch (methodCall.method) {
             case "startScan":
                 isPlay = true;
-//                result.success(null);
+//                result.success(null);x
                 break;
             case "stopScan":
                 isPlay = false;

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/appinfo/AppInfo.dart';
+import 'package:flutter_curiosity_example/ScanPage.dart';
 
 void main() async {
   runApp(MaterialApp(
@@ -11,6 +12,7 @@ void main() async {
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    return ScanPage();
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,

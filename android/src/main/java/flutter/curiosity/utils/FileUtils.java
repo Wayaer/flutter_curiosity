@@ -15,7 +15,6 @@ import io.flutter.plugin.common.MethodCall;
 
 public class FileUtils {
 
-
     public static void deleteDirWithFile(File dir) {
         if (dir == null || !dir.exists()) return;
         if (dir.isFile()) {
@@ -23,11 +22,11 @@ public class FileUtils {
             return;
         }
         File[] files = dir.listFiles();
-        for (int i = 0; i < files.length; i++) {
-            if (files[i].isFile())
-                files[i].delete(); // 删除所有文件
-            else if (files[i].isDirectory())
-                deleteDirWithFile(files[i]); // 递规的方式删除文件夹
+        for (File file : files) {
+            if (file.isFile())
+                file.delete(); // 删除所有文件
+            else if (file.isDirectory())
+                deleteDirWithFile(file); // 递规的方式删除文件夹
 
         }
         dir.delete();// 删除目录本身
@@ -39,24 +38,21 @@ public class FileUtils {
      *
      * @param file
      * @return
-     * @throws Exception
      */
     public static String getDirectorySize(File file) {
-        String size = "";
-        File list[] = file.listFiles();//文件夹目录下的所有文件
+        StringBuilder size = new StringBuilder();
+        File[] list = file.listFiles();//文件夹目录下的所有文件
         if (list == null) {//4.2的模拟器空指针。
             return "0.00KB";
         }
-        if (list != null) {
-            for (int i = 0; i < list.length; i++) {
-                if (list[i].isDirectory()) {//判断是否父目录下还有子目录
-                    size = size + getDirectorySize(list[i]);
-                } else {
-                    size = size + getFileSize(list[i]);
-                }
+        for (File value : list) {
+            if (value.isDirectory()) {//判断是否父目录下还有子目录
+                size.append(getDirectorySize(value));
+            } else {
+                size.append(getFileSize(value));
             }
         }
-        return size == "" ? "0.00KB" : size;
+        return size.toString().equals("") ? "0.00KB" : size.toString();
     }
 
 
@@ -77,6 +73,7 @@ public class FileUtils {
                 e.printStackTrace();
             } finally {
                 try {
+                    assert fis != null;
                     fis.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -123,7 +120,7 @@ public class FileUtils {
     public static File getRealFileName(String baseDir, String absFileName) {
         String[] dirs = absFileName.split("/");
         File ret = new File(baseDir);
-        String substr = null;
+        String substr;
         if (dirs.length > 1) {
             for (int i = 0; i < dirs.length - 1; i++) {
                 substr = dirs[i];
@@ -165,11 +162,7 @@ public class FileUtils {
 
     public static boolean isDirectoryExist(String path) {
         File file = new File(path);
-        if (!file.exists()) {
-            return false;
-        } else {
-            return true;
-        }
+        return file.exists();
     }
 
 
@@ -206,11 +199,11 @@ public class FileUtils {
      */
     public static void deleteDirectory(String path) {
         File[] dir = new File(path).listFiles();
-        for (int i = 0; i < dir.length; i++) {
-            if (dir[i].isFile()) {
-                dir[i].delete(); // 删除所有文件
-            } else if (dir[i].isDirectory()) {
-                FileUtils.deleteDirWithFile(dir[i]);
+        for (File file : dir) {
+            if (file.isFile()) {
+                file.delete(); // 删除所有文件
+            } else if (file.isDirectory()) {
+                FileUtils.deleteDirWithFile(file);
             }
         }
     }

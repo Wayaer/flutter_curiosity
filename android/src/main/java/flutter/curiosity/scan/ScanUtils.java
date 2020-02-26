@@ -126,7 +126,7 @@ public class ScanUtils extends ContextWrapper {
         });
     }
 
-    private class MyX509TrustManager implements X509TrustManager {
+    private static class MyX509TrustManager implements X509TrustManager {
 
         // 检查客户端证书
         @SuppressLint("TrustAllX509TrustManager")
