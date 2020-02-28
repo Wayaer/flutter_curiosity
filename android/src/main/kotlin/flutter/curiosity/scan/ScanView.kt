@@ -51,7 +51,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         EventChannel(messenger, scanView + "_" + i + "/event")
                 .setStreamHandler(this)
         val methodChannel = MethodChannel(messenger, scanView + "_" + i + "/method")
-//        multiFormatReader = MultiFormatReader()
         methodChannel.setMethodCallHandler(this)
         previewView = initPreviewView(width, height)
         previewView.post { startCamera(context, initPreview(width, height), initImageAnalysis(width, height)) }
