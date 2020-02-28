@@ -31,6 +31,10 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.platform.PlatformView
 import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
+import sun.misc.BASE64Encoder
+
+
+
 
 class ScanView internal constructor(private val context: Context, messenger: BinaryMessenger?, i: Int, any: Any) : PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler, MethodCallHandler {
     private lateinit var lifecycleRegistry: LifecycleRegistry
@@ -42,6 +46,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var cameraControl: CameraControl
     private lateinit var cameraInfo: CameraInfo
+    private val multiFormatReader = MultiFormatReader()
 
     init {
         val map = any as Map<*, *>
@@ -51,6 +56,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         EventChannel(messenger, scanView + "_" + i + "/event")
                 .setStreamHandler(this)
         val methodChannel = MethodChannel(messenger, scanView + "_" + i + "/method")
+        multiFormatReader = MultiFormatReader()
         methodChannel.setMethodCallHandler(this)
         previewView = initPreviewView(width, height)
         previewView.post { startCamera(context, initPreview(width, height), initImageAnalysis(width, height)) }
@@ -104,7 +110,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     }
 
     private inner class ScanImageAnalysis : ImageAnalysis.Analyzer {
-        private val multiFormatReader = MultiFormatReader()
         override fun analyze(image: ImageProxy) {
             val currentTimestamp = System.currentTimeMillis()
             if (currentTimestamp - lastCurrentTimestamp >= 1L && isPlay == java.lang.Boolean.TRUE) {
@@ -125,11 +130,10 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                         height,
                         false)
                 val binaryBitmap = BinaryBitmap(HybridBinarizer(source.invert()))
-                //                multiFormatReader.setHints(NativeUtils.getHints());
+                multiFormatReader.setHints(NativeUtils.getHints());
                 val result: Result?
                 try {
                     result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
-                    //                    Log.i("扫码出来的数据", result.getText());
                     Log.i("扫码出来的数据", "")
                     if (result != null) {
                         previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }
@@ -179,7 +183,22 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
             else -> result.notImplemented()
         }
     }
-
+    fun GetImageStr(path: String): String? { //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+        var `in`: InputStream? = null
+        var data: ByteArray? = null
+        //读取图片字节数组
+        try {
+            `in` = FileInputStream(path)
+            data = ByteArray(`in`.available())
+            `in`.read(data)
+            `in`.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        //对字节数组Base64编码
+        val encoder = BASE64Encoder()
+        return encoder.encode(data) //返回Base64编码过的字节数组字符串
+    }
 
 }
 
