@@ -29,12 +29,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.platform.PlatformView
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.Executors
-import sun.misc.BASE64Encoder
-
-
-
 
 class ScanView internal constructor(private val context: Context, messenger: BinaryMessenger?, i: Int, any: Any) : PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler, MethodCallHandler {
     private lateinit var lifecycleRegistry: LifecycleRegistry
@@ -46,7 +41,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var cameraControl: CameraControl
     private lateinit var cameraInfo: CameraInfo
-    private val multiFormatReader = MultiFormatReader()
+    private var multiFormatReader = MultiFormatReader()
 
     init {
         val map = any as Map<*, *>
@@ -56,7 +51,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         EventChannel(messenger, scanView + "_" + i + "/event")
                 .setStreamHandler(this)
         val methodChannel = MethodChannel(messenger, scanView + "_" + i + "/method")
-        multiFormatReader = MultiFormatReader()
+//        multiFormatReader = MultiFormatReader()
         methodChannel.setMethodCallHandler(this)
         previewView = initPreviewView(width, height)
         previewView.post { startCamera(context, initPreview(width, height), initImageAnalysis(width, height)) }
@@ -91,17 +86,11 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private fun startCamera(context: Context, preview: Preview, imageAnalysis: ImageAnalysis) {
         val cameraSelector = CameraSelector.Builder().requireLensFacing(CameraSelector.LENS_FACING_BACK).build()
         cameraProviderFuture.addListener(Runnable {
-            try {
-                cameraProvider = cameraProviderFuture.get()
-                val camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview,
-                        imageAnalysis)
-                cameraControl = camera.cameraControl
-                cameraInfo = camera.cameraInfo
-            } catch (e: ExecutionException) {
-                e.printStackTrace()
-            } catch (e: InterruptedException) {
-                e.printStackTrace()
-            }
+            cameraProvider = cameraProviderFuture.get()
+            val camera = cameraProvider.bindToLifecycle(this, cameraSelector, preview,
+                    imageAnalysis)
+            cameraControl = camera.cameraControl
+            cameraInfo = camera.cameraInfo
         }, ContextCompat.getMainExecutor(context))
     }
 
@@ -129,8 +118,8 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                         width,
                         height,
                         false)
-                val binaryBitmap = BinaryBitmap(HybridBinarizer(source.invert()))
-                multiFormatReader.setHints(NativeUtils.getHints());
+                val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
+//                multiFormatReader.setHints();
                 val result: Result?
                 try {
                     result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
@@ -183,22 +172,23 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
             else -> result.notImplemented()
         }
     }
-    fun GetImageStr(path: String): String? { //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
-        var `in`: InputStream? = null
-        var data: ByteArray? = null
-        //读取图片字节数组
-        try {
-            `in` = FileInputStream(path)
-            data = ByteArray(`in`.available())
-            `in`.read(data)
-            `in`.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        //对字节数组Base64编码
-        val encoder = BASE64Encoder()
-        return encoder.encode(data) //返回Base64编码过的字节数组字符串
-    }
+
+//    fun GetImageStr(path: String): String? { //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
+//        var `in`: InputStream? = null
+//        var data: ByteArray? = null
+//        //读取图片字节数组
+//        try {
+//            `in` = FileInputStream(path)
+//            data = ByteArray(`in`.available())
+//            `in`.read(data)
+//            `in`.close()
+//        } catch (e: IOException) {
+//            e.printStackTrace()
+//        }
+//        //对字节数组Base64编码
+//        val encoder = BASE64Encoder()
+//        return encoder.encode(data) //返回Base64编码过的字节数组字符串
+//    }
 
 }
 

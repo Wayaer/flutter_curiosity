@@ -9,9 +9,9 @@ import com.google.zxing.BinaryBitmap
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import com.google.zxing.qrcode.QRCodeReader
-import flutter.curiosity.utils.NativeUtils
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import  flutter.curiosity.utils.NativeUtils
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -126,4 +126,5 @@ object ScanUtils {
             return null
         }
     }
+
 }
