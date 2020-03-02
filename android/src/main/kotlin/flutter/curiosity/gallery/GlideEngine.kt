@@ -15,24 +15,24 @@ class GlideEngine private constructor() : ImageEngine {
         Glide.with(context).load(url).into(imageView)
     }
 
-    override fun loadFolderAsBitmapImage(context: Context, url: String,
-                                         imageView: ImageView, placeholderId: Int) {
-        Glide.with(context)
-                .asBitmap()
-                .override(180, 180)
-                .centerCrop()
-                .sizeMultiplier(0.5f)
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(placeholderId)
-                .load(url)
-                .into(object : BitmapImageViewTarget(imageView) {
-                    override fun setResource(resource: Bitmap?) {
-                        val circularBitmapDrawable = RoundedBitmapDrawableFactory.create(context.resources, resource)
-                        circularBitmapDrawable.cornerRadius = 8f
-                        imageView.setImageDrawable(circularBitmapDrawable)
-                    }
-                })
-    }
+//    override fun loadFolderAsBitmapImage(context: Context, url: String,
+//                                         imageView: ImageView, placeholderId: Int) {
+//        Glide.with(context)
+//                .asBitmap()
+//                .override(180, 180)
+//                .centerCrop()
+//                .sizeMultiplier(0.5f)
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .placeholder(placeholderId)
+//                .load(url)
+//                .into(object : BitmapImageViewTarget(imageView) {
+//                    override fun setResource(resource: Bitmap?) {
+//                        val circularBitmapDrawable = RoundedBitmapDrawableFactory.create(context.resources, resource)
+//                        circularBitmapDrawable.cornerRadius = 8f
+//                        imageView.setImageDrawable(circularBitmapDrawable)
+//                    }
+//                })
+//    }
 
     override fun loadAsGifImage(context: Context, url: String,
                                 imageView: ImageView) {
@@ -44,17 +44,17 @@ class GlideEngine private constructor() : ImageEngine {
                 .into(imageView)
     }
 
-    override fun loadAsBitmapGridImage(context: Context, url: String,
-                                       imageView: ImageView, placeholderId: Int) {
-        Glide.with(context)
-                .asBitmap()
-                .override(200, 200)
-                .centerCrop()
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .placeholder(placeholderId)
-                .load(url)
-                .into(imageView)
-    }
+//    override fun loadAsBitmapGridImage(context: Context, url: String,
+//                                       imageView: ImageView, placeholderId: Int) {
+//        Glide.with(context)
+//                .asBitmap()
+//                .override(200, 200)
+//                .centerCrop()
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .placeholder(placeholderId)
+//                .load(url)
+//                .into(imageView)
+//    }
 
     companion object {
         private var instance: GlideEngine? = null

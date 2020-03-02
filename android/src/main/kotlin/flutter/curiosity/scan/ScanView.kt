@@ -53,6 +53,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         val methodChannel = MethodChannel(messenger, scanView + "_" + i + "/method")
         methodChannel.setMethodCallHandler(this)
         previewView = initPreviewView(width, height)
+
         previewView.post { startCamera(context, initPreview(width, height), initImageAnalysis(width, height)) }
     }
 
@@ -106,6 +107,8 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 }
                 val buffer = image.planes[0].buffer
                 val array = ByteArray(buffer.remaining())
+
+//                Log.i("Base64", Base64.encodeBase64String(array));
                 buffer[array, 0, array.size]
                 val height = image.height
                 val width = image.width
@@ -132,7 +135,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 }
                 lastCurrentTimestamp = currentTimestamp
             }
-            image.close()
+//            image.close()
         }
     }
 
