@@ -3,13 +3,11 @@ package flutter.curiosity.scan
 import android.content.Context
 import android.graphics.ImageFormat
 import android.util.Log
-import android.util.Size
 import android.view.View
 import android.view.ViewGroup
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
@@ -18,9 +16,10 @@ import com.google.common.util.concurrent.ListenableFuture
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
 import com.google.zxing.PlanarYUVLuminanceSource
-import com.google.zxing.Result
 import com.google.zxing.common.HybridBinarizer
+import com.luck.picture.lib.tools.ToastUtils
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
+import flutter.curiosity.camera.preview.PreviewView
 import flutter.curiosity.utils.NativeUtils
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
@@ -33,7 +32,7 @@ import java.util.concurrent.Executors
 
 class ScanView internal constructor(private val context: Context, messenger: BinaryMessenger?, i: Int, any: Any) : PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler, MethodCallHandler {
     private lateinit var lifecycleRegistry: LifecycleRegistry
-    private var previewView: PreviewView
+    private lateinit var previewView: PreviewView
     private var isPlay: Boolean
     private lateinit var eventSink: EventSink
     private var lastCurrentTimestamp = 0L //最后一次的扫描
@@ -48,39 +47,27 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         isPlay = (map["isPlay"] as Boolean?)!!
         val width = map["width"] as Int
         val height = map["height"] as Int
-        EventChannel(messenger, scanView + "_" + i + "/event")
-                .setStreamHandler(this)
-        val methodChannel = MethodChannel(messenger, scanView + "_" + i + "/method")
-        methodChannel.setMethodCallHandler(this)
-        previewView = initPreviewView(width, height)
-
-        previewView.post { startCamera(context, initPreview(width, height), initImageAnalysis(width, height)) }
+        EventChannel(messenger, scanView + "_" + i + "/event").setStreamHandler(this)
+        MethodChannel(messenger, scanView + "_" + i + "/method").setMethodCallHandler(this)
+        initCameraView(width, height)
     }
 
-    private fun initPreviewView(width: Int, height: Int): PreviewView {
-        lifecycleRegistry = LifecycleRegistry(this)
+    private fun initCameraView(width: Int, height: Int) {
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
+        lifecycleRegistry = LifecycleRegistry(this)
         previewView = PreviewView(context)
         previewView.layoutParams = ViewGroup.LayoutParams(width, height)
         previewView.implementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW
-        return previewView
-    }
-
-    private fun initImageAnalysis(width: Int, height: Int): ImageAnalysis { //设置分析
-        val imageAnalysis = ImageAnalysis.Builder().apply {
-            setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
-            setTargetResolution(Size(width, height))
-        }.build()
-        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), ScanImageAnalysis())
-        return imageAnalysis
-    }
-
-    private fun initPreview(width: Int, height: Int): Preview {
         val preview = Preview.Builder()
-                .setTargetResolution(Size(width, height))
+//                .setTargetResolution(Size(width, height))
                 .build()
         preview.setSurfaceProvider(previewView.previewSurfaceProvider)
-        return preview
+        val imageAnalysis = ImageAnalysis.Builder().apply {
+            setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
+//            setTargetResolution(Size(width, height))
+        }.build()
+        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), ScanImageAnalysis())
+        previewView.post { startCamera(context, preview, imageAnalysis) }
     }
 
     private fun startCamera(context: Context, preview: Preview, imageAnalysis: ImageAnalysis) {
@@ -91,6 +78,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                     imageAnalysis)
             cameraControl = camera.cameraControl
             cameraInfo = camera.cameraInfo
+
         }, ContextCompat.getMainExecutor(context))
     }
 
@@ -107,7 +95,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 }
                 val buffer = image.planes[0].buffer
                 val array = ByteArray(buffer.remaining())
-
 //                Log.i("Base64", Base64.encodeBase64String(array));
                 buffer[array, 0, array.size]
                 val height = image.height
@@ -122,10 +109,9 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                         false)
                 val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
 //                multiFormatReader.setHints();
-                val result: Result?
                 try {
-                    result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
-                    Log.i("扫码出来的数据", "")
+                    val result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
+                    ToastUtils.s(context, "扫码识别成功")
                     if (result != null) {
                         previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }
                     }
@@ -135,7 +121,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 }
                 lastCurrentTimestamp = currentTimestamp
             }
-//            image.close()
+            image.close()
         }
     }
 
@@ -175,22 +161,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         }
     }
 
-//    fun GetImageStr(path: String): String? { //将图片文件转化为字节数组字符串，并对其进行Base64编码处理
-//        var `in`: InputStream? = null
-//        var data: ByteArray? = null
-//        //读取图片字节数组
-//        try {
-//            `in` = FileInputStream(path)
-//            data = ByteArray(`in`.available())
-//            `in`.read(data)
-//            `in`.close()
-//        } catch (e: IOException) {
-//            e.printStackTrace()
-//        }
-//        //对字节数组Base64编码
-//        val encoder = BASE64Encoder()
-//        return encoder.encode(data) //返回Base64编码过的字节数组字符串
-//    }
 
 }
 

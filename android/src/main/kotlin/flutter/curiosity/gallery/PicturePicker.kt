@@ -1,8 +1,11 @@
 package flutter.curiosity.gallery
 
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Environment
 import android.util.Base64
+import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
@@ -11,6 +14,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
+//import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
@@ -95,6 +99,7 @@ object PicturePicker {
         }
     }
 
+    @SuppressLint("NewApi")
     fun openSelect(call: MethodCall) {
         setValue(call)
         PictureSelector.create(activity)
@@ -110,7 +115,7 @@ object PicturePicker {
                 .isCamera(isCamera) // 是否显示拍照按钮 true or false
                 .imageFormat(PictureMimeType.PNG) // 拍照保存图片格式后缀,默认jpeg
                 .isZoomAnim(isZoomAnim) // 图片列表点击 缩放效果 默认true
-                .sizeMultiplier(0.5f) // glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
+                .sizeMultiplier(0.5F) // glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
                 .enableCrop(enableCrop) // 是否裁剪 true or false
                 .compress(compress) // 是否压缩 true or false
                 .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
@@ -135,6 +140,7 @@ object PicturePicker {
                 .forResult(PictureConfig.CHOOSE_REQUEST) //结果回调onActivityResult code
     }
 
+    @SuppressLint("NewApi")
     fun openCamera(call: MethodCall) {
         setValue(call)
         PictureSelector.create(activity)
@@ -227,6 +233,7 @@ object PicturePicker {
         result.success(resultList)
     }
 
+    @RequiresApi(Build.VERSION_CODES.FROYO)
     @Throws(Exception::class)
     private fun encodeBase64(path: String): String {
         val file = File(path)

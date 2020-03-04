@@ -1,5 +1,6 @@
 package flutter.curiosity.scan.zxing
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
 import android.util.Log
@@ -19,7 +20,7 @@ object BGAQRCodeUtil {
         return debug
     }
 
-    fun d(msg: String?) {
+    fun d(msg: String) {
         d("BGAQRCode", msg)
     }
 
@@ -28,13 +29,13 @@ object BGAQRCodeUtil {
                 + " rectHalfWidth：" + rect.width() / 2 + " rectHalfHeight：" + rect.height() / 2 + " left：" + rect.left + " top：" + rect.top + " right：" + rect.right + " bottom：" + rect.bottom)
     }
 
-    fun d(tag: String?, msg: String?) {
+    fun d(tag: String, msg: String) {
         if (debug) {
             Log.d(tag, msg)
         }
     }
 
-    fun e(msg: String?) {
+    fun e(msg: String) {
         if (debug) {
             Log.e("BGAQRCode", msg)
         }
@@ -48,6 +49,7 @@ object BGAQRCodeUtil {
         return screenResolution.y > screenResolution.x
     }
 
+    @SuppressLint("NewApi")
     fun getScreenResolution(context: Context): Point {
         val wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         val display = wm.defaultDisplay
@@ -137,6 +139,7 @@ object BGAQRCodeUtil {
     /**
      * 计算手指间距
      */
+    @SuppressLint("NewApi")
     fun calculateFingerSpacing(event: MotionEvent): Float {
         val x = event.getX(0) - event.getX(1)
         val y = event.getY(0) - event.getY(1)

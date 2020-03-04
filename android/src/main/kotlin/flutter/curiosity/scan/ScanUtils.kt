@@ -31,7 +31,7 @@ object ScanUtils {
     fun scanImagePath(call: MethodCall, result: MethodChannel.Result) {
         val path = call.argument<String>("path")
         assert(path != null)
-        val file = File(path)
+        val file = File(path.toString())
         if (file.isFile) {
             executor.execute {
                 val bitmap = BitmapFactory.decodeFile(path)

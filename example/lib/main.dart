@@ -1,5 +1,6 @@
+import 'package:curiosity/ScanPage.dart';
 import 'package:flutter/material.dart';
-import './ScanPage.dart';
+import 'package:flutter_curiosity/curiosity.dart';
 
 void main() async {
   runApp(MaterialApp(
@@ -24,6 +25,7 @@ class App extends StatelessWidget {
           Center(),
           RaisedButton(
               onPressed: () {
+                PicturePicker.openSelect();
               },
               child: Text('按钮'))
         ],
