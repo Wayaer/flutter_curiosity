@@ -16,11 +16,10 @@ dev_dependencies:
 
   flutter_curiosity:
     path: ../
-  flutter_waya:
-    #    path: ../Library/flutter_waya
-    git:
-      url: git://github.com/Wayaer/flutter_waya.git
-      ref: master
+#  flutter_waya:
+#    git:
+#      url: git://github.com/Wayaer/flutter_waya.git
+#      ref: master
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
