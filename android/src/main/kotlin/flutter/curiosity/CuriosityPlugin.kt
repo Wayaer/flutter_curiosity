@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import androidx.annotation.NonNull
 import flutter.curiosity.gallery.PicturePicker
 import flutter.curiosity.scan.ScanUtils
 import flutter.curiosity.scan.ScanViewFactory
@@ -31,51 +32,50 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     private lateinit var methodChannel: MethodChannel
 
     companion object {
+        //此处是旧的插件加载注册方式
+        @JvmStatic
+        fun registerWith(registrar: Registrar) {
+            val plugin = CuriosityPlugin()
+            val methodChannel = MethodChannel(registrar.messenger(), "Curiosity")
+            context = registrar.context()
+            activity = registrar.activity()
+            methodChannel.setMethodCallHandler(plugin)
+            registrar.addActivityResultListener(plugin)
+        }
+
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
+
         @SuppressLint("StaticFieldLeak")
         lateinit var activity: Activity
         var scanView = "scanView"
+
     }
 
-    fun registerWith(registrar: Registrar) {
-        val plugin = CuriosityPlugin()
-        plugin.methodChannel = MethodChannel(registrar.messenger(), methodChannelName)
-        context = registrar.context()
-        activity = registrar.activity()
-        methodChannel.setMethodCallHandler(plugin)
-        registrar.addActivityResultListener(plugin)
-    }
-
-    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-        activity = binding.activity
-    }
-
-    override fun onDetachedFromActivityForConfigChanges() {
-        activity
-    }
-
-    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {}
-    override fun onDetachedFromActivity() {}
-    override fun onAttachedToEngine(binding: FlutterPluginBinding) {
-        methodChannel = MethodChannel(binding.binaryMessenger, methodChannelName)
-        context = binding.applicationContext
+    ///此处是新的插件加载注册方式
+    override fun onAttachedToEngine(@NonNull pluginBinding: FlutterPluginBinding) {
+        methodChannel = MethodChannel(pluginBinding.binaryMessenger, methodChannelName)
         methodChannel.setMethodCallHandler(this)
-        binding.platformViewRegistry.registerViewFactory(scanView, ScanViewFactory(binding.binaryMessenger))
+        context = pluginBinding.applicationContext
+        pluginBinding.platformViewRegistry.registerViewFactory(scanView, ScanViewFactory(pluginBinding.binaryMessenger))
     }
 
-    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        context
-        activity
-        methodChannel.setMethodCallHandler(null)
-        methodChannel
+    ///主要是用于获取当前flutter页面所处的Activity.
+    override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
+        activity = pluginBinding.activity
+        pluginBinding.addActivityResultListener(this)
     }
 
+    ///主要是用于获取当前flutter页面所处的Activity.
+    override fun onDetachedFromActivity() {}
+
+
+    ///主要用于接收Flutter端对原生方法调用的实现.
     override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
         result = _result
         call = _call
         scan()
-        appInfo
+        appInfo()
         gallery()
         utils()
     }
@@ -105,17 +105,16 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         }
     }
 
-    private val appInfo: Unit
-        get() {
-            when (call.method) {
-                "getAppInfo" -> try {
-                    result.success(AppInfo.getAppInfo())
-                } catch (e: PackageManager.NameNotFoundException) {
-                    result.error("Name not found", e.message, null)
-                }
-                "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName(call))
+    private fun appInfo() {
+        when (call.method) {
+            "getAppInfo" -> try {
+                result.success(AppInfo.getAppInfo())
+            } catch (e: PackageManager.NameNotFoundException) {
+                result.error("Name not found", e.message, null)
             }
+            "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName(call))
         }
+    }
 
     private fun scan() {
         when (call.method) {
@@ -128,13 +127,26 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent): Boolean {
         if (resultCode == Activity.RESULT_OK) {
             PicturePicker.onResult(requestCode, intent, result)
+        } else {
+            result.error("resultCode  not found", "onActivityResult error", null)
         }
-        result.error("resultCode  not found", "onActivityResult error", null)
         return false
     }
 
+    //以下暂时不知道的方法
     private fun isArgumentNull(key: String, function: () -> Unit) {
         NativeUtils.isArgumentNull(key, call, result, function)
     }
 
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    }
+
+    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
+        methodChannel.setMethodCallHandler(null)
+    }
 }
+

@@ -28,7 +28,6 @@ class ScanController extends ChangeNotifier {
       },
     );
     subscription = stream.listen((data) {
-//      log('原生发过来的数据' + jsonEncode(data));
       this.result = ScanResult.formMap(data);
       notifyListeners();
     });

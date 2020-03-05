@@ -1,6 +1,9 @@
-import 'package:curiosity/ScanPage.dart';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/curiosity.dart';
+
+import 'ScanPage.dart';
 
 void main() async {
   runApp(MaterialApp(
@@ -10,10 +13,11 @@ void main() async {
 }
 
 class App extends StatelessWidget {
+  bool san = true;
+
   @override
   Widget build(BuildContext context) {
-    return ScanPage();
-    return Scaffold(
+    return san ? ScanPage() : Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Flutter Curiosity Plugin app'),
@@ -25,12 +29,20 @@ class App extends StatelessWidget {
           Center(),
           RaisedButton(
               onPressed: () {
-                PicturePicker.openSelect();
+                select();
               },
               child: Text('按钮'))
         ],
       ),
     );
+  }
+
+  select() async {
+    List<AssetMedia> data = await PicturePicker.openSelect();
+    AssetMedia assetMedia = data[0];
+    log(assetMedia.path);
+    final result = await ScanUtils.scanImagePath(assetMedia.path);
+    log(result.code);
   }
 
 }

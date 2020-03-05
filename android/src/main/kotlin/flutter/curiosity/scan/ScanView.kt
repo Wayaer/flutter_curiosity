@@ -2,22 +2,22 @@ package flutter.curiosity.scan
 
 import android.content.Context
 import android.graphics.ImageFormat
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
+import androidx.core.view.size
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
+import com.google.zxing.NotFoundException
 import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
-import com.luck.picture.lib.tools.ToastUtils
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
 import flutter.curiosity.camera.preview.PreviewView
 import flutter.curiosity.utils.NativeUtils
@@ -28,19 +28,23 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.platform.PlatformView
+import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class ScanView internal constructor(private val context: Context, messenger: BinaryMessenger?, i: Int, any: Any) : PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler, MethodCallHandler {
+class ScanView internal constructor(private val context: Context, messenger: BinaryMessenger, i: Int, any: Any) :
+        PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler,
+        MethodCallHandler {
     private lateinit var lifecycleRegistry: LifecycleRegistry
     private lateinit var previewView: PreviewView
     private var isPlay: Boolean
     private lateinit var eventSink: EventSink
-    private var lastCurrentTimestamp = 0L //最后一次的扫描
+    private var lastCurrentTime = 0L //最后一次的扫描
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var cameraProvider: ProcessCameraProvider
     private lateinit var cameraControl: CameraControl
     private lateinit var cameraInfo: CameraInfo
-    private var multiFormatReader = MultiFormatReader()
+    private var multiFormatReader: MultiFormatReader = MultiFormatReader()
+    private val executor: Executor = Executors.newSingleThreadExecutor()
 
     init {
         val map = any as Map<*, *>
@@ -50,6 +54,13 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         EventChannel(messenger, scanView + "_" + i + "/event").setStreamHandler(this)
         MethodChannel(messenger, scanView + "_" + i + "/method").setMethodCallHandler(this)
         initCameraView(width, height)
+    }
+
+    override fun getView(): View {
+        if (lifecycleRegistry.currentState != Lifecycle.State.RESUMED) {
+            lifecycleRegistry.currentState = Lifecycle.State.RESUMED
+        }
+        return previewView
     }
 
     private fun initCameraView(width: Int, height: Int) {
@@ -66,7 +77,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
             setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
 //            setTargetResolution(Size(width, height))
         }.build()
-        imageAnalysis.setAnalyzer(Executors.newSingleThreadExecutor(), ScanImageAnalysis())
+        imageAnalysis.setAnalyzer(executor, ScanImageAnalysis())
         previewView.post { startCamera(context, preview, imageAnalysis) }
     }
 
@@ -88,52 +99,39 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
 
     private inner class ScanImageAnalysis : ImageAnalysis.Analyzer {
         override fun analyze(image: ImageProxy) {
-            val currentTimestamp = System.currentTimeMillis()
-            if (currentTimestamp - lastCurrentTimestamp >= 1L && isPlay == java.lang.Boolean.TRUE) {
+            val currentTime = System.currentTimeMillis()
+            if (currentTime - lastCurrentTime >= 100L && isPlay == java.lang.Boolean.TRUE) {
                 if (ImageFormat.YUV_420_888 != image.format) {
                     return
                 }
                 val buffer = image.planes[0].buffer
-                val array = ByteArray(buffer.remaining())
-//                Log.i("Base64", Base64.encodeBase64String(array));
-                buffer[array, 0, array.size]
+                val byteArray = ByteArray(buffer.remaining())
+                buffer[byteArray, 0, byteArray.size]
                 val height = image.height
                 val width = image.width
-                val source = PlanarYUVLuminanceSource(array,
-                        width,
-                        height,
-                        0,
-                        0,
-                        width,
-                        height,
-                        false)
-                val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-//                multiFormatReader.setHints();
+                val binaryBitmap = BinaryBitmap(HybridBinarizer(PlanarYUVLuminanceSource(byteArray,
+                        width, height, 0, 0, width, height, false)))
                 try {
                     val result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
-                    ToastUtils.s(context, "扫码识别成功")
+//                    NativeUtils.logInfo("扫码识别成功")
+                    NativeUtils.logInfo(result.text)
                     if (result != null) {
                         previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }
                     }
-                } catch (e: Exception) {
-                    Log.i("无二维码数据", "无二维码数据")
-                    buffer.clear()
+                } catch (e: NotFoundException) {
+//                    NativeUtils.logInfo("未识别")
                 }
-                lastCurrentTimestamp = currentTimestamp
+                buffer.clear()
+                lastCurrentTime = currentTime
             }
             image.close()
         }
     }
 
+
     override fun onCancel(any: Any) {
     }
 
-    override fun getView(): View {
-        if (lifecycleRegistry.currentState != Lifecycle.State.RESUMED) {
-            lifecycleRegistry.currentState = Lifecycle.State.RESUMED
-        }
-        return previewView
-    }
 
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry

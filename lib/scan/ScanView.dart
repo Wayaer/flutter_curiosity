@@ -9,12 +9,12 @@ import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/scan/ScanController.dart';
 import 'package:flutter_curiosity/utils/Utils.dart';
 
-class Scan extends StatefulWidget {
+class ScanView extends StatefulWidget {
   final ScanController controller;
   int width;
   int height;
 
-  Scan({this.controller, this.width, this.height}) {
+  ScanView({this.controller, this.width, this.height}) {
     assert(controller != null);
     if (width == null) {
       width = (Utils
@@ -27,10 +27,10 @@ class Scan extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => ScanState();
+  State<StatefulWidget> createState() => ScanViewState();
 }
 
-class ScanState extends State<Scan> {
+class ScanViewState extends State<ScanView> {
   ScanController controller;
 
   void onPlatformViewCreated(int id) {

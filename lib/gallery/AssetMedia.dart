@@ -4,7 +4,7 @@ import 'package:flutter_curiosity/utils/LogUtils.dart';
 
 dynamic convertValueByType(value, Type type, {String stack: ""}) {
   if (value == null) {
-    log("$stack : value is null");
+//    log("$stack : value is null");
     if (type == String) {
       return "";
     } else if (type == int) {
@@ -21,7 +21,7 @@ dynamic convertValueByType(value, Type type, {String stack: ""}) {
     return value;
   }
   var valueS = value.toString();
-  log("$stack : ${value.runtimeType} is not $type type");
+//  log("$stack : ${value.runtimeType} is not $type type");
   if (type == String) {
     return valueS;
   } else if (type == int) {
