@@ -2,8 +2,8 @@ package flutter.curiosity.scan
 
 import android.content.Context
 import android.graphics.ImageFormat
+import android.util.Size
 import android.view.View
-import android.view.ViewGroup
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -58,6 +58,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         heightRatio = anyMap["heightRatio"] as Double
         EventChannel(messenger, scanView + "_" + i + "/event").setStreamHandler(this)
         MethodChannel(messenger, scanView + "_" + i + "/method").setMethodCallHandler(this)
+
         initCameraView()
     }
 
@@ -74,14 +75,13 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         lifecycleRegistry = LifecycleRegistry(this)
         previewView = PreviewView(context)
-        previewView.layoutParams = ViewGroup.LayoutParams(width, height)
         val preview = Preview.Builder()
-//                .setTargetResolution(Size(width, height))
+                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .build()
         preview.setSurfaceProvider(previewView.previewSurfaceProvider)
         val imageAnalysis = ImageAnalysis.Builder().apply {
             setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
-//            setTargetResolution(Size(width, height))
+            setTargetResolution(Size(width, height))
         }.build()
         imageAnalysis.setAnalyzer(executor, ScanImageAnalysis())
         previewView.post { startCamera(context, preview, imageAnalysis) }
@@ -120,7 +120,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                         (height * heightRatio).toInt(), false)))
                 try {
                     val result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
-//                    NativeUtils.logInfo("扫码识别成功")
 //                    NativeUtils.logInfo(result.text)
                     if (result != null) {
                         previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }

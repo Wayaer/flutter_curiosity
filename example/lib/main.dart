@@ -30,8 +30,8 @@ class App extends StatelessWidget {
           Center(),
           RaisedButton(
               onPressed: () {
-                select();
-//                scan(context);
+//                select();
+                scan(context);
               },
               child: Text('按钮'))
         ],

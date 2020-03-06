@@ -3,9 +3,11 @@ package flutter.curiosity.scan
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.os.Handler
 import com.google.zxing.BinaryBitmap
 import com.google.zxing.MultiFormatReader
+import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.RGBLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.utils.NativeUtils

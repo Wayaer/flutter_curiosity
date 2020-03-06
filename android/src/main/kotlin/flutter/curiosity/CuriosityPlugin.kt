@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.annotation.NonNull
+import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
 import flutter.curiosity.scan.ScanUtils
 import flutter.curiosity.scan.ScanViewFactory
@@ -67,8 +68,19 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     }
 
     ///主要是用于获取当前flutter页面所处的Activity.
-    override fun onDetachedFromActivity() {}
+    override fun onDetachedFromActivity() {
 
+    }
+
+    ///Activity注销时
+    override fun onReattachedToActivityForConfigChanges(pluginBinding: ActivityPluginBinding) {
+        pluginBinding.removeActivityResultListener(this)
+    }
+
+
+    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
+        methodChannel.setMethodCallHandler(null)
+    }
 
     ///主要用于接收Flutter端对原生方法调用的实现.
     override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
@@ -124,13 +136,13 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent): Boolean {
-        if (resultCode == Activity.RESULT_OK) {
-            PicturePicker.onResult(requestCode, intent, result)
-        } else {
-            result.error("resultCode  not found", "onActivityResult error", null)
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
+        if (resultCode == Activity.RESULT_OK && intent != null) {
+            if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
+                PicturePicker.onResult(requestCode, intent, result)
+            }
         }
-        return false
+        return true
     }
 
     //以下暂时不知道的方法
@@ -142,11 +154,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         activity
     }
 
-    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    }
 
-    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        methodChannel.setMethodCallHandler(null)
-    }
 }
 

@@ -14,11 +14,12 @@ class ScanView extends StatefulWidget {
   final ScanController controller;
   final PlatformViewHitTestBehavior hitTestBehavior;
 
+  //android扫描条形码请横屏即可识别
   //识别区域 比例 0-1 默认全屏幕识别
-  double topRatio;//距离屏幕头部
-  double leftRatio;//距离屏幕左边
-  double widthRatio;//宽度
-  double heightRatio;//高度
+  double topRatio; //距离屏幕头部
+  double leftRatio; //距离屏幕左边
+  double widthRatio; //宽度
+  double heightRatio; //高度
 
   ScanView({this.controller, this.topRatio: 0, this.leftRatio: 0, this.widthRatio: 1, this.heightRatio: 1, this.hitTestBehavior =
       PlatformViewHitTestBehavior
