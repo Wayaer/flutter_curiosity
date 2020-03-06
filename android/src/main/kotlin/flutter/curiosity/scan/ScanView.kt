@@ -1,8 +1,7 @@
 package flutter.curiosity.scan
 
 import android.content.Context
-import android.graphics.ImageFormat
-import android.util.Size
+import android.graphics.*
 import android.view.View
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
@@ -70,8 +69,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     }
 
     private fun initCameraView() {
-        val width = anyMap["width"] as Int
-        val height = anyMap["height"] as Int
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         lifecycleRegistry = LifecycleRegistry(this)
         previewView = PreviewView(context)
@@ -81,7 +78,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         preview.setSurfaceProvider(previewView.previewSurfaceProvider)
         val imageAnalysis = ImageAnalysis.Builder().apply {
             setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
-            setTargetResolution(Size(width, height))
         }.build()
         imageAnalysis.setAnalyzer(executor, ScanImageAnalysis())
         previewView.post { startCamera(context, preview, imageAnalysis) }
@@ -113,14 +109,17 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 val buffer = image.planes[0].buffer
                 val byteArray = ByteArray(buffer.remaining())
                 buffer[byteArray, 0, byteArray.size]
+//                NativeUtils.logInfo("${image.width}==${image.height}")
                 val height = image.height
                 val width = image.width
-                val binaryBitmap = BinaryBitmap(HybridBinarizer(PlanarYUVLuminanceSource(byteArray,
+                val source = PlanarYUVLuminanceSource(byteArray,
                         width, height, (width * leftRatio).toInt(), ((height * topRatio).toInt()), (width * widthRatio).toInt(),
-                        (height * heightRatio).toInt(), false)))
+                        (height * heightRatio).toInt(), false)
+//                NativeUtils.logInfo("${source.renderThumbnail()}==")
+                val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
                 try {
                     val result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
-//                    NativeUtils.logInfo(result.text)
+                    NativeUtils.logInfo(result.text)
                     if (result != null) {
                         previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }
                     }
@@ -162,6 +161,25 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
             "getFlashMode" -> result.success(cameraInfo.torchState)
             else -> result.notImplemented()
         }
+    }
+
+    fun rotateBitmap(bitmap: Bitmap): Bitmap {
+        val matrix = Matrix()
+        matrix.setRotate(90.toFloat(), bitmap.width.toFloat() / 2,
+                bitmap.height.toFloat() / 2)
+        val targetX: Float = bitmap.height.toFloat()
+        val targetY: Float = 0f
+        val values = FloatArray(9)
+        matrix.getValues(values)
+        val x1 = values[Matrix.MTRANS_X]
+        val y1 = values[Matrix.MTRANS_Y]
+        matrix.postTranslate(targetX - x1, targetY - y1)
+        val canvasBitmap: Bitmap = Bitmap.createBitmap(bitmap.height, bitmap.width,
+                Bitmap.Config.ARGB_8888)
+        val paint = Paint()
+        val canvas = Canvas(canvasBitmap)
+        canvas.drawBitmap(bitmap, matrix, paint)
+        return canvasBitmap
     }
 
 

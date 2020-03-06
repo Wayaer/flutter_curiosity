@@ -98,19 +98,19 @@ object ScanUtils {
         val height = bitmap.height
         val width = bitmap.width
         val pixels = IntArray(width * height)
-        try {
+        return try {
             bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
             val source = RGBLuminanceSource(
                     width,
                     height, pixels)
             val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-            val decode = multiFormatReader.decodeWithState(binaryBitmap)
-            return NativeUtils.scanDataToMap(decode)
+            val decode = multiFormatReader.decode(binaryBitmap)
+            NativeUtils.scanDataToMap(decode)
         } catch (e: Exception) {
             val data: MutableMap<String, Any> = HashMap()
             data["message"] = "Unrecognized data"
             data["type"] = 0
-            return data
+            data
         }
 
     }
