@@ -5,25 +5,25 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/scan/ScanController.dart';
 import 'package:flutter_curiosity/utils/Utils.dart';
 
 class ScanView extends StatefulWidget {
   final ScanController controller;
-  int width;
-  int height;
+  final PlatformViewHitTestBehavior hitTestBehavior;
 
-  ScanView({this.controller, this.width, this.height}) {
+  //识别区域 比例 0-1 默认全屏幕识别
+  double topRatio;//距离屏幕头部
+  double leftRatio;//距离屏幕左边
+  double widthRatio;//宽度
+  double heightRatio;//高度
+
+  ScanView({this.controller, this.topRatio: 0, this.leftRatio: 0, this.widthRatio: 1, this.heightRatio: 1, this.hitTestBehavior =
+      PlatformViewHitTestBehavior
+          .opaque,}) {
     assert(controller != null);
-    if (width == null) {
-      width = (Utils
-          .getSize()
-          .width * Utils.getDevicePixelRatio()).toInt();
-      height = (Utils
-          .getSize()
-          .height * Utils.getDevicePixelRatio()).toInt();
-    }
   }
 
   @override
@@ -32,6 +32,7 @@ class ScanView extends StatefulWidget {
 
 class ScanViewState extends State<ScanView> {
   ScanController controller;
+  Map<String, dynamic> params;
 
   void onPlatformViewCreated(int id) {
     controller.attach(id);
@@ -41,6 +42,19 @@ class ScanViewState extends State<ScanView> {
   void initState() {
     super.initState();
     controller = widget.controller ?? ScanController();
+    params = {
+      "isPlay": controller.isPlay,
+      "width": (Utils
+          .getSize()
+          .width * Utils.getDevicePixelRatio()).toInt(),
+      "height": (Utils
+          .getSize()
+          .height * Utils.getDevicePixelRatio()).toInt(),
+      "topRatio": widget.topRatio,
+      "leftRatio": widget.leftRatio,
+      "widthRatio": widget.widthRatio,
+      "heightRatio": widget.heightRatio,
+    };
   }
 
   @override
@@ -51,18 +65,17 @@ class ScanViewState extends State<ScanView> {
 
   @override
   Widget build(BuildContext context) {
-    dynamic params = {"isPlay": controller.isPlay, "width": widget.width, "height": widget.height};
     if (Platform.isAndroid) {
       return AndroidView(
         viewType: scanView,
         //与原生交互时唯一标识符，常见形式是包名+自定义名；
         onPlatformViewCreated: onPlatformViewCreated,
         //创建视图后的回调
-//        hitTestBehavior: null,
+        hitTestBehavior: widget.hitTestBehavior,
         // 渗透点击事件，接收范围 opaque > translucent > transparent；
         creationParams: params,
         //向视图传递参数，常为 PlatformViewFactory；
-//        layoutDirection: null,
+//        layoutDirection: TextDirection.ltr,
         // 嵌入视图文本方向；
         creationParamsCodec: StandardMessageCodec(),
         //编解码器类型
@@ -70,6 +83,7 @@ class ScanViewState extends State<ScanView> {
     } else if (Platform.isIOS) {
       return UiKitView(
         viewType: scanView,
+//        hitTestBehavior: widget.hitTestBehavior,
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: params,
         creationParamsCodec: StandardMessageCodec(),

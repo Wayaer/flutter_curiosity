@@ -8,7 +8,6 @@ import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
-import androidx.core.view.size
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
@@ -45,15 +44,21 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private lateinit var cameraInfo: CameraInfo
     private var multiFormatReader: MultiFormatReader = MultiFormatReader()
     private val executor: Executor = Executors.newSingleThreadExecutor()
+    private val anyMap = any as Map<*, *>
+    private val topRatio: Double
+    private val leftRatio: Double
+    private val widthRatio: Double
+    private val heightRatio: Double
 
     init {
-        val map = any as Map<*, *>
-        isPlay = (map["isPlay"] as Boolean?)!!
-        val width = map["width"] as Int
-        val height = map["height"] as Int
+        isPlay = (anyMap["isPlay"] as Boolean?)!!
+        topRatio = anyMap["topRatio"] as Double
+        leftRatio = anyMap["leftRatio"] as Double
+        widthRatio = anyMap["widthRatio"] as Double
+        heightRatio = anyMap["heightRatio"] as Double
         EventChannel(messenger, scanView + "_" + i + "/event").setStreamHandler(this)
         MethodChannel(messenger, scanView + "_" + i + "/method").setMethodCallHandler(this)
-        initCameraView(width, height)
+        initCameraView()
     }
 
     override fun getView(): View {
@@ -63,12 +68,13 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         return previewView
     }
 
-    private fun initCameraView(width: Int, height: Int) {
+    private fun initCameraView() {
+        val width = anyMap["width"] as Int
+        val height = anyMap["height"] as Int
         cameraProviderFuture = ProcessCameraProvider.getInstance(context)
         lifecycleRegistry = LifecycleRegistry(this)
         previewView = PreviewView(context)
         previewView.layoutParams = ViewGroup.LayoutParams(width, height)
-        previewView.implementationMode = PreviewView.ImplementationMode.TEXTURE_VIEW
         val preview = Preview.Builder()
 //                .setTargetResolution(Size(width, height))
                 .build()
@@ -110,16 +116,16 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 val height = image.height
                 val width = image.width
                 val binaryBitmap = BinaryBitmap(HybridBinarizer(PlanarYUVLuminanceSource(byteArray,
-                        width, height, 0, 0, width, height, false)))
+                        width, height, (width * leftRatio).toInt(), ((height * topRatio).toInt()), (width * widthRatio).toInt(),
+                        (height * heightRatio).toInt(), false)))
                 try {
                     val result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
 //                    NativeUtils.logInfo("扫码识别成功")
-                    NativeUtils.logInfo(result.text)
+//                    NativeUtils.logInfo(result.text)
                     if (result != null) {
                         previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }
                     }
                 } catch (e: NotFoundException) {
-//                    NativeUtils.logInfo("未识别")
                 }
                 buffer.clear()
                 lastCurrentTime = currentTime

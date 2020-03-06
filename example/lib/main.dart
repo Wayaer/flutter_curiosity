@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/curiosity.dart';
 
@@ -17,7 +18,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return san ? ScanPage() : Scaffold(
+    return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Flutter Curiosity Plugin app'),
@@ -29,12 +30,17 @@ class App extends StatelessWidget {
           Center(),
           RaisedButton(
               onPressed: () {
-                select();
+//                select();
+                scan(context);
               },
               child: Text('按钮'))
         ],
       ),
     );
+  }
+
+  scan(BuildContext context) {
+    showCupertinoModalPopup(context: context, builder: (context) => ScanPage());
   }
 
   select() async {
