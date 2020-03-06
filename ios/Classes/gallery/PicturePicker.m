@@ -25,7 +25,7 @@
     int videoMaxSecond = [[arguments objectForKey:@"videoMaxSecond"] intValue];
     //    int videoMinSecond = [[arguments objectForKey:@"videoMinSecond"] intValue];
     //    int recordVideoSecond = [[arguments objectForKey:@"recordVideoSecond"] intValue];
-    int selectValueType = [[arguments objectForKey:@"selectValueType"] intValue];
+    int pickerSelectType = [[arguments objectForKey:@"pickerSelectType"] intValue];
     int circleCropRadius = [[arguments objectForKey:@"circleCropRadius"] intValue];
     BOOL previewImage = [[arguments objectForKey:@"previewImage"] boolValue];
     //    BOOL previewVideo = [[arguments objectForKey:@"previewVideo"] boolValue];
@@ -48,12 +48,12 @@
     picker.minImagesCount=minSelectNum;
     picker.allowPickingGif=isGif;
     picker.allowCrop=enableCrop;
-    if(selectValueType==1){
+    if(pickerSelectType==1){
         picker.allowPickingImage=true;
         picker.allowTakePicture=isCamera;
         picker.allowPickingVideo=false;
         picker.allowTakeVideo=false;
-    }else if(selectValueType==2){
+    }else if(pickerSelectType==2){
         picker.allowPickingVideo=true;
         picker.allowTakeVideo=isCamera;
         picker.allowPickingImage=false;

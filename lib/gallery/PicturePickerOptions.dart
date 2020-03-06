@@ -7,7 +7,7 @@ class PicturePickerOptions {
   int cropW; //裁剪比例 如16:9 3:2 3:4 1:1 可自定义  宽
   int cropH; //裁剪比例 如16:9 3:2 3:4 1:1 可自定义  高
   int videoMaxSecond; //显示多少秒以内的视频or音频也可适用 int
-  int selectValueType; //全部0、图片1、视频2、音频3（仅支持android）
+  int pickerSelectType; //全部0、图片1、视频2、 音频3（3仅支持android）
   bool enableCrop; // 是否裁剪 true or false
   bool previewImage; // 是否可预览图片 true or false
   bool isCamera; // 是否显示拍照按钮 true or false
@@ -38,38 +38,37 @@ class PicturePickerOptions {
   bool scaleAspectFillCrop; //是否图片等比缩放填充cropRect区域   在单选模式下，照片列表页中，显示选择按钮,默认为false
   bool originalPhoto; //是否显示原图按钮
 
-  PicturePickerOptions(
-      {this.maxSelectNum: 6,
-      this.minSelectNum: 1,
-      this.imageSpanCount: 4,
-      this.selectionMode: 0,
-      this.minimumCompressSize: 100,
-      this.cropW: 4,
-      this.cropH: 3,
-      this.cropCompressQuality: 90,
-      this.videoQuality: 0,
-      this.videoMaxSecond: 60,
-      this.videoMinSecond: 5,
-      this.recordVideoSecond: 60,
-      this.previewImage: true,
-      this.previewVideo: true,
-      this.isZoomAnim: true,
-      this.isCamera: true,
-      this.enableCrop: false,
-      this.compress: false,
-      this.hideBottomControls: false,
-      this.freeStyleCropEnabled: false,
-      this.showCropCircle: false,
-      this.showCropFrame: false,
-      this.showCropGrid: false,
-      this.openClickSound: true,
-      this.isGif: true,
-      this.scaleAspectFillCrop: false,
-      this.setOutputCameraPath: "",
-      this.rotateEnabled: false,
-      this.originalPhoto: false,
-      this.scaleEnabled: false,
-      this.selectValueType: 0});
+  PicturePickerOptions({this.maxSelectNum: 6,
+    this.minSelectNum: 1,
+    this.imageSpanCount: 4,
+    this.selectionMode: 0,
+    this.minimumCompressSize: 100,
+    this.cropW: 4,
+    this.cropH: 3,
+    this.cropCompressQuality: 90,
+    this.videoQuality: 0,
+    this.videoMaxSecond: 60,
+    this.videoMinSecond: 5,
+    this.recordVideoSecond: 60,
+    this.previewImage: true,
+    this.previewVideo: true,
+    this.isZoomAnim: true,
+    this.isCamera: true,
+    this.enableCrop: false,
+    this.compress: false,
+    this.hideBottomControls: false,
+    this.freeStyleCropEnabled: false,
+    this.showCropCircle: false,
+    this.showCropFrame: false,
+    this.showCropGrid: false,
+    this.openClickSound: true,
+    this.isGif: true,
+    this.scaleAspectFillCrop: false,
+    this.setOutputCameraPath: "",
+    this.rotateEnabled: false,
+    this.originalPhoto: false,
+    this.scaleEnabled: false,
+    this.pickerSelectType: 0});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
@@ -100,7 +99,7 @@ class PicturePickerOptions {
     data['isGif'] = this.isGif;
     data['rotateEnabled'] = this.rotateEnabled;
     data['scaleEnabled'] = this.scaleEnabled;
-    data['selectValueType'] = this.selectValueType;
+    data['pickerSelectType'] = this.pickerSelectType;
     data['setOutputCameraPath'] = this.setOutputCameraPath;
     data['scaleAspectFillCrop'] = this.scaleAspectFillCrop;
     data['originalPhoto'] = this.originalPhoto;

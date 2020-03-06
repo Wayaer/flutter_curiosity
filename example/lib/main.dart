@@ -30,8 +30,8 @@ class App extends StatelessWidget {
           Center(),
           RaisedButton(
               onPressed: () {
-//                select();
-                scan(context);
+                select();
+//                scan(context);
               },
               child: Text('按钮'))
         ],
@@ -44,11 +44,10 @@ class App extends StatelessWidget {
   }
 
   select() async {
-    List<AssetMedia> data = await PicturePicker.openSelect();
-    AssetMedia assetMedia = data[0];
-    log(assetMedia.path);
-    final result = await ScanUtils.scanImagePath(assetMedia.path);
-    log(result.code);
+    PicturePickerOptions options = PicturePickerOptions();
+    options.pickerSelectType = 0;
+    List<AssetMedia> data = await PicturePicker.openSelect(options);
+    log(data.toString());
   }
 
 }

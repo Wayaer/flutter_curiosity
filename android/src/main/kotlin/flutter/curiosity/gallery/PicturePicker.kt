@@ -45,7 +45,7 @@ object PicturePicker {
     private var cropW = 0
     private var cropH = 0
     private var cropCompressQuality = 0
-    private var selectValueType = 0
+    private var pickerSelectType = 0
     private var videoQuality = 0
     private var videoMaxSecond = 0
     private var videoMinSecond = 0
@@ -77,13 +77,13 @@ object PicturePicker {
         cropW = call.argument<Int>("cropW")!!
         cropH = call.argument<Int>("cropH")!!
         cropCompressQuality = call.argument<Int>("cropCompressQuality")!!
-        selectValueType = call.argument<Int>("selectValueType")!!
+        pickerSelectType = call.argument<Int>("pickerSelectType")!!
         videoQuality = call.argument<Int>("videoQuality")!!
         videoMaxSecond = call.argument<Int>("videoMaxSecond")!!
         videoMinSecond = call.argument<Int>("videoMinSecond")!!
         recordVideoSecond = call.argument<Int>("recordVideoSecond")!!
         setOutputCameraPath = call.argument<String>("setOutputCameraPath")
-        pictureMimeType = when (selectValueType) {
+        pictureMimeType = when (pickerSelectType) {
             1 -> {
                 PictureMimeType.ofImage()
             }

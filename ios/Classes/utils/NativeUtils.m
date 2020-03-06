@@ -4,7 +4,7 @@
 
 //Log
 + (void)log:(id)info{
-    NSLog(@"LogInfo==> %@", info);
+    NSLog(@"Curiosity--- %@", info);
 }
 
 //跳转到AppStore
