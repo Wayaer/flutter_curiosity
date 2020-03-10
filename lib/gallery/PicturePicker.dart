@@ -15,6 +15,8 @@ class PicturePicker {
   static Future<List<AssetMedia>> openSelect([PicturePickerOptions selectOptions]) async {
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result = await channel.invokeMethod('openSelect', selectOptions.toJson());
+    log('准备打印数据');
+    log(result);
     if (result is List) {
       return Future.value(
           result.map((data) => AssetMedia.fromJson(data)).toList());

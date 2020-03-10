@@ -10,10 +10,9 @@
 @end
 @implementation PicturePicker
 
-+ (void)openSelect:(NSDictionary *)arguments viewController:(UIViewController*)viewController {
++ (void)openSelect:(NSDictionary *)arguments viewController:(UIViewController*)viewController  result:(FlutterResult)result{
     
-     NSLog(@"LogInfo%@",arguments);
-     NSLog(@"LogInfo%@",viewController);
+    NSLog(@"LogInfo%@",arguments);
     int maxSelectNum = [[arguments objectForKey:@"maxSelectNum"] intValue];
     int minSelectNum = [[arguments objectForKey:@"minSelectNum"] intValue];
     //    int imageSpanCount = [[arguments objectForKey:@"imageSpanCount"] intValue];
@@ -21,7 +20,7 @@
     //    int minimumCompressSize = [[arguments objectForKey:@"minimumCompressSize"] intValue];
     int cropW = [[arguments objectForKey:@"cropW"] intValue];
     int cropH = [[arguments objectForKey:@"cropH"] intValue];
-        int cropCompressQuality = [[arguments objectForKey:@"cropCompressQuality"] intValue];
+    int cropCompressQuality = [[arguments objectForKey:@"cropCompressQuality"] intValue];
     int videoMaxSecond = [[arguments objectForKey:@"videoMaxSecond"] intValue];
     //    int videoMinSecond = [[arguments objectForKey:@"videoMinSecond"] intValue];
     //    int recordVideoSecond = [[arguments objectForKey:@"recordVideoSecond"] intValue];
@@ -71,7 +70,7 @@
     picker.allowPreview=previewImage;
     picker.allowPickingOriginalPhoto=originalPhoto;
     picker.showPhotoCannotSelectLayer=true;
-  
+    
     if (selectionMode == 1) {  // 单选模式
         picker.showSelectBtn = NO;
         picker.allowCrop=enableCrop;
@@ -87,48 +86,64 @@
             }
         }
     }
-    __weak TZImagePickerController *weakPicker = picker;
+    
+    
     [picker setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
-         [weakPicker showProgressHUD];
-          NSLog(@"LogInfo%@",assets);
-        if (maxSelectNum == 1 && enableCrop) {
-               [self cropImage:photos[0] asset:assets[0] quality:cropCompressQuality];
-            }
-//        else {
-//                [infos enumerateObjectsUsingBlock:^(NSDictionary * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-//                    [self handleAssets:assets photos:photos quality:quality isSelectOriginalPhoto:isSelectOriginalPhoto completion:^(NSArray *selecteds) {
-//                      return selecteds;
-//                    } fail:^(NSError *error) {
-//
-//                    }];
-//                }];
-//            }
-         [weakPicker hideProgressHUD];
-    }];
-//    [picker setImagePickerControllerDidCancelHandle:^{
-//     NSLog(@"LogInfo%@",@"cancel");
-//        [weakPicker hideProgressHUD];
-//    }];
-//    [picker setDidFinishPickingGifImageHandle:^(UIImage *animatedImage, id sourceAssets) {
-//           NSLog(@"LogInfo%@",sourceAssets);
-//    }];
-    [picker setDidFinishPickingPhotosWithInfosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto, NSArray<NSDictionary *> *infos) {
-        //
-           NSLog(@"LogInfo%@",assets);
+        [NativeUtils log:assets];
+//        result(assets);
     }];
 
-
+    [picker setImagePickerControllerDidCancelHandle:^{
+        NSLog(@"LogInfo%@",@"cancel");
+        result(@"cancel");
+    }];
+    [picker setDidFinishPickingGifImageHandle:^(UIImage *animatedImage, id sourceAssets) {
+        NSLog(@"LogInfo%@",sourceAssets);
+    }];
+    
+    
     [viewController presentViewController:picker animated:YES completion:nil];
 }
-//+ (UIViewController *)viewController {
-//    UIViewController *rootViewController = FlutterViewController();
-//    return rootViewController;
-//}
 
-+ (void)openCamera:(NSDictionary *)arguments{
+
++ (void)openCamera:(NSDictionary *)arguments  viewController:(UIViewController*)viewController  result:(FlutterResult)result{
     NSLog(@"LogInfo%@",arguments);
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied) {
+        // 无相机权限 做一个友好的提示
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"无法使用相机" message:@"请在iPhone的""设置-隐私-相机""中允许访问相机" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"设置", nil];
+        [alert show];
+    } else if (authStatus == AVAuthorizationStatusNotDetermined) {
+        // fix issue 466, 防止用户首次拍照拒绝授权时相机页黑屏
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+            if (granted) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [PicturePicker openCamera:  arguments viewController:viewController result:result];
+                });
+            }
+        }];
+        // 拍照之前还需要检查相册权限
+    } else if ([PHPhotoLibrary authorizationStatus] == 2) { // 已被拒绝，没有相册权限，将无法保存拍的照片
+        UIAlertView * alert = [[UIAlertView alloc]initWithTitle:@"无法访问相册" message:@"请在iPhone的""设置-隐私-相册""中允许访问相册" delegate:self cancelButtonTitle:@"取消" otherButtonTitles:@"设置", nil];
+        [alert show];
+    } else if ([PHPhotoLibrary authorizationStatus] == 0) { // 未请求过相册权限
+        [[TZImageManager manager] requestAuthorizationWithCompletion:^{
+            [PicturePicker openCamera:  arguments viewController:viewController result:result];
+        }];
+    } else {
+        UIImagePickerController *picker=   [[UIImagePickerController alloc] init];
+        UIImagePickerControllerSourceType sourceType = UIImagePickerControllerSourceTypeCamera;
+        if ([UIImagePickerController isSourceTypeAvailable: UIImagePickerControllerSourceTypeCamera]) {
+            picker.sourceType = sourceType;
+            [viewController presentViewController:picker   animated:YES completion:nil];
+        } else {
+            NSLog(@"模拟器中无法打开照相机,请在真机中使用");
+        }
+    }
     
 }
+
+
 + (void)deleteCacheDirFile{
     
     
@@ -143,16 +158,16 @@
     NSString *fileExtension    = [filename pathExtension];
     NSMutableString *filePath = [NSMutableString string];
     BOOL isPNG = [fileExtension hasSuffix:@"PNG"] || [fileExtension hasSuffix:@"png"];
-
+    
     if (isPNG) {
         [filePath appendString:[NSString stringWithFormat:@"%@PicturePickerCaches/%@", NSTemporaryDirectory(), filename]];
     } else {
         [filePath appendString:[NSString stringWithFormat:@"%@PicturePickerCaches/%@.jpg", NSTemporaryDirectory(), [filename stringByDeletingPathExtension]]];
     }
-
+    
     NSData *writeData = isPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, quality/100);
     [writeData writeToFile:filePath atomically:YES];
-
+    
     photo[@"path"]       = filePath;
     photo[@"width"]     = @(image.size.width);
     photo[@"height"]    = @(image.size.height);
@@ -168,10 +183,10 @@
     video[@"size"] = @(size);
     video[@"width"] = @(asset.pixelWidth);
     video[@"height"] = @(asset.pixelHeight);
-   // video[@"favorite"] = @(asset.favorite);
+    // video[@"favorite"] = @(asset.favorite);
     video[@"duration"] = @(asset.duration);
     //video[@"mediaType"] = @(asset.mediaType);
-   // video[@"coverUri"] = [self handleCropImage:coverImage phAsset:asset quality:quality][@"uri"];
+    // video[@"coverUri"] = [self handleCropImage:coverImage phAsset:asset quality:quality][@"uri"];
     return video;
 }
 /// 创建缓存目录
