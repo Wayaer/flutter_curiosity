@@ -1,6 +1,5 @@
 class PicturePickerOptions {
   //支持ios && android
-
   int maxSelectNum; // 最大图片选择数量 int
   int minSelectNum; // 最小选择数量 int
   int selectionMode; //多选0 or 单选=1

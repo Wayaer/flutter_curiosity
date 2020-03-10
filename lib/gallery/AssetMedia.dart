@@ -1,7 +1,5 @@
 import 'dart:convert' show json;
 
-import 'package:flutter_curiosity/utils/LogUtils.dart';
-
 dynamic convertValueByType(value, Type type, {String stack: ""}) {
   if (value == null) {
 //    log("$stack : value is null");
@@ -42,6 +40,7 @@ class AssetMedia {
   String compressPath;
   String cropPath;
   int duration;
+  String mediaType;
   int height;
   String path;
   int size;
@@ -55,6 +54,7 @@ class AssetMedia {
     this.path,
     this.size,
     this.width,
+    this.mediaType
   });
 
   factory AssetMedia.fromJson(jsonRes) =>
@@ -63,6 +63,8 @@ class AssetMedia {
           : AssetMedia(
         compressPath: convertValueByType(jsonRes['compressPath'], String,
             stack: "AssetMedia-compressPath"),
+        mediaType: convertValueByType(jsonRes['mediaType'], String,
+            stack: "AssetMedia-mediaType"),
         cropPath: convertValueByType(jsonRes['cutPath'], String,
             stack: "AssetMedia-cutPath"),
         duration: convertValueByType(jsonRes['duration'], int,
@@ -86,6 +88,7 @@ class AssetMedia {
         'path': path,
         'size': size,
         'width': width,
+        'mediaType': mediaType,
       };
 
   @override

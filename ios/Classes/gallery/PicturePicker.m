@@ -12,7 +12,7 @@
 
 + (void)openSelect:(NSDictionary *)arguments viewController:(UIViewController*)viewController  result:(FlutterResult)result{
     
-    NSLog(@"LogInfo%@",arguments);
+//    NSLog(@"LogInfo%@",arguments);
     int maxSelectNum = [[arguments objectForKey:@"maxSelectNum"] intValue];
     int minSelectNum = [[arguments objectForKey:@"minSelectNum"] intValue];
     //    int imageSpanCount = [[arguments objectForKey:@"imageSpanCount"] intValue];
@@ -86,19 +86,73 @@
             }
         }
     }
-    
-    
+   TZImageManager *manager= [TZImageManager manager];
+    __weak TZImagePickerController *weakPicker = picker;
     [picker setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
-        [NativeUtils log:assets];
-//        result(assets);
-    }];
 
+        [weakPicker showProgressHUD];
+        if (selectionMode == 1 && enableCrop) {
+            result([self resultImage:(UIImage *)photos asset:assets[0] quality:cropCompressQuality]);
+        } else {
+            NSMutableArray *selectedPhotos = [NSMutableArray array];
+            [assets enumerateObjectsUsingBlock:^(PHAsset * _Nonnull asset, NSUInteger idx, BOOL * _Nonnull stop) {
+                if (asset.mediaType == PHAssetMediaTypeVideo) {
+                    [manager getVideoOutputPathWithAsset:asset presetName:AVAssetExportPresetHighestQuality success:^(NSString *outputPath) {
+                        [selectedPhotos addObject:[self resultVideo:outputPath asset:asset coverImage:photos[idx] quality:cropCompressQuality]];
+                        if ([selectedPhotos count] == [assets count]) {
+                            result(selectedPhotos);
+                        }
+                        if (idx + 1 == [assets count] && [selectedPhotos count] != [assets count]) {
+                            result(@"fail");
+                        }
+                    } failure:^(NSString *errorMessage, NSError *error) {
+                        
+                    }];
+                } else {
+                    BOOL isGIF = [manager getAssetType:asset] == TZAssetModelMediaTypePhotoGif;
+                    if (isGIF || isSelectOriginalPhoto) {
+                        [manager requestImageDataForAsset:asset completion:^(NSData *imageData, NSString *dataUTI, UIImageOrientation orientation, NSDictionary *info) {
+                            [selectedPhotos addObject:[self resultOriginalPhotoData:imageData phAsset:asset isGIF:isGIF quality:cropCompressQuality]];
+                            if ([selectedPhotos count] == [assets count]) {
+                                result(selectedPhotos);
+                            }
+                            if (idx + 1 == [assets count] && [selectedPhotos count] != [assets count]) {
+                                result(@"fail");
+                            }
+                        } progressHandler:^(double progress, NSError *error, BOOL *stop, NSDictionary *info) {
+                            
+                        }];
+                    } else {
+                        [selectedPhotos addObject:[self resultImage:photos[idx] asset:asset quality:cropCompressQuality]];
+                        if ([selectedPhotos count] == [assets count]) {
+                            result(selectedPhotos);
+                        }
+                    }
+                }
+            }];
+        }
+        [weakPicker hideProgressHUD];
+    }];
+    [picker setDidFinishPickingVideoHandle:^(UIImage *coverImage, PHAsset *asset) {
+        [weakPicker showProgressHUD];
+        [manager getVideoOutputPathWithAsset:asset presetName:AVAssetExportPresetHighestQuality success:^(NSString *outputPath) {
+            result([self resultVideo:outputPath asset:asset coverImage:coverImage quality:cropCompressQuality]);
+            
+            [weakPicker dismissViewControllerAnimated:YES completion:nil];
+            [weakPicker hideProgressHUD];
+        } failure:^(NSString *errorMessage, NSError *error) {
+//            NSLog(@"视频导出失败:%@,error:%@",errorMessage, error);
+            result(@"视频导出失败");
+            [weakPicker dismissViewControllerAnimated:YES completion:nil];
+            [weakPicker hideProgressHUD];
+        }];
+    }];
     [picker setImagePickerControllerDidCancelHandle:^{
-        NSLog(@"LogInfo%@",@"cancel");
+//        NSLog(@"LogInfo%@",@"cancel");
         result(@"cancel");
     }];
     [picker setDidFinishPickingGifImageHandle:^(UIImage *animatedImage, id sourceAssets) {
-        NSLog(@"LogInfo%@",sourceAssets);
+//        NSLog(@"LogInfo%@",sourceAssets);
     }];
     
     
@@ -107,7 +161,7 @@
 
 
 + (void)openCamera:(NSDictionary *)arguments  viewController:(UIViewController*)viewController  result:(FlutterResult)result{
-    NSLog(@"LogInfo%@",arguments);
+//    NSLog(@"LogInfo%@",arguments);
     AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied) {
         // 无相机权限 做一个友好的提示
@@ -149,9 +203,48 @@
     
     
 }
+/// 处理原图数据
++ (NSDictionary *)resultOriginalPhotoData:(NSData *)data phAsset:(PHAsset *)asset isGIF:(BOOL)isGIF quality:(CGFloat)quality {
+    [self createCache];
+    NSMutableDictionary *photo  = [NSMutableDictionary dictionary];
+    NSString *filename = [NSString stringWithFormat:@"%@%@", [[NSUUID UUID] UUIDString], [asset valueForKey:@"filename"]];
+    NSString *fileExtension    = [filename pathExtension];
+    UIImage *image = nil;
+    NSData *writeData = nil;
+    NSMutableString *filePath = [NSMutableString string];
+    
+    BOOL isPNG = [fileExtension hasSuffix:@"PNG"] || [fileExtension hasSuffix:@"png"];
+    
+    if (isGIF) {
+        image = [UIImage sd_tz_animatedGIFWithData:data];
+        writeData = data;
+    } else {
+        image = [UIImage imageWithData: data];
+        writeData = isPNG ? UIImagePNGRepresentation(image) : UIImageJPEGRepresentation(image, quality/100);
+    }
+    
+    if (isPNG || isGIF) {
+        [filePath appendString:[NSString stringWithFormat:@"%@PicturePickerCaches/%@", NSTemporaryDirectory(), filename]];
+    } else {
+        [filePath appendString:[NSString stringWithFormat:@"%@PicturePickerCaches/%@.jpg", NSTemporaryDirectory(), [filename stringByDeletingPathExtension]]];
+    }
+    
+    [writeData writeToFile:filePath atomically:YES];
+    
+    photo[@"path"]       = filePath;
+    photo[@"width"]     = @(image.size.width);
+    photo[@"height"]    = @(image.size.height);
+    NSInteger size      = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil].fileSize;
+    photo[@"size"]      = @(size);
+    photo[@"mediaType"] = @(asset.mediaType);
+    //    if ([self.cameraOptions sy_boolForKey:@"enableBase64"] && !isGIF) {
+    //        photo[@"base64"] = [NSString stringWithFormat:@"data:image/jpeg;base64,%@", [writeData base64EncodedStringWithOptions:0]];
+    //    }
+    return photo;
+}
 
-// 裁剪图片
-+ (NSDictionary *)cropImage:(UIImage *)image asset:(PHAsset *)asset quality:(CGFloat)quality {
+// 图片数据
++ (NSDictionary *)resultImage:(UIImage *)image asset:(PHAsset *)asset quality:(CGFloat)quality {
     [self createCache];
     NSMutableDictionary *photo  = [NSMutableDictionary dictionary];
     NSString *filename = [NSString stringWithFormat:@"%@%@", [[NSUUID UUID] UUIDString], [asset valueForKey:@"filename"]];
@@ -173,10 +266,11 @@
     photo[@"height"]    = @(image.size.height);
     NSInteger size = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil].fileSize;
     photo[@"size"] = @(size);
+    photo[@"mediaType"] = @(asset.mediaType);
     return photo;
 }
 /// 视频数据
-- (NSDictionary *)videoAsset:(NSString *)outputPath asset:(PHAsset *)asset coverImage:(UIImage *)coverImage quality:(CGFloat)quality {
++ (NSDictionary *)resultVideo:(NSString *)outputPath asset:(PHAsset *)asset coverImage:(UIImage *)coverImage quality:(CGFloat)quality {
     NSMutableDictionary *video = [NSMutableDictionary dictionary];
     video[@"path"] = outputPath;
     NSInteger size = [[NSFileManager defaultManager] attributesOfItemAtPath:outputPath error:nil].fileSize;
@@ -185,7 +279,7 @@
     video[@"height"] = @(asset.pixelHeight);
     // video[@"favorite"] = @(asset.favorite);
     video[@"duration"] = @(asset.duration);
-    //video[@"mediaType"] = @(asset.mediaType);
+    video[@"mediaType"] = @(asset.mediaType);
     // video[@"coverUri"] = [self handleCropImage:coverImage phAsset:asset quality:quality][@"uri"];
     return video;
 }
