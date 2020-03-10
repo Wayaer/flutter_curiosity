@@ -98,6 +98,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "installApp" -> isArgumentNull("apkPath") { NativeUtils.installApp(call.argument("apkPath")) }
             "getAllCookie" -> isArgumentNull("url") { result.success(NativeUtils.getAllCookie(call.argument("url"))) }
             "getFilePathSize" -> isArgumentNull("filePath") { result.success(NativeUtils.getFilePathSize(call.argument("filePath"))) }
+            "unZipFile" -> isArgumentNull("filePath") { result.success(FileUtils.unZipFile(call.argument("filePath"))) }
             "deleteDirectory" -> isArgumentNull("directoryPath") { FileUtils.deleteDirectory(call.argument("directoryPath")) }
             "deleteFile" -> isArgumentNull("filePath") { FileUtils.deleteFile(call.argument("filePath")) }
             "goToMarket" -> isArgumentNull("packageName") {

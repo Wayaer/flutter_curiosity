@@ -10,7 +10,6 @@
 // 沙盒是否有指定文件夹
 + (BOOL)isDirectoryExist:(NSString *)props;
 
-
 // 获取文件或文件夹大小
 + (NSString *)getFilePathSize:(NSString *)props;
 
@@ -19,6 +18,9 @@
 
 //获取目录下所有文件夹和文件名字
 +(NSMutableArray *)getDirectoryAllName:(NSDictionary *)props;
+
+// 解压文件
++ (NSString *)unZipFile:(NSString *)props;
 
 @end
 

@@ -2,12 +2,11 @@ package flutter.curiosity.utils
 
 import android.util.Log
 import io.flutter.plugin.common.MethodCall
-import java.io.File
-import java.io.FileInputStream
-import java.io.IOException
-import java.io.UnsupportedEncodingException
+import java.io.*
 import java.text.DecimalFormat
 import java.util.*
+import java.util.zip.ZipEntry
+import java.util.zip.ZipFile
 
 object FileUtils {
     private fun deleteDirWithFile(dir: File) {
@@ -226,4 +225,46 @@ object FileUtils {
         }
         return nameList
     }
+
+    /**
+     * 解压文件
+     *
+     * @param zipPath
+     * @return
+     */
+    fun unZipFile(zipPath: String?): String {
+        if (zipPath == null) return "";
+        return if (isDirectoryExist(path = zipPath)) {
+            val pathArr = zipPath.split("/").toTypedArray()
+            val fileName = pathArr[pathArr.size - 1]
+            val filePath = zipPath.substring(0, zipPath.length - fileName.length)
+            val file = ZipFile(File(zipPath))
+            val zList = file.entries()
+            val buf = ByteArray(1024)
+            while (zList.hasMoreElements()) {
+                val ze: ZipEntry = zList.nextElement() as ZipEntry
+                if (ze.isDirectory) {
+                    var dirStr = filePath + ze.name
+                    dirStr = String(dirStr.toByteArray(charset("8859_1")))
+                    val f = File(dirStr)
+                    f.mkdir()
+                    continue
+                }
+                val os = BufferedOutputStream(FileOutputStream(getRealFileName(filePath, ze.getName())))
+                val inputStream = BufferedInputStream(file.getInputStream(ze))
+                var readLen = 0
+                while (inputStream.read(buf, 0, 1024).also { readLen = it } != -1) {
+                    os.write(buf, 0, readLen)
+                }
+                inputStream.close()
+                os.close()
+            }
+            file.close()
+            "Success"
+        } else {
+            "NotFile"
+        }
+    }
+
+
 }

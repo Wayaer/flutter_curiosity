@@ -1,7 +1,7 @@
 import 'package:flutter_curiosity/constant/Constant.dart';
 import 'package:flutter_curiosity/gallery/AssetMedia.dart';
 import 'package:flutter_curiosity/gallery/PicturePickerOptions.dart';
-import 'package:flutter_curiosity/utils/LogUtils.dart';
+import 'package:flutter_curiosity/utils/Utils.dart';
 
 class PicturePicker {
 
@@ -13,10 +13,9 @@ class PicturePicker {
 //    print(list);
 //  }
   static Future<List<AssetMedia>> openSelect([PicturePickerOptions selectOptions]) async {
+    Utils.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result = await channel.invokeMethod('openSelect', selectOptions.toJson());
-    log('准备打印数据');
-    log(result);
     if (result is List) {
       return Future.value(
           result.map((data) => AssetMedia.fromJson(data)).toList());
@@ -26,10 +25,10 @@ class PicturePicker {
   }
 
   static Future<List<AssetMedia>> openCamera([PicturePickerOptions selectOptions]) async {
+    Utils.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result =
     await channel.invokeMethod('openCamera', selectOptions.toJson());
-    log(result.toString());
     if (result is List) {
       return Future.value(
           result.map((data) => AssetMedia.fromJson(data)).toList());
@@ -40,6 +39,7 @@ class PicturePicker {
 
   /// [selectValueType] 0:全部类型，1:图片，2:视频，3:音频
   static Future deleteCacheDirFile({int selectValueType = 0}) async {
+    Utils.supportPlatform();
     return channel.invokeMethod(
         'deleteCacheDirFile', {'selectValueType': selectValueType});
   }

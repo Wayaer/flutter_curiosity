@@ -1,6 +1,6 @@
 
 #import "FileUtils.h"
-
+#import "SSZipArchive.h"
 #define fileManager [NSFileManager defaultManager]
 #define cachePath [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject]
 
@@ -107,4 +107,13 @@
     return nameList;
 }
 
+//解压文件
++ (NSString *)unZipFile:(NSString *)filePath {
+    if ([self isDirectoryExist:filePath]) {
+        [SSZipArchive unzipFileAtPath:filePath toDestination:[filePath substringToIndex:filePath.length-[[[filePath componentsSeparatedByString:@"/"] lastObject] length]]];
+        return @"Success";
+    }else{
+        return @"NotFile";
+    }
+}
 @end

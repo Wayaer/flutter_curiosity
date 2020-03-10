@@ -74,7 +74,10 @@
     } else if ([@"deleteFile" isEqualToString:call.method]) {
         [FileUtils deleteFile:call.arguments[@"filePath"]];
         result( @"success");
-    } else if ([@"goToMarket" isEqualToString:call.method]) {
+    } else if ([@"unZipFile" isEqualToString:call.method]) {
+        [FileUtils unZipFile:call.arguments[@"filePath"]];
+        result( @"success");
+    }else if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeUtils goToMarket:call.arguments[@"packageName"]];
         result( @"success");
     } else if ([@"exitApp" isEqualToString:call.method]) {
