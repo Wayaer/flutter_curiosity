@@ -35,7 +35,7 @@ class ScanViewState extends State<ScanView> {
   ScanController controller;
   Map<String, dynamic> params;
 
-  void onPlatformViewCreated(int id) {
+   onPlatformViewCreated(int id) {
     controller.attach(id);
   }
 
@@ -44,7 +44,7 @@ class ScanViewState extends State<ScanView> {
     super.initState();
     controller = widget.controller ?? ScanController();
     params = {
-      "isPlay": controller.isPlay,
+      "isScan": controller.isScan,
       "width": (Utils
           .getSize()
           .width * Utils.getDevicePixelRatio()).toInt(),
@@ -91,7 +91,7 @@ class ScanViewState extends State<ScanView> {
       );
     } else {
       return Container(
-        child: Text('Not support ${Platform.operatingSystem} platform.'),
+        child: Text('Not support ${Platform.operatingSystem} platform'),
       );
     }
   }

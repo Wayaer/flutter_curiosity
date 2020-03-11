@@ -10,5 +10,4 @@ class ScanViewFactory(private val messenger: BinaryMessenger) : PlatformViewFact
     override fun create(context: Context, i: Int, any: Any): PlatformView {
         return ScanView(context, messenger, i, any)
     }
-
 }

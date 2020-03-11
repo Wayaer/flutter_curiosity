@@ -18,7 +18,6 @@ import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
 import flutter.curiosity.camera.preview.PreviewView
-import flutter.curiosity.utils.NativeUtils
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
@@ -34,7 +33,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         MethodCallHandler {
     private lateinit var lifecycleRegistry: LifecycleRegistry
     private lateinit var previewView: PreviewView
-    private var isPlay: Boolean
+    private var isScan: Boolean
     private lateinit var eventSink: EventSink
     private var lastCurrentTime = 0L //最后一次的扫描
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
@@ -50,13 +49,13 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private val heightRatio: Double
 
     init {
-        isPlay = (anyMap["isPlay"] as Boolean?)!!
+        isScan = (anyMap["isScan"] as Boolean?)!!
         topRatio = anyMap["topRatio"] as Double
         leftRatio = anyMap["leftRatio"] as Double
         widthRatio = anyMap["widthRatio"] as Double
         heightRatio = anyMap["heightRatio"] as Double
-        EventChannel(messenger, scanView + "_" + i + "/event").setStreamHandler(this)
-        MethodChannel(messenger, scanView + "_" + i + "/method").setMethodCallHandler(this)
+        EventChannel(messenger, "$scanView/$i/event").setStreamHandler(this)
+        MethodChannel(messenger, "$scanView/$i/method").setMethodCallHandler(this)
 
         initCameraView()
     }
@@ -102,7 +101,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private inner class ScanImageAnalysis : ImageAnalysis.Analyzer {
         override fun analyze(image: ImageProxy) {
             val currentTime = System.currentTimeMillis()
-            if (currentTime - lastCurrentTime >= 100L && isPlay == java.lang.Boolean.TRUE) {
+            if (currentTime - lastCurrentTime >= 100L && isScan == java.lang.Boolean.TRUE) {
                 if (ImageFormat.YUV_420_888 != image.format) {
                     return
                 }
@@ -115,13 +114,11 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 val source = PlanarYUVLuminanceSource(byteArray,
                         width, height, (width * leftRatio).toInt(), ((height * topRatio).toInt()), (width * widthRatio).toInt(),
                         (height * heightRatio).toInt(), false)
-//                NativeUtils.logInfo("${source.renderThumbnail()}==")
                 val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
                 try {
-                    val result = multiFormatReader.decode(binaryBitmap, NativeUtils.hints)
-                    NativeUtils.logInfo(result.text)
+                    val result = multiFormatReader.decode(binaryBitmap, ScanUtils.hints)
                     if (result != null) {
-                        previewView.post { eventSink.success(NativeUtils.scanDataToMap(result)) }
+                        previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
                     }
                 } catch (e: NotFoundException) {
                 }
@@ -152,11 +149,10 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         when (methodCall.method) {
-            "startScan" -> isPlay = true
-            "stopScan" -> isPlay = false
+            "startScan" -> isScan = true
+            "stopScan" -> isScan = false
             "setFlashMode" -> {
-                val isOpen = methodCall.argument<Boolean>("isOpen")!!
-                cameraControl.enableTorch(isOpen)
+                cameraControl.enableTorch(methodCall.argument<Boolean>("status")!!)
             }
             "getFlashMode" -> result.success(cameraInfo.torchState)
             else -> result.notImplemented()

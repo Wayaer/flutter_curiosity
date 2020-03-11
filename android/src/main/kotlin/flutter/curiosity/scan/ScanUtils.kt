@@ -3,14 +3,9 @@ package flutter.curiosity.scan
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Rect
 import android.os.Handler
-import com.google.zxing.BinaryBitmap
-import com.google.zxing.MultiFormatReader
-import com.google.zxing.PlanarYUVLuminanceSource
-import com.google.zxing.RGBLuminanceSource
+import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
-import flutter.curiosity.utils.NativeUtils
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
@@ -41,7 +36,7 @@ object ScanUtils {
                 handler.post { result.success(scan(bitmap)) }
             }
         } else {
-            result.success("")
+            result.success(null)
         }
     }
 
@@ -94,7 +89,7 @@ object ScanUtils {
     }
 
     private fun scan(bitmap: Bitmap): Map<String, Any>? {
-        multiFormatReader.setHints(NativeUtils.hints)
+        multiFormatReader.setHints(hints)
         val height = bitmap.height
         val width = bitmap.width
         val pixels = IntArray(width * height)
@@ -104,11 +99,11 @@ object ScanUtils {
                     width,
                     height, pixels)
             val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-            val decode = multiFormatReader.decode(binaryBitmap)
-            NativeUtils.scanDataToMap(decode)
+            val result = multiFormatReader.decode(binaryBitmap)
+            scanDataToMap(result)
         } catch (e: Exception) {
             val data: MutableMap<String, Any> = HashMap()
-            data["message"] = "Unrecognized data"
+            data["code"] = "Unrecognized data"
             data["type"] = 0
             data
         }
@@ -132,4 +127,40 @@ object ScanUtils {
         }
     }
 
+    // 这里设置可扫描的类型
+    val hints: Map<DecodeHintType, Any>
+        get() {
+            val decodeFormats: MutableCollection<BarcodeFormat> = ArrayList<BarcodeFormat>()
+            //一维码
+            decodeFormats.add(BarcodeFormat.UPC_A)
+            decodeFormats.add(BarcodeFormat.UPC_E)
+            decodeFormats.add(BarcodeFormat.EAN_13)
+            decodeFormats.add(BarcodeFormat.EAN_8)
+            decodeFormats.add(BarcodeFormat.CODABAR)
+            decodeFormats.add(BarcodeFormat.CODE_39)
+            decodeFormats.add(BarcodeFormat.CODE_93)
+            decodeFormats.add(BarcodeFormat.CODE_128)
+            decodeFormats.add(BarcodeFormat.ITF)
+            decodeFormats.add(BarcodeFormat.RSS_14)
+            decodeFormats.add(BarcodeFormat.RSS_EXPANDED)
+            //二维码
+            decodeFormats.add(BarcodeFormat.QR_CODE)
+            decodeFormats.add(BarcodeFormat.AZTEC)
+            decodeFormats.add(BarcodeFormat.DATA_MATRIX)
+//            decodeFormats.add(BarcodeFormat.MAXICODE)
+//            decodeFormats.add(BarcodeFormat.PDF_417)
+            val hints: MutableMap<DecodeHintType, Any> = mutableMapOf()
+            hints[DecodeHintType.CHARACTER_SET] = "UTF-8"
+            hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
+            hints[DecodeHintType.TRY_HARDER] = true
+            return hints
+        }
+
+    fun scanDataToMap(result: Result?): Map<String, Any>? {
+        if (result == null) return null
+        val data: MutableMap<String, Any> = HashMap()
+        data["code"] = result.text
+        data["type"] = result.barcodeFormat.ordinal
+        return data
+    }
 }

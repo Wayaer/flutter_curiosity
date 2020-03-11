@@ -6,7 +6,7 @@ import 'package:flutter_curiosity/utils/Utils.dart';
 
 class AppInfo {
   static getPackageInfo() async {
-    Map<String, dynamic> map = await channel.invokeMapMethod<String, dynamic>('getAppInfo');
+    Map<String, dynamic> map = await methodChannel.invokeMapMethod<String, dynamic>('getAppInfo');
     return AppInfoModel.fromJson(map);
   }
 
@@ -49,7 +49,7 @@ class AppInfo {
   static getDirectoryAllName(String path, {bool isAbsolutePath: false}) async {
     Utils.supportPlatform();
     List<String> pathNameList =
-    await channel.invokeListMethod('getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
+    await methodChannel.invokeListMethod('getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
     if (Platform.isIOS && isAbsolutePath) {
       List<String> list = List();
       if (pathNameList.length > 0) {

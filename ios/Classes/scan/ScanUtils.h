@@ -4,10 +4,8 @@
 @interface ScanUtils : NSObject
 
 //scan
-+ (NSDictionary*) toMap:(AVMetadataMachineReadableCodeObject*) obj;
-+ (NSNumber*) getType:(AVMetadataObjectType)type;
-+ (NSDictionary*) pointsToMap:(CGPoint) point;
-+ (NSDictionary *) getQrCode:(NSData *)data;
++ (NSDictionary*) scanDataToMap:(AVMetadataMachineReadableCodeObject*) data;
++ (NSDictionary *) getCode:(NSData *)data;
 
 + (void) scanImagePath:(FlutterMethodCall*)call result:(FlutterResult)result;
 

@@ -10,7 +10,7 @@
 @end
 @implementation PicturePicker
 
-+ (void)openSelect:(NSDictionary *)arguments viewController:(UIViewController*)viewController  result:(FlutterResult)result{
++ (void)openPicker:(NSDictionary *)arguments viewController:(UIViewController*)viewController  result:(FlutterResult)result{
     
 //    NSLog(@"LogInfo%@",arguments);
     int maxSelectNum = [[arguments objectForKey:@"maxSelectNum"] intValue];
@@ -237,9 +237,7 @@
     NSInteger size      = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil].fileSize;
     photo[@"size"]      = @(size);
     photo[@"mediaType"] = @(asset.mediaType);
-    //    if ([self.cameraOptions sy_boolForKey:@"enableBase64"] && !isGIF) {
-    //        photo[@"base64"] = [NSString stringWithFormat:@"data:image/jpeg;base64,%@", [writeData base64EncodedStringWithOptions:0]];
-    //    }
+  
     return photo;
 }
 

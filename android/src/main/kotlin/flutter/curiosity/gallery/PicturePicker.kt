@@ -100,7 +100,7 @@ object PicturePicker {
     }
 
     @SuppressLint("NewApi")
-    fun openSelect(call: MethodCall) {
+    fun openPicker(call: MethodCall) {
         setValue(call)
         PictureSelector.create(activity)
                 .openGallery(pictureMimeType) //全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()

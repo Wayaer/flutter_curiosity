@@ -36,8 +36,8 @@
 }
 
 -(void)gallery:(FlutterResult)result{
-    if ([@"openSelect" isEqualToString:call.method]) {
-       [PicturePicker openSelect:call.arguments viewController:viewController result:result];
+    if ([@"openPicker" isEqualToString:call.method]) {
+       [PicturePicker openPicker:call.arguments viewController:viewController result:result];
     } else if ([@"openCamera" isEqualToString:call.method]) {
     [PicturePicker openCamera:call.arguments viewController:viewController result:result];
     } else if ([@"deleteCacheDirFile" isEqualToString:call.method]) {

@@ -87,7 +87,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         result = _result
         call = _call
         scan()
-        appInfo()
         gallery()
         utils()
     }
@@ -102,24 +101,10 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "deleteDirectory" -> isArgumentNull("directoryPath") { FileUtils.deleteDirectory(call.argument("directoryPath")) }
             "deleteFile" -> isArgumentNull("filePath") { FileUtils.deleteFile(call.argument("filePath")) }
             "goToMarket" -> isArgumentNull("packageName") {
-                NativeUtils.goToMarket(call.argument("packageName"), call.argument
-                ("marketPackageName"))
+                NativeUtils.goToMarket(call.argument("packageName"), call.argument("marketPackageName"))
             }
             "isInstallApp" -> isArgumentNull("packageName") { result.success(NativeUtils.isInstallApp(call.argument("packageName"))) }
             "exitApp" -> NativeUtils.exitApp()
-        }
-    }
-
-    private fun gallery() {
-        when (call.method) {
-            "openSelect" -> PicturePicker.openSelect(call)
-            "openCamera" -> PicturePicker.openCamera(call)
-            "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile(call)
-        }
-    }
-
-    private fun appInfo() {
-        when (call.method) {
             "getAppInfo" -> try {
                 result.success(AppInfo.getAppInfo())
             } catch (e: PackageManager.NameNotFoundException) {
@@ -128,6 +113,15 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName(call))
         }
     }
+
+    private fun gallery() {
+        when (call.method) {
+            "openPicker" -> PicturePicker.openPicker(call)
+            "openCamera" -> PicturePicker.openCamera(call)
+            "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile(call)
+        }
+    }
+
 
     private fun scan() {
         when (call.method) {
@@ -146,11 +140,11 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         return true
     }
 
-    //以下暂时不知道的方法
+
     private fun isArgumentNull(key: String, function: () -> Unit) {
         NativeUtils.isArgumentNull(key, call, result, function)
     }
-
+    //以下暂时不知道的方法
     override fun onDetachedFromActivityForConfigChanges() {
         activity
     }
