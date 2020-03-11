@@ -19,6 +19,8 @@
 	<string>扫描二维码时需要使用您的相机</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>扫描二维码时需要访问您的相册</string>
+    <key>io.flutter.embedded_views_preview</key>
+    <true/>
 ```
 ## 5.图片选择
 #### ios

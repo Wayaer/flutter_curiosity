@@ -4,7 +4,7 @@
 Pod::Spec.new do |s|
   s.name             = 'flutter_curiosity'
   s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin.'
+  s.summary          = 'A Flutter plugin.'
   s.description      = <<-DESC
 A new Flutter plugin.
                        DESC
@@ -13,11 +13,14 @@ A new Flutter plugin.
   s.author           = { 'Your Company' => 'wayaer@foxmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/**/*.h'
+  s.public_header_files = 'Classes/*.h'
   s.dependency 'Flutter'
   s.ios.deployment_target = '8.0'
   s.dependency 'SSZipArchive'
   s.dependency 'TZImagePickerController'
-#  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+  s.swift_version = '5.1'
+  
+  # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
 end
 
