@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
@@ -29,7 +28,6 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, ActivityResultListener {
     private val methodChannelName = "Curiosity"
     private lateinit var result: MethodChannel.Result
-    private lateinit var call: MethodCall
     private lateinit var methodChannel: MethodChannel
 
     companion object {
@@ -46,6 +44,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
         @SuppressLint("StaticFieldLeak")
         lateinit var context: Context
+        lateinit var call: MethodCall
 
         @SuppressLint("StaticFieldLeak")
         lateinit var activity: Activity
@@ -94,22 +93,17 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     private fun utils() {
         when (call.method) {
             "clearAllCookie" -> NativeUtils.clearAllCookie()
-            "installApp" -> isArgumentNull("apkPath") { NativeUtils.installApp(call.argument("apkPath")) }
-            "getAllCookie" -> isArgumentNull("url") { result.success(NativeUtils.getAllCookie(call.argument("url"))) }
-            "getFilePathSize" -> isArgumentNull("filePath") { result.success(NativeUtils.getFilePathSize(call.argument("filePath"))) }
-            "unZipFile" -> isArgumentNull("filePath") { result.success(FileUtils.unZipFile(call.argument("filePath"))) }
-            "deleteDirectory" -> isArgumentNull("directoryPath") { FileUtils.deleteDirectory(call.argument("directoryPath")) }
-            "deleteFile" -> isArgumentNull("filePath") { FileUtils.deleteFile(call.argument("filePath")) }
-            "goToMarket" -> isArgumentNull("packageName") {
-                NativeUtils.goToMarket(call.argument("packageName"), call.argument("marketPackageName"))
-            }
-            "isInstallApp" -> isArgumentNull("packageName") { result.success(NativeUtils.isInstallApp(call.argument("packageName"))) }
+            "installApp" -> result.success(NativeUtils.installApp())
+            "getAllCookie" -> result.success(NativeUtils.getAllCookie())
+            "getFilePathSize" -> result.success(NativeUtils.getFilePathSize())
+            "unZipFile" -> result.success(FileUtils.unZipFile())
+            "deleteDirectory" -> result.success(FileUtils.deleteDirectory())
+            "deleteFile" -> result.success(FileUtils.deleteFile())
+            "callPhone" -> result.success(NativeUtils.callPhone())
+            "goToMarket" -> result.success(NativeUtils.goToMarket())
+            "isInstallApp" -> result.success(NativeUtils.isInstallApp())
             "exitApp" -> NativeUtils.exitApp()
-            "getAppInfo" -> try {
-                result.success(AppInfo.getAppInfo())
-            } catch (e: PackageManager.NameNotFoundException) {
-                result.error("Name not found", e.message, null)
-            }
+            "getAppInfo" -> result.success(AppInfo.getAppInfo())
             "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName(call))
         }
     }
@@ -141,9 +135,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     }
 
 
-    private fun isArgumentNull(key: String, function: () -> Unit) {
-        NativeUtils.isArgumentNull(key, call, result, function)
-    }
     //以下暂时不知道的方法
     override fun onDetachedFromActivityForConfigChanges() {
         activity

@@ -1,9 +1,8 @@
 import Foundation
 import UIKit
 
-class NativeUtils  {
+class AppInfo {
     //获取app信息
-    
     class func getAppInfo() -> [AnyHashable : Any]? {
         let app = Bundle.main.infoDictionary
         let statusBar = UIApplication.shared.statusBarFrame
@@ -14,9 +13,9 @@ class NativeUtils  {
             AnyHashable("statusBarWidth") : NSNumber(value: Float(statusBar.size.width)),
             
             AnyHashable("homeDirectory") : NSHomeDirectory(),
-            AnyHashable("documentDirectory") : NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.documentDirectory, FileManager.SearchPathDomainMask.userDomainMask, true).first as Any,
-            AnyHashable("libraryDirectory") : NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.libraryDirectory, FileManager.SearchPathDomainMask.userDomainMask, true).last as Any,
-            AnyHashable("cachesDirectory") : NSSearchPathForDirectoriesInDomains(FileManager.SearchPathDirectory.cachesDirectory, FileManager.SearchPathDomainMask.userDomainMask, true).first as Any,
+            AnyHashable("documentDirectory") : NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first as Any,
+            AnyHashable("libraryDirectory") : NSSearchPathForDirectoriesInDomains(.libraryDirectory, .userDomainMask, true).last as Any,
+            AnyHashable("cachesDirectory") : NSSearchPathForDirectoriesInDomains(.cachesDirectory, .userDomainMask, true).first as Any,
             AnyHashable("temporaryDirectory") : NSTemporaryDirectory(),
             
             AnyHashable("versionName") : app?["CFBundleShortVersionString"] as Any,
@@ -38,21 +37,20 @@ class NativeUtils  {
     }
     
     //Log
-    class  func log(info: Any?) {
+    class func log(_ info: Any?) {
         if let info = info {
             print("Curiosity--- \(info)")
         }
     }
     
     //跳转到AppStore
-    class func goToMarket(id: String) {
-    
-        let url = "itms-apps://itunes.apple.com/us/app/id"+call.arguments!["packageName"] as! String
+    class func go(toMarket props: String) {
+        let url = "itms-apps://itunes.apple.com/us/app/id"+props
         UIApplication.shared.openURL(URL(string: url)!)
         
     }
     //设置Cookie
-    class func setCookie(props: [AnyHashable : Any]?) {
+    class func setCookie(_ props: [AnyHashable : Any]?) {
         
         let properties: [AnyHashable : Any] = [
             AnyHashable(HTTPCookiePropertyKey.name):props?["name"] as Any,
@@ -73,8 +71,7 @@ class NativeUtils  {
     }
     
     //清楚Cookie
-    
-    class  func clearAllCookie() {
+    class func clearAllCookie() {
         let cookieStorage = HTTPCookieStorage.shared
         for c in cookieStorage.cookies ?? [] {
             cookieStorage.deleteCookie(c)
@@ -82,7 +79,7 @@ class NativeUtils  {
     }
     
     //获取Cookie
-    class  func getAllCookie() -> [AnyHashable : Any]? {
+    class func getAllCookie() -> [AnyHashable : Any]? {
         let cookieStorage = HTTPCookieStorage.shared
         var cookies: [AnyHashable : Any] = [:]
         for c in cookieStorage.cookies ?? [] {

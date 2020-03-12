@@ -1,6 +1,7 @@
 package flutter.curiosity.utils
 
 import android.util.Log
+import flutter.curiosity.CuriosityPlugin.Companion.call
 import io.flutter.plugin.common.MethodCall
 import java.io.*
 import java.text.DecimalFormat
@@ -173,20 +174,19 @@ object FileUtils {
     /**
      * 删除文件和文件夹里面的文件
      *
-     * @param path
      */
-    fun deleteFile(path: String?) {
+    fun deleteFile(): String {
+        val path = call.argument<String>("filePath") ?: return Utils.resultError()
         val dir = File(path)
         deleteDirWithFile(dir)
+        return Utils.resultSuccess()
     }
 
     /**
      * 删除文件夹内的文件（不删除文件夹）
-     *
-     * @param path
      */
-    fun deleteDirectory(path: String?) {
-        if (path == null) return
+    fun deleteDirectory(): String {
+        val path = call.argument<String>("directoryPath") ?: return Utils.resultError()
         val dir = File(path).listFiles()
         for (file in dir) {
             if (file.isFile) {
@@ -195,7 +195,7 @@ object FileUtils {
                 deleteDirWithFile(file)
             }
         }
-
+        return Utils.resultSuccess()
     }
 
     /**
@@ -229,12 +229,10 @@ object FileUtils {
     /**
      * 解压文件
      *
-     * @param zipPath
-     * @return
      */
-    fun unZipFile(zipPath: String?): String {
-        if (zipPath == null) return "";
-        return if (isDirectoryExist(path = zipPath)) {
+    fun unZipFile(): String {
+        val zipPath = call.argument<String>("filePath") ?: return Utils.resultError()
+        return if (isDirectoryExist(zipPath)) {
             val pathArr = zipPath.split("/").toTypedArray()
             val fileName = pathArr[pathArr.size - 1]
             val filePath = zipPath.substring(0, zipPath.length - fileName.length)
@@ -260,9 +258,9 @@ object FileUtils {
                 os.close()
             }
             file.close()
-            "Success"
+            Utils.resultSuccess()
         } else {
-            "NotFile"
+            Utils.resultNot("not file")
         }
     }
 

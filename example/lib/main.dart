@@ -31,7 +31,8 @@ class App extends StatelessWidget {
           RaisedButton(
               onPressed: () {
 //                select();
-                scan(context);
+                NativeUtils.callPhone('13282830824');
+//                scan(context);
               },
               child: Text('按钮'))
         ],
