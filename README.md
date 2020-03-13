@@ -1,14 +1,10 @@
 # flutter-curiosity
 集成部分原生功能，支持ios&amp;android
-计划完成功能
 
-## 1.安装apk only Android
+## 1.原生多个方法 [点击查看](./lib/utils/NativeUtils.dart)
 
-## 2.跳转至应用商店 android ios
-
-## 3.解压文件
-
-## 4.二维码扫描
+## 2.二维码扫描 [点击查看](./lib/scan) 
+#### (ios暂时没有测试，因为真机升级到了13.3.1后没法真机测试，等后面下个版本解决后 立即是测试)
 #### ios
 ##### 1、添加相机相关权限：
 
@@ -22,7 +18,7 @@
     <key>io.flutter.embedded_views_preview</key>
     <true/>
 ```
-## 5.图片选择
+## 3.图片选择 [点击查看](./lib/gallery/PicturePicker.dart)
 #### ios
 ##### 1、添加相册相关权限：
 
@@ -44,5 +40,5 @@
 ##### 2、中文适配：    
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
-## 6.获取手机硬件信息 (app信息,手机厂商信息) 
+## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/appinfo/AppInfo.dart)
 
