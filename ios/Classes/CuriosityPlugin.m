@@ -1,6 +1,10 @@
 #import "CuriosityPlugin.h"
 #import "ScanUtils.h"
 #import "ScanViewFactory.h"
+#import "NativeUtils.h"
+#import "FileUtils.h"
+#import "PicturePicker.h"
+#import "AppInfo.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
