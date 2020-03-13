@@ -58,5 +58,15 @@
     }
     return cookies;
 }
-
++ (void)callPhone:(NSString *)phoneNumber :(BOOL)directDial {
+    
+    if (directDial) {
+        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
+    }else{
+        UIWebView * callWebview = [[UIWebView alloc] init];
+        [callWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[@"tel:" stringByAppendingString:phoneNumber] ]]];
+        [[UIApplication sharedApplication].keyWindow addSubview:callWebview];
+    }
+    
+}
 @end

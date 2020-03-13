@@ -84,6 +84,9 @@
     }else if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeUtils goToMarket:call.arguments[@"packageName"]];
         result( @"success");
+    } else if ([@"callPhone" isEqualToString:call.method]) {
+        [NativeUtils callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
+        result( @"success");
     } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }
