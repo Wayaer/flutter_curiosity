@@ -13,7 +13,7 @@ class AppInfo {
   //android versionCode  ios version
   static getVersionCode() async {
     Utils.supportPlatform();
-    AppInfoModel appInfoModel = getPackageInfo();
+    AppInfoModel appInfoModel = await getPackageInfo();
     return appInfoModel.versionCode;
   }
 
