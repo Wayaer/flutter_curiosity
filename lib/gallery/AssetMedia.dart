@@ -18,21 +18,21 @@ dynamic convertValueByType(value, Type type, {String stack: ""}) {
   if (value.runtimeType == type) {
     return value;
   }
-  var valueS = value.toString();
+  var valueString = value.toString();
 //  log("$stack : ${value.runtimeType} is not $type type");
   if (type == String) {
-    return valueS;
+    return valueString;
   } else if (type == int) {
-    return int.tryParse(valueS);
+    return int.tryParse(valueString);
   } else if (type == double) {
-    return double.tryParse(valueS);
+    return double.tryParse(valueString);
   } else if (type == bool) {
-    valueS = valueS.toLowerCase();
-    var intValue = int.tryParse(valueS);
+    valueString = valueString.toLowerCase();
+    var intValue = int.tryParse(valueString);
     if (intValue != null) {
       return intValue == 1;
     }
-    return valueS == "true";
+    return valueString == "true";
   }
 }
 
@@ -45,6 +45,7 @@ class AssetMedia {
   String path;
   int size;
   int width;
+  String fileName;
 
   AssetMedia({
     this.compressPath,
@@ -54,6 +55,7 @@ class AssetMedia {
     this.path,
     this.size,
     this.width,
+    this.fileName,
     this.mediaType
   });
 
@@ -65,6 +67,8 @@ class AssetMedia {
             stack: "AssetMedia-compressPath"),
         mediaType: convertValueByType(jsonRes['mediaType'], String,
             stack: "AssetMedia-mediaType"),
+        fileName: convertValueByType(jsonRes['fileName'], String,
+            stack: "AssetMedia-fileName"),
         cropPath: convertValueByType(jsonRes['cutPath'], String,
             stack: "AssetMedia-cutPath"),
         duration: convertValueByType(jsonRes['duration'], int,
@@ -88,6 +92,7 @@ class AssetMedia {
         'path': path,
         'size': size,
         'width': width,
+        'fileName': fileName,
         'mediaType': mediaType,
       };
 

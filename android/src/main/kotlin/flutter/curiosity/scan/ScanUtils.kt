@@ -23,7 +23,6 @@ import javax.net.ssl.X509TrustManager
 
 object ScanUtils {
     private val executor: Executor = Executors.newSingleThreadExecutor()
-    private val handler = Handler()
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
 
     fun scanImagePath(call: MethodCall, result: MethodChannel.Result) {
@@ -33,7 +32,7 @@ object ScanUtils {
         if (file.isFile) {
             executor.execute {
                 val bitmap = BitmapFactory.decodeFile(path)
-                handler.post { result.success(scan(bitmap)) }
+                Handler().post { result.success(identifyBitmap(bitmap)) }
             }
         } else {
             result.success(null)
@@ -68,9 +67,9 @@ object ScanUtils {
                     bitmap = BitmapFactory.decodeStream(connection.inputStream)
                 }
 
-                handler.post { result.success(scan(bitmap)) }
+                Handler().post { result.success(identifyBitmap(bitmap)) }
             } catch (e: Exception) {
-                handler.post { result.success(null) }
+                Handler().post { result.success(null) }
             }
         }
     }
@@ -81,14 +80,14 @@ object ScanUtils {
         executor.execute {
             try {
                 val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
-                handler.post { result.success(scan(bitmap)) }
+                Handler().post { result.success(identifyBitmap(bitmap)) }
             } catch (e: Exception) {
-                handler.post { result.success(null) }
+                Handler().post { result.success(null) }
             }
         }
     }
 
-    private fun scan(bitmap: Bitmap): Map<String, Any>? {
+    fun identifyBitmap(bitmap: Bitmap): Map<String, Any>? {
         multiFormatReader.setHints(hints)
         val height = bitmap.height
         val width = bitmap.width
@@ -160,7 +159,7 @@ object ScanUtils {
         if (result == null) return null
         val data: MutableMap<String, Any> = HashMap()
         data["code"] = result.text
-        data["type"] = result.barcodeFormat.ordinal
+        data["type"] = result.barcodeFormat.name
         return data
     }
 }

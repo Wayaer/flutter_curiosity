@@ -56,7 +56,6 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         heightRatio = anyMap["heightRatio"] as Double
         EventChannel(messenger, "$scanView/$i/event").setStreamHandler(this)
         MethodChannel(messenger, "$scanView/$i/method").setMethodCallHandler(this)
-
         initCameraView()
     }
 
@@ -108,9 +107,8 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 val buffer = image.planes[0].buffer
                 val byteArray = ByteArray(buffer.remaining())
                 buffer[byteArray, 0, byteArray.size]
-//                NativeUtils.logInfo("${image.width}==${image.height}")
-                val height = image.height
-                val width = image.width
+                var height = image.height
+                var width = image.width
                 val source = PlanarYUVLuminanceSource(byteArray,
                         width, height, (width * leftRatio).toInt(), ((height * topRatio).toInt()), (width * widthRatio).toInt(),
                         (height * heightRatio).toInt(), false)
@@ -121,6 +119,42 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                         previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
                     }
                 } catch (e: NotFoundException) {
+//                    val yBuffer = image.planes[0].buffer // Y
+//                    val uBuffer = image.planes[1].buffer // U
+//                    val vBuffer = image.planes[2].buffer // V
+//                    val ySize = yBuffer.remaining()
+//                    val uSize = uBuffer.remaining()
+//                    val vSize = vBuffer.remaining()
+//                    val nv21 = ByteArray(ySize + uSize + vSize)
+//                    //U and V are swapped
+//                    yBuffer.get(nv21, 0, ySize)
+//                    vBuffer.get(nv21, ySize, vSize)
+//                    uBuffer.get(nv21, ySize + vSize, uSize)
+//
+//                    val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
+//                    val out = ByteArrayOutputStream()
+//                    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
+//                    val imageBytes = out.toByteArray()
+//                    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+//                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+//                    val matrix = Matrix() //旋转图片 动作
+//                    matrix.setRotate(90.0F) //旋转角度
+//                    val resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)// 创建新的图片
+//                    Utils.logInfo("旋转图片完成，开始识别")
+//                    previewView.post { eventSink.success(ScanUtils.identifyBitmap(resizedBitmap)) }
+//                    val source1 = PlanarYUVLuminanceSource(byteArray,
+//                            resizedBitmap.width, height, (resizedBitmap.width * leftRatio).toInt(), ((resizedBitmap.height * topRatio).toInt()), (resizedBitmap.width * widthRatio).toInt(),
+//                            (resizedBitmap.height * heightRatio).toInt(), false)
+//                    val binaryBitmap1 = BinaryBitmap(HybridBinarizer(source1))
+//                    try {
+//                        val result = multiFormatReader.decode(binaryBitmap1, ScanUtils.hints)
+//                        if (result != null) {
+//                            previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
+//                        }
+//                    } catch (e: NotFoundException) {
+//
+//                    }
+
                 }
                 buffer.clear()
                 lastCurrentTime = currentTime

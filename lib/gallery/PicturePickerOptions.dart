@@ -37,10 +37,11 @@ class PicturePickerOptions {
   bool scaleAspectFillCrop; //是否图片等比缩放填充cropRect区域   在单选模式下，照片列表页中，显示选择按钮,默认为false
   bool originalPhoto; //是否显示原图按钮
 
-  PicturePickerOptions({this.maxSelectNum: 6,
+  PicturePickerOptions({
+    this.maxSelectNum: 6,
     this.minSelectNum: 1,
     this.imageSpanCount: 4,
-    this.selectionMode: 0,
+    this.selectionMode: 1,
     this.minimumCompressSize: 100,
     this.cropW: 4,
     this.cropH: 3,

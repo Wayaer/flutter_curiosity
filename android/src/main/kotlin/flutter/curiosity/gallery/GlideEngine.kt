@@ -12,7 +12,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.BitmapImageViewTarget
 import com.bumptech.glide.request.target.ImageViewTarget
 import com.luck.picture.lib.engine.ImageEngine
-import com.luck.picture.lib.listener.ImageCompleteCallback
+import com.luck.picture.lib.listener.OnImageCompleteCallback
 import com.luck.picture.lib.tools.MediaUtils
 import com.luck.picture.lib.widget.longimage.ImageSource
 import com.luck.picture.lib.widget.longimage.ImageViewState
@@ -54,7 +54,7 @@ class GlideEngine private constructor() : ImageEngine {
      * @param longImageView
      * @param callback      网络图片加载回调监听
      */
-    override fun loadImage(context: Context, url: String, imageView: ImageView, longImageView: SubsamplingScaleImageView, callback: ImageCompleteCallback) {
+    override fun loadImage(context: Context, url: String, imageView: ImageView, longImageView: SubsamplingScaleImageView, callback: OnImageCompleteCallback) {
         Glide.with(context)
                 .asBitmap()
                 .load(url)

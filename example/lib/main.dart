@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/curiosity.dart';
@@ -15,6 +13,8 @@ void main() async {
 
 class App extends StatelessWidget {
   bool san = true;
+  StateSetter setState;
+  List<AssetMedia> list = List();
 
   @override
   Widget build(BuildContext context) {
@@ -28,16 +28,31 @@ class App extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Center(),
+          StatefulBuilder(builder: (BuildContext context, StateSetter state) {
+            setState = state;
+            return Column(children: showText());
+          },),
           RaisedButton(
               onPressed: () {
-//                select();
-                NativeUtils.callPhone('13282830824');
-//                scan(context);
+                scan(context);
               },
-              child: Text('按钮'))
+              child: Text('扫码')),
+          RaisedButton(
+              onPressed: () {
+                select();
+              },
+              child: Text('图片选择'))
         ],
       ),
     );
+  }
+
+  List<Widget> showText() {
+    List<Widget> widget = List();
+    list.map((value) {
+      widget.add(Text(value.path + '==' + value.fileName));
+    }).toList();
+    return widget;
   }
 
   scan(BuildContext context) {
@@ -47,8 +62,10 @@ class App extends StatelessWidget {
   select() async {
     PicturePickerOptions options = PicturePickerOptions();
     options.selectionMode = 1;
-    List<AssetMedia> data = await PicturePicker.openPicker(options);
-    log(data.toString());
+    options.pickerSelectType = 2;
+    list = await PicturePicker.openPicker(options);
+    setState(() {});
+//    log(data.toString());
   }
 
 }

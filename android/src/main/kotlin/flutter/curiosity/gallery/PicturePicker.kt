@@ -228,6 +228,7 @@ object PicturePicker {
             }
             resultMap["width"] = localMedia.width
             resultMap["height"] = localMedia.height
+            resultMap["fileName"] = localMedia.fileName
             resultList.add(resultMap)
         }
         result.success(resultList)
