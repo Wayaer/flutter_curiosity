@@ -104,7 +104,9 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "isInstallApp" -> result.success(NativeUtils.isInstallApp())
             "exitApp" -> NativeUtils.exitApp()
             "getAppInfo" -> result.success(AppInfo.getAppInfo())
-            "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName(call))
+            "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName())
+            "setStatusBarColor" -> NativeUtils.setStatusBarColor()
+            "setNavigationBarColor" -> NativeUtils.setNavigationBarColor()
         }
     }
 

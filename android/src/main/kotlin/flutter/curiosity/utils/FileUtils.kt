@@ -2,7 +2,6 @@ package flutter.curiosity.utils
 
 import android.util.Log
 import flutter.curiosity.CuriosityPlugin.Companion.call
-import io.flutter.plugin.common.MethodCall
 import java.io.*
 import java.text.DecimalFormat
 import java.util.*
@@ -203,7 +202,7 @@ object FileUtils {
      *
      * @return
      */
-    fun getDirectoryAllName(call: MethodCall): MutableList<String> {
+    fun getDirectoryAllName(): MutableList<String> {
         val path = call.argument<String>("path")
         assert(path != null)
         val isAbsolutePath = Objects.requireNonNull<Boolean>(call.argument("isAbsolutePath"))
