@@ -23,6 +23,7 @@
 ##### 1、添加相册相关权限：
 
 - 项目目录->Info.plist->增加
+使用了相机、定位、麦克风、相册，请参考Demo添加下列属性到info.plist文件：
 
 ```
    <key>NSCameraUsageDescription</key>    
