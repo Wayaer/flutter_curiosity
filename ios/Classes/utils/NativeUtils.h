@@ -13,8 +13,6 @@
 
 //跳转拨号
 + (void)callPhone:(NSString *)phoneNumber :(NSNumber *)directDial;
-//修改状态栏颜色
-+ (void)setStatusBarColor:(NSNumber *)fontIconDark :(NSString *)statusBarColor;
-//十六进制颜色值转换UIColor
-+ (UIColor *)colorWithHexString:(NSString *)hexColor;
+
+
 @end

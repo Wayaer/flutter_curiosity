@@ -42,16 +42,6 @@ class App extends StatelessWidget {
                 select();
               },
               child: Text('图片选择')),
-          RaisedButton(
-              onPressed: () {
-                NativeUtils.setStatusBarColor(false, statusBarColor: Colors.green);
-              },
-              child: Text('修改状态栏颜色')),
-          RaisedButton(
-              onPressed: () {
-                NativeUtils.setStatusBarColor(true, statusBarColor: Colors.redAccent);
-              },
-              child: Text('修改状态栏颜色'))
         ],
       ),
     );

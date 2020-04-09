@@ -87,10 +87,7 @@
     } else if ([@"callPhone" isEqualToString:call.method]) {
         [NativeUtils callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
         result( @"success");
-    }  else if ([@"setStatusBarColor" isEqualToString:call.method]) {
-        [NativeUtils setStatusBarColor:call.arguments[@"fontIconDark"] :call.arguments[@"statusBarColor"]];
-        result( @"success");
-    }else if ([@"exitApp" isEqualToString:call.method]) {
+    } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }
 }
