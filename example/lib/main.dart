@@ -41,11 +41,22 @@ class App extends StatelessWidget {
               onPressed: () {
                 select();
               },
-              child: Text('图片选择'))
+              child: Text('图片选择')),
+          RaisedButton(
+              onPressed: () {
+                NativeUtils.setStatusBarColor(false, statusBarColor: Colors.green);
+              },
+              child: Text('修改状态栏颜色')),
+          RaisedButton(
+              onPressed: () {
+                NativeUtils.setStatusBarColor(true, statusBarColor: Colors.redAccent);
+              },
+              child: Text('修改状态栏颜色'))
         ],
       ),
     );
   }
+
 
   List<Widget> showText() {
     List<Widget> widget = List();
@@ -65,7 +76,6 @@ class App extends StatelessWidget {
     options.pickerSelectType = 2;
     list = await PicturePicker.openPicker(options);
     setState(() {});
-//    log(data.toString());
   }
 
 }
