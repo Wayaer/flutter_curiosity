@@ -70,15 +70,16 @@
     
 }
 + (void)setStatusBarColor:(NSNumber*)fontIconDark :(NSString *)statusBarColor {
-    if (@available(iOS 13.0, *)) {
-        UIView *statusBar = [[UIView alloc] initWithFrame:[UIApplication sharedApplication].keyWindow.windowScene.statusBarManager.statusBarFrame];
-        statusBar.backgroundColor = [NativeUtils colorWithHexString:statusBarColor];
-        [[UIApplication sharedApplication].keyWindow addSubview:statusBar];
-    }else{
-        UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
-        if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
-            statusBar.backgroundColor = [NativeUtils colorWithHexString:statusBarColor];
-        }  }
+//    if (@available(iOS 13.0, *)) {
+//        UIView *statusBar = [[UIView alloc] initWithFrame:[UIApplication sharedApplication].keyWindow.windowScene.statusBarManager.statusBarFrame];
+//        statusBar.backgroundColor = [NativeUtils colorWithHexString:statusBarColor];
+//        [[UIApplication sharedApplication].keyWindow addSubview:statusBar];
+//    }else{
+//        UIView *statusBar = [[[UIApplication sharedApplication] valueForKey:@"statusBarWindow"] valueForKey:@"statusBar"];
+//        if ([statusBar respondsToSelector:@selector(setBackgroundColor:)]) {
+//            statusBar.backgroundColor = [NativeUtils colorWithHexString:statusBarColor];
+//        }
+//}
     if([fontIconDark intValue]==1){
         [UIApplication sharedApplication].statusBarStyle =  UIStatusBarStyleDefault;
     }else{

@@ -18,9 +18,9 @@
     [UIApplication sharedApplication].delegate.window.rootViewController;
     CuriosityPlugin* instance = [[CuriosityPlugin alloc] initWithViewController:viewController];
     [registrar addMethodCallDelegate:instance channel:channel];
-      ScanViewFactory * scanView=[[ScanViewFactory alloc]initWithMessenger:[registrar messenger]];
+    ScanViewFactory * scanView=[[ScanViewFactory alloc]initWithMessenger:[registrar messenger]];
     
-      [registrar registerViewFactory:scanView withId:@"scanView"];
+    [registrar registerViewFactory:scanView withId:@"scanView"];
 }
 
 - (instancetype)initWithViewController:(UIViewController *)_viewController {
@@ -41,21 +41,21 @@
 
 -(void)gallery:(FlutterResult)result{
     if ([@"openPicker" isEqualToString:call.method]) {
-       [PicturePicker openPicker:call.arguments viewController:viewController result:result];
+        [PicturePicker openPicker:call.arguments viewController:viewController result:result];
     } else if ([@"openCamera" isEqualToString:call.method]) {
-    [PicturePicker openCamera:call.arguments viewController:viewController result:result];
+        [PicturePicker openCamera:call.arguments viewController:viewController result:result];
     } else if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
         [PicturePicker deleteCacheDirFile];
     }
 }
 -(void)scan:(FlutterResult)result{
     if ([@"scanImagePath" isEqualToString:call.method]) {
-          [ScanUtils scanImagePath:call result:result];
-      }else if ([@"scanImageUrl" isEqualToString:call.method]) {
-          [ScanUtils scanImageUrl:call result:result];
-      }if ([@"scanImageMemory" isEqualToString:call.method]) {
-          [ScanUtils scanImageMemory:call result:result];
-      }
+        [ScanUtils scanImagePath:call result:result];
+    }else if ([@"scanImageUrl" isEqualToString:call.method]) {
+        [ScanUtils scanImageUrl:call result:result];
+    }if ([@"scanImageMemory" isEqualToString:call.method]) {
+        [ScanUtils scanImageMemory:call result:result];
+    }
 }
 -(void)getAppInfo:(FlutterResult)result{
     if ([@"getAppInfo" isEqualToString:call.method]) {
@@ -88,10 +88,9 @@
         [NativeUtils callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
         result( @"success");
     }  else if ([@"setStatusBarColor" isEqualToString:call.method]) {
-        NSLog(@"%@",call.arguments[@"statusBarColor"]);
-           [NativeUtils setStatusBarColor:call.arguments[@"fontIconDark"] :call.arguments[@"statusBarColor"]];
-           result( @"success");
-       }else if ([@"exitApp" isEqualToString:call.method]) {
+        [NativeUtils setStatusBarColor:call.arguments[@"fontIconDark"] :call.arguments[@"statusBarColor"]];
+        result( @"success");
+    }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }
 }
