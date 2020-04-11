@@ -25,8 +25,8 @@ class PicturePickerOptions {
   bool hideBottomControls; // 是否显示uCrop工具栏，默认不显示 true or false
   bool freeStyleCropEnabled; // 裁剪框是否可拖拽 true or false
   bool showCropCircle; // 是否圆形裁剪 true or false
-  bool showCropFrame; // 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
-  bool showCropGrid; // 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
+  bool showCropFrame; // 是否显示矩形 圆形裁剪时建议设为false    true or false
+  bool showCropGrid; // 是否显示网格 圆形裁剪时建议设为false    true or false
   bool openClickSound; // 是否开启点击声音 true or false
   bool rotateEnabled; // 裁剪是否可旋转图片 true or false
   bool scaleEnabled; // 裁剪是否可放大缩小图片 true or false

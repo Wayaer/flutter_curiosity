@@ -1,6 +1,5 @@
 package flutter.curiosity
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -20,33 +19,27 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
-import io.flutter.plugin.common.PluginRegistry.Registrar
 
 /**
  * CuriosityPlugin
  */
 class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, ActivityResultListener {
-    private val methodChannelName = "Curiosity"
-    private lateinit var result: MethodChannel.Result
     private lateinit var methodChannel: MethodChannel
+    private lateinit var result: MethodChannel.Result
 
     companion object {
-        //此处是旧的插件加载注册方式
-        @JvmStatic
-        fun registerWith(registrar: Registrar) {
-            val plugin = CuriosityPlugin()
-            val methodChannel = MethodChannel(registrar.messenger(), "Curiosity")
-            context = registrar.context()
-            activity = registrar.activity()
-            methodChannel.setMethodCallHandler(plugin)
-            registrar.addActivityResultListener(plugin)
-        }
-
-        @SuppressLint("StaticFieldLeak")
+        //        此处是旧的插件加载注册方式
+//        @JvmStatic
+//        fun registerWith(registrar: Registrar) {
+//            val plugin = CuriosityPlugin()
+//            val methodChannel = MethodChannel(registrar.messenger(), "Curiosity")
+//            context = registrar.context()
+//            activity = registrar.activity()
+//            methodChannel.setMethodCallHandler(plugin)
+//            registrar.addActivityResultListener(plugin)
+//        }
         lateinit var context: Context
         lateinit var call: MethodCall
-
-        @SuppressLint("StaticFieldLeak")
         lateinit var activity: Activity
         var scanView = "scanView"
 
@@ -54,7 +47,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     ///此处是新的插件加载注册方式
     override fun onAttachedToEngine(@NonNull pluginBinding: FlutterPluginBinding) {
-        methodChannel = MethodChannel(pluginBinding.binaryMessenger, methodChannelName)
+        methodChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
         methodChannel.setMethodCallHandler(this)
         context = pluginBinding.applicationContext
         pluginBinding.platformViewRegistry.registerViewFactory(scanView, ScanViewFactory(pluginBinding.binaryMessenger))
@@ -126,9 +119,11 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
-        if (resultCode == Activity.RESULT_OK && intent != null) {
-            if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
-                PicturePicker.onResult(requestCode, intent, result)
+        if (this::result.isInitialized) {
+            if (resultCode == Activity.RESULT_OK && intent != null) {
+                if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
+                    this.result.success(PicturePicker.onResult(requestCode, intent))
+                }
             }
         }
         return true

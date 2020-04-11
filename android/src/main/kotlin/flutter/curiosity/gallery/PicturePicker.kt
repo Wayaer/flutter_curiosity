@@ -14,9 +14,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
-//import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import io.flutter.plugin.common.MethodCall
-import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileInputStream
 import java.util.*
@@ -195,7 +193,7 @@ object PicturePicker {
         PictureFileUtils.deleteCacheDirFile(activity, pictureMimeType)
     }
 
-    fun onResult(requestCode: Int, intent: Intent, result: MethodChannel.Result) {
+    fun onResult(requestCode: Int, intent: Intent): MutableList<Map<String, Any>>? {
         // 图片、视频、音频选择结果回调
         // 例如 LocalMedia 里面返回四种path
         // 1.media.getPath(); 为原图path
@@ -205,13 +203,14 @@ object PicturePicker {
         // 4.media.getAndroidQToPath();为Android Q版本特有返回的字段，此字段有值就用来做上传使用
         val selectList = PictureSelector.obtainMultipleResult(intent)
         if (requestCode == PictureConfig.REQUEST_CAMERA) {
-            onChooseResult(selectList, result)
+            return onChooseResult(selectList)
         } else if (requestCode == PictureConfig.CHOOSE_REQUEST) {
-            onChooseResult(selectList, result)
+            return onChooseResult(selectList)
         }
+        return null
     }
 
-    private fun onChooseResult(selectList: MutableList<LocalMedia>, result: MethodChannel.Result) {
+    private fun onChooseResult(selectList: MutableList<LocalMedia>): MutableList<Map<String, Any>> {
         val resultList: MutableList<Map<String, Any>> = ArrayList()
         for (localMedia in selectList) {
             val resultMap: MutableMap<String, Any> = ArrayMap()
@@ -231,7 +230,8 @@ object PicturePicker {
             resultMap["fileName"] = localMedia.fileName
             resultList.add(resultMap)
         }
-        result.success(resultList)
+        return resultList;
+//        result.success(resultList)
     }
 
     @RequiresApi(Build.VERSION_CODES.FROYO)

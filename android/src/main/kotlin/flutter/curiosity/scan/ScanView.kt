@@ -18,6 +18,7 @@ import com.google.zxing.PlanarYUVLuminanceSource
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
 import flutter.curiosity.camera.preview.PreviewView
+import flutter.curiosity.utils.Utils
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
@@ -107,8 +108,8 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 val buffer = image.planes[0].buffer
                 val byteArray = ByteArray(buffer.remaining())
                 buffer[byteArray, 0, byteArray.size]
-                var height = image.height
-                var width = image.width
+                val height = image.height
+                val width = image.width
                 val source = PlanarYUVLuminanceSource(byteArray,
                         width, height, (width * leftRatio).toInt(), ((height * topRatio).toInt()), (width * widthRatio).toInt(),
                         (height * heightRatio).toInt(), false)
@@ -186,7 +187,8 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
             "startScan" -> isScan = true
             "stopScan" -> isScan = false
             "setFlashMode" -> {
-                cameraControl.enableTorch(methodCall.argument<Boolean>("status")!!)
+//                Utils.logInfo("手电筒" + methodCall.argument<Boolean>("status").toString())
+                methodCall.argument<Boolean>("status")?.let { cameraControl.enableTorch(it) }
             }
             "getFlashMode" -> result.success(cameraInfo.torchState)
             else -> result.notImplemented()
