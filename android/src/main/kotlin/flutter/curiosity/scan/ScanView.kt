@@ -1,7 +1,8 @@
 package flutter.curiosity.scan
 
 import android.content.Context
-import android.graphics.*
+import android.graphics.ImageFormat
+import android.graphics.Rect
 import android.view.View
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
@@ -11,10 +12,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LifecycleRegistry
 import com.google.common.util.concurrent.ListenableFuture
-import com.google.zxing.BinaryBitmap
-import com.google.zxing.MultiFormatReader
-import com.google.zxing.NotFoundException
-import com.google.zxing.PlanarYUVLuminanceSource
+import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
 import flutter.curiosity.camera.preview.PreviewView
@@ -44,19 +42,20 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private var multiFormatReader: MultiFormatReader = MultiFormatReader()
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val anyMap = any as Map<*, *>
-    private val topRatio: Double
-    private val leftRatio: Double
-    private val widthRatio: Double
-    private val heightRatio: Double
+    private val topRatio: Int
+    private val leftRatio: Int
+    private val widthRatio: Int
+    private val heightRatio: Int
 
     init {
         isScan = (anyMap["isScan"] as Boolean?)!!
-        topRatio = anyMap["topRatio"] as Double
-        leftRatio = anyMap["leftRatio"] as Double
-        widthRatio = anyMap["widthRatio"] as Double
-        heightRatio = anyMap["heightRatio"] as Double
+        topRatio = anyMap["topRatio"] as Int
+        leftRatio = anyMap["leftRatio"] as Int
+        widthRatio = anyMap["widthRatio"] as Int
+        heightRatio = anyMap["heightRatio"] as Int
         EventChannel(messenger, "$scanView/$i/event").setStreamHandler(this)
         MethodChannel(messenger, "$scanView/$i/method").setMethodCallHandler(this)
+        multiFormatReader.setHints(ScanUtils.hints)
         initCameraView()
     }
 
@@ -72,7 +71,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         lifecycleRegistry = LifecycleRegistry(this)
         previewView = PreviewView(context)
         val preview = Preview.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
+                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
                 .build()
         preview.setSurfaceProvider(previewView.previewSurfaceProvider)
         val imageAnalysis = ImageAnalysis.Builder().apply {
@@ -110,52 +109,29 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                 buffer[byteArray, 0, byteArray.size]
                 val height = image.height
                 val width = image.width
-                val source = PlanarYUVLuminanceSource(byteArray,
-                        width, height, (width * leftRatio).toInt(), ((height * topRatio).toInt()), (width * widthRatio).toInt(),
-                        (height * heightRatio).toInt(), false)
+                val source = buildLuminanceSource(byteArray, width, height);
                 val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
+                var result: Result? = null
                 try {
-                    val result = multiFormatReader.decode(binaryBitmap, ScanUtils.hints)
-                    if (result != null) {
-                        previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
-                    }
+                    result = multiFormatReader.decodeWithState(binaryBitmap)
                 } catch (e: NotFoundException) {
-//                    val yBuffer = image.planes[0].buffer // Y
-//                    val uBuffer = image.planes[1].buffer // U
-//                    val vBuffer = image.planes[2].buffer // V
-//                    val ySize = yBuffer.remaining()
-//                    val uSize = uBuffer.remaining()
-//                    val vSize = vBuffer.remaining()
-//                    val nv21 = ByteArray(ySize + uSize + vSize)
-//                    //U and V are swapped
-//                    yBuffer.get(nv21, 0, ySize)
-//                    vBuffer.get(nv21, ySize, vSize)
-//                    uBuffer.get(nv21, ySize + vSize, uSize)
-//
-//                    val yuvImage = YuvImage(nv21, ImageFormat.NV21, width, height, null)
-//                    val out = ByteArrayOutputStream()
-//                    yuvImage.compressToJpeg(Rect(0, 0, yuvImage.width, yuvImage.height), 50, out)
-//                    val imageBytes = out.toByteArray()
-//                    val bitmap = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
-//                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-//                    val matrix = Matrix() //旋转图片 动作
-//                    matrix.setRotate(90.0F) //旋转角度
-//                    val resizedBitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)// 创建新的图片
-//                    Utils.logInfo("旋转图片完成，开始识别")
-//                    previewView.post { eventSink.success(ScanUtils.identifyBitmap(resizedBitmap)) }
-//                    val source1 = PlanarYUVLuminanceSource(byteArray,
-//                            resizedBitmap.width, height, (resizedBitmap.width * leftRatio).toInt(), ((resizedBitmap.height * topRatio).toInt()), (resizedBitmap.width * widthRatio).toInt(),
-//                            (resizedBitmap.height * heightRatio).toInt(), false)
-//                    val binaryBitmap1 = BinaryBitmap(HybridBinarizer(source1))
-//                    try {
-//                        val result = multiFormatReader.decode(binaryBitmap1, ScanUtils.hints)
-//                        if (result != null) {
-//                            previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
-//                        }
-//                    } catch (e: NotFoundException) {
-//
-//                    }
 
+                } finally {
+                    multiFormatReader.reset()
+                }
+                if (result == null) {
+                    val invertedSource = source?.invert()
+                    val invertBinaryBitmap = BinaryBitmap(HybridBinarizer(invertedSource))
+                    try {
+                        result = multiFormatReader.decodeWithState(invertBinaryBitmap)
+                    } catch (e: NotFoundException) {
+                        // continue
+                    } finally {
+                        multiFormatReader.reset()
+                    }
+                }
+                if (result != null) {
+                    resultCode(result)
                 }
                 buffer.clear()
                 lastCurrentTime = currentTime
@@ -164,10 +140,61 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         }
     }
 
+    fun resultCode(result: Result) {
+        previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
+    }
+
+    fun buildLuminanceSource(byteArray: ByteArray, width: Int, height: Int): PlanarYUVLuminanceSource? {
+//        Utils.logInfo("图像宽高")
+//        Utils.logInfo(width.toString())
+//        Utils.logInfo(height.toString())
+//        Utils.logInfo("可识别区宽高度")
+//        Utils.logInfo((width / 10 * widthRatio).toString())
+//        Utils.logInfo((height / 10 * heightRatio).toString())
+//        Utils.logInfo("距离头部和左边的距离")
+//        Utils.logInfo((width / 10 * leftRatio).toString())
+//        Utils.logInfo((height / 10 * topRatio).toString())
+        return PlanarYUVLuminanceSource(byteArray,
+                width, height, (width / 10 * leftRatio), ((height / 10 * topRatio)), (width / 10 * widthRatio),
+                (height / 10 * heightRatio), false)
+//        val rect: Rect = getFramingRectInPreview(width, height)
+//        return PlanarYUVLuminanceSource(byteArray, width, height, rect.left, rect.top,
+//                rect.width(), rect.height(), false)
+    }
 
     override fun onCancel(any: Any) {
     }
 
+    private fun getFramingRectInPreview(previewWidth: Int, previewHeight: Int): Rect {
+        val rect = Rect()
+        val rectViewWidth = (previewWidth / 10 * leftRatio)
+        val rectViewHeight = (previewHeight / 10 * leftRatio)
+        Utils.logInfo(previewWidth.toString())
+        Utils.logInfo(previewHeight.toString())
+
+        Utils.logInfo(rectViewWidth.toString())
+        Utils.logInfo(rectViewHeight.toString())
+
+        if (rectViewWidth < previewWidth) {
+//            rect.left = rect.left * previewWidth / rectViewWidth;
+//            rect.right = rect.right * previewWidth / rectViewWidth;
+            rect.left = previewWidth / 10
+            rect.right = previewWidth / 10
+        }
+        if (rectViewHeight < previewHeight) {
+//            rect.top = rect.top * previewHeight / rectViewHeight;
+//            rect.bottom = rect.bottom * previewHeight / rectViewHeight;
+            rect.top = previewHeight / 10;
+            rect.bottom = previewHeight / 10;
+        }
+
+        Utils.logInfo(rect.left.toString());
+        Utils.logInfo(rect.right.toString());
+        Utils.logInfo(rect.width().toString());
+        Utils.logInfo(rect.height().toString());
+        return rect
+
+    }
 
     override fun getLifecycle(): Lifecycle {
         return lifecycleRegistry
@@ -187,31 +214,14 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
             "startScan" -> isScan = true
             "stopScan" -> isScan = false
             "setFlashMode" -> {
-//                Utils.logInfo("手电筒" + methodCall.argument<Boolean>("status").toString())
-                methodCall.argument<Boolean>("status")?.let { cameraControl.enableTorch(it) }
+                val status = methodCall.argument<Boolean>("status")
+                if (status != null) {
+                    cameraControl.enableTorch(status)
+                }
             }
             "getFlashMode" -> result.success(cameraInfo.torchState)
             else -> result.notImplemented()
         }
-    }
-
-    fun rotateBitmap(bitmap: Bitmap): Bitmap {
-        val matrix = Matrix()
-        matrix.setRotate(90.toFloat(), bitmap.width.toFloat() / 2,
-                bitmap.height.toFloat() / 2)
-        val targetX: Float = bitmap.height.toFloat()
-        val targetY: Float = 0f
-        val values = FloatArray(9)
-        matrix.getValues(values)
-        val x1 = values[Matrix.MTRANS_X]
-        val y1 = values[Matrix.MTRANS_Y]
-        matrix.postTranslate(targetX - x1, targetY - y1)
-        val canvasBitmap: Bitmap = Bitmap.createBitmap(bitmap.height, bitmap.width,
-                Bitmap.Config.ARGB_8888)
-        val paint = Paint()
-        val canvas = Canvas(canvasBitmap)
-        canvas.drawBitmap(bitmap, matrix, paint)
-        return canvasBitmap
     }
 
 

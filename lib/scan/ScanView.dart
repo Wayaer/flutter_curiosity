@@ -15,15 +15,17 @@ class ScanView extends StatefulWidget {
   final PlatformViewHitTestBehavior hitTestBehavior;
 
   //android扫描条形码请横屏即可识别
-  //识别区域 比例 0-1 默认全屏幕识别
-  double topRatio; //距离屏幕头部
-  double leftRatio; //距离屏幕左边
-  double widthRatio; //宽度
-  double heightRatio; //高度
+  //识别区域 比例 1-10 默认全屏幕识别
+  int topRatio; //距离屏幕头部
+  int leftRatio; //距离屏幕左边
+  int widthRatio; //识别区域的宽度比例
+  int heightRatio; //识别区域的高度比例
 
-  ScanView({this.controller, this.topRatio: 0, this.leftRatio: 0, this.widthRatio: 1, this.heightRatio: 1, this.hitTestBehavior =
-      PlatformViewHitTestBehavior
-          .opaque,}) {
+  ScanView({this.controller, this.topRatio: 2, this.leftRatio: 2,
+    this.widthRatio: 6, this.heightRatio: 6,
+    this.hitTestBehavior =
+        PlatformViewHitTestBehavior
+            .opaque,}) {
     assert(controller != null);
   }
 
@@ -35,7 +37,7 @@ class ScanViewState extends State<ScanView> {
   ScanController controller;
   Map<String, dynamic> params;
 
-   onPlatformViewCreated(int id) {
+  onPlatformViewCreated(int id) {
     controller.attach(id);
   }
 
