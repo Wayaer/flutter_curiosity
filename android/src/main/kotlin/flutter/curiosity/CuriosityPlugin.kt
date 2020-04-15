@@ -85,9 +85,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     private fun utils() {
         when (call.method) {
-            "clearAllCookie" -> NativeUtils.clearAllCookie()
             "installApp" -> result.success(NativeUtils.installApp())
-            "getAllCookie" -> result.success(NativeUtils.getAllCookie())
             "getFilePathSize" -> result.success(NativeUtils.getFilePathSize())
             "unZipFile" -> result.success(FileUtils.unZipFile())
             "deleteDirectory" -> result.success(FileUtils.deleteDirectory())

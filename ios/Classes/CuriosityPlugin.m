@@ -65,12 +65,7 @@
     }
 }
 -(void)utils:(FlutterResult)result{
-    if ([@"clearAllCookie" isEqualToString:call.method]) {
-        [NativeUtils clearAllCookie];
-        result( @"success");
-    } else if ([@"getAllCookie" isEqualToString:call.method]) {
-        result([NativeUtils getAllCookie]);
-    } else if ([@"getFilePathSize" isEqualToString:call.method]) {
+    if ([@"getFilePathSize" isEqualToString:call.method]) {
         result([FileUtils getFilePathSize:call.arguments[@"filePath"]]);
     } else if ([@"deleteDirectory" isEqualToString:call.method]) {
         [FileUtils deleteDirectory:call.arguments[@"directoryPath"]];
