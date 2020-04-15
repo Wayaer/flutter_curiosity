@@ -15,19 +15,17 @@ class ScanView extends StatefulWidget {
   final PlatformViewHitTestBehavior hitTestBehavior;
 
   //android扫描条形码请横屏即可识别
-  //识别区域 比例 1-10 默认全屏幕识别
-  int topRatio; //距离屏幕头部
-  int leftRatio; //距离屏幕左边
-  int widthRatio; //识别区域的宽度比例
-  int heightRatio; //识别区域的高度比例
+  //识别区域 比例 0-1 默认全屏幕识别
+  double topRatio; //距离屏幕头部
+  double leftRatio; //距离屏幕左边
+  double widthRatio; //识别区域的宽高度比例
+//  double heightRatio; //识别区域的高度比例
 
-  ScanView({this.controller, this.topRatio: 2, this.leftRatio: 2,
-    this.widthRatio: 6, this.heightRatio: 6,
+  ScanView({this.controller, this.topRatio: 0.2, this.leftRatio: 0.2,
+    this.widthRatio: 0.8,
     this.hitTestBehavior =
         PlatformViewHitTestBehavior
-            .opaque,}) {
-    assert(controller != null);
-  }
+            .opaque,}) : assert(controller != null);
 
   @override
   State<StatefulWidget> createState() => ScanViewState();
@@ -47,16 +45,20 @@ class ScanViewState extends State<ScanView> {
     controller = widget.controller ?? ScanController();
     params = {
       "isScan": controller.isScan,
-      "width": (Utils
+//      "width": (Utils
+//          .getSize()
+//          .width * Utils.getDevicePixelRatio()).toInt(),
+//      "height": (Utils
+//          .getSize()
+//          .height * Utils.getDevicePixelRatio()).toInt(),
+      "topRatio": (widget.topRatio * 10).toInt(),
+      "leftRatio": (widget.leftRatio * 10).toInt(),
+      "widthRatio": (widget.widthRatio * 10).toInt(),
+      "heightRatio": ((widget.widthRatio * Utils
           .getSize()
-          .width * Utils.getDevicePixelRatio()).toInt(),
-      "height": (Utils
+          .width / Utils
           .getSize()
-          .height * Utils.getDevicePixelRatio()).toInt(),
-      "topRatio": widget.topRatio,
-      "leftRatio": widget.leftRatio,
-      "widthRatio": widget.widthRatio,
-      "heightRatio": widget.heightRatio,
+          .height) * 10).roundToDouble().toInt(),
     };
   }
 

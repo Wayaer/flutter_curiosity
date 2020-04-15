@@ -11,8 +11,8 @@ import io.flutter.plugin.platform.PlatformViewFactory
 
 class ScanViewFactory(private val messenger: BinaryMessenger) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, i: Int, any: Any): PlatformView {
-//        return Scanner(context, messenger, i, any);
-        return ScanView(context, messenger, i, any);
+        return Scanner(context, messenger, i, any);
+//        return ScanView(context, messenger, i, any);
     }
 }
 
@@ -21,14 +21,10 @@ class Scanner internal constructor(context: Context, messenger: BinaryMessenger,
         MethodChannel.MethodCallHandler, ScannerView.ResultHandler {
     private var scannerView: ScannerView = ScannerView(context)
     private var flashStatus: Boolean = false;
+    private lateinit var eventSink: EventChannel.EventSink
 
     init {
         val anyMap = any as Map<*, *>
-        val isScan = (anyMap["isScan"] as Boolean?)!!
-        val topRatio = anyMap["topRatio"] as Double
-        val leftRatio = anyMap["leftRatio"] as Double
-        val widthRatio = anyMap["widthRatio"] as Double
-        val heightRatio = anyMap["heightRatio"] as Double
         EventChannel(messenger, "${CuriosityPlugin.scanView}/$i/event").setStreamHandler(this)
         MethodChannel(messenger, "${CuriosityPlugin.scanView}/$i/method").setMethodCallHandler(this)
         scannerView.setAutoFocus(true)
@@ -46,7 +42,8 @@ class Scanner internal constructor(context: Context, messenger: BinaryMessenger,
         scannerView.stopCamera()
     }
 
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+    override fun onListen(o: Any, eventSink: EventChannel.EventSink) {
+        this.eventSink = eventSink
     }
 
     override fun onCancel(arguments: Any?) {
@@ -54,13 +51,14 @@ class Scanner internal constructor(context: Context, messenger: BinaryMessenger,
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         when (methodCall.method) {
-//            "startScan" -> isScan = true
-//            "stopScan" -> isScan = false
+            "startScan" -> scannerView.startCamera()
+            "stopScan" -> scannerView.stopCamera()
             "setFlashMode" -> {
-//                Utils.logInfo("手电筒" + methodCall.argument<Boolean>("status").toString())
+                Utils.logInfo("status" + methodCall.argument<Boolean>("status").toString())
                 val status = methodCall.argument<Boolean>("status")
                 if (status != null) {
                     scannerView.flash = status
+                    result.success(scannerView.flash)
                 }
             }
             "getFlashMode" -> result.success(scannerView.flash)
@@ -69,9 +67,7 @@ class Scanner internal constructor(context: Context, messenger: BinaryMessenger,
     }
 
     override fun handleResult(rawResult: Result?) {
-        if (rawResult != null) {
-            Utils.logInfo(rawResult.text)
-        }
+        eventSink.success(ScanUtils.scanDataToMap(rawResult))
     }
 
 }

@@ -1,8 +1,11 @@
 package flutter.curiosity.scan
 
 import android.content.Context
+import android.content.res.Configuration
 import android.graphics.ImageFormat
+import android.graphics.Point
 import android.graphics.Rect
+import android.view.Display
 import android.view.View
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
@@ -14,9 +17,9 @@ import androidx.lifecycle.LifecycleRegistry
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
+import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
 import flutter.curiosity.camera.preview.PreviewView
-import flutter.curiosity.utils.Utils
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
@@ -71,11 +74,11 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         lifecycleRegistry = LifecycleRegistry(this)
         previewView = PreviewView(context)
         val preview = Preview.Builder()
-                .setTargetAspectRatio(AspectRatio.RATIO_4_3)
+                .setTargetAspectRatio(AspectRatio.RATIO_16_9)
                 .build()
         preview.setSurfaceProvider(previewView.previewSurfaceProvider)
         val imageAnalysis = ImageAnalysis.Builder().apply {
-            setImageQueueDepth(ImageAnalysis.STRATEGY_BLOCK_PRODUCER)
+            setImageQueueDepth(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
         }.build()
         imageAnalysis.setAnalyzer(executor, ScanImageAnalysis())
         previewView.post { startCamera(context, preview, imageAnalysis) }
@@ -98,24 +101,24 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     }
 
     private inner class ScanImageAnalysis : ImageAnalysis.Analyzer {
+
         override fun analyze(image: ImageProxy) {
             val currentTime = System.currentTimeMillis()
             if (currentTime - lastCurrentTime >= 100L && isScan == java.lang.Boolean.TRUE) {
                 if (ImageFormat.YUV_420_888 != image.format) {
                     return
                 }
+                val rect = image.cropRect
                 val buffer = image.planes[0].buffer
                 val byteArray = ByteArray(buffer.remaining())
                 buffer[byteArray, 0, byteArray.size]
-                val height = image.height
-                val width = image.width
-                val source = buildLuminanceSource(byteArray, width, height);
+                val source = buildLuminanceSource(byteArray, rect)
                 val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
                 var result: Result? = null
                 try {
                     result = multiFormatReader.decodeWithState(binaryBitmap)
                 } catch (e: NotFoundException) {
-
+                    // continue
                 } finally {
                     multiFormatReader.reset()
                 }
@@ -130,9 +133,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                         multiFormatReader.reset()
                     }
                 }
-                if (result != null) {
-                    resultCode(result)
-                }
+                if (result != null) resultCode(result)
                 buffer.clear()
                 lastCurrentTime = currentTime
             }
@@ -144,55 +145,25 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
     }
 
-    fun buildLuminanceSource(byteArray: ByteArray, width: Int, height: Int): PlanarYUVLuminanceSource? {
-//        Utils.logInfo("图像宽高")
-//        Utils.logInfo(width.toString())
-//        Utils.logInfo(height.toString())
-//        Utils.logInfo("可识别区宽高度")
-//        Utils.logInfo((width / 10 * widthRatio).toString())
-//        Utils.logInfo((height / 10 * heightRatio).toString())
-//        Utils.logInfo("距离头部和左边的距离")
-//        Utils.logInfo((width / 10 * leftRatio).toString())
-//        Utils.logInfo((height / 10 * topRatio).toString())
-        return PlanarYUVLuminanceSource(byteArray,
-                width, height, (width / 10 * leftRatio), ((height / 10 * topRatio)), (width / 10 * widthRatio),
-                (height / 10 * heightRatio), false)
-//        val rect: Rect = getFramingRectInPreview(width, height)
-//        return PlanarYUVLuminanceSource(byteArray, width, height, rect.left, rect.top,
-//                rect.width(), rect.height(), false)
+    fun buildLuminanceSource(byteArray: ByteArray, rect: Rect): PlanarYUVLuminanceSource? {
+        val newRect = getRectInPreview(rect);
+        return PlanarYUVLuminanceSource(byteArray, newRect.width(), newRect.height(), newRect.left, newRect.top,
+                newRect.width(), newRect.height(), false)
     }
 
     override fun onCancel(any: Any) {
     }
 
-    private fun getFramingRectInPreview(previewWidth: Int, previewHeight: Int): Rect {
-        val rect = Rect()
-        val rectViewWidth = (previewWidth / 10 * leftRatio)
-        val rectViewHeight = (previewHeight / 10 * leftRatio)
-        Utils.logInfo(previewWidth.toString())
-        Utils.logInfo(previewHeight.toString())
-
-        Utils.logInfo(rectViewWidth.toString())
-        Utils.logInfo(rectViewHeight.toString())
-
-        if (rectViewWidth < previewWidth) {
-//            rect.left = rect.left * previewWidth / rectViewWidth;
-//            rect.right = rect.right * previewWidth / rectViewWidth;
-            rect.left = previewWidth / 10
-            rect.right = previewWidth / 10
-        }
-        if (rectViewHeight < previewHeight) {
-//            rect.top = rect.top * previewHeight / rectViewHeight;
-//            rect.bottom = rect.bottom * previewHeight / rectViewHeight;
-            rect.top = previewHeight / 10;
-            rect.bottom = previewHeight / 10;
-        }
-
-        Utils.logInfo(rect.left.toString());
-        Utils.logInfo(rect.right.toString());
-        Utils.logInfo(rect.width().toString());
-        Utils.logInfo(rect.height().toString());
+    private fun getRectInPreview(rect: Rect): Rect {
         return rect
+//        val rect = Rect()
+//        Utils.logInfo("比例")
+//        Utils.logInfo(rect.width().toString())
+//        Utils.logInfo(rect.height().toString())
+//        Utils.logInfo("left$leftRatio==top$topRatio==width${widthRatio}==height${heightRatio}")
+//        Utils.logInfo("rectLeft${rect.width() / 10 * leftRatio}==rectTop${rect.height() / 10 * topRatio}")
+//        Utils.logInfo("rectWidth${rect.width() / 10 * widthRatio}==rectHeight${rect.height() / 10 * heightRatio}")
+//        return newRect
 
     }
 
@@ -224,6 +195,22 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         }
     }
 
+    fun getScreenOrientation(): Int {
+        val defaultDisplay: Display = activity.windowManager.defaultDisplay
+        val point = Point()
+        defaultDisplay.getSize(point)
+        var orientation = Configuration.ORIENTATION_UNDEFINED
+        if (point.x != point.y) {
+            if (point.x < point.y) {
+                orientation = Configuration.ORIENTATION_PORTRAIT
+            } else {
+                orientation = Configuration.ORIENTATION_LANDSCAPE
+            }
+        }
+        return orientation
+    }
+
 
 }
+
 

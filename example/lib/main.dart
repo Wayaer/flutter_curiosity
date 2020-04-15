@@ -1,12 +1,14 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/curiosity.dart';
+import 'package:flutter_waya/waya.dart';
 
 import 'ScanPage.dart';
 
 void main() async {
-  runApp(MaterialApp(
+  runApp(OverlayMaterial(
     debugShowCheckedModeBanner: false,
+    title: 'Curiosity',
     home: App(),
   ));
 }

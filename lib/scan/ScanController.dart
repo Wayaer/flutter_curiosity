@@ -31,10 +31,13 @@ class ScanController extends ChangeNotifier {
 
   Future<void> stopScan() async => await channel.invokeMethod('stopScan');
 
-  Future<bool> setFlashMode(bool status) async =>
-      await methodChannel.invokeMethod('setFlashMode', {'status': status});
+  Future<bool> setFlashMode(bool status) async {
+    return await methodChannel.invokeMethod('setFlashMode', {'status': status ?? false});
+  }
 
-  Future<bool> getFlashMode() async => await methodChannel.invokeMethod('getFlashMode');
+  Future<bool> getFlashMode() async {
+    return await methodChannel.invokeMethod('getFlashMode');
+  }
 
   static Future<String> scanImagePath(String path) async {
     return await methodChannel.invokeMethod('scanImagePath', { "path": path});
