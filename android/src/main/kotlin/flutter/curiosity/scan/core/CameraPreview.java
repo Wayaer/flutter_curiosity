@@ -1,5 +1,6 @@
 package flutter.curiosity.scan.core;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Point;
@@ -18,6 +19,7 @@ import android.view.WindowManager;
 import java.util.List;
 
 
+@SuppressLint("ViewConstructor")
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "CameraPreview";
 
@@ -26,7 +28,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private boolean mPreviewing = true;
     private boolean mAutoFocus = true;
     private boolean mSurfaceCreated = false;
-    private boolean mShouldScaleToFill = true;
     private Camera.PreviewCallback mPreviewCallback;
     private float mAspectTolerance = 0.1f;
 
@@ -52,9 +53,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mPreviewCallback = previewCallback;
     }
 
-    public void setShouldScaleToFill(boolean scaleToFill) {
-        mShouldScaleToFill = scaleToFill;
-    }
 
     public void setAspectTolerance(float aspectTolerance) {
         mAspectTolerance = aspectTolerance;
@@ -167,23 +165,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             tmpHeight = width;
         }
 
-        if (mShouldScaleToFill) {
-            int parentWidth = ((View) getParent()).getWidth();
-            int parentHeight = ((View) getParent()).getHeight();
-            float ratioWidth = (float) parentWidth / (float) tmpWidth;
-            float ratioHeight = (float) parentHeight / (float) tmpHeight;
+//        if (mShouldScaleToFill) {
+        int parentWidth = ((View) getParent()).getWidth();
+        int parentHeight = ((View) getParent()).getHeight();
+        float ratioWidth = (float) parentWidth / (float) tmpWidth;
+        float ratioHeight = (float) parentHeight / (float) tmpHeight;
 
-            float compensation;
+        float compensation;
 
-            if (ratioWidth > ratioHeight) {
-                compensation = ratioWidth;
-            } else {
-                compensation = ratioHeight;
-            }
-
-            tmpWidth = Math.round(tmpWidth * compensation);
-            tmpHeight = Math.round(tmpHeight * compensation);
+        if (ratioWidth > ratioHeight) {
+            compensation = ratioWidth;
+        } else {
+            compensation = ratioHeight;
         }
+
+        tmpWidth = Math.round(tmpWidth * compensation);
+        tmpHeight = Math.round(tmpHeight * compensation);
+//        }
 
         layoutParams.width = tmpWidth;
         layoutParams.height = tmpHeight;
@@ -204,6 +202,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
 
         WindowManager wm = (WindowManager) getContext().getSystemService(Context.WINDOW_SERVICE);
+        assert wm != null;
         Display display = wm.getDefaultDisplay();
 
         int rotation = display.getRotation();

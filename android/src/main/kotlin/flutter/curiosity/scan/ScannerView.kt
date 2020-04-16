@@ -34,11 +34,11 @@ class ScannerView : BarcodeScannerView {
     }
 
     private fun initMultiFormatReader() {
-        mMultiFormatReader?.setHints(hints)
+        mMultiFormatReader.setHints(hints)
     }
 
-    override fun onPreviewFrame(data: ByteArray, camera: Camera) {
-        var data: ByteArray? = data
+    override fun onPreviewFrame(byteArray: ByteArray, camera: Camera) {
+        var data: ByteArray? = byteArray
         if (mResultHandler == null) {
             return
         }

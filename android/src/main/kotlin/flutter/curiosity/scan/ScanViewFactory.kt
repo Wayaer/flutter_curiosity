@@ -11,8 +11,13 @@ import io.flutter.plugin.platform.PlatformViewFactory
 
 class ScanViewFactory(private val messenger: BinaryMessenger) : PlatformViewFactory(StandardMessageCodec.INSTANCE) {
     override fun create(context: Context, i: Int, any: Any): PlatformView {
-        return Scanner(context, messenger, i, any);
-//        return ScanView(context, messenger, i, any);
+        val anyMap = any as Map<*, *>
+        val androidFullScreen = (anyMap["androidFullScreen"] as Boolean?)!!
+        if (androidFullScreen) {
+            return ScanView(context, messenger, i, any)
+        } else {
+            return Scanner(context, messenger, i, any)
+        }
     }
 }
 

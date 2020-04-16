@@ -1,19 +1,11 @@
 package flutter.curiosity.scan.core;
 
 import android.content.Context;
-import android.content.res.TypedArray;
-import android.graphics.Color;
 import android.graphics.Rect;
 import android.hardware.Camera;
 import android.util.AttributeSet;
-import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.RelativeLayout;
-
-import androidx.annotation.ColorInt;
-
-import flutter.curiosity.R;
 
 
 public abstract class BarcodeScannerView extends FrameLayout implements Camera.PreviewCallback {
@@ -24,78 +16,26 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     private Rect mFramingRectInPreview;
     private CameraHandlerThread mCameraHandlerThread;
     private Boolean mFlashState;
-    private boolean mAutofocusState = true;
-    private boolean mShouldScaleToFill = true;
-
-    private boolean mIsLaserEnabled = true;
-    @ColorInt
-    private int mLaserColor = getResources().getColor(R.color.viewfinder_laser);
-    @ColorInt
-    private int mBorderColor = getResources().getColor(R.color.viewfinder_border);
-    private int mMaskColor = getResources().getColor(R.color.viewfinder_mask);
-    private int mBorderWidth = getResources().getInteger(R.integer.viewfinder_border_width);
-    private int mBorderLength = getResources().getInteger(R.integer.viewfinder_border_length);
-    private boolean mRoundedCorner = false;
-    private int mCornerRadius = 0;
-    private boolean mSquaredFinder = false;
-    private float mBorderAlpha = 1.0f;
-    private int mViewFinderOffset = 0;
+    private boolean mAutoFocusState = true;
     private float mAspectTolerance = 0.1f;
 
     public BarcodeScannerView(Context context) {
         super(context);
-        init();
+        mViewFinderView = new ViewFinderView(getContext());
     }
 
     public BarcodeScannerView(Context context, AttributeSet attributeSet) {
         super(context, attributeSet);
-
-        TypedArray a = context.getTheme().obtainStyledAttributes(
-                attributeSet,
-                R.styleable.BarcodeScannerView,
-                0, 0);
-
-        try {
-            setShouldScaleToFill(a.getBoolean(R.styleable.BarcodeScannerView_shouldScaleToFill, true));
-            mIsLaserEnabled = a.getBoolean(R.styleable.BarcodeScannerView_laserEnabled, mIsLaserEnabled);
-            mLaserColor = a.getColor(R.styleable.BarcodeScannerView_laserColor, mLaserColor);
-            mBorderColor = a.getColor(R.styleable.BarcodeScannerView_borderColor, mBorderColor);
-            mMaskColor = a.getColor(R.styleable.BarcodeScannerView_maskColor, mMaskColor);
-            mBorderWidth = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderWidth, mBorderWidth);
-            mBorderLength = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_borderLength, mBorderLength);
-
-            mRoundedCorner = a.getBoolean(R.styleable.BarcodeScannerView_roundedCorner, mRoundedCorner);
-            mCornerRadius = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_cornerRadius, mCornerRadius);
-            mSquaredFinder = a.getBoolean(R.styleable.BarcodeScannerView_squaredFinder, mSquaredFinder);
-            mBorderAlpha = a.getFloat(R.styleable.BarcodeScannerView_borderAlpha, mBorderAlpha);
-            mViewFinderOffset = a.getDimensionPixelSize(R.styleable.BarcodeScannerView_finderOffset, mViewFinderOffset);
-        } finally {
-            a.recycle();
-        }
-
-        init();
+        mViewFinderView = new ViewFinderView(getContext());
     }
 
-    private void init() {
-        mViewFinderView = createViewFinderView(getContext());
-    }
 
     public final void setupLayout(CameraWrapper cameraWrapper) {
         removeAllViews();
 
         mPreview = new CameraPreview(getContext(), cameraWrapper, this);
         mPreview.setAspectTolerance(mAspectTolerance);
-        mPreview.setShouldScaleToFill(mShouldScaleToFill);
-        if (!mShouldScaleToFill) {
-            RelativeLayout relativeLayout = new RelativeLayout(getContext());
-            relativeLayout.setGravity(Gravity.CENTER);
-            relativeLayout.setBackgroundColor(Color.BLACK);
-            relativeLayout.addView(mPreview);
-            addView(relativeLayout);
-        } else {
-            addView(mPreview);
-        }
-
+        addView(mPreview);
         if (mViewFinderView instanceof View) {
             addView((View) mViewFinderView);
         } else {
@@ -104,28 +44,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
         }
     }
 
-    /**
-     * <p>Method that creates view that represents visual appearance of a barcode scanner</p>
-     * <p>Override it to provide your own view for visual appearance of a barcode scanner</p>
-     *
-     * @param context {@link Context}
-     * @return {@link View} that implements {@link ViewFinderView}
-     */
-    protected IViewFinder createViewFinderView(Context context) {
-        ViewFinderView viewFinderView = new ViewFinderView(context);
-        viewFinderView.setBorderColor(mBorderColor);
-        viewFinderView.setLaserColor(mLaserColor);
-        viewFinderView.setLaserEnabled(mIsLaserEnabled);
-        viewFinderView.setBorderStrokeWidth(mBorderWidth);
-        viewFinderView.setBorderLineLength(mBorderLength);
-        viewFinderView.setMaskColor(mMaskColor);
 
-        viewFinderView.setBorderCornerRounded(mRoundedCorner);
-        viewFinderView.setBorderCornerRadius(mCornerRadius);
-        viewFinderView.setSquareViewFinder(mSquaredFinder);
-        viewFinderView.setViewFinderOffset(mViewFinderOffset);
-        return viewFinderView;
-    }
     public void startCamera(int cameraId) {
         if (mCameraHandlerThread == null) {
             mCameraHandlerThread = new CameraHandlerThread(this);
@@ -141,7 +60,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
             if (mFlashState != null) {
                 setFlash(mFlashState);
             }
-            setAutoFocus(mAutofocusState);
+            setAutoFocus(mAutoFocusState);
         }
     }
 
@@ -217,25 +136,17 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     public boolean getFlash() {
         if (mCameraWrapper != null && CameraUtils.isFlashSupported(mCameraWrapper.mCamera)) {
             Camera.Parameters parameters = mCameraWrapper.mCamera.getParameters();
-            if (parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH)) {
-                return true;
-            } else {
-                return false;
-            }
+            return parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH);
         }
         return false;
     }
 
 
     public void setAutoFocus(boolean state) {
-        mAutofocusState = state;
+        mAutoFocusState = state;
         if (mPreview != null) {
             mPreview.setAutoFocus(state);
         }
-    }
-
-    public void setShouldScaleToFill(boolean shouldScaleToFill) {
-        mShouldScaleToFill = shouldScaleToFill;
     }
 
     public void setAspectTolerance(float aspectTolerance) {

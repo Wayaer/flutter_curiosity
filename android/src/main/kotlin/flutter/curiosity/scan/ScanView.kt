@@ -1,12 +1,11 @@
 package flutter.curiosity.scan
 
+import android.annotation.SuppressLint
 import android.content.Context
-import android.content.res.Configuration
 import android.graphics.ImageFormat
-import android.graphics.Point
 import android.graphics.Rect
-import android.view.Display
 import android.view.View
+import android.widget.FrameLayout
 import androidx.camera.camera2.Camera2Config
 import androidx.camera.core.*
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -17,7 +16,6 @@ import androidx.lifecycle.LifecycleRegistry
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
-import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.scanView
 import flutter.curiosity.camera.preview.PreviewView
 import io.flutter.plugin.common.BinaryMessenger
@@ -30,9 +28,10 @@ import io.flutter.plugin.platform.PlatformView
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class ScanView internal constructor(private val context: Context, messenger: BinaryMessenger, i: Int, any: Any) :
+@SuppressLint("ViewConstructor")
+class ScanView internal constructor(context: Context, messenger: BinaryMessenger, i: Int, any: Any) :
         PlatformView, LifecycleOwner, CameraXConfig.Provider, EventChannel.StreamHandler,
-        MethodCallHandler {
+        MethodCallHandler, FrameLayout(context) {
     private lateinit var lifecycleRegistry: LifecycleRegistry
     private lateinit var previewView: PreviewView
     private var isScan: Boolean
@@ -49,6 +48,7 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
     private val leftRatio: Int
     private val widthRatio: Int
     private val heightRatio: Int
+//    private var mViewFinderView: ViewFinderView? = null
 
     init {
         isScan = (anyMap["isScan"] as Boolean?)!!
@@ -59,7 +59,15 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         EventChannel(messenger, "$scanView/$i/event").setStreamHandler(this)
         MethodChannel(messenger, "$scanView/$i/method").setMethodCallHandler(this)
         multiFormatReader.setHints(ScanUtils.hints)
+//        initLayout()
         initCameraView()
+    }
+
+    private fun initLayout() {
+        initCameraView()
+//        mViewFinderView = ViewFinderView(context)
+//        addView(previewView)
+//        addView(mViewFinderView)
     }
 
     override fun getView(): View {
@@ -92,12 +100,27 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
                     imageAnalysis)
             cameraControl = camera.cameraControl
             cameraInfo = camera.cameraInfo
-
         }, ContextCompat.getMainExecutor(context))
     }
 
     override fun getCameraXConfig(): CameraXConfig {
         return Camera2Config.defaultConfig()
+    }
+
+    override fun onCancel(any: Any) {
+    }
+
+    override fun getLifecycle(): Lifecycle {
+        return lifecycleRegistry
+    }
+
+    override fun dispose() {
+        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
+        cameraProvider.unbindAll()
+    }
+
+    override fun onListen(o: Any, eventSink: EventSink) {
+        this.eventSink = eventSink
     }
 
     private inner class ScanImageAnalysis : ImageAnalysis.Analyzer {
@@ -145,40 +168,12 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         previewView.post { eventSink.success(ScanUtils.scanDataToMap(result)) }
     }
 
-    fun buildLuminanceSource(byteArray: ByteArray, rect: Rect): PlanarYUVLuminanceSource? {
+    private fun buildLuminanceSource(byteArray: ByteArray, rect: Rect): PlanarYUVLuminanceSource? {
         val newRect = getRectInPreview(rect);
         return PlanarYUVLuminanceSource(byteArray, newRect.width(), newRect.height(), newRect.left, newRect.top,
                 newRect.width(), newRect.height(), false)
     }
 
-    override fun onCancel(any: Any) {
-    }
-
-    private fun getRectInPreview(rect: Rect): Rect {
-        return rect
-//        val rect = Rect()
-//        Utils.logInfo("比例")
-//        Utils.logInfo(rect.width().toString())
-//        Utils.logInfo(rect.height().toString())
-//        Utils.logInfo("left$leftRatio==top$topRatio==width${widthRatio}==height${heightRatio}")
-//        Utils.logInfo("rectLeft${rect.width() / 10 * leftRatio}==rectTop${rect.height() / 10 * topRatio}")
-//        Utils.logInfo("rectWidth${rect.width() / 10 * widthRatio}==rectHeight${rect.height() / 10 * heightRatio}")
-//        return newRect
-
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        return lifecycleRegistry
-    }
-
-    override fun dispose() {
-        lifecycleRegistry.currentState = Lifecycle.State.DESTROYED
-        cameraProvider.unbindAll()
-    }
-
-    override fun onListen(o: Any, eventSink: EventSink) {
-        this.eventSink = eventSink
-    }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         when (methodCall.method) {
@@ -195,22 +190,37 @@ class ScanView internal constructor(private val context: Context, messenger: Bin
         }
     }
 
-    fun getScreenOrientation(): Int {
-        val defaultDisplay: Display = activity.windowManager.defaultDisplay
-        val point = Point()
-        defaultDisplay.getSize(point)
-        var orientation = Configuration.ORIENTATION_UNDEFINED
-        if (point.x != point.y) {
-            if (point.x < point.y) {
-                orientation = Configuration.ORIENTATION_PORTRAIT
-            } else {
-                orientation = Configuration.ORIENTATION_LANDSCAPE
-            }
-        }
-        return orientation
+    @Synchronized
+    fun getRectInPreview(rect: Rect): Rect {
+        return rect
+//        val previewWidth = rect.width()
+//        val previewHeight = rect.height()
+//        val framingRect = mViewFinderView!!.framingRect
+//        val viewFinderViewWidth = mViewFinderView!!.width
+//        val viewFinderViewHeight = mViewFinderView!!.height
+//        if (framingRect == null || viewFinderViewWidth == 0 || viewFinderViewHeight == 0) {
+//            return rect
+//        }
+//        val newRect = Rect(rect)
+//        if (previewWidth < viewFinderViewWidth) {
+//            newRect.left = rect.left * previewWidth / viewFinderViewWidth
+//            newRect.right = rect.right * previewWidth / viewFinderViewWidth
+//        }
+//        if (previewHeight < viewFinderViewHeight) {
+//            newRect.top = rect.top * previewHeight / viewFinderViewHeight
+//            newRect.bottom = rect.bottom * previewHeight / viewFinderViewHeight
+//        }
+//
+//        Utils.logInfo(viewFinderViewWidth.toString())
+//        Utils.logInfo(viewFinderViewHeight.toString())
+//        Utils.logInfo(newRect.left.toString())
+//        Utils.logInfo(newRect.top.toString())
+//        Utils.logInfo(newRect.width().toString())
+//        Utils.logInfo(newRect.height().toString())
+//        return rect
     }
 
-
 }
+
 
 
