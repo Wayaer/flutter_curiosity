@@ -1,10 +1,10 @@
 
-#import "ScanViewFactory.h"
-#import "ScanView.h"
+#import "ScannerFactory.h"
+#import "Scanner.h"
 
 static NSString * scanView=@"scanView";
 
-@implementation ScanViewFactory{
+@implementation ScannerFactory{
  
     NSObject<FlutterBinaryMessenger>* _messenger;
 }
@@ -21,24 +21,24 @@ static NSString * scanView=@"scanView";
     return [FlutterStandardMessageCodec sharedInstance];
 }
 - (NSObject<FlutterPlatformView> *)createWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args{
-    ScanPlatformView * scanView=[[ScanPlatformView alloc]initWithFrame:frame viewindentifier:viewId arguments:args binaryMessenger:_messenger];
-    return scanView;
+    ScannerPlatformView * scanner=[[ScannerPlatformView alloc]initWithFrame:frame viewindentifier:viewId arguments:args binaryMessenger:_messenger];
+    return scanner;
     
 }
 @end
 
-@interface ScanPlatformView()
-@property(nonatomic , strong)ScanView * view;
+@interface ScannerPlatformView()
+@property(nonatomic , strong)Scanner * view;
 
 
 @end
-@implementation ScanPlatformView{
+@implementation ScannerPlatformView{
 
 }
 
 - (instancetype)initWithFrame:(CGRect)frame viewindentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger{
     if(self = [super init]){
-        _view=[[ScanView alloc]initWithFrame:frame viewIdentifier:viewId arguments:args binaryMessenger:messenger];
+        _view=[[Scanner alloc]initWithFrame:frame viewIdentifier:viewId arguments:args binaryMessenger:messenger];
         _view.backgroundColor=[UIColor clearColor];
         _view.frame=frame;
         

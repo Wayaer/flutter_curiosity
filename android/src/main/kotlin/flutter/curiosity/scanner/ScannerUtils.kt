@@ -1,4 +1,4 @@
-package flutter.curiosity.scan
+package flutter.curiosity.scanner
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
@@ -21,7 +21,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-object ScanUtils {
+object ScannerUtils {
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
 
@@ -43,34 +43,29 @@ object ScanUtils {
     fun scanImageUrl(call: MethodCall, result: MethodChannel.Result) {
         val url = call.argument<String>("url")
         executor.execute {
-            try {
-                val myUrl = URL(url)
-                val bitmap: Bitmap
-                assert(url != null)
-                if (url!!.startsWith("https")) {
-                    val connection = myUrl.openConnection() as HttpsURLConnection
-                    connection.readTimeout = 6 * 60 * 1000
-                    connection.connectTimeout = 6 * 60 * 1000
-                    val tm = arrayOf<TrustManager>(X509Trust())
-                    val sslContext = SSLContext.getInstance("TLS")
-                    sslContext.init(null, tm, SecureRandom())
-                    // 从上述SSLContext对象中得到SSLSocketFactory对象
-                    val ssf = sslContext.socketFactory
-                    connection.sslSocketFactory = ssf
-                    connection.connect()
-                    bitmap = BitmapFactory.decodeStream(connection.inputStream)
-                } else {
-                    val connection = myUrl.openConnection() as HttpURLConnection
-                    connection.readTimeout = 6 * 60 * 1000
-                    connection.connectTimeout = 6 * 60 * 1000
-                    connection.connect()
-                    bitmap = BitmapFactory.decodeStream(connection.inputStream)
-                }
-
-                Handler().post { result.success(identifyBitmap(bitmap)) }
-            } catch (e: Exception) {
-                Handler().post { result.success(null) }
+            val myUrl = URL(url)
+            val bitmap: Bitmap
+            assert(url != null)
+            if (url!!.startsWith("https")) {
+                val connection = myUrl.openConnection() as HttpsURLConnection
+                connection.readTimeout = 6 * 60 * 1000
+                connection.connectTimeout = 6 * 60 * 1000
+                val tm = arrayOf<TrustManager>(X509Trust())
+                val sslContext = SSLContext.getInstance("TLS")
+                sslContext.init(null, tm, SecureRandom())
+                // 从上述SSLContext对象中得到SSLSocketFactory对象
+                val ssf = sslContext.socketFactory
+                connection.sslSocketFactory = ssf
+                connection.connect()
+                bitmap = BitmapFactory.decodeStream(connection.inputStream)
+            } else {
+                val connection = myUrl.openConnection() as HttpURLConnection
+                connection.readTimeout = 6 * 60 * 1000
+                connection.connectTimeout = 6 * 60 * 1000
+                connection.connect()
+                bitmap = BitmapFactory.decodeStream(connection.inputStream)
             }
+            Handler().post { result.success(identifyBitmap(bitmap)) }
         }
     }
 
@@ -78,35 +73,30 @@ object ScanUtils {
         val unit8List = call.argument<ByteArray>("unit8List")
         assert(unit8List != null)
         executor.execute {
-            try {
-                val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
-                Handler().post { result.success(identifyBitmap(bitmap)) }
-            } catch (e: Exception) {
-                Handler().post { result.success(null) }
-            }
+            val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
+            Handler().post { result.success(identifyBitmap(bitmap)) }
         }
     }
 
-    fun identifyBitmap(bitmap: Bitmap): Map<String, Any>? {
+    private fun identifyBitmap(bitmap: Bitmap): Map<String, Any>? {
         multiFormatReader.setHints(hints)
         val height = bitmap.height
         val width = bitmap.width
         val pixels = IntArray(width * height)
-        return try {
-            bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-            val source = RGBLuminanceSource(
-                    width,
-                    height, pixels)
-            val binaryBitmap = BinaryBitmap(HybridBinarizer(source))
-            val result = multiFormatReader.decode(binaryBitmap)
-            scanDataToMap(result)
-        } catch (e: Exception) {
-            val data: MutableMap<String, Any> = HashMap()
-            data["code"] = "Unrecognized data"
-            data["type"] = 0
-            data
+        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
+        var result: Result? = null
+        val source = RGBLuminanceSource(
+                width,
+                height, pixels)
+        try {
+            result = multiFormatReader.decodeWithState(BinaryBitmap(HybridBinarizer(source)))
+        } catch (e: NotFoundException) {
+            try {
+                result = multiFormatReader.decodeWithState(BinaryBitmap(HybridBinarizer(source.invert())))
+            } catch (e: NotFoundException) {
+            }
         }
-
+        return scanDataToMap(result)
     }
 
     private class X509Trust : X509TrustManager {
@@ -156,10 +146,14 @@ object ScanUtils {
         }
 
     fun scanDataToMap(result: Result?): Map<String, Any>? {
-        if (result == null) return null
         val data: MutableMap<String, Any> = HashMap()
-        data["code"] = result.text
-        data["type"] = result.barcodeFormat.name
+        if (result == null) {
+            data["code"] = ""
+            data["type"] = ""
+        } else {
+            data["code"] = result.text
+            data["type"] = result.barcodeFormat.name
+        }
         return data
     }
 }

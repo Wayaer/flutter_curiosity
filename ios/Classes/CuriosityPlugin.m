@@ -1,6 +1,6 @@
 #import "CuriosityPlugin.h"
-#import "ScanUtils.h"
-#import "ScanViewFactory.h"
+#import "ScannerUtils.h"
+#import "ScannerFactory.h"
 #import "NativeUtils.h"
 #import "FileUtils.h"
 #import "PicturePicker.h"
@@ -18,9 +18,9 @@
     [UIApplication sharedApplication].delegate.window.rootViewController;
     CuriosityPlugin* instance = [[CuriosityPlugin alloc] initWithViewController:viewController];
     [registrar addMethodCallDelegate:instance channel:channel];
-    ScanViewFactory * scanView=[[ScanViewFactory alloc]initWithMessenger:[registrar messenger]];
+    ScannerFactory * scanner=[[ScannerFactory alloc]initWithMessenger:[registrar messenger]];
     
-    [registrar registerViewFactory:scanView withId:@"scanView"];
+    [registrar registerViewFactory:scanner withId:@"scanner"];
 }
 
 - (instancetype)initWithViewController:(UIViewController *)_viewController {
@@ -50,11 +50,11 @@
 }
 -(void)scan:(FlutterResult)result{
     if ([@"scanImagePath" isEqualToString:call.method]) {
-        [ScanUtils scanImagePath:call result:result];
+        [ScannerUtils scanImagePath:call result:result];
     }else if ([@"scanImageUrl" isEqualToString:call.method]) {
-        [ScanUtils scanImageUrl:call result:result];
+        [ScannerUtils scanImageUrl:call result:result];
     }if ([@"scanImageMemory" isEqualToString:call.method]) {
-        [ScanUtils scanImageMemory:call result:result];
+        [ScannerUtils scanImageMemory:call result:result];
     }
 }
 -(void)getAppInfo:(FlutterResult)result{

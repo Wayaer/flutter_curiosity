@@ -6,8 +6,8 @@ import android.content.Intent
 import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
-import flutter.curiosity.scan.ScanUtils
-import flutter.curiosity.scan.ScanViewFactory
+import flutter.curiosity.scanner.ScannerFactory
+import flutter.curiosity.scanner.ScannerUtils
 import flutter.curiosity.utils.AppInfo
 import flutter.curiosity.utils.FileUtils
 import flutter.curiosity.utils.NativeUtils
@@ -41,7 +41,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
-        var scanView = "scanView"
+        var scanner = "scanner"
 
     }
 
@@ -50,7 +50,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         methodChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
         methodChannel.setMethodCallHandler(this)
         context = pluginBinding.applicationContext
-        pluginBinding.platformViewRegistry.registerViewFactory(scanView, ScanViewFactory(pluginBinding.binaryMessenger))
+        pluginBinding.platformViewRegistry.registerViewFactory(scanner, ScannerFactory(pluginBinding.binaryMessenger))
     }
 
     ///主要是用于获取当前flutter页面所处的Activity.
@@ -78,7 +78,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
         result = _result
         call = _call
-        scan()
+        scanner()
         gallery()
         utils()
     }
@@ -108,11 +108,11 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     }
 
 
-    private fun scan() {
+    private fun scanner() {
         when (call.method) {
-            "scanImagePath" -> ScanUtils.scanImagePath(call, result)
-            "scanImageUrl" -> ScanUtils.scanImageUrl(call, result)
-            "scanImageMemory" -> ScanUtils.scanImageMemory(call, result)
+            "scanImagePath" -> ScannerUtils.scanImagePath(call, result)
+            "scanImageUrl" -> ScannerUtils.scanImageUrl(call, result)
+            "scanImageMemory" -> ScannerUtils.scanImageMemory(call, result)
         }
     }
 

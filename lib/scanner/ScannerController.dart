@@ -5,39 +5,26 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/Constant.dart';
 
-const scanView = 'scanView';
+const scanner = 'scanner';
 
-class ScanController extends ChangeNotifier {
+class ScannerController extends ChangeNotifier {
   StreamSubscription subscription;
   String code;
   String type;
-  bool isScan;
-  MethodChannel channel;
-
-  ScanController({this.isScan: true})
-      : assert(isScan != null),
-        super();
 
   void attach(int id) {
-    channel = MethodChannel('$scanView/$id/method');
-    subscription = EventChannel('$scanView/$id/event').receiveBroadcastStream({ "isScan": isScan}).listen((data) {
+    MethodChannel('$scanner/$id/method');
+    subscription = EventChannel('$scanner/$id/event').receiveBroadcastStream({}).listen((data) {
       this.code = data['code'];
       this.type = data['type'];
       notifyListeners();
     });
   }
 
-  Future<void> startScan() async => await channel.invokeMethod('startScan');
-
-  Future<void> stopScan() async => await channel.invokeMethod('stopScan');
-
   Future<bool> setFlashMode(bool status) async {
-    return await methodChannel.invokeMethod('setFlashMode', {'status': status ?? false});
+    return await methodChannel.invokeMethod('setFlashMode', {'status': status});
   }
 
-  Future<bool> getFlashMode() async {
-    return await methodChannel.invokeMethod('getFlashMode');
-  }
 
   static Future<String> scanImagePath(String path) async {
     return await methodChannel.invokeMethod('scanImagePath', { "path": path});

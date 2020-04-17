@@ -1,11 +1,11 @@
 
-#import "ScanView.h"
-#import "ScanUtils.h"
-@interface ScanView()<AVCaptureMetadataOutputObjectsDelegate>
+#import "Scanner.h"
+#import "ScannerUtils.h"
+@interface Scanner()<AVCaptureMetadataOutputObjectsDelegate>
 
 @property(nonatomic , strong)AVCaptureSession * session;
 @property(nonatomic , strong)FlutterMethodChannel * _channel;
-@property(nonatomic , strong)ScanViewEventChannel * _event;
+@property(nonatomic , strong)ScannerEventChannel * _event;
 @property(nonatomic , strong)AVCaptureVideoPreviewLayer * captureLayer;
 @property(nonatomic , strong)AVCaptureDevice * _device;
 
@@ -13,7 +13,7 @@
 
 @end
 
-@implementation ScanView
+@implementation Scanner
 
 - (AVCaptureSession *)session{
     if(!_session){
@@ -25,16 +25,16 @@
 - (instancetype)initWithFrame:(CGRect)frame viewIdentifier:(int64_t)viewId arguments:(id)args binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger{
     if(self = [super initWithFrame:frame]){
         
-       NSString * channelName=[NSString stringWithFormat:@"scanView/%lld/method",viewId];
+       NSString * channelName=[NSString stringWithFormat:@"scanner/%lld/method",viewId];
         self._channel=[FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
         __weak __typeof__(self) weakSelf = self;
         [weakSelf._channel setMethodCallHandler:^(FlutterMethodCall * _Nonnull call, FlutterResult  _Nonnull result) {
             [weakSelf onMethodCall:call result:result];
         }];
         
-        NSString * eventChannelName=[NSString stringWithFormat:@"scanView/%lld/event",viewId];
+        NSString * eventChannelName=[NSString stringWithFormat:@"scanner/%lld/event",viewId];
         FlutterEventChannel * _evenChannel = [FlutterEventChannel eventChannelWithName:eventChannelName binaryMessenger:messenger];
-        self._event=[ScanViewEventChannel new];
+        self._event=[ScannerEventChannel new];
         [_evenChannel setStreamHandler:self._event];
         
         AVCaptureVideoPreviewLayer * layer=[AVCaptureVideoPreviewLayer layerWithSession:self.session];
@@ -67,17 +67,9 @@
 }
 
 -(void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    if ([call.method isEqualToString:@"startScan"]) {
-        [self resume];
-        result(nil);
-    }else if([call.method isEqualToString:@"stopScan"]){
-        [self pause];
-        result(nil);
-    }else if ([call.method isEqualToString:@"setFlashMode"]){
+ if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
         result([NSNumber numberWithBool:[self setFlashMode:[status boolValue]]]);
-    }else if ([call.method isEqualToString:@"getFlashMode"]){
-        result([NSNumber numberWithBool:[self getFlashMode]]);
     }else {
         result(FlutterMethodNotImplemented);
     }
@@ -114,20 +106,13 @@
     return isSuccess;
     
 }
--(BOOL)getFlashMode{
-    [self._device lockForConfiguration:nil];
-    BOOL isSuccess = self._device.flashMode==AVCaptureFlashModeOn&&
-    self._device.torchMode==AVCaptureTorchModeOn;
-    [self._device unlockForConfiguration];
-    return isSuccess;
-    
-}
+
 - (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection{
     if (metadataObjects.count>0) {
         AVMetadataMachineReadableCodeObject * data=metadataObjects[0];
         NSString * value=data.stringValue;
         if(value.length&&self._event){
-            [self._event getResult:[ScanUtils scanDataToMap:data]];
+            [self._event getResult:[ScannerUtils scanDataToMap:data]];
         }
     }
 }
@@ -135,26 +120,16 @@
 
 
 
-@implementation ScanViewEventChannel
+@implementation ScannerEventChannel
 
 - (FlutterError *)onListenWithArguments:(id)arguments eventSink:(FlutterEventSink)events{
     self.events = events;
-    if(self.scanView){
-        NSNumber * isScan=[arguments valueForKey:@"isScan"];
-        if(isScan){
-            if (isScan.boolValue) {
-                [self.scanView resume];
-            }else{
-                [self.scanView pause];
-            }
-        }
-    }
     return nil;
 }
 
 - (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
-    if(self.scanView){
-        [self.scanView pause];
+    if(self.scanner){
+        [self.scanner pause];
     }
     return nil;
 }

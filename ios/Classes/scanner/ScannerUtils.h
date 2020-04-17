@@ -1,7 +1,7 @@
 
 #import <Flutter/Flutter.h>
 #import <AVFoundation/AVFoundation.h>
-@interface ScanUtils : NSObject
+@interface ScannerUtils : NSObject
 
 //scan
 + (NSDictionary*) scanDataToMap:(AVMetadataMachineReadableCodeObject*) data;

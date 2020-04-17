@@ -7,37 +7,36 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_curiosity/scan/ScanController.dart';
-import 'package:flutter_curiosity/utils/Utils.dart';
+import 'package:flutter_curiosity/scanner/ScannerController.dart';
 
-class ScanView extends StatefulWidget {
-  final ScanController controller;
+class Scanner extends StatefulWidget {
+  final ScannerController controller;
   final PlatformViewHitTestBehavior hitTestBehavior;
-  final bool androidFullScreen;
 
   //android扫描条形码请横屏即可识别
-  //识别区域 比例 0-1 默认全屏幕识别
+  //识别区域 比例 0-1
   final double topRatio; //距离屏幕头部
   final double leftRatio; //距离屏幕左边
   final double widthRatio; //识别区域的宽高度比例
-// final double heightRatio; //识别区域的高度比例
+  final double heightRatio; //识别区域的宽高度比例
+  //屏幕宽度比例=leftRatio + widthRatio + leftRatio
+  //屏幕高度比例=topRatio + heightRatio + topRatio
 
-  ScanView({this.controller,
-    this.androidFullScreen: false,
+  Scanner({this.controller,
     this.hitTestBehavior =
         PlatformViewHitTestBehavior
-            .opaque,})
-      : this.topRatio=0.2,
-        this.leftRatio=0.2,
-        this.widthRatio=0.8,
+            .opaque,
+    this.topRatio: 0.3, this.leftRatio: 0.1, this.widthRatio: 0.8, this.heightRatio: 0.4,})
+      : assert(leftRatio * 2 + widthRatio == 1),
+        assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
 
   @override
-  State<StatefulWidget> createState() => ScanViewState();
+  State<StatefulWidget> createState() => ScannerState();
 }
 
-class ScanViewState extends State<ScanView> {
-  ScanController controller;
+class ScannerState extends State<Scanner> {
+  ScannerController controller;
   Map<String, dynamic> params;
 
   onPlatformViewCreated(int id) {
@@ -47,18 +46,12 @@ class ScanViewState extends State<ScanView> {
   @override
   void initState() {
     super.initState();
-    controller = widget.controller ?? ScanController();
+    controller = widget.controller ?? ScannerController();
     params = {
-      "isScan": controller.isScan,
-      "androidFullScreen": widget.androidFullScreen,
-      "topRatio": (widget.topRatio * 10).toInt(),
-      "leftRatio": (widget.leftRatio * 10).toInt(),
-      "widthRatio": (widget.widthRatio * 10).toInt(),
-      "heightRatio": ((widget.widthRatio * Utils
-          .getSize()
-          .width / Utils
-          .getSize()
-          .height) * 10).roundToDouble().toInt(),
+      "topRatio": widget.topRatio,
+      "leftRatio": widget.leftRatio,
+      "widthRatio": widget.widthRatio,
+      "heightRatio": widget.heightRatio,
     };
   }
 
@@ -72,7 +65,7 @@ class ScanViewState extends State<ScanView> {
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       return AndroidView(
-        viewType: scanView,
+        viewType: scanner,
         //与原生交互时唯一标识符，常见形式是包名+自定义名；
         onPlatformViewCreated: onPlatformViewCreated,
         //创建视图后的回调
@@ -87,7 +80,7 @@ class ScanViewState extends State<ScanView> {
       );
     } else if (Platform.isIOS) {
       return UiKitView(
-        viewType: scanView,
+        viewType: scanner,
 //        hitTestBehavior: widget.hitTestBehavior,
         onPlatformViewCreated: onPlatformViewCreated,
         creationParams: params,
