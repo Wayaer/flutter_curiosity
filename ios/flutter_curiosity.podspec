@@ -10,15 +10,15 @@ A new Flutter plugin.
                        DESC
   s.homepage         = 'https://github.com/Wayaer/flutter-curiosity.git'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'wayaer@foxmail.com' }
+  s.author           = { 'My Company' => 'wayaer@foxmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
-  s.public_header_files = 'Classes/*.h'
+  s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.ios.deployment_target = '8.0'
+  s.platform = :ios, '8.0'
   s.dependency 'SSZipArchive'
   s.dependency 'TZImagePickerController'
-  s.swift_version = '5.1'
+#  s.swift_version = '5.1'
   
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }

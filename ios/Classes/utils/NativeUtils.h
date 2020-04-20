@@ -10,5 +10,7 @@
 //跳转拨号
 + (void)callPhone:(NSString *)phoneNumber :(NSNumber *)directDial;
 
+//获取app信息
++ (NSMutableDictionary *)getAppInfo;
 
 @end

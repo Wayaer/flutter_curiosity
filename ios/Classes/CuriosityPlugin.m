@@ -4,7 +4,6 @@
 #import "NativeUtils.h"
 #import "FileUtils.h"
 #import "PicturePicker.h"
-#import "AppInfo.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
@@ -19,7 +18,6 @@
     CuriosityPlugin* instance = [[CuriosityPlugin alloc] initWithViewController:viewController];
     [registrar addMethodCallDelegate:instance channel:channel];
     ScannerFactory * scanner=[[ScannerFactory alloc]initWithMessenger:[registrar messenger]];
-    
     [registrar registerViewFactory:scanner withId:@"scanner"];
 }
 
@@ -33,8 +31,7 @@
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)result {
     call=_call;
     [self gallery:result];
-    [self scan:result];
-    [self getAppInfo:result];
+    [self scanner:result];
     [self utils:result];
     
 }
@@ -48,7 +45,7 @@
         [PicturePicker deleteCacheDirFile];
     }
 }
--(void)scan:(FlutterResult)result{
+-(void)scanner:(FlutterResult)result{
     if ([@"scanImagePath" isEqualToString:call.method]) {
         [ScannerUtils scanImagePath:call result:result];
     }else if ([@"scanImageUrl" isEqualToString:call.method]) {
@@ -57,15 +54,13 @@
         [ScannerUtils scanImageMemory:call result:result];
     }
 }
--(void)getAppInfo:(FlutterResult)result{
+
+-(void)utils:(FlutterResult)result{
     if ([@"getAppInfo" isEqualToString:call.method]) {
-        result([AppInfo getAppInfo]);
+        result([NativeUtils getAppInfo]);
     }else if([@"getDirectoryAllName" isEqualToString:call.method]){
         result([FileUtils getDirectoryAllName:call.arguments]);
-    }
-}
--(void)utils:(FlutterResult)result{
-    if ([@"getFilePathSize" isEqualToString:call.method]) {
+    }else if ([@"getFilePathSize" isEqualToString:call.method]) {
         result([FileUtils getFilePathSize:call.arguments[@"filePath"]]);
     } else if ([@"deleteDirectory" isEqualToString:call.method]) {
         [FileUtils deleteDirectory:call.arguments[@"directoryPath"]];

@@ -1,11 +1,10 @@
 #import "PicturePicker.h"
-
 #import "TZImageManager.h"
 #import "TZImageCropManager.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 @interface PicturePicker ()
 
-@property (nonatomic, strong) UIImagePickerController *picker;
+//@property (nonatomic, strong) UIImagePickerController *picker;
 
 @end
 @implementation PicturePicker
