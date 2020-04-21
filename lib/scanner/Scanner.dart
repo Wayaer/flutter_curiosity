@@ -19,6 +19,7 @@ class Scanner extends StatefulWidget {
   final double leftRatio; //距离屏幕左边
   final double widthRatio; //识别区域的宽高度比例
   final double heightRatio; //识别区域的宽高度比例
+  final bool androidOldCamera; //android 使用旧版Camera 识别率更快
   //屏幕宽度比例=leftRatio + widthRatio + leftRatio
   //屏幕高度比例=topRatio + heightRatio + topRatio
 
@@ -26,7 +27,7 @@ class Scanner extends StatefulWidget {
     this.hitTestBehavior =
         PlatformViewHitTestBehavior
             .opaque,
-    this.topRatio: 0.3, this.leftRatio: 0.1, this.widthRatio: 0.8, this.heightRatio: 0.4,})
+    this.topRatio: 0.3, this.leftRatio: 0.1, this.widthRatio: 0.8, this.heightRatio: 0.4, this.androidOldCamera: false,})
       : assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
@@ -48,6 +49,7 @@ class ScannerState extends State<Scanner> {
     super.initState();
     controller = widget.controller ?? ScannerController();
     params = {
+      "androidOldCamera": widget.androidOldCamera,
       "topRatio": widget.topRatio,
       "leftRatio": widget.leftRatio,
       "widthRatio": widget.widthRatio,
