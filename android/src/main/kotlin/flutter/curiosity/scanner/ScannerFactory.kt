@@ -176,13 +176,13 @@ class ScannerFactory(private val messenger: BinaryMessenger) : PlatformViewFacto
                 result = multiFormatReader.decodeWithState(binaryBitmap)
             } catch (e: NotFoundException) {
                 multiFormatReader.reset()
-                val invertedSource = source.invert()
-                val invertBinaryBitmap = BinaryBitmap(HybridBinarizer(invertedSource))
-                try {
-                    result = multiFormatReader.decodeWithState(invertBinaryBitmap)
-                } catch (e: NotFoundException) {
-                    multiFormatReader.reset()
-                }
+//                val invertedSource = source.invert()
+//                val invertBinaryBitmap = BinaryBitmap(HybridBinarizer(invertedSource))
+//                try {
+//                    result = multiFormatReader.decodeWithState(invertBinaryBitmap)
+//                } catch (e: NotFoundException) {
+//                    multiFormatReader.reset()
+//                }
             }
             return result
 
