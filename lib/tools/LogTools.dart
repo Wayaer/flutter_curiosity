@@ -1,8 +1,8 @@
 log(message) {
-  LogUtils.d(message);
+  LogTools.d(message);
 }
 
-class LogUtils {
+class LogTools {
   static var separator = "=";
   static var split =
       "$separator$separator$separator$separator$separator$separator$separator$separator$separator";

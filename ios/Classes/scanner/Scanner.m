@@ -1,6 +1,6 @@
 
 #import "Scanner.h"
-#import "ScannerUtils.h"
+#import "ScannerTools.h"
 @interface Scanner()<AVCaptureMetadataOutputObjectsDelegate>
 
 @property(nonatomic , strong)AVCaptureSession * session;
@@ -112,7 +112,7 @@
         AVMetadataMachineReadableCodeObject * data=metadataObjects[0];
         NSString * value=data.stringValue;
         if(value.length&&self._event){
-            [self._event getResult:[ScannerUtils scanDataToMap:data]];
+            [self._event getResult:[ScannerTools scanDataToMap:data]];
         }
     }
 }

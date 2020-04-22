@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface FileUtils : NSObject
+@interface FileTools : NSObject
 // 删除沙盒指定文件夹和文件（删除文件夹）
 + (void)deleteFile:(NSString *)props;
 

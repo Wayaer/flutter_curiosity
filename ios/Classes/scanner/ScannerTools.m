@@ -1,8 +1,8 @@
 
 #import "Scanner.h"
-#import "ScannerUtils.h"
+#import "ScannerTools.h"
 
-@implementation ScannerUtils
+@implementation ScannerTools
 + (void)scanImagePath:(FlutterMethodCall*)call result:(FlutterResult)result{
     NSString * path=[call.arguments valueForKey:@"path"];
     if([path isKindOfClass:[NSNull class]]){

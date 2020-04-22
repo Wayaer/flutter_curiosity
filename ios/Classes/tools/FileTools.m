@@ -1,10 +1,10 @@
 
-#import "FileUtils.h"
+#import "FileTools.h"
 #import "SSZipArchive.h"
 #define fileManager [NSFileManager defaultManager]
 #define cachePath [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject]
 
-@implementation FileUtils
+@implementation FileTools
 
 // 删除沙盒指定文件或文件夹
 + (void)deleteFile:(NSString *)path{
@@ -50,9 +50,9 @@
         // 1. 拼接每一个文件的全路径
         filePath =[path stringByAppendingPathComponent:subPath];
         // 2. 是否是文件夹，默认不是
-        BOOL isDirectory = [FileUtils isDirectory:path];
+        BOOL isDirectory = [FileTools isDirectory:path];
         // 3. 判断文件是否存在
-        BOOL isExist = [FileUtils isDirectoryExist:path];
+        BOOL isExist = [FileTools isDirectoryExist:path];
         // 4. 以上判断目的是忽略不需要计算的文件
         if (!isExist || isDirectory || [filePath containsString:@".DS"]){
             // 过滤: 1. 文件夹不存在  2. 过滤文件夹  3. 隐藏文件
@@ -88,11 +88,11 @@
 + (NSMutableArray *) getDirectoryAllName :(NSDictionary *)arguments{
     NSString *path = [arguments objectForKey:@"path"];
     NSMutableArray * nameList=[NSMutableArray array];
-    if(![FileUtils isDirectoryExist:path]){
+    if(![FileTools isDirectoryExist:path]){
         [nameList addObject:@"path not exist"];
         return nameList;
     }
-    if(![FileUtils isDirectory:path]){
+    if(![FileTools isDirectory:path]){
         [nameList addObject:@"path not exist"];
         return nameList;
     }
@@ -111,9 +111,9 @@
 + (NSString *)unZipFile:(NSString *)filePath {
     if ([self isDirectoryExist:filePath]) {
         [SSZipArchive unzipFileAtPath:filePath toDestination:[filePath substringToIndex:filePath.length-[[[filePath componentsSeparatedByString:@"/"] lastObject] length]]];
-        return @"Success";
+        return @"success";
     }else{
-        return @"NotFile";
+        return @"not file";
     }
 }
 @end

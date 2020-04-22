@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 
-@interface NativeUtils : NSObject
+@interface NativeTools : NSObject
 //Log
 + (void)log:(id)props;
 

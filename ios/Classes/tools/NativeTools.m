@@ -1,6 +1,6 @@
-#import "NativeUtils.h"
+#import "NativeTools.h"
 
-@implementation NativeUtils
+@implementation NativeTools
 
 //Log
 + (void)log:(id)info{
@@ -25,7 +25,7 @@
     }
     
 }
-+ (NSMutableDictionary *)getAppInfo;
++ (NSMutableDictionary *)getAppInfo
 {
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
     NSDictionary *app = [[NSBundle mainBundle] infoDictionary];

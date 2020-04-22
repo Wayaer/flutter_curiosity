@@ -67,7 +67,7 @@ class Scanner internal constructor(context: Context, messenger: BinaryMessenger,
         heightRatio = anyMap["heightRatio"] as Double
         EventChannel(messenger, "$scanner/$i/event").setStreamHandler(this)
         MethodChannel(messenger, "$scanner/$i/method").setMethodCallHandler(this)
-        multiFormatReader.setHints(ScannerUtils.hints)
+        multiFormatReader.setHints(ScannerTools.hints)
         initCameraView()
         countDownTimer = object : CountDownTimer(3000, 3000) { // starts at 3 seconds
             override fun onTick(secondsUntilDone: Long) {
@@ -151,7 +151,7 @@ class Scanner internal constructor(context: Context, messenger: BinaryMessenger,
                     result = identify(byteArray, imageProxy, false)
                 }
                 if (result != null) {
-                    previewView.post { event.success(ScannerUtils.scanDataToMap(result)) }
+                    previewView.post { event.success(ScannerTools.scanDataToMap(result)) }
                     countDownTimer.cancel()
                 }
                 buffer.clear()

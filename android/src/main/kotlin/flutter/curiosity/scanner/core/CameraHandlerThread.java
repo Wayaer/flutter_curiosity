@@ -21,7 +21,7 @@ class CameraHandlerThread extends HandlerThread {
         localHandler.post(new Runnable() {
             @Override
             public void run() {
-                final Camera camera = CameraUtils.getCameraInstance(cameraId);
+                final Camera camera = CameraTools.getCameraInstance(cameraId);
                 Handler mainHandler = new Handler(Looper.getMainLooper());
                 mainHandler.post(new Runnable() {
                     @Override

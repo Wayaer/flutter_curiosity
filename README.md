@@ -1,7 +1,7 @@
 # flutter-curiosity
 集成部分原生功能，支持ios&amp;android
 
-## 1.原生多个方法 [点击查看](./lib/utils/NativeUtils.dart)
+## 1.原生多个方法 [点击查看](./lib/tools/NativeTools.dart)
 
 ## 2.二维码扫描 [点击查看](./lib/scanner) 
 ```

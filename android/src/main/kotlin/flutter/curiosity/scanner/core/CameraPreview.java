@@ -240,7 +240,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         List<Camera.Size> sizes = mCameraWrapper.mCamera.getParameters().getSupportedPreviewSizes();
         int w = getWidth();
         int h = getHeight();
-        if (DisplayUtils.getScreenOrientation(getContext()) == Configuration.ORIENTATION_PORTRAIT) {
+        if (DisplayTools.getScreenOrientation(getContext()) == Configuration.ORIENTATION_PORTRAIT) {
             int portraitWidth = h;
             h = w;
             w = portraitWidth;

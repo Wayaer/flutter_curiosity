@@ -4,7 +4,7 @@ import android.hardware.Camera;
 
 import java.util.List;
 
-public class CameraUtils {
+public class CameraTools {
     /** A safe way to get an instance of the Camera object. */
     public static Camera getCameraInstance() {
         return getCameraInstance(getDefaultCameraId());

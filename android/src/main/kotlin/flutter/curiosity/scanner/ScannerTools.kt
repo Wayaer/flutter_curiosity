@@ -21,7 +21,7 @@ import javax.net.ssl.SSLContext
 import javax.net.ssl.TrustManager
 import javax.net.ssl.X509TrustManager
 
-object ScannerUtils {
+object ScannerTools {
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
 

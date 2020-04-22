@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_curiosity/appinfo/AppInfoModel.dart';
 import 'package:flutter_curiosity/constant/Constant.dart';
-import 'package:flutter_curiosity/utils/Utils.dart';
+import 'package:flutter_curiosity/tools/Tools.dart';
 
 class AppInfo {
   static Future<AppInfoModel> getPackageInfo() async {
@@ -12,13 +12,13 @@ class AppInfo {
 
   //android versionCode  ios version
   static Future<int> getVersionCode() async {
-    Utils.supportPlatform();
+    Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
     return appInfoModel.versionCode;
   }
 
   static Future<String> getAppName() async {
-    Utils.supportPlatform();
+    Tools.supportPlatform();
     if (Platform.isIOS || Platform.isAndroid) {
       AppInfoModel appInfoModel = await getPackageInfo();
       return appInfoModel.appName;
@@ -26,28 +26,28 @@ class AppInfo {
   }
 
   static Future<String> getPackageName() async {
-    Utils.supportPlatform();
+    Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
     return appInfoModel.packageName;
   }
 
   //android versionName  ios buildName
   static Future<String> getVersionName() async {
-    Utils.supportPlatform();
+    Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
     return appInfoModel.versionName;
   }
 
   //获取根目录
   static Future<String> getRootDirectory() async {
-    Utils.supportPlatform();
+    Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
     return Platform.isAndroid ? appInfoModel.externalStorageDirectory : appInfoModel.homeDirectory;
   }
 
   //目录下所有文件夹以及文件名字  isAbsolutePath true 目录下文件的完整路径
   static Future<List<String>> getDirectoryAllName(String path, {bool isAbsolutePath: false}) async {
-    Utils.supportPlatform();
+    Tools.supportPlatform();
     List<String> pathNameList =
     await methodChannel.invokeListMethod('getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
     if (Platform.isIOS && isAbsolutePath) {

@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/curiosity.dart';
@@ -44,11 +46,26 @@ class App extends StatelessWidget {
                 select();
               },
               child: Text('图片选择')),
+          RaisedButton(
+              onPressed: () {
+                getGPS();
+              },
+              child: Text('获取gps状态')),
+          RaisedButton(
+              onPressed: () {
+                GPSTools.jumpSetting();
+              },
+              child: Text('跳转GPS设置')),
+
         ],
       ),
     );
   }
 
+  getGPS() async {
+    var data = await GPSTools.getStatus();
+    log(data);
+  }
 
   List<Widget> showText() {
     List<Widget> widget = List();

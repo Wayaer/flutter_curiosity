@@ -234,6 +234,7 @@ public final class CameraView extends FrameLayout {
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     @NonNull
     protected Parcelable onSaveInstanceState() {
@@ -256,6 +257,7 @@ public final class CameraView extends FrameLayout {
         return state;
     }
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onRestoreInstanceState(@Nullable Parcelable savedState) {
         // TODO(b/113884082): Decide what belongs here or what should be invalidated on
@@ -567,6 +569,7 @@ public final class CameraView extends FrameLayout {
      * Focus the position of the touch event, or focus the center of the preview for
      * accessibility events
      */
+    @SuppressLint("RestrictedApi")
     @Override
     public boolean performClick() {
         super.performClick();

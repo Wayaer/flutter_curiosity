@@ -10,7 +10,7 @@ import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin
 import flutter.curiosity.scanner.core.BarcodeScannerView
-import flutter.curiosity.scanner.core.DisplayUtils
+import flutter.curiosity.scanner.core.DisplayTools
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
@@ -64,7 +64,7 @@ class ScannerOldCamera internal constructor(context: Context, messenger: BinaryM
     }
 
     override fun handleResult(rawResult: Result?) {
-        eventSink.success(ScannerUtils.scanDataToMap(rawResult))
+        eventSink.success(ScannerTools.scanDataToMap(rawResult))
     }
 
 }
@@ -137,7 +137,7 @@ class ScannerView : BarcodeScannerView {
             val size = parameters.previewSize
             var width = size.width
             var height = size.height
-            if (DisplayUtils.getScreenOrientation(context) == Configuration.ORIENTATION_PORTRAIT) {
+            if (DisplayTools.getScreenOrientation(context) == Configuration.ORIENTATION_PORTRAIT) {
                 val rotationCount = rotationCount
                 if (rotationCount == 1 || rotationCount == 3) {
                     val tmp = width

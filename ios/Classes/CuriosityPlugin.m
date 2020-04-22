@@ -1,9 +1,10 @@
 #import "CuriosityPlugin.h"
-#import "ScannerUtils.h"
+#import "ScannerTools.h"
 #import "ScannerFactory.h"
-#import "NativeUtils.h"
-#import "FileUtils.h"
+#import "NativeTools.h"
+#import "FileTools.h"
 #import "PicturePicker.h"
+#import "GPSTools.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
@@ -32,8 +33,17 @@
     call=_call;
     [self gallery:result];
     [self scanner:result];
-    [self utils:result];
+    [self tools:result];
+    [self gps:result];
     
+}
+
+-(void)gps:(FlutterResult)result{
+    if ([@"getStatus" isEqualToString:call.method]) {
+        [GPSTools getStatus ];
+    } else if ([@"jumpSetting" isEqualToString:call.method]) {
+        [GPSTools jumpSetting];
+    }
 }
 
 -(void)gallery:(FlutterResult)result{
@@ -47,35 +57,35 @@
 }
 -(void)scanner:(FlutterResult)result{
     if ([@"scanImagePath" isEqualToString:call.method]) {
-        [ScannerUtils scanImagePath:call result:result];
+        [ScannerTools scanImagePath:call result:result];
     }else if ([@"scanImageUrl" isEqualToString:call.method]) {
-        [ScannerUtils scanImageUrl:call result:result];
+        [ScannerTools scanImageUrl:call result:result];
     }if ([@"scanImageMemory" isEqualToString:call.method]) {
-        [ScannerUtils scanImageMemory:call result:result];
+        [ScannerTools scanImageMemory:call result:result];
     }
 }
 
--(void)utils:(FlutterResult)result{
+-(void)tools:(FlutterResult)result{
     if ([@"getAppInfo" isEqualToString:call.method]) {
-        result([NativeUtils getAppInfo]);
+        result([NativeTools getAppInfo]);
     }else if([@"getDirectoryAllName" isEqualToString:call.method]){
-        result([FileUtils getDirectoryAllName:call.arguments]);
+        result([FileTools getDirectoryAllName:call.arguments]);
     }else if ([@"getFilePathSize" isEqualToString:call.method]) {
-        result([FileUtils getFilePathSize:call.arguments[@"filePath"]]);
+        result([FileTools getFilePathSize:call.arguments[@"filePath"]]);
     } else if ([@"deleteDirectory" isEqualToString:call.method]) {
-        [FileUtils deleteDirectory:call.arguments[@"directoryPath"]];
+        [FileTools deleteDirectory:call.arguments[@"directoryPath"]];
         result( @"success");
     } else if ([@"deleteFile" isEqualToString:call.method]) {
-        [FileUtils deleteFile:call.arguments[@"filePath"]];
+        [FileTools deleteFile:call.arguments[@"filePath"]];
         result( @"success");
     } else if ([@"unZipFile" isEqualToString:call.method]) {
-        [FileUtils unZipFile:call.arguments[@"filePath"]];
+        [FileTools unZipFile:call.arguments[@"filePath"]];
         result( @"success");
     }else if ([@"goToMarket" isEqualToString:call.method]) {
-        [NativeUtils goToMarket:call.arguments[@"packageName"]];
+        [NativeTools goToMarket:call.arguments[@"packageName"]];
         result( @"success");
     } else if ([@"callPhone" isEqualToString:call.method]) {
-        [NativeUtils callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
+        [NativeTools callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
         result( @"success");
     } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);

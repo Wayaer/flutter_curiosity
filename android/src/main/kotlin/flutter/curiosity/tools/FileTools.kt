@@ -1,4 +1,4 @@
-package flutter.curiosity.utils
+package flutter.curiosity.tools
 
 import android.util.Log
 import flutter.curiosity.CuriosityPlugin.Companion.call
@@ -8,7 +8,7 @@ import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
-object FileUtils {
+object FileTools {
     private fun deleteDirWithFile(dir: File) {
         if (!dir.exists()) return
         if (dir.isFile) {
@@ -175,17 +175,17 @@ object FileUtils {
      *
      */
     fun deleteFile(): String {
-        val path = call.argument<String>("filePath") ?: return Utils.resultError()
+        val path = call.argument<String>("filePath") ?: return Tools.resultError()
         val dir = File(path)
         deleteDirWithFile(dir)
-        return Utils.resultSuccess()
+        return Tools.resultSuccess()
     }
 
     /**
      * 删除文件夹内的文件（不删除文件夹）
      */
     fun deleteDirectory(): String {
-        val path = call.argument<String>("directoryPath") ?: return Utils.resultError()
+        val path = call.argument<String>("directoryPath") ?: return Tools.resultError()
         val dir = File(path).listFiles()
         for (file in dir) {
             if (file.isFile) {
@@ -194,7 +194,7 @@ object FileUtils {
                 deleteDirWithFile(file)
             }
         }
-        return Utils.resultSuccess()
+        return Tools.resultSuccess()
     }
 
     /**
@@ -230,7 +230,7 @@ object FileUtils {
      *
      */
     fun unZipFile(): String {
-        val zipPath = call.argument<String>("filePath") ?: return Utils.resultError()
+        val zipPath = call.argument<String>("filePath") ?: return Tools.resultError()
         return if (isDirectoryExist(zipPath)) {
             val pathArr = zipPath.split("/").toTypedArray()
             val fileName = pathArr[pathArr.size - 1]
@@ -257,9 +257,9 @@ object FileUtils {
                 os.close()
             }
             file.close()
-            Utils.resultSuccess()
+            Tools.resultSuccess()
         } else {
-            Utils.resultNot("not file")
+            Tools.resultNot("not file")
         }
     }
 

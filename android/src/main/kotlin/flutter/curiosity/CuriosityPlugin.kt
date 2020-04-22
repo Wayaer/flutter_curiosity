@@ -7,10 +7,11 @@ import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
 import flutter.curiosity.scanner.ScannerFactory
-import flutter.curiosity.scanner.ScannerUtils
-import flutter.curiosity.utils.AppInfo
-import flutter.curiosity.utils.FileUtils
-import flutter.curiosity.utils.NativeUtils
+import flutter.curiosity.scanner.ScannerTools
+import flutter.curiosity.tools.AppInfo
+import flutter.curiosity.tools.FileTools
+import flutter.curiosity.tools.GPSTools
+import flutter.curiosity.tools.NativeTools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -80,22 +81,30 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         call = _call
         scanner()
         gallery()
-        utils()
+        tools()
+        gps()
     }
 
-    private fun utils() {
+    private fun gps() {
         when (call.method) {
-            "installApp" -> result.success(NativeUtils.installApp())
-            "getFilePathSize" -> result.success(NativeUtils.getFilePathSize())
-            "unZipFile" -> result.success(FileUtils.unZipFile())
-            "deleteDirectory" -> result.success(FileUtils.deleteDirectory())
-            "deleteFile" -> result.success(FileUtils.deleteFile())
-            "callPhone" -> result.success(NativeUtils.callPhone())
-            "goToMarket" -> result.success(NativeUtils.goToMarket())
-            "isInstallApp" -> result.success(NativeUtils.isInstallApp())
-            "exitApp" -> NativeUtils.exitApp()
+            "getStatus" -> result.success(GPSTools.getStatus())
+            "jumpSetting" -> GPSTools.jumpSetting()
+        }
+    }
+
+    private fun tools() {
+        when (call.method) {
+            "installApp" -> result.success(NativeTools.installApp())
+            "getFilePathSize" -> result.success(NativeTools.getFilePathSize())
+            "unZipFile" -> result.success(FileTools.unZipFile())
+            "deleteDirectory" -> result.success(FileTools.deleteDirectory())
+            "deleteFile" -> result.success(FileTools.deleteFile())
+            "callPhone" -> result.success(NativeTools.callPhone())
+            "goToMarket" -> result.success(NativeTools.goToMarket())
+            "isInstallApp" -> result.success(NativeTools.isInstallApp())
+            "exitApp" -> NativeTools.exitApp()
             "getAppInfo" -> result.success(AppInfo.getAppInfo())
-            "getDirectoryAllName" -> result.success(FileUtils.getDirectoryAllName())
+            "getDirectoryAllName" -> result.success(FileTools.getDirectoryAllName())
         }
     }
 
@@ -110,9 +119,9 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     private fun scanner() {
         when (call.method) {
-            "scanImagePath" -> ScannerUtils.scanImagePath(call, result)
-            "scanImageUrl" -> ScannerUtils.scanImageUrl(call, result)
-            "scanImageMemory" -> ScannerUtils.scanImageMemory(call, result)
+            "scanImagePath" -> ScannerTools.scanImagePath(call, result)
+            "scanImageUrl" -> ScannerTools.scanImageUrl(call, result)
+            "scanImageMemory" -> ScannerTools.scanImageMemory(call, result)
         }
     }
 

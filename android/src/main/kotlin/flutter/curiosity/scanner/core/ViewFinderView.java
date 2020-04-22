@@ -68,7 +68,7 @@ public class ViewFinderView extends View implements IViewFinder {
         Point viewResolution = new Point(getWidth(), getHeight());
         int width;
         int height;
-        int orientation = DisplayUtils.getScreenOrientation(getContext());
+        int orientation = DisplayTools.getScreenOrientation(getContext());
 
         if (mSquareViewFinder) {
             if (orientation != Configuration.ORIENTATION_PORTRAIT) {

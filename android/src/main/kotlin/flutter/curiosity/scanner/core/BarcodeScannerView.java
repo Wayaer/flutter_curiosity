@@ -65,7 +65,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     }
 
     public void startCamera() {
-        startCamera(CameraUtils.getDefaultCameraId());
+        startCamera(CameraTools.getDefaultCameraId());
     }
 
     public void stopCamera() {
@@ -115,7 +115,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
 
     public void setFlash(boolean flag) {
         mFlashState = flag;
-        if (mCameraWrapper != null && CameraUtils.isFlashSupported(mCameraWrapper.mCamera)) {
+        if (mCameraWrapper != null && CameraTools.isFlashSupported(mCameraWrapper.mCamera)) {
 
             Camera.Parameters parameters = mCameraWrapper.mCamera.getParameters();
             if (flag) {
@@ -134,7 +134,7 @@ public abstract class BarcodeScannerView extends FrameLayout implements Camera.P
     }
 
     public boolean getFlash() {
-        if (mCameraWrapper != null && CameraUtils.isFlashSupported(mCameraWrapper.mCamera)) {
+        if (mCameraWrapper != null && CameraTools.isFlashSupported(mCameraWrapper.mCamera)) {
             Camera.Parameters parameters = mCameraWrapper.mCamera.getParameters();
             return parameters.getFlashMode().equals(Camera.Parameters.FLASH_MODE_TORCH);
         }
