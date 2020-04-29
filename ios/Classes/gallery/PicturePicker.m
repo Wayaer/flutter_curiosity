@@ -9,8 +9,8 @@
 @end
 @implementation PicturePicker
 
-+ (void)openPicker:(NSDictionary *)arguments viewController:(UIViewController*)viewController  result:(FlutterResult)result{
-    
++ (void)openPicker:(FlutterMethodCall*)call viewController:(UIViewController*)viewController  result:(FlutterResult)result{
+    NSDictionary * arguments = call.arguments;
     //    NSLog(@"LogInfo%@",arguments);
     int maxSelectNum = [[arguments objectForKey:@"maxSelectNum"] intValue];
     int minSelectNum = [[arguments objectForKey:@"minSelectNum"] intValue];
@@ -162,7 +162,8 @@
 }
 
 
-+ (void)openCamera:(NSDictionary *)arguments  viewController:(UIViewController*)viewController  result:(FlutterResult)result{
++ (void)openCamera:(UIViewController*)viewController  result:(FlutterResult)result{
+    
     //    NSLog(@"LogInfo%@",arguments);
     AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
     if (authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied) {
@@ -174,7 +175,7 @@
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
             if (granted) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [PicturePicker openCamera:  arguments viewController:viewController result:result];
+                    [PicturePicker openCamera:viewController result:result];
                 });
             }
         }];
@@ -184,7 +185,7 @@
         [alert show];
     } else if ([PHPhotoLibrary authorizationStatus] == 0) { // 未请求过相册权限
         [[TZImageManager manager] requestAuthorizationWithCompletion:^{
-            [PicturePicker openCamera:  arguments viewController:viewController result:result];
+            [PicturePicker openCamera:viewController result:result];
         }];
     } else {
         UIImagePickerController *picker=   [[UIImagePickerController alloc] init];
@@ -273,9 +274,9 @@
 /// 视频数据
 + (NSDictionary *)resultVideo:(NSString *)outputPath asset:(PHAsset *)asset coverImage:(UIImage *)coverImage quality:(CGFloat)quality {
     NSMutableDictionary *video = [NSMutableDictionary dictionary];
-//    NSString *filename = [NSString stringWithFormat:@"%@%@", [[NSUUID UUID] UUIDString], [asset valueForKey:@"filename"]];
-//    
-//    video[@"fileName"] = filename;
+    //    NSString *filename = [NSString stringWithFormat:@"%@%@", [[NSUUID UUID] UUIDString], [asset valueForKey:@"filename"]];
+    //
+    //    video[@"fileName"] = filename;
     video[@"path"] = outputPath;
     NSInteger size = [[NSFileManager defaultManager] attributesOfItemAtPath:outputPath error:nil].fileSize;
     video[@"size"] = @(size);

@@ -45,6 +45,21 @@ class App extends StatelessWidget {
               child: Text('图片选择')),
           RaisedButton(
               onPressed: () {
+                shareText();
+              },
+              child: Text('分享文字')),
+          RaisedButton(
+              onPressed: () {
+                shareImage();
+              },
+              child: Text('分享图片')),
+          RaisedButton(
+              onPressed: () {
+                shareImages();
+              },
+              child: Text('分享多张图片')),
+          RaisedButton(
+              onPressed: () {
                 getGPS();
               },
               child: Text('获取gps状态')),
@@ -59,9 +74,32 @@ class App extends StatelessWidget {
     );
   }
 
+  shareText() {
+    NativeTools.systemShare(title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
+  }
+
+  shareImage() {
+    if (list.length == 0) {
+      print('请先选择图片');
+      return;
+    }
+    NativeTools.systemShare(title: '分享图片', content: list[0].path, shareType: ShareType.image);
+  }
+
+  shareImages() {
+    if (list.length == 0) {
+      print('请先选择图片');
+      return;
+    }
+    List<String> listPath = [];
+    listPath.add(list[0].path);
+    listPath.add(list[0].path);
+    NativeTools.systemShare(title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
+  }
+
   getGPS() async {
     var data = await GPSTools.getStatus();
-//    log(data);
+    print(data);
   }
 
   List<Widget> showText() {
@@ -78,8 +116,6 @@ class App extends StatelessWidget {
 
   select() async {
     PicturePickerOptions options = PicturePickerOptions();
-    options.selectionMode = 1;
-    options.pickerSelectType = 2;
     list = await PicturePicker.openPicker(options);
     setState(() {});
   }

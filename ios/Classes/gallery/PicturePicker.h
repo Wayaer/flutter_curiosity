@@ -3,8 +3,8 @@
 #import "TZImagePickerController.h"
 
 @interface PicturePicker : NSObject <TZImagePickerControllerDelegate>
-+ (void)openPicker:(NSDictionary*)arguments viewController:(UIViewController*)viewController result:(FlutterResult)result;
-+ (void)openCamera:(NSDictionary*)arguments viewController:(UIViewController*)viewController result:(FlutterResult)result;
++ (void)openPicker:(FlutterMethodCall*)call viewController:(UIViewController*)viewController result:(FlutterResult)result;
++ (void)openCamera:(UIViewController*)viewController result:(FlutterResult)result;
 + (void)deleteCacheDirFile;
 
 @end

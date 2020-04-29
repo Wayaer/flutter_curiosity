@@ -48,9 +48,9 @@
 
 -(void)gallery:(FlutterResult)result{
     if ([@"openPicker" isEqualToString:call.method]) {
-        [PicturePicker openPicker:call.arguments viewController:viewController result:result];
+        [PicturePicker openPicker:call viewController:viewController result:result];
     } else if ([@"openCamera" isEqualToString:call.method]) {
-        [PicturePicker openCamera:call.arguments viewController:viewController result:result];
+        [PicturePicker openCamera:viewController result:result];
     } else if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
         [PicturePicker deleteCacheDirFile];
     }
@@ -87,7 +87,10 @@
     } else if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
         result( @"success");
-    } else if ([@"exitApp" isEqualToString:call.method]) {
+    } else if ([@"systemShare" isEqualToString:call.method]) {
+        [NativeTools systemShare:call result:result];
+//        result( @"success");
+    }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }
 }

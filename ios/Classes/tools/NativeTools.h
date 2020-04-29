@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <Flutter/Flutter.h>
 
 @interface NativeTools : NSObject
 //Log
@@ -13,4 +14,6 @@
 //获取app信息
 + (NSMutableDictionary *)getAppInfo;
 
+//调用系统分享
++ (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result;
 @end
