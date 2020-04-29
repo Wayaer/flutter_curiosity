@@ -105,6 +105,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "exitApp" -> NativeTools.exitApp()
             "getAppInfo" -> result.success(AppInfo.getAppInfo())
             "getDirectoryAllName" -> result.success(FileTools.getDirectoryAllName())
+            "systemShare" -> result.success(NativeTools.systemShare())
         }
     }
 

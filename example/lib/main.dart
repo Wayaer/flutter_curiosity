@@ -1,14 +1,11 @@
-import 'dart:developer';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/curiosity.dart';
-import 'package:flutter_waya/waya.dart';
 
 import 'ScanPage.dart';
 
 void main() async {
-  runApp(OverlayMaterial(
+  runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     title: 'Curiosity',
     home: App(),
@@ -64,7 +61,7 @@ class App extends StatelessWidget {
 
   getGPS() async {
     var data = await GPSTools.getStatus();
-    log(data);
+//    log(data);
   }
 
   List<Widget> showText() {
