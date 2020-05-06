@@ -1,7 +1,7 @@
 name: flutter_curiosity
 description: The flutter curiosity is compatible with android and ios for multiple native features
-version: 0.0.2
-author: Wayaer <Wayaer@foxmail.com>
+version: 1.0.0
+author: wayaer <Wayaer@foxmail.com>
 homepage: https://github.com/Wayaer/flutter-curiosity.git
 environment:
   sdk: ">=2.1.0 <3.0.0"
