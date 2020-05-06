@@ -1,1 +1,3 @@
-import 'package:flutter/services.dart';const MethodChannel methodChannel = const MethodChannel('Curiosity');
+import 'package:flutter/services.dart';
+
+const MethodChannel methodChannel = MethodChannel('Curiosity');

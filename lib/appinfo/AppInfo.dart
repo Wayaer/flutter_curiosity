@@ -25,6 +25,7 @@ class AppInfo {
       AppInfoModel appInfoModel = await getPackageInfo();
       return appInfoModel.appName;
     }
+    return null;
   }
 
   static Future<String> getPackageName() async {
@@ -68,8 +69,4 @@ class AppInfo {
     return pathNameList;
   }
 
-/// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.
-/// The package name. `bundleIdentifier` on iOS, `getPackageName` on Android.
-/// The package version. `CFBundleShortVersionString` on iOS, `versionName` on Android.
-/// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
 }
