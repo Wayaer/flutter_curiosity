@@ -6,11 +6,13 @@ import 'package:flutter_curiosity/tools/Tools.dart';
 
 class AppInfo {
   static Future<AppInfoModel> getPackageInfo() async {
-    Map<String, dynamic> map = await methodChannel.invokeMapMethod<String, dynamic>('getAppInfo');
+    Map<String, dynamic> map = await methodChannel.invokeMapMethod<
+        String,
+        dynamic>('getAppInfo');
     return AppInfoModel.fromJson(map);
   }
 
-  //android versionCode  ios version
+  ///android versionCode  ios version
   static Future<int> getVersionCode() async {
     Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
@@ -31,25 +33,29 @@ class AppInfo {
     return appInfoModel.packageName;
   }
 
-  //android versionName  ios buildName
+  ///android versionName  ios buildName
   static Future<String> getVersionName() async {
     Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
     return appInfoModel.versionName;
   }
 
-  //获取根目录
+  ///获取根目录
   static Future<String> getRootDirectory() async {
     Tools.supportPlatform();
     AppInfoModel appInfoModel = await getPackageInfo();
-    return Platform.isAndroid ? appInfoModel.externalStorageDirectory : appInfoModel.homeDirectory;
+    return Platform.isAndroid
+        ? appInfoModel.externalStorageDirectory
+        : appInfoModel.homeDirectory;
   }
 
-  //目录下所有文件夹以及文件名字  isAbsolutePath true 目录下文件的完整路径
-  static Future<List<String>> getDirectoryAllName(String path, {bool isAbsolutePath: false}) async {
+  ///目录下所有文件夹以及文件名字  isAbsolutePath true 目录下文件的完整路径
+  static Future<List<String>> getDirectoryAllName(String path,
+      {bool isAbsolutePath: false}) async {
     Tools.supportPlatform();
     List<String> pathNameList =
-    await methodChannel.invokeListMethod('getDirectoryAllName', {'path': path, 'isAbsolutePath': isAbsolutePath});
+    await methodChannel.invokeListMethod('getDirectoryAllName',
+        {'path': path, 'isAbsolutePath': isAbsolutePath});
     if (Platform.isIOS && isAbsolutePath) {
       List<String> list = List();
       if (pathNameList.length > 0) {

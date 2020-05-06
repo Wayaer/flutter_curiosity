@@ -41,24 +41,23 @@ import flutter.curiosity.R;
 public class PreviewView extends FrameLayout {
 
     @SuppressWarnings("WeakerAccess") /* synthetic accessor */
-    Implementation mImplementation;
-
-    private ImplementationMode mImplementationMode;
-
+            Implementation mImplementation;
     private final DisplayManager.DisplayListener mDisplayListener =
             new DisplayManager.DisplayListener() {
-        @Override
-        public void onDisplayAdded(int displayId) {
-        }
+                @Override
+                public void onDisplayAdded(int displayId) {
+                }
 
-        @Override
-        public void onDisplayRemoved(int displayId) {
-        }
-        @Override
-        public void onDisplayChanged(int displayId) {
-            mImplementation.onDisplayChanged();
-        }
-    };
+                @Override
+                public void onDisplayRemoved(int displayId) {
+                }
+
+                @Override
+                public void onDisplayChanged(int displayId) {
+                    mImplementation.onDisplayChanged();
+                }
+            };
+    private ImplementationMode mImplementationMode;
 
     public PreviewView(@NonNull Context context) {
         this(context, null);
@@ -73,7 +72,7 @@ public class PreviewView extends FrameLayout {
     }
 
     public PreviewView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
-            int defStyleRes) {
+                       int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
 
         final TypedArray attributes = context.getTheme().obtainStyledAttributes(attrs,
@@ -131,18 +130,6 @@ public class PreviewView extends FrameLayout {
     }
 
     /**
-     * Specifies the {@link ImplementationMode} to use for the preview.
-     *
-     * @param implementationMode <code>SURFACE_VIEW</code> if a {@link android.view.SurfaceView}
-     *                           should be used to display the camera feed, or
-     *                           <code>TEXTURE_VIEW</code> to use a {@link android.view.TextureView}
-     */
-    public void setImplementationMode(@NonNull final ImplementationMode implementationMode) {
-        mImplementationMode = implementationMode;
-        setUp();
-    }
-
-    /**
      * Returns the implementation mode of the {@link PreviewView}.
      *
      * @return <code>SURFACE_VIEW</code> if the {@link PreviewView} is internally using a
@@ -155,39 +142,24 @@ public class PreviewView extends FrameLayout {
     }
 
     /**
+     * Specifies the {@link ImplementationMode} to use for the preview.
+     *
+     * @param implementationMode <code>SURFACE_VIEW</code> if a {@link android.view.SurfaceView}
+     *                           should be used to display the camera feed, or
+     *                           <code>TEXTURE_VIEW</code> to use a {@link android.view.TextureView}
+     */
+    public void setImplementationMode(@NonNull final ImplementationMode implementationMode) {
+        mImplementationMode = implementationMode;
+        setUp();
+    }
+
+    /**
      * Gets the {@link Preview.SurfaceProvider} to be used with
      * {@link Preview#setSurfaceProvider(Executor, Preview.SurfaceProvider)}.
      */
     @NonNull
     public Preview.SurfaceProvider getPreviewSurfaceProvider() {
         return mImplementation.getSurfaceProvider();
-    }
-
-    /**
-     * Implements this interface to create PreviewView implementation.
-     */
-    interface Implementation {
-
-        /**
-         * Initializes the parent view with sub views.
-         *
-         * @param parent the containing parent {@link FrameLayout}.
-         */
-        void init(@NonNull FrameLayout parent);
-
-        /**
-         * Gets the {@link Preview.SurfaceProvider} to be used with {@link Preview}.
-         */
-        @NonNull
-        Preview.SurfaceProvider getSurfaceProvider();
-
-        /**
-         *  Notifies that the display properties have changed.
-         *
-         *  <p>Implementation might need to adjust transform by latest display properties such as
-         *  display orientation in order to show the preview correctly.
-         */
-        void onDisplayChanged();
     }
 
     /**
@@ -198,20 +170,20 @@ public class PreviewView extends FrameLayout {
      * </p>
      */
     public enum ImplementationMode {
-        /** Use a {@link android.view.SurfaceView} for the preview */
+        /**
+         * Use a {@link android.view.SurfaceView} for the preview
+         */
         SURFACE_VIEW(0),
 
-        /** Use a {@link android.view.TextureView} for the preview */
+        /**
+         * Use a {@link android.view.TextureView} for the preview
+         */
         TEXTURE_VIEW(1);
 
         private final int mId;
 
         ImplementationMode(final int id) {
             mId = id;
-        }
-
-        public int getId() {
-            return mId;
         }
 
         static ImplementationMode fromId(final int id) {
@@ -222,9 +194,15 @@ public class PreviewView extends FrameLayout {
             }
             throw new IllegalArgumentException("Unsupported implementation mode " + id);
         }
+
+        public int getId() {
+            return mId;
+        }
     }
 
-    /** Options for scaling the preview vis-à-vis its container {@link PreviewView}. */
+    /**
+     * Options for scaling the preview vis-à-vis its container {@link PreviewView}.
+     */
     public enum ScaleType {
         /**
          * Scale the preview, maintaining the source aspect ratio, so it fills the entire
@@ -268,6 +246,33 @@ public class PreviewView extends FrameLayout {
          * of its container {@link PreviewView}.
          */
         FIT_END
+    }
+
+    /**
+     * Implements this interface to create PreviewView implementation.
+     */
+    interface Implementation {
+
+        /**
+         * Initializes the parent view with sub views.
+         *
+         * @param parent the containing parent {@link FrameLayout}.
+         */
+        void init(@NonNull FrameLayout parent);
+
+        /**
+         * Gets the {@link Preview.SurfaceProvider} to be used with {@link Preview}.
+         */
+        @NonNull
+        Preview.SurfaceProvider getSurfaceProvider();
+
+        /**
+         * Notifies that the display properties have changed.
+         *
+         * <p>Implementation might need to adjust transform by latest display properties such as
+         * display orientation in order to show the preview correctly.
+         */
+        void onDisplayChanged();
     }
 }
 

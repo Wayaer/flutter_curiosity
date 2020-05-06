@@ -30,6 +30,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private boolean mSurfaceCreated = false;
     private Camera.PreviewCallback mPreviewCallback;
     private float mAspectTolerance = 0.1f;
+    private Runnable doAutoFocus = new Runnable() {
+        public void run() {
+            if (mCameraWrapper != null && mPreviewing && mAutoFocus && mSurfaceCreated) {
+                safeAutoFocus();
+            }
+        }
+    };
+    // Mimic continuous auto-focusing
+    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
+        public void onAutoFocus(boolean success, Camera camera) {
+            scheduleAutoFocus();
+        }
+    };
 
     public CameraPreview(Context context, CameraWrapper cameraWrapper, Camera.PreviewCallback previewCallback) {
         super(context);
@@ -52,7 +65,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mCameraWrapper = cameraWrapper;
         mPreviewCallback = previewCallback;
     }
-
 
     public void setAspectTolerance(float aspectTolerance) {
         mAspectTolerance = aspectTolerance;
@@ -296,21 +308,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
         }
     }
-
-    private Runnable doAutoFocus = new Runnable() {
-        public void run() {
-            if (mCameraWrapper != null && mPreviewing && mAutoFocus && mSurfaceCreated) {
-                safeAutoFocus();
-            }
-        }
-    };
-
-    // Mimic continuous auto-focusing
-    Camera.AutoFocusCallback autoFocusCB = new Camera.AutoFocusCallback() {
-        public void onAutoFocus(boolean success, Camera camera) {
-            scheduleAutoFocus();
-        }
-    };
 
     private void scheduleAutoFocus() {
         mAutoFocusHandler.postDelayed(doAutoFocus, 1000);

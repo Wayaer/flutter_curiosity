@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/curiosity.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 
 import 'ScanPage.dart';
 
@@ -75,7 +75,8 @@ class App extends StatelessWidget {
   }
 
   shareText() {
-    NativeTools.systemShare(title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
+    NativeTools.systemShare(
+        title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
   }
 
   shareImage() {
@@ -83,7 +84,8 @@ class App extends StatelessWidget {
       print('请先选择图片');
       return;
     }
-    NativeTools.systemShare(title: '分享图片', content: list[0].path, shareType: ShareType.image);
+    NativeTools.systemShare(
+        title: '分享图片', content: list[0].path, shareType: ShareType.image);
   }
 
   shareImages() {
@@ -94,7 +96,8 @@ class App extends StatelessWidget {
     List<String> listPath = [];
     listPath.add(list[0].path);
     listPath.add(list[0].path);
-    NativeTools.systemShare(title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
+    NativeTools.systemShare(
+        title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
   }
 
   getGPS() async {

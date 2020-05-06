@@ -5,17 +5,19 @@ import 'package:flutter_curiosity/tools/Tools.dart';
 
 class PicturePicker {
 
-//  openPicker() async {
-//    PicturePickerOptions pickerOptions = PicturePickerOptions();
-//    pickerOptions.selectValueType = 0;
-//    pickerOptions.previewVideo = true;
-//    var list = await PicturePicker.openPicker(pickerOptions);
-//    print(list);
-//  }
-  static Future<List<AssetMedia>> openPicker([PicturePickerOptions selectOptions]) async {
+  ///  openPicker() async {
+  ///    PicturePickerOptions pickerOptions = PicturePickerOptions();
+  ///    pickerOptions.selectValueType = 0;
+  ///    pickerOptions.previewVideo = true;
+  ///    var list = await PicturePicker.openPicker(pickerOptions);
+  ///    print(list);
+  ///  }
+  static Future<List<AssetMedia>> openPicker(
+      [PicturePickerOptions selectOptions]) async {
     Tools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
-    final result = await methodChannel.invokeMethod('openPicker', selectOptions.toJson());
+    final result = await methodChannel.invokeMethod(
+        'openPicker', selectOptions.toJson());
     if (result is List) {
       return Future.value(
           result.map((data) => AssetMedia.fromJson(data)).toList());
@@ -24,7 +26,8 @@ class PicturePicker {
     }
   }
 
-  static Future<List<AssetMedia>> openCamera([PicturePickerOptions selectOptions]) async {
+  static Future<List<AssetMedia>> openCamera(
+      [PicturePickerOptions selectOptions]) async {
     Tools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result =

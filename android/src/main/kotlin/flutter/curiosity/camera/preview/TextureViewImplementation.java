@@ -16,11 +16,6 @@
 
 package flutter.curiosity.camera.preview;
 
-import static androidx.camera.core.SurfaceRequest.Result;
-import static flutter.curiosity.camera.preview.ScaleTypeTransform.getFillScaleWithBufferAspectRatio;
-import static flutter.curiosity.camera.preview.ScaleTypeTransform.getOriginOfCenteredView;
-import static flutter.curiosity.camera.preview.ScaleTypeTransform.getRotationDegrees;
-
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.util.Log;
@@ -43,19 +38,23 @@ import androidx.core.util.Preconditions;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
+import static androidx.camera.core.SurfaceRequest.Result;
+import static flutter.curiosity.camera.preview.ScaleTypeTransform.getFillScaleWithBufferAspectRatio;
+import static flutter.curiosity.camera.preview.ScaleTypeTransform.getOriginOfCenteredView;
+import static flutter.curiosity.camera.preview.ScaleTypeTransform.getRotationDegrees;
+
 /**
  * The {@link TextureView} implementation for {@link PreviewView}
  */
 public class TextureViewImplementation implements PreviewView.Implementation {
 
     private static final String TAG = "TextureViewImpl";
-
-    private FrameLayout mParent;
     TextureView mTextureView;
     SurfaceTexture mSurfaceTexture;
-    private Size mResolution;
     ListenableFuture<Result> mSurfaceReleaseFuture;
     SurfaceRequest mSurfaceRequest;
+    private FrameLayout mParent;
+    private Size mResolution;
 
     @Override
     public void init(@NonNull FrameLayout parent) {
@@ -101,14 +100,14 @@ public class TextureViewImplementation implements PreviewView.Implementation {
         mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
             public void onSurfaceTextureAvailable(final SurfaceTexture surfaceTexture,
-                    final int width, final int height) {
+                                                  final int width, final int height) {
                 mSurfaceTexture = surfaceTexture;
                 tryToProvidePreviewSurface();
             }
 
             @Override
             public void onSurfaceTextureSizeChanged(final SurfaceTexture surfaceTexture,
-                    final int width, final int height) {
+                                                    final int width, final int height) {
                 Log.d(TAG, "onSurfaceTextureSizeChanged(width:" + width + ", height: " + height
                         + " )");
             }
@@ -216,7 +215,7 @@ public class TextureViewImplementation implements PreviewView.Implementation {
      * @param bufferSize  The camera sensor output size.
      */
     private void correctPreviewForCenterCrop(@NonNull final View container,
-            @NonNull final TextureView textureView, @NonNull final Size bufferSize) {
+                                             @NonNull final TextureView textureView, @NonNull final Size bufferSize) {
         // Scale TextureView to fill PreviewView while respecting sensor output size aspect ratio
         final Pair<Float, Float> scale = getFillScaleWithBufferAspectRatio(container, textureView,
                 bufferSize);

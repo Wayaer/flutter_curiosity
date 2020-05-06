@@ -35,16 +35,13 @@ import androidx.core.content.ContextCompat;
 final class SurfaceViewImplementation implements PreviewView.Implementation {
 
     private static final String TAG = "SurfaceViewPreviewView";
-
-    // Synthetic Accessor
-    @SuppressWarnings("WeakerAccess")
-    TransformableSurfaceView mSurfaceView;
-
     // Synthetic Accessor
     @SuppressWarnings("WeakerAccess")
     final SurfaceRequestCallback mSurfaceRequestCallback =
             new SurfaceRequestCallback();
-
+    // Synthetic Accessor
+    @SuppressWarnings("WeakerAccess")
+    TransformableSurfaceView mSurfaceView;
     private Preview.SurfaceProvider mSurfaceProvider =
             new Preview.SurfaceProvider() {
                 @Override

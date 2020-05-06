@@ -1,1 +1,1 @@
-enum ShareType {  text, //android ios  image, //android ios  images, //android ios  url, //ios}
+enum ShareType {  text,  ///android ios  image,  ///android ios  images,  ///android ios  url,  ///ios}

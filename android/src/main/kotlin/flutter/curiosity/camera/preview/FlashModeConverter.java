@@ -16,13 +16,13 @@
 
 package flutter.curiosity.camera.preview;
 
-import static androidx.camera.core.ImageCapture.FLASH_MODE_AUTO;
-import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
-import static androidx.camera.core.ImageCapture.FLASH_MODE_ON;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.camera.core.ImageCapture.FlashMode;
+
+import static androidx.camera.core.ImageCapture.FLASH_MODE_AUTO;
+import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
+import static androidx.camera.core.ImageCapture.FLASH_MODE_ON;
 
 /**
  * Helper class that defines certain enum-like methods for {@link FlashMode}

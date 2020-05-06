@@ -28,6 +28,10 @@ import androidx.annotation.NonNull;
 
 final class ScaleTypeTransform {
 
+    // Prevent creating an instance
+    private ScaleTypeTransform() {
+    }
+
     /**
      * Computes the scale by which a view has to scale in x and y in order to fill its parent
      * while maintaining the buffer's aspect ratio.
@@ -41,7 +45,7 @@ final class ScaleTypeTransform {
      */
     @SuppressWarnings("SuspiciousNameCombination")
     static Pair<Float, Float> getFillScaleWithBufferAspectRatio(@NonNull final View container,
-            @NonNull final View view, @NonNull final Size bufferSize) {
+                                                                @NonNull final View view, @NonNull final Size bufferSize) {
         // Scaling only makes sense when none of the dimensions are equal to zero. In the
         // opposite case, a default scale of 1 is returned,
         if (container.getWidth() == 0 || container.getHeight() == 0 || view.getWidth() == 0
@@ -95,7 +99,7 @@ final class ScaleTypeTransform {
      * {@code view} when centered inside its parent.
      */
     static Point getOriginOfCenteredView(@NonNull final View container,
-            @NonNull final View view) {
+                                         @NonNull final View view) {
         final int offsetX = (view.getWidth() - container.getWidth()) / 2;
         final int offsetY = (view.getHeight() - container.getHeight()) / 2;
         return new Point(-offsetX, -offsetY);
@@ -135,7 +139,7 @@ final class ScaleTypeTransform {
      * @return Whether the device is naturally portrait-oriented.
      */
     private static boolean isNaturalPortrait(@NonNull final Context context,
-            final int rotationDegrees) {
+                                             final int rotationDegrees) {
         final WindowManager windowManager = (WindowManager) context.getSystemService(
                 Context.WINDOW_SERVICE);
         if (windowManager == null) {
@@ -150,9 +154,5 @@ final class ScaleTypeTransform {
         final int height = deviceSize.y;
         return ((rotationDegrees == 0 || rotationDegrees == 180) && width < height) || (
                 (rotationDegrees == 90 || rotationDegrees == 270) && width >= height);
-    }
-
-    // Prevent creating an instance
-    private ScaleTypeTransform() {
     }
 }

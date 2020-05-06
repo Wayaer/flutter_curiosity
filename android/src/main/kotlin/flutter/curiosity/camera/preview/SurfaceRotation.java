@@ -20,10 +20,16 @@ import android.view.Surface;
 
 final class SurfaceRotation {
     /**
+     * Prevents construction
+     */
+    private SurfaceRotation() {
+    }
+
+    /**
      * Get the int value degree of a rotation from the {@link Surface} constants.
      *
      * <p>Valid values for the relative rotation are {@link Surface#ROTATION_0}, {@link
-     *      * Surface#ROTATION_90}, {@link Surface#ROTATION_180}, {@link Surface#ROTATION_270}.
+     * * Surface#ROTATION_90}, {@link Surface#ROTATION_180}, {@link Surface#ROTATION_270}.
      */
     static int rotationDegreesFromSurfaceRotation(int rotationConstant) {
         switch (rotationConstant) {
@@ -40,7 +46,4 @@ final class SurfaceRotation {
                         "Unsupported surface rotation constant: " + rotationConstant);
         }
     }
-
-    /** Prevents construction */
-    private SurfaceRotation() {}
 }

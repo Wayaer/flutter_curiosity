@@ -5,12 +5,16 @@ import android.hardware.Camera;
 import java.util.List;
 
 public class CameraTools {
-    /** A safe way to get an instance of the Camera object. */
+    /**
+     * A safe way to get an instance of the Camera object.
+     */
     public static Camera getCameraInstance() {
         return getCameraInstance(getDefaultCameraId());
     }
 
-    /** Favor back-facing camera by default. If none exists, fallback to whatever camera is available **/
+    /**
+     * Favor back-facing camera by default. If none exists, fallback to whatever camera is available
+     **/
     public static int getDefaultCameraId() {
         int numberOfCameras = Camera.getNumberOfCameras();
         Camera.CameraInfo cameraInfo = new Camera.CameraInfo();
@@ -25,17 +29,18 @@ public class CameraTools {
         return defaultCameraId;
     }
 
-    /** A safe way to get an instance of the Camera object. */
+    /**
+     * A safe way to get an instance of the Camera object.
+     */
     public static Camera getCameraInstance(int cameraId) {
         Camera c = null;
         try {
-            if(cameraId == -1) {
+            if (cameraId == -1) {
                 c = Camera.open(); // attempt to get a Camera instance
             } else {
                 c = Camera.open(cameraId); // attempt to get a Camera instance
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             // Camera is not available (in use or does not exist)
         }
         return c; // returns null if camera is unavailable

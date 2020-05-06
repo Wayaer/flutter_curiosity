@@ -1,7 +1,3 @@
-// Copyright 2019 The rhyme_lph Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -13,15 +9,25 @@ class Scanner extends StatefulWidget {
   final ScannerController controller;
   final PlatformViewHitTestBehavior hitTestBehavior;
 
-  //android扫描条形码请横屏即可识别
-  //识别区域 比例 0-1
-  final double topRatio; //距离屏幕头部
-  final double leftRatio; //距离屏幕左边
-  final double widthRatio; //识别区域的宽高度比例
-  final double heightRatio; //识别区域的宽高度比例
-  final bool androidOldCamera; //android 使用旧版Camera 识别率更快
-  //屏幕宽度比例=leftRatio + widthRatio + leftRatio
-  //屏幕高度比例=topRatio + heightRatio + topRatio
+  ///识别区域 比例 0-1
+  ///距离屏幕头部
+  final double topRatio;
+
+  ///距离屏幕左边
+  final double leftRatio;
+
+
+  ///识别区域的宽高度比例
+  final double widthRatio;
+
+  ///识别区域的宽高度比例
+  final double heightRatio;
+
+  ///android 使用旧版Camera 识别率更快
+  final bool androidOldCamera;
+
+  ///屏幕宽度比例=leftRatio + widthRatio + leftRatio
+  ///屏幕高度比例=topRatio + heightRatio + topRatio
 
   Scanner({this.controller,
     this.hitTestBehavior =
@@ -67,25 +73,38 @@ class ScannerState extends State<Scanner> {
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
       return AndroidView(
+
+        ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
-        //与原生交互时唯一标识符，常见形式是包名+自定义名；
+
+        ///创建视图后的回调
         onPlatformViewCreated: onPlatformViewCreated,
-        //创建视图后的回调
+
+        /// 渗透点击事件，接收范围 opaque > translucent > transparent；
         hitTestBehavior: widget.hitTestBehavior,
-        // 渗透点击事件，接收范围 opaque > translucent > transparent；
+
+        /// 嵌入视图文本方向；
+        ///        layoutDirection: TextDirection.ltr,
+        ///向视图传递参数，常为 PlatformViewFactory；
         creationParams: params,
-        //向视图传递参数，常为 PlatformViewFactory；
-//        layoutDirection: TextDirection.ltr,
-        // 嵌入视图文本方向；
+
+        ///编解码器类型
         creationParamsCodec: StandardMessageCodec(),
-        //编解码器类型
       );
     } else if (Platform.isIOS) {
       return UiKitView(
+
+        ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
-//        hitTestBehavior: widget.hitTestBehavior,
+
+        ///hitTestBehavior: widget.hitTestBehavior,
+        ///创建视图后的回调
         onPlatformViewCreated: onPlatformViewCreated,
+
+        ///向视图传递参数，常为 PlatformViewFactory；
         creationParams: params,
+
+        ///编解码器类型
         creationParamsCodec: StandardMessageCodec(),
       );
     } else {

@@ -28,7 +28,7 @@ class LogTools {
     endLine = endLineStr.toString();
   }
 
-  //仅Debug模式可见
+  ///仅Debug模式可见
   static void d(dynamic obj) {
     if (isDebug) {
       log(obj.toString());

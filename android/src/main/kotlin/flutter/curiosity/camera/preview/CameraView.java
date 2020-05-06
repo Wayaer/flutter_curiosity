@@ -101,11 +101,6 @@ public final class CameraView extends FrameLayout {
     private static final int FLASH_MODE_AUTO = 1;
     private static final int FLASH_MODE_ON = 2;
     private static final int FLASH_MODE_OFF = 4;
-    // For tap-to-focus
-    private long mDownEventTimestamp;
-    // For pinch-to-zoom
-    private PinchToZoomGestureDetector mPinchToZoomGestureDetector;
-    private boolean mIsPinchToZoomEnabled = true;
     CameraXModule mCameraModule;
     private final DisplayListener mDisplayListener =
             new DisplayListener() {
@@ -122,6 +117,11 @@ public final class CameraView extends FrameLayout {
                     mCameraModule.invalidateView();
                 }
             };
+    // For tap-to-focus
+    private long mDownEventTimestamp;
+    // For pinch-to-zoom
+    private PinchToZoomGestureDetector mPinchToZoomGestureDetector;
+    private boolean mIsPinchToZoomEnabled = true;
     private PreviewView mPreviewView;
     private ScaleType mScaleType = ScaleType.CENTER_CROP;
     // For accessibility event
@@ -142,7 +142,7 @@ public final class CameraView extends FrameLayout {
 
     @RequiresApi(21)
     public CameraView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyleAttr,
-            int defStyleRes) {
+                      int defStyleRes) {
         super(context, attrs, defStyleAttr, defStyleRes);
         init(context, attrs);
     }
@@ -445,7 +445,7 @@ public final class CameraView extends FrameLayout {
      * @param callback Callback which will receive success or failure.
      */
     public void takePicture(@NonNull File file, @NonNull Executor executor,
-            @NonNull OnImageSavedCallback callback) {
+                            @NonNull OnImageSavedCallback callback) {
         mCameraModule.takePicture(file, executor, callback);
     }
 
@@ -457,16 +457,20 @@ public final class CameraView extends FrameLayout {
      * @param callback Callback which will receive success or failure.
      */
     public void startRecording(@NonNull File file, @NonNull Executor executor,
-            @NonNull OnVideoSavedCallback callback) {
+                               @NonNull OnVideoSavedCallback callback) {
         mCameraModule.startRecording(file, executor, callback);
     }
 
-    /** Stops an in progress video. */
+    /**
+     * Stops an in progress video.
+     */
     public void stopRecording() {
         mCameraModule.stopRecording();
     }
 
-    /** @return True if currently recording. */
+    /**
+     * @return True if currently recording.
+     */
     public boolean isRecording() {
         return mCameraModule.isRecording();
     }
@@ -493,6 +497,14 @@ public final class CameraView extends FrameLayout {
     }
 
     /**
+     * Returns the currently selected lensFacing.
+     */
+    @Nullable
+    public Integer getCameraLensFacing() {
+        return mCameraModule.getLensFacing();
+    }
+
+    /**
      * Sets the desired camera by specifying desired lensFacing.
      *
      * <p>This will choose the primary camera with the specified camera lensFacing.
@@ -511,19 +523,17 @@ public final class CameraView extends FrameLayout {
         mCameraModule.setCameraLensFacing(lensFacing);
     }
 
-    /** Returns the currently selected lensFacing. */
-    @Nullable
-    public Integer getCameraLensFacing() {
-        return mCameraModule.getLensFacing();
-    }
-
-    /** Gets the active flash strategy. */
+    /**
+     * Gets the active flash strategy.
+     */
     @ImageCapture.FlashMode
     public int getFlash() {
         return mCameraModule.getFlash();
     }
 
-    /** Sets the active flash strategy. */
+    /**
+     * Sets the active flash strategy.
+     */
     public void setFlash(@ImageCapture.FlashMode int flashMode) {
         mCameraModule.setFlash(flashMode);
     }
@@ -711,7 +721,9 @@ public final class CameraView extends FrameLayout {
         return mCameraModule.isTorchOn();
     }
 
-    /** Options for scaling the bounds of the view finder to the bounds of this view. */
+    /**
+     * Options for scaling the bounds of the view finder to the bounds of this view.
+     */
     public enum ScaleType {
         /**
          * Scale the view finder, maintaining the source aspect ratio, so the view finder fills the
@@ -727,10 +739,6 @@ public final class CameraView extends FrameLayout {
 
         private final int mId;
 
-        int getId() {
-            return mId;
-        }
-
         ScaleType(int id) {
             mId = id;
         }
@@ -743,6 +751,10 @@ public final class CameraView extends FrameLayout {
             }
             throw new IllegalArgumentException();
         }
+
+        int getId() {
+            return mId;
+        }
     }
 
     /**
@@ -752,9 +764,13 @@ public final class CameraView extends FrameLayout {
      * CameraView}.
      */
     public enum CaptureMode {
-        /** A mode where image capture is enabled. */
+        /**
+         * A mode where image capture is enabled.
+         */
         IMAGE(0),
-        /** A mode where video capture is enabled. */
+        /**
+         * A mode where video capture is enabled.
+         */
         VIDEO(1),
         /**
          * A mode where both image capture and video capture are simultaneously enabled. Note that
@@ -763,10 +779,6 @@ public final class CameraView extends FrameLayout {
         MIXED(2);
 
         private final int mId;
-
-        int getId() {
-            return mId;
-        }
 
         CaptureMode(int id) {
             mId = id;
@@ -779,6 +791,10 @@ public final class CameraView extends FrameLayout {
                 }
             }
             throw new IllegalArgumentException();
+        }
+
+        int getId() {
+            return mId;
         }
     }
 

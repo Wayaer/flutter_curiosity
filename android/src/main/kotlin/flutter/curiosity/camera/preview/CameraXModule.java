@@ -16,8 +16,6 @@
 
 package flutter.curiosity.camera.preview;
 
-import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
-
 import android.Manifest.permission;
 import android.annotation.SuppressLint;
 import android.content.Context;
@@ -47,7 +45,6 @@ import androidx.camera.core.impl.utils.executor.CameraXExecutors;
 import androidx.camera.core.impl.utils.futures.FutureCallback;
 import androidx.camera.core.impl.utils.futures.Futures;
 import androidx.camera.lifecycle.ProcessCameraProvider;
-import flutter.curiosity.camera.preview.CameraView.CaptureMode;
 import androidx.core.util.Preconditions;
 import androidx.lifecycle.Lifecycle;
 import androidx.lifecycle.LifecycleObserver;
@@ -66,7 +63,13 @@ import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-/** CameraX use case operation built on @{link androidx.camera.core}. */
+import flutter.curiosity.camera.preview.CameraView.CaptureMode;
+
+import static androidx.camera.core.ImageCapture.FLASH_MODE_OFF;
+
+/**
+ * CameraX use case operation built on @{link androidx.camera.core}.
+ */
 final class CameraXModule {
     public static final String TAG = "CameraXModule";
 
@@ -76,30 +79,35 @@ final class CameraXModule {
     private static final Rational ASPECT_RATIO_4_3 = new Rational(4, 3);
     private static final Rational ASPECT_RATIO_9_16 = new Rational(9, 16);
     private static final Rational ASPECT_RATIO_3_4 = new Rational(3, 4);
-
+    final AtomicBoolean mVideoIsRecording = new AtomicBoolean(false);
     private final Preview.Builder mPreviewBuilder;
     private final VideoCaptureConfig.Builder mVideoCaptureConfigBuilder;
     private final ImageCapture.Builder mImageCaptureBuilder;
     private final CameraView mCameraView;
-    final AtomicBoolean mVideoIsRecording = new AtomicBoolean(false);
-    private CaptureMode mCaptureMode = CaptureMode.IMAGE;
-    private long mMaxVideoDuration = CameraView.INDEFINITE_VIDEO_DURATION;
-    private long mMaxVideoSize = CameraView.INDEFINITE_VIDEO_SIZE;
-    @ImageCapture.FlashMode
-    private int mFlash = FLASH_MODE_OFF;
     @Nullable
     @SuppressWarnings("WeakerAccess") /* synthetic accessor */
-    Camera mCamera;
-    @Nullable
-    private ImageCapture mImageCapture;
-    @Nullable
-    private VideoCapture mVideoCapture;
+            Camera mCamera;
     @SuppressWarnings("WeakerAccess") /* synthetic accessor */
     @Nullable
     Preview mPreview;
     @SuppressWarnings("WeakerAccess") /* synthetic accessor */
     @Nullable
     LifecycleOwner mCurrentLifecycle;
+    @SuppressWarnings("WeakerAccess") /* synthetic accessor */
+    @Nullable
+    Integer mCameraLensFacing = CameraSelector.LENS_FACING_BACK;
+    @SuppressWarnings("WeakerAccess") /* synthetic accessor */
+    @Nullable
+    ProcessCameraProvider mCameraProvider;
+    private CaptureMode mCaptureMode = CaptureMode.IMAGE;
+    private long mMaxVideoDuration = CameraView.INDEFINITE_VIDEO_DURATION;
+    private long mMaxVideoSize = CameraView.INDEFINITE_VIDEO_SIZE;
+    @ImageCapture.FlashMode
+    private int mFlash = FLASH_MODE_OFF;
+    @Nullable
+    private ImageCapture mImageCapture;
+    @Nullable
+    private VideoCapture mVideoCapture;
     private final LifecycleObserver mCurrentLifecycleObserver =
             new LifecycleObserver() {
                 @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
@@ -112,12 +120,6 @@ final class CameraXModule {
             };
     @Nullable
     private LifecycleOwner mNewLifecycle;
-    @SuppressWarnings("WeakerAccess") /* synthetic accessor */
-    @Nullable
-    Integer mCameraLensFacing = CameraSelector.LENS_FACING_BACK;
-    @SuppressWarnings("WeakerAccess") /* synthetic accessor */
-    @Nullable
-    ProcessCameraProvider mCameraProvider;
 
     CameraXModule(CameraView view) {
         mCameraView = view;

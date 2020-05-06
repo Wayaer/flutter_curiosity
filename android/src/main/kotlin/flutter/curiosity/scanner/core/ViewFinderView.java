@@ -11,21 +11,17 @@ import android.view.View;
 
 public class ViewFinderView extends View implements IViewFinder {
 
-    private Rect mFramingRect;
-
     private static final float PORTRAIT_WIDTH_RATIO = 6f / 8;
     private static final float PORTRAIT_WIDTH_HEIGHT_RATIO = 0.75f;
-
     private static final float LANDSCAPE_HEIGHT_RATIO = 5f / 8;
     private static final float LANDSCAPE_WIDTH_HEIGHT_RATIO = 1.4f;
     private static final int MIN_DIMENSION_DIFF = 50;
-
     private static final float DEFAULT_SQUARE_DIMENSION_RATIO = 5f / 8;
-
     protected Paint mLaserPaint;
     protected Paint mFinderMaskPaint;
     protected Paint mBorderPaint;
     protected boolean mSquareViewFinder = false;
+    private Rect mFramingRect;
 
     public ViewFinderView(Context context) {
         super(context);

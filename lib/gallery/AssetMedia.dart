@@ -2,7 +2,7 @@ import 'dart:convert' show json;
 
 dynamic convertValueByType(value, Type type, {String stack: ""}) {
   if (value == null) {
-//    log("$stack : value is null");
+    ///    log("$stack : value is null");
     if (type == String) {
       return "";
     } else if (type == int) {
@@ -19,7 +19,8 @@ dynamic convertValueByType(value, Type type, {String stack: ""}) {
     return value;
   }
   var valueString = value.toString();
-//  log("$stack : ${value.runtimeType} is not $type type");
+
+  ///  log("$stack : ${value.runtimeType} is not $type type");
   if (type == String) {
     return valueString;
   } else if (type == int) {

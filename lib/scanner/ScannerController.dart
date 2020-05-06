@@ -14,11 +14,13 @@ class ScannerController extends ChangeNotifier {
 
   void attach(int id) {
     MethodChannel('$scanner/$id/method');
-    subscription = EventChannel('$scanner/$id/event').receiveBroadcastStream({}).listen((data) {
-      this.code = data['code'];
-      this.type = data['type'];
-      notifyListeners();
-    });
+    subscription =
+        EventChannel('$scanner/$id/event').receiveBroadcastStream({}).listen((
+            data) {
+          this.code = data['code'];
+          this.type = data['type'];
+          notifyListeners();
+        });
   }
 
   Future<bool> setFlashMode(bool status) async {
@@ -35,7 +37,8 @@ class ScannerController extends ChangeNotifier {
   }
 
   static Future<String> scanImageMemory(Uint8List uint8list) async {
-    return await methodChannel.invokeMethod('scanImageMemory', { "uint8list": uint8list});
+    return await methodChannel.invokeMethod(
+        'scanImageMemory', { "uint8list": uint8list});
   }
 
   void detach() {
