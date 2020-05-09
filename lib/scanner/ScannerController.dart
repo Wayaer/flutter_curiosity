@@ -24,20 +24,22 @@ class ScannerController extends ChangeNotifier {
   }
 
   Future<bool> setFlashMode(bool status) async {
-    return await methodChannel.invokeMethod('setFlashMode', {'status': status});
+    return await curiosityChannel.invokeMethod(
+        'setFlashMode', {'status': status});
   }
 
 
   static Future<String> scanImagePath(String path) async {
-    return await methodChannel.invokeMethod('scanImagePath', { "path": path});
+    return await curiosityChannel.invokeMethod(
+        'scanImagePath', { "path": path});
   }
 
   static Future<String> scanImageUrl(String url) async {
-    return await methodChannel.invokeMethod('scanImageUrl', { "url": url});
+    return await curiosityChannel.invokeMethod('scanImageUrl', { "url": url});
   }
 
   static Future<String> scanImageMemory(Uint8List uint8list) async {
-    return await methodChannel.invokeMethod(
+    return await curiosityChannel.invokeMethod(
         'scanImageMemory', { "uint8list": uint8list});
   }
 

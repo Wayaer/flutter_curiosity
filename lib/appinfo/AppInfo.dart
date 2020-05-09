@@ -6,7 +6,7 @@ import 'package:flutter_curiosity/tools/Tools.dart';
 
 class AppInfo {
   static Future<AppInfoModel> getPackageInfo() async {
-    Map<String, dynamic> map = await methodChannel.invokeMapMethod<
+    Map<String, dynamic> map = await curiosityChannel.invokeMapMethod<
         String,
         dynamic>('getAppInfo');
     return AppInfoModel.fromJson(map);
@@ -55,7 +55,7 @@ class AppInfo {
       {bool isAbsolutePath: false}) async {
     Tools.supportPlatform();
     List<String> pathNameList =
-    await methodChannel.invokeListMethod('getDirectoryAllName',
+    await curiosityChannel.invokeListMethod('getDirectoryAllName',
         {'path': path, 'isAbsolutePath': isAbsolutePath});
     if (Platform.isIOS && isAbsolutePath) {
       List<String> list = List();

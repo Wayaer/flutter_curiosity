@@ -36,7 +36,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 //            val methodChannel = MethodChannel(registrar.messenger(), "Curiosity")
 //            context = registrar.context()
 //            activity = registrar.activity()
-//            methodChannel.setMethodCallHandler(plugin)
+//            curiosityChannel.setMethodCallHandler(plugin)
 //            registrar.addActivityResultListener(plugin)
 //        }
         lateinit var context: Context
@@ -49,7 +49,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     ///此处是新的插件加载注册方式
     override fun onAttachedToEngine(@NonNull pluginBinding: FlutterPluginBinding) {
         methodChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
-        methodChannel.setMethodCallHandler(this)
+        curiosityChannel.setMethodCallHandler(this)
         context = pluginBinding.applicationContext
         pluginBinding.platformViewRegistry.registerViewFactory(scanner, ScannerFactory(pluginBinding.binaryMessenger))
     }
@@ -72,7 +72,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        methodChannel.setMethodCallHandler(null)
+        curiosityChannel.setMethodCallHandler(null)
     }
 
     ///主要用于接收Flutter端对原生方法调用的实现.

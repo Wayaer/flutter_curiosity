@@ -16,7 +16,7 @@ class PicturePicker {
       [PicturePickerOptions selectOptions]) async {
     Tools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
-    final result = await methodChannel.invokeMethod(
+    final result = await curiosityChannel.invokeMethod(
         'openPicker', selectOptions.toJson());
     if (result is List) {
       return Future.value(
@@ -31,7 +31,7 @@ class PicturePicker {
     Tools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result =
-    await methodChannel.invokeMethod('openCamera', selectOptions.toJson());
+    await curiosityChannel.invokeMethod('openCamera', selectOptions.toJson());
     if (result is List) {
       return Future.value(
           result.map((data) => AssetMedia.fromJson(data)).toList());
@@ -43,7 +43,7 @@ class PicturePicker {
   /// [selectValueType] 0:全部类型，1:图片，2:视频，3:音频
   static Future deleteCacheDirFile({int selectValueType = 0}) async {
     Tools.supportPlatform();
-    return methodChannel.invokeMethod(
+    return curiosityChannel.invokeMethod(
         'deleteCacheDirFile', {'selectValueType': selectValueType});
   }
 }
