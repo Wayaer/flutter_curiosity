@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_curiosity/constant/Constant.dart';
 import 'package:flutter_curiosity/scanner/ScannerController.dart';
+import 'package:flutter_curiosity/tools/Tools.dart';
 
 class Scanner extends StatefulWidget {
   final ScannerController controller;
@@ -15,7 +17,6 @@ class Scanner extends StatefulWidget {
 
   ///距离屏幕左边
   final double leftRatio;
-
 
   ///识别区域的宽高度比例
   final double widthRatio;
@@ -29,12 +30,15 @@ class Scanner extends StatefulWidget {
   ///屏幕宽度比例=leftRatio + widthRatio + leftRatio
   ///屏幕高度比例=topRatio + heightRatio + topRatio
 
-  Scanner({this.controller,
-    this.hitTestBehavior =
-        PlatformViewHitTestBehavior
-            .opaque,
-    this.topRatio: 0.3, this.leftRatio: 0.1, this.widthRatio: 0.8, this.heightRatio: 0.4, this.androidOldCamera: false,})
-      : assert(leftRatio * 2 + widthRatio == 1),
+  Scanner({
+    this.controller,
+    this.hitTestBehavior = PlatformViewHitTestBehavior.opaque,
+    this.topRatio: 0.3,
+    this.leftRatio: 0.1,
+    this.widthRatio: 0.8,
+    this.heightRatio: 0.4,
+    this.androidOldCamera: false,
+  })  : assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
 
@@ -47,7 +51,7 @@ class ScannerState extends State<Scanner> {
   Map<String, dynamic> params;
 
   onPlatformViewCreated(int id) {
-    controller.attach(id);
+    controller.start(id);
   }
 
   @override
@@ -71,9 +75,8 @@ class ScannerState extends State<Scanner> {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isAndroid) {
+    if (Tools.isAndroid()) {
       return AndroidView(
-
         ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
 
@@ -91,9 +94,8 @@ class ScannerState extends State<Scanner> {
         ///编解码器类型
         creationParamsCodec: StandardMessageCodec(),
       );
-    } else if (Platform.isIOS) {
+    } else if (Tools.isIOS()) {
       return UiKitView(
-
         ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
 

@@ -25,11 +25,11 @@ import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
  * CuriosityPlugin
  */
 class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, ActivityResultListener {
-    private lateinit var methodChannel: MethodChannel
+    private lateinit var curiosityChannel: MethodChannel
     private lateinit var result: MethodChannel.Result
 
     companion object {
-        //        此处是旧的插件加载注册方式
+//        此处是旧的插件加载注册方式
 //        @JvmStatic
 //        fun registerWith(registrar: Registrar) {
 //            val plugin = CuriosityPlugin()
@@ -48,7 +48,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     ///此处是新的插件加载注册方式
     override fun onAttachedToEngine(@NonNull pluginBinding: FlutterPluginBinding) {
-        methodChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
+        curiosityChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
         curiosityChannel.setMethodCallHandler(this)
         context = pluginBinding.applicationContext
         pluginBinding.platformViewRegistry.registerViewFactory(scanner, ScannerFactory(pluginBinding.binaryMessenger))
