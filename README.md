@@ -1,4 +1,4 @@
-# flutter-curiosity
+# flutter_curiosity
 集成部分原生功能，支持ios&amp;android
 
 ## 1.原生多个方法 [点击查看](./lib/tools/NativeTools.dart)
@@ -7,6 +7,8 @@
 ```
    anroid 分 CameraX最新版预览识别 和旧版 Camera API预览识别
    新版API对于条形码的识别率 相对于 旧版的API正确率会低一些
+   旧版不支持设置区域识别，新版 仅android支持指定区域识别
+   打开闪光灯  android 暂时无效
 ```
 ##### 1、添加相机相关权限：
 
