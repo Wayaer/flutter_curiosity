@@ -1,6 +1,8 @@
+## [1.0.1]
+  remove android r8
 ## [1.0.0]
-  发布正式版
+  publish
 ## [0.0.2]
-  1.format code
+  format code
 ## [0.0.1]
-  1.create lib
+  create lib
