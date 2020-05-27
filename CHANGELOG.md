@@ -1,8 +1,8 @@
 ## [1.0.1]
-  remove android r8
+*  remove android r8
 ## [1.0.0]
-  publish
+*  publish
 ## [0.0.2]
-  format code
+*  format code
 ## [0.0.1]
-  create lib
+*  create lib
