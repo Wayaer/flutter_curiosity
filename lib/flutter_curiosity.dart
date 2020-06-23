@@ -10,5 +10,4 @@ export 'scanner/Scanner.dart';
 export 'scanner/ScannerController.dart';
 export 'scanner/view/ScannerBox.dart';
 export 'scanner/view/ScannerPainter.dart';
-export 'tools/GPSTools.dart';
 export 'tools/NativeTools.dart';
