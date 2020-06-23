@@ -29,10 +29,12 @@ class App extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Center(),
-          StatefulBuilder(builder: (BuildContext context, StateSetter state) {
-            setState = state;
-            return Column(children: showText());
-          },),
+          StatefulBuilder(
+            builder: (BuildContext context, StateSetter state) {
+              setState = state;
+              return Column(children: showText());
+            },
+          ),
           RaisedButton(
               onPressed: () {
                 scan(context);
@@ -65,10 +67,9 @@ class App extends StatelessWidget {
               child: Text('获取gps状态')),
           RaisedButton(
               onPressed: () {
-                GPSTools.jumpSetting();
+                NativeTools.jumpSetting();
               },
               child: Text('跳转GPS设置')),
-
         ],
       ),
     );
@@ -101,7 +102,7 @@ class App extends StatelessWidget {
   }
 
   getGPS() async {
-    var data = await GPSTools.getStatus();
+    var data = await NativeTools.getStatus();
     print(data);
   }
 
@@ -122,5 +123,4 @@ class App extends StatelessWidget {
     list = await PicturePicker.openPicker(options);
     setState(() {});
   }
-
 }

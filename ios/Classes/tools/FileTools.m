@@ -6,29 +6,6 @@
 
 @implementation FileTools
 
-// 删除沙盒指定文件或文件夹
-+ (void)deleteFile:(NSString *)path{
-    if ([self isDirectoryExist:path]) {
-        if(![fileManager removeItemAtPath:path error:nil]){
-            [fileManager removeItemAtPath:path error:nil];
-        }
-    }
-}
-// 删除沙盒指定文件夹内容
-+ (void)deleteDirectory:(NSString *)path{
-    if ([self isDirectoryExist:path]) {
-        if ([fileManager fileExistsAtPath:path]) {
-            // 获取该路径下面的文件名
-            NSArray *childrenFiles = [fileManager subpathsAtPath:path];
-            for (NSString *fileName in childrenFiles) {
-                // 拼接路径
-                
-                // 将文件删除
-                [fileManager removeItemAtPath: [path stringByAppendingPathComponent:fileName] error:nil];
-            }
-        }
-    }
-}
 // 沙盒是否有指定路径文件夹或文件
 +(BOOL)isDirectoryExist:(NSString *)path {
     return [fileManager fileExistsAtPath:path];
@@ -84,28 +61,6 @@
 }
 
 
-//获取目录下所有文件和文件夹名字
-+ (NSMutableArray *) getDirectoryAllName :(NSDictionary *)arguments{
-    NSString *path = [arguments objectForKey:@"path"];
-    NSMutableArray * nameList=[NSMutableArray array];
-    if(![FileTools isDirectoryExist:path]){
-        [nameList addObject:@"path not exist"];
-        return nameList;
-    }
-    if(![FileTools isDirectory:path]){
-        [nameList addObject:@"path not exist"];
-        return nameList;
-    }
-    NSDirectoryEnumerator *dirEnum=[fileManager enumeratorAtPath:path];
-    //列举目录内容，可以遍历子目录
-    NSString *name;
-    while((name=[dirEnum nextObject])!=nil)
-    {
-        if([self isDirectoryExist:name] == YES)  [dirEnum skipDescendants];
-        [nameList addObject:name];
-    }
-    return nameList;
-}
 
 //解压文件
 + (NSString *)unZipFile:(NSString *)filePath {

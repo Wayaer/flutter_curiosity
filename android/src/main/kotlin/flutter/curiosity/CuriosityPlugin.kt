@@ -29,7 +29,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     private lateinit var result: MethodChannel.Result
 
     companion object {
-//        此处是旧的插件加载注册方式
+        //        此处是旧的插件加载注册方式
 //        @JvmStatic
 //        fun registerWith(registrar: Registrar) {
 //            val plugin = CuriosityPlugin()
@@ -97,14 +97,10 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "installApp" -> result.success(NativeTools.installApp())
             "getFilePathSize" -> result.success(NativeTools.getFilePathSize())
             "unZipFile" -> result.success(FileTools.unZipFile())
-            "deleteDirectory" -> result.success(FileTools.deleteDirectory())
-            "deleteFile" -> result.success(FileTools.deleteFile())
             "callPhone" -> result.success(NativeTools.callPhone())
             "goToMarket" -> result.success(NativeTools.goToMarket())
             "isInstallApp" -> result.success(NativeTools.isInstallApp())
-            "exitApp" -> NativeTools.exitApp()
             "getAppInfo" -> result.success(AppInfo.getAppInfo())
-            "getDirectoryAllName" -> result.success(FileTools.getDirectoryAllName())
             "systemShare" -> result.success(NativeTools.systemShare())
         }
     }

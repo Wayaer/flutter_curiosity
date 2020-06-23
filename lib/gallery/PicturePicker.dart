@@ -1,7 +1,7 @@
 import 'package:flutter_curiosity/constant/Constant.dart';
 import 'package:flutter_curiosity/gallery/AssetMedia.dart';
 import 'package:flutter_curiosity/gallery/PicturePickerOptions.dart';
-import 'package:flutter_curiosity/tools/Tools.dart';
+import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class PicturePicker {
 
@@ -14,7 +14,7 @@ class PicturePicker {
   ///  }
   static Future<List<AssetMedia>> openPicker(
       [PicturePickerOptions selectOptions]) async {
-    Tools.supportPlatform();
+    InternalTools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result = await curiosityChannel.invokeMethod(
         'openPicker', selectOptions.toJson());
@@ -28,7 +28,7 @@ class PicturePicker {
 
   static Future<List<AssetMedia>> openCamera(
       [PicturePickerOptions selectOptions]) async {
-    Tools.supportPlatform();
+    InternalTools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     final result =
     await curiosityChannel.invokeMethod('openCamera', selectOptions.toJson());
@@ -42,7 +42,7 @@ class PicturePicker {
 
   /// [selectValueType] 0:全部类型，1:图片，2:视频，3:音频
   static Future deleteCacheDirFile({int selectValueType = 0}) async {
-    Tools.supportPlatform();
+    InternalTools.supportPlatform();
     return curiosityChannel.invokeMethod(
         'deleteCacheDirFile', {'selectValueType': selectValueType});
   }

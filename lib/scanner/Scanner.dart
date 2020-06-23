@@ -5,7 +5,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/Constant.dart';
 import 'package:flutter_curiosity/scanner/ScannerController.dart';
-import 'package:flutter_curiosity/tools/Tools.dart';
+import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class Scanner extends StatefulWidget {
   final ScannerController controller;
@@ -38,8 +38,7 @@ class Scanner extends StatefulWidget {
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
     this.androidOldCamera: false,
-  })
-      : assert(leftRatio * 2 + widthRatio == 1),
+  })  : assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
 
@@ -68,12 +67,10 @@ class ScannerState extends State<Scanner> {
     };
   }
 
-
   @override
   Widget build(BuildContext context) {
-    if (Tools.isAndroid()) {
+    if (InternalTools.isAndroid()) {
       return AndroidView(
-
         ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
 
@@ -91,9 +88,8 @@ class ScannerState extends State<Scanner> {
         ///编解码器类型
         creationParamsCodec: StandardMessageCodec(),
       );
-    } else if (Tools.isIOS()) {
+    } else if (InternalTools.isIOS()) {
       return UiKitView(
-
         ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
 

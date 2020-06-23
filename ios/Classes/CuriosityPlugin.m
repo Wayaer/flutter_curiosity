@@ -68,17 +68,9 @@
 -(void)tools:(FlutterResult)result{
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
-    }else if([@"getDirectoryAllName" isEqualToString:call.method]){
-        result([FileTools getDirectoryAllName:call.arguments]);
     }else if ([@"getFilePathSize" isEqualToString:call.method]) {
         result([FileTools getFilePathSize:call.arguments[@"filePath"]]);
-    } else if ([@"deleteDirectory" isEqualToString:call.method]) {
-        [FileTools deleteDirectory:call.arguments[@"directoryPath"]];
-        result( @"success");
-    } else if ([@"deleteFile" isEqualToString:call.method]) {
-        [FileTools deleteFile:call.arguments[@"filePath"]];
-        result( @"success");
-    } else if ([@"unZipFile" isEqualToString:call.method]) {
+    } else  if ([@"unZipFile" isEqualToString:call.method]) {
         [FileTools unZipFile:call.arguments[@"filePath"]];
         result( @"success");
     }else if ([@"goToMarket" isEqualToString:call.method]) {
@@ -89,9 +81,6 @@
         result( @"success");
     } else if ([@"systemShare" isEqualToString:call.method]) {
         [NativeTools systemShare:call result:result];
-//        result( @"success");
-    }else if ([@"exitApp" isEqualToString:call.method]) {
-        exit(0);
     }
 }
 

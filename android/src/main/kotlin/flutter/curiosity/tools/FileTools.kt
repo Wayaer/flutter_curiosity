@@ -1,6 +1,7 @@
 package flutter.curiosity.tools
 
 import android.util.Log
+import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import java.io.*
 import java.text.DecimalFormat
@@ -9,19 +10,6 @@ import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 
 object FileTools {
-    private fun deleteDirWithFile(dir: File) {
-        if (!dir.exists()) return
-        if (dir.isFile) {
-            dir.delete()
-            return
-        }
-        val files = dir.listFiles()
-        for (file in files) {
-            if (file.isFile) file.delete() // 删除所有文件
-            else if (file.isDirectory) deleteDirWithFile(file) // 递规的方式删除文件夹
-        }
-        dir.delete() // 删除目录本身
-    }
 
     /**
      * 获取指定文件夹的大小
@@ -61,7 +49,9 @@ object FileTools {
                 e.printStackTrace()
             } finally {
                 try {
-                    assert(fis != null)
+                    if (BuildConfig.DEBUG && fis == null) {
+                        error("Assertion failed")
+                    }
                     fis!!.close()
                 } catch (e: IOException) {
                     e.printStackTrace()
@@ -108,7 +98,7 @@ object FileTools {
      * @param absFileName 相对路径名，来自于ZipEntry中的name
      * @return java.io.File 实际的文件
      */
-    fun getRealFileName(baseDir: String, absFileName: String): File {
+    private fun getRealFileName(baseDir: String, absFileName: String): File {
         val dirs = absFileName.split("/").toTypedArray()
         var ret = File(baseDir)
         var substr: String
@@ -154,76 +144,6 @@ object FileTools {
         return file.exists()
     }
 
-    /**
-     * 判断是否有该路径,如果没有就创建,传入路径
-     *
-     * @param directory
-     * @return
-     */
-    fun createDirectory(directory: String): Boolean {
-        val file = File(directory)
-        if (!file.exists()) {
-            if (file.mkdirs()) {
-                return true
-            }
-        }
-        return true
-    }
-
-    /**
-     * 删除文件和文件夹里面的文件
-     *
-     */
-    fun deleteFile(): String {
-        val path = call.argument<String>("filePath") ?: return Tools.resultError()
-        val dir = File(path)
-        deleteDirWithFile(dir)
-        return Tools.resultSuccess()
-    }
-
-    /**
-     * 删除文件夹内的文件（不删除文件夹）
-     */
-    fun deleteDirectory(): String {
-        val path = call.argument<String>("directoryPath") ?: return Tools.resultError()
-        val dir = File(path).listFiles()
-        for (file in dir) {
-            if (file.isFile) {
-                file.delete() // 删除所有文件
-            } else if (file.isDirectory) {
-                deleteDirWithFile(file)
-            }
-        }
-        return Tools.resultSuccess()
-    }
-
-    /**
-     * 获取路径下所有文件及文件夹名
-     *
-     * @return
-     */
-    fun getDirectoryAllName(): MutableList<String> {
-        val path = call.argument<String>("path")
-        assert(path != null)
-        val isAbsolutePath = Objects.requireNonNull<Boolean>(call.argument("isAbsolutePath"))
-        val nameList: MutableList<String> = ArrayList()
-        if (!isDirectoryExist(path!!)) {
-            nameList.add("path not exist")
-            return nameList
-        }
-        val file = File(path)
-        if (!file.isDirectory) {
-            nameList.add("path is not Directory")
-            return nameList
-        }
-        val files = file.listFiles()
-        if (files != null && files.isNotEmpty()) {
-            for (value in files) {
-                nameList.add(if (isAbsolutePath) value.absolutePath else value.name)
-            }
-        }
-        return nameList
-    }
 
     /**
      * 解压文件

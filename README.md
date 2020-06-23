@@ -45,5 +45,5 @@
 ##### 2、中文适配：    
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
-## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/appinfo/AppInfo.dart)
+## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/app/AppInfo.dart)
 
