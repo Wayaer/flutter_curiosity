@@ -12,6 +12,7 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
+import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import io.flutter.plugin.common.MethodCall
@@ -111,7 +112,7 @@ object PicturePicker {
                 .previewVideo(previewVideo) // 是否可预览视频 true or false
                 .enablePreviewAudio(false) // 是否可播放音频 true or false
                 .isCamera(isCamera) // 是否显示拍照按钮 true or false
-                .imageFormat(PictureMimeType.PNG) // 拍照保存图片格式后缀,默认jpeg
+                .imageFormat(PictureMimeType.JPEG) // 拍照保存图片格式后缀,默认jpeg
                 .isZoomAnim(isZoomAnim) // 图片列表点击 缩放效果 默认true
                 .sizeMultiplier(0.5F) // glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
                 .enableCrop(enableCrop) // 是否裁剪 true or false
@@ -143,7 +144,7 @@ object PicturePicker {
         setValue(call)
         PictureSelector.create(activity)
                 .openCamera(pictureMimeType)
-                .imageFormat(PictureMimeType.PNG) // 拍照保存图片格式后缀,默认jpeg
+                .imageFormat(PictureMimeType.JPEG) // 拍照保存图片格式后缀,默认jpeg
                 .enableCrop(enableCrop) // 是否裁剪 true or false
                 .compress(compress) // 是否压缩 true or false
                 .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
@@ -174,7 +175,9 @@ object PicturePicker {
 
     fun deleteCacheDirFile(call: MethodCall) {
         val selectValueType = call.argument<Int>("selectValueType")
-        assert(selectValueType != null)
+        if (BuildConfig.DEBUG && selectValueType == null) {
+            error("Assertion failed")
+        }
         var pictureMimeType = 0
         pictureMimeType = when (selectValueType) {
             1 -> {

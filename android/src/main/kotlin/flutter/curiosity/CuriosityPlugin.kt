@@ -6,7 +6,8 @@ import android.content.Intent
 import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
-import flutter.curiosity.scanner.ScannerFactory
+import flutter.curiosity.scanner.ScannerMethodHandler
+import flutter.curiosity.scanner.ScannerMethodHandler.Companion.scannerChannel
 import flutter.curiosity.scanner.ScannerTools
 import flutter.curiosity.tools.AppInfo
 import flutter.curiosity.tools.FileTools
@@ -29,47 +30,40 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     private lateinit var result: MethodChannel.Result
 
     companion object {
-        //        此处是旧的插件加载注册方式
-//        @JvmStatic
-//        fun registerWith(registrar: Registrar) {
-//            val plugin = CuriosityPlugin()
-//            val methodChannel = MethodChannel(registrar.messenger(), "Curiosity")
-//            context = registrar.context()
-//            activity = registrar.activity()
-//            curiosityChannel.setMethodCallHandler(plugin)
-//            registrar.addActivityResultListener(plugin)
-//        }
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
         var scanner = "scanner"
-
     }
 
     ///此处是新的插件加载注册方式
-    override fun onAttachedToEngine(@NonNull pluginBinding: FlutterPluginBinding) {
-        curiosityChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
+    override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
+        curiosityChannel = MethodChannel(plugin.binaryMessenger, "Curiosity")
         curiosityChannel.setMethodCallHandler(this)
-        context = pluginBinding.applicationContext
-        pluginBinding.platformViewRegistry.registerViewFactory(scanner, ScannerFactory(pluginBinding.binaryMessenger))
+        context = plugin.applicationContext
+        ScannerMethodHandler(plugin.binaryMessenger, plugin.textureRegistry)
     }
 
     ///主要是用于获取当前flutter页面所处的Activity.
-    override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
-        activity = pluginBinding.activity
-        pluginBinding.addActivityResultListener(this)
+    override fun onAttachedToActivity(plugin: ActivityPluginBinding) {
+        activity = plugin.activity
+        plugin.addActivityResultListener(this)
     }
 
     ///主要是用于获取当前flutter页面所处的Activity.
     override fun onDetachedFromActivity() {
-
+        onDetachedFromActivity()
     }
 
     ///Activity注销时
-    override fun onReattachedToActivityForConfigChanges(pluginBinding: ActivityPluginBinding) {
-        pluginBinding.removeActivityResultListener(this)
+    override fun onReattachedToActivityForConfigChanges(plugin: ActivityPluginBinding) {
+        plugin.removeActivityResultListener(this)
     }
 
+    override fun onDetachedFromActivityForConfigChanges() {
+        scannerChannel.setMethodCallHandler(null)
+        curiosityChannel.setMethodCallHandler(null)
+    }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         curiosityChannel.setMethodCallHandler(null)
@@ -131,12 +125,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             }
         }
         return true
-    }
-
-
-    //以下暂时不知道的方法
-    override fun onDetachedFromActivityForConfigChanges() {
-        activity
     }
 
 

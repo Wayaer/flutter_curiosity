@@ -2,7 +2,7 @@ library flutter_curiosity;
 
 export 'app/AppInfo.dart';
 export 'app/AppInfoModel.dart';
-export 'constant/Enum.dart';
+export 'constant/enum.dart';
 export 'gallery/AssetMedia.dart';
 export 'gallery/PicturePicker.dart';
 export 'gallery/PicturePickerOptions.dart';

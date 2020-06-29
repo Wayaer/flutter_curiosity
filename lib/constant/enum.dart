@@ -1,1 +1,1 @@
-enum ShareType {  ///android ios  text,  ///android ios  image,  ///android ios  images,  ///ios  url,}
+enum ShareType {  ///android ios  text,  ///android ios  image,  ///android ios  images,  ///ios  url,}enum ResolutionPreset { Low, Medium, High, VeryHigh, UltraHigh, Max }

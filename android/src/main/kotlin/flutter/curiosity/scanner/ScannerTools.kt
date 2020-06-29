@@ -6,6 +6,8 @@ import android.graphics.BitmapFactory
 import android.os.Handler
 import com.google.zxing.*
 import com.google.zxing.common.HybridBinarizer
+import flutter.curiosity.BuildConfig
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
@@ -27,7 +29,9 @@ object ScannerTools {
 
     fun scanImagePath(call: MethodCall, result: MethodChannel.Result) {
         val path = call.argument<String>("path")
-        assert(path != null)
+        if (BuildConfig.DEBUG && path == null) {
+            error("Assertion failed")
+        }
         val file = File(path.toString())
         if (file.isFile) {
             executor.execute {
@@ -45,7 +49,9 @@ object ScannerTools {
         executor.execute {
             val myUrl = URL(url)
             val bitmap: Bitmap
-            assert(url != null)
+            if (BuildConfig.DEBUG && url == null) {
+                error("Assertion failed")
+            }
             if (url!!.startsWith("https")) {
                 val connection = myUrl.openConnection() as HttpsURLConnection
                 connection.readTimeout = 6 * 60 * 1000
@@ -71,7 +77,9 @@ object ScannerTools {
 
     fun scanImageMemory(call: MethodCall, result: MethodChannel.Result) {
         val unit8List = call.argument<ByteArray>("unit8List")
-        assert(unit8List != null)
+        if (BuildConfig.DEBUG && unit8List == null) {
+            error("Assertion failed")
+        }
         executor.execute {
             val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
             Handler().post { result.success(identifyBitmap(bitmap)) }
@@ -156,4 +164,6 @@ object ScannerTools {
         }
         return data
     }
+
+  
 }
