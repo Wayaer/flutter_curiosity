@@ -51,8 +51,8 @@ class ScannerState extends State<Scanner> {
   @override
   void initState() {
     super.initState();
-    controller =
-        widget.controller ?? ScannerController(ResolutionPreset.VeryHigh);
+    controller = widget.controller ??
+        ScannerController(resolutionPreset: ResolutionPreset.VeryHigh);
     controller.initialize().then((value) {
       setState(() {});
     });

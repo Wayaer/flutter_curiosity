@@ -20,21 +20,24 @@ class ScannerController extends ChangeNotifier {
   final double heightRatio;
   final ResolutionPreset resolutionPreset;
 
-  ScannerController(
-    this.resolutionPreset, {
+  ScannerController({
+    ResolutionPreset resolutionPreset,
     this.topRatio: 0.3,
     this.cameraId: '0',
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-  })  : assert(leftRatio * 2 + widthRatio == 1),
+  })
+      :
+        this.resolutionPreset=resolutionPreset ?? ResolutionPreset.VeryHigh,
+        assert(leftRatio * 2 + widthRatio == 1),
         assert(cameraId != null),
         assert(topRatio * 2 + heightRatio == 1);
 
   Future<void> initialize() async {
     try {
       final Map<String, dynamic> reply =
-          await scannerChannel.invokeMapMethod('initialize', {
+      await scannerChannel.invokeMapMethod('initialize', {
         'cameraId': cameraId,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
         "topRatio": topRatio,
