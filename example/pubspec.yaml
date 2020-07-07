@@ -9,10 +9,6 @@ dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^0.1.3
-  r_scan:
-      git:
-        url: git://github.com/rhymelph/r_scan.git
-        ref: master
 
 dev_dependencies:
   flutter_test:

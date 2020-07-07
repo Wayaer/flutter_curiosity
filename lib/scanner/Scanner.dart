@@ -81,10 +81,4 @@ class ScannerState extends State<Scanner> {
       );
     }
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller.dispose();
-  }
 }
