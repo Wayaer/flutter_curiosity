@@ -27,9 +27,7 @@ class ScannerController extends ChangeNotifier {
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-  })
-      :
-        this.resolutionPreset=resolutionPreset ?? ResolutionPreset.VeryHigh,
+  })  : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(cameraId != null),
         assert(topRatio * 2 + heightRatio == 1);
@@ -37,7 +35,7 @@ class ScannerController extends ChangeNotifier {
   Future<void> initialize() async {
     try {
       final Map<String, dynamic> reply =
-      await scannerChannel.invokeMapMethod('initialize', {
+          await scannerChannel.invokeMapMethod('initialize', {
         'cameraId': cameraId,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
         "topRatio": topRatio,
@@ -77,6 +75,19 @@ class ScannerController extends ChangeNotifier {
         .invokeMethod('scanImageMemory', {"uint8list": uint8list});
   }
 
+  Future<List<Cameras>> availableCameras() async {
+    try {
+      final List<Map<dynamic, dynamic>> cameras = await scannerChannel
+          .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+      return cameras.map((camera) {
+        return Cameras(name: camera['name'], lensFacing: camera['lensFacing']);
+      }).toList();
+    } on PlatformException catch (e) {
+      print(e);
+      return null;
+    }
+  }
+
   @override
   Future<void> dispose() async {
     super.dispose();
@@ -85,4 +96,11 @@ class ScannerController extends ChangeNotifier {
     if (textureId == null) return;
     await scannerChannel.invokeMethod('dispose');
   }
+}
+
+class Cameras {
+  final String name;
+  final String lensFacing;
+
+  Cameras({this.name, this.lensFacing});
 }

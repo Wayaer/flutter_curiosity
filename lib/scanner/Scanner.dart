@@ -36,7 +36,8 @@ class Scanner extends StatefulWidget {
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
     this.androidOldCamera: false,
-  })  : assert(leftRatio * 2 + widthRatio == 1),
+  })
+      : assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
 
@@ -44,17 +45,20 @@ class Scanner extends StatefulWidget {
   State<StatefulWidget> createState() => ScannerState();
 }
 
-class ScannerState extends State<Scanner> {
+class ScannerState extends State<Scanner> with WidgetsBindingObserver {
   ScannerController controller;
   Map<String, dynamic> params;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     controller = widget.controller ??
         ScannerController(resolutionPreset: ResolutionPreset.VeryHigh);
-    controller.initialize().then((value) {
-      setState(() {});
+    WidgetsBinding.instance.addPostFrameCallback((callback) {
+      controller.initialize().then((value) {
+        setState(() {});
+      });
     });
   }
 
@@ -65,6 +69,7 @@ class ScannerState extends State<Scanner> {
       return Texture(textureId: controller.textureId);
     } else if (InternalTools.isIOS()) {
       return UiKitView(
+
         ///与原生交互时唯一标识符，常见形式是包名+自定义名；
         viewType: scanner,
 
@@ -79,6 +84,13 @@ class ScannerState extends State<Scanner> {
       return Container(
         child: Text('Not support ${Platform.operatingSystem} platform'),
       );
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      controller.initialize();
     }
   }
 }
