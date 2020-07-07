@@ -55,10 +55,8 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     controller = widget.controller ??
         ScannerController(resolutionPreset: ResolutionPreset.VeryHigh);
-    WidgetsBinding.instance.addPostFrameCallback((callback) {
-      controller.initialize().then((value) {
-        setState(() {});
-      });
+    controller.initialize().then((value) {
+      setState(() {});
     });
   }
 
