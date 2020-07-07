@@ -81,6 +81,8 @@
         result( @"success");
     } else if ([@"systemShare" isEqualToString:call.method]) {
         [NativeTools systemShare:call result:result];
+    }else if ([@"exitApp" isEqualToString:call.method]) {
+        exit(0);
     }
 }
 

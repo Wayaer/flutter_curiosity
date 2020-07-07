@@ -94,6 +94,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "callPhone" -> result.success(NativeTools.callPhone())
             "goToMarket" -> result.success(NativeTools.goToMarket())
             "isInstallApp" -> result.success(NativeTools.isInstallApp())
+            "exitApp" -> NativeTools.exitApp()
             "getAppInfo" -> result.success(AppInfo.getAppInfo())
             "systemShare" -> result.success(NativeTools.systemShare())
         }
