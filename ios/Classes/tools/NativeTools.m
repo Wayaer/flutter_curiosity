@@ -1,5 +1,5 @@
 #import "NativeTools.h"
-
+#import <CoreLocation/CoreLocation.h>
 @implementation NativeTools
 
 //Log
@@ -120,5 +120,23 @@
     }else{
         [vc presentViewController:activityVC animated:YES completion:nil];
     }
+}
+
+//强制帮用户打开GPS
++ (void) open {
+    
+    
+}
+
+//跳转到设置页面让用户自己手动开启
++ (void) jumpGPSSetting {
+    NSURL *url = [[NSURL alloc] initWithString:UIApplicationOpenSettingsURLString];
+    if( [[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+    }
+}
+//判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
++ (BOOL) getGPSStatus {
+    return [CLLocationManager locationServicesEnabled];
 }
 @end

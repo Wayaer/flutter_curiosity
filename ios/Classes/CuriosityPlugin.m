@@ -4,7 +4,6 @@
 #import "NativeTools.h"
 #import "FileTools.h"
 #import "PicturePicker.h"
-#import "GPSTools.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
@@ -34,16 +33,6 @@
     [self gallery:result];
     [self scanner:result];
     [self tools:result];
-    [self gps:result];
-    
-}
-
--(void)gps:(FlutterResult)result{
-    if ([@"getStatus" isEqualToString:call.method]) {
-        [GPSTools getStatus ];
-    } else if ([@"jumpSetting" isEqualToString:call.method]) {
-        [GPSTools jumpSetting];
-    }
 }
 
 -(void)gallery:(FlutterResult)result{
@@ -66,22 +55,34 @@
 }
 
 -(void)tools:(FlutterResult)result{
+    if ([@"getGPSStatus" isEqualToString:call.method]) {
+        [NativeTools getGPSStatus];
+    }
+    if ([@"jumpGPSSetting" isEqualToString:call.method]) {
+        [NativeTools jumpGPSSetting];
+    }
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
-    }else if ([@"getFilePathSize" isEqualToString:call.method]) {
+    }
+    if ([@"getFilePathSize" isEqualToString:call.method]) {
         result([FileTools getFilePathSize:call.arguments[@"filePath"]]);
-    } else  if ([@"unZipFile" isEqualToString:call.method]) {
+    }
+    if ([@"unZipFile" isEqualToString:call.method]) {
         [FileTools unZipFile:call.arguments[@"filePath"]];
         result( @"success");
-    }else if ([@"goToMarket" isEqualToString:call.method]) {
+    }
+    if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeTools goToMarket:call.arguments[@"packageName"]];
         result( @"success");
-    } else if ([@"callPhone" isEqualToString:call.method]) {
+    }
+    if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
         result( @"success");
-    } else if ([@"systemShare" isEqualToString:call.method]) {
+    }
+    if ([@"systemShare" isEqualToString:call.method]) {
         [NativeTools systemShare:call result:result];
-    }else if ([@"exitApp" isEqualToString:call.method]) {
+    }
+    if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }
 }

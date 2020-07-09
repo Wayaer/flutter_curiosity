@@ -67,7 +67,7 @@ class App extends StatelessWidget {
               child: Text('获取gps状态')),
           RaisedButton(
               onPressed: () {
-                NativeTools.jumpSetting();
+                NativeTools.jumpGPSSetting();
               },
               child: Text('跳转GPS设置')),
         ],
@@ -102,7 +102,7 @@ class App extends StatelessWidget {
   }
 
   getGPS() async {
-    var data = await NativeTools.getStatus();
+    var data = await NativeTools.getGPSStatus();
     print(data);
   }
 

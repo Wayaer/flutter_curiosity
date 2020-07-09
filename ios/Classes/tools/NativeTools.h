@@ -16,4 +16,15 @@
 
 //调用系统分享
 + (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result;
+
+
+//强制帮用户打开GPS
++ (void)open;
+
+//跳转到设置页面让用户自己手动开启
++ (void)jumpGPSSetting;
+
+//判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
++ (BOOL)getGPSStatus;
+
 @end

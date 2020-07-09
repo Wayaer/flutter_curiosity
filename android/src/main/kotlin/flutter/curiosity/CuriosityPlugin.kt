@@ -11,7 +11,6 @@ import flutter.curiosity.scanner.ScannerMethodHandler.Companion.scannerChannel
 import flutter.curiosity.scanner.ScannerTools
 import flutter.curiosity.tools.AppInfo
 import flutter.curiosity.tools.FileTools
-import flutter.curiosity.tools.GPSTools
 import flutter.curiosity.tools.NativeTools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
@@ -76,14 +75,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         scanner()
         gallery()
         tools()
-        gps()
-    }
-
-    private fun gps() {
-        when (call.method) {
-            "getStatus" -> result.success(GPSTools.getStatus())
-            "jumpSetting" -> GPSTools.jumpSetting()
-        }
     }
 
     private fun tools() {
@@ -97,6 +88,8 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "exitApp" -> NativeTools.exitApp()
             "getAppInfo" -> result.success(AppInfo.getAppInfo())
             "systemShare" -> result.success(NativeTools.systemShare())
+            "getGPSStatus" -> result.success(NativeTools.getGPSStatus())
+            "jumpGPSSetting" -> NativeTools.jumpGPSSetting()
         }
     }
 
