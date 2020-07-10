@@ -6,41 +6,52 @@ import android.content.Intent
 import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
-import flutter.curiosity.scanner.ScannerMethodHandler
-import flutter.curiosity.scanner.ScannerMethodHandler.Companion.scannerChannel
+import flutter.curiosity.scanner.CameraTools
 import flutter.curiosity.scanner.ScannerTools
+import flutter.curiosity.scanner.ScannerView
 import flutter.curiosity.tools.AppInfo
 import flutter.curiosity.tools.FileTools
 import flutter.curiosity.tools.NativeTools
+import flutter.curiosity.tools.Tools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
+import io.flutter.view.TextureRegistry
 
 /**
  * CuriosityPlugin
  */
-class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, ActivityResultListener {
+class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventChannel.StreamHandler, ActivityResultListener {
     private lateinit var curiosityChannel: MethodChannel
-    private lateinit var result: MethodChannel.Result
+
+    private lateinit var scannerView: ScannerView
+    private lateinit var binaryMessenger: BinaryMessenger
+    private lateinit var textureRegistry: TextureRegistry
 
     companion object {
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
-        var scanner = "scanner"
+        lateinit var channelResult: MethodChannel.Result
+        lateinit var eventSink: EventChannel.EventSink
     }
 
-    ///此处是新的插件加载注册方式
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
-        curiosityChannel = MethodChannel(plugin.binaryMessenger, "Curiosity")
+        val curiosity = "Curiosity"
+        curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
         curiosityChannel.setMethodCallHandler(this)
         context = plugin.applicationContext
-        ScannerMethodHandler(plugin.binaryMessenger, plugin.textureRegistry)
+        binaryMessenger = plugin.binaryMessenger
+        textureRegistry = plugin.textureRegistry
+        val eventChannel = EventChannel(binaryMessenger, "$curiosity/event")
+        eventChannel.setStreamHandler(this)
     }
 
     ///主要是用于获取当前flutter页面所处的Activity.
@@ -51,7 +62,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     ///主要是用于获取当前flutter页面所处的Activity.
     override fun onDetachedFromActivity() {
-        onDetachedFromActivity()
     }
 
     ///Activity注销时
@@ -60,17 +70,18 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        scannerChannel.setMethodCallHandler(null)
         curiosityChannel.setMethodCallHandler(null)
+        eventSink.endOfStream()
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         curiosityChannel.setMethodCallHandler(null)
+        eventSink.endOfStream()
     }
 
     ///主要用于接收Flutter端对原生方法调用的实现.
     override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
-        result = _result
+        channelResult = _result
         call = _call
         scanner()
         gallery()
@@ -79,46 +90,65 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     private fun tools() {
         when (call.method) {
-            "installApp" -> result.success(NativeTools.installApp())
-            "getFilePathSize" -> result.success(NativeTools.getFilePathSize())
-            "unZipFile" -> result.success(FileTools.unZipFile())
-            "callPhone" -> result.success(NativeTools.callPhone())
-            "goToMarket" -> result.success(NativeTools.goToMarket())
-            "isInstallApp" -> result.success(NativeTools.isInstallApp())
+            "installApp" -> channelResult.success(NativeTools.installApp())
+            "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
+            "unZipFile" -> channelResult.success(FileTools.unZipFile())
+            "callPhone" -> channelResult.success(NativeTools.callPhone())
+            "goToMarket" -> channelResult.success(NativeTools.goToMarket())
+            "isInstallApp" -> channelResult.success(NativeTools.isInstallApp())
             "exitApp" -> NativeTools.exitApp()
-            "getAppInfo" -> result.success(AppInfo.getAppInfo())
-            "systemShare" -> result.success(NativeTools.systemShare())
-            "getGPSStatus" -> result.success(NativeTools.getGPSStatus())
+            "getAppInfo" -> channelResult.success(AppInfo.getAppInfo())
+            "systemShare" -> channelResult.success(NativeTools.systemShare())
+            "getGPSStatus" -> channelResult.success(NativeTools.getGPSStatus())
             "jumpGPSSetting" -> NativeTools.jumpGPSSetting()
         }
     }
 
     private fun gallery() {
         when (call.method) {
-            "openPicker" -> PicturePicker.openPicker(call)
-            "openCamera" -> PicturePicker.openCamera(call)
-            "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile(call)
+            "openPicker" -> PicturePicker.openPicker()
+            "openCamera" -> PicturePicker.openCamera()
+            "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile()
         }
     }
 
 
     private fun scanner() {
         when (call.method) {
-            "scanImagePath" -> ScannerTools.scanImagePath(call, result)
-            "scanImageUrl" -> ScannerTools.scanImageUrl(call, result)
-            "scanImageMemory" -> ScannerTools.scanImageMemory(call, result)
+            "scanImagePath" -> ScannerTools.scanImagePath()
+            "scanImageUrl" -> ScannerTools.scanImageUrl()
+            "scanImageMemory" -> ScannerTools.scanImageMemory()
+            "availableCameras" ->
+                channelResult.success(CameraTools.getAvailableCameras(activity))
+            "initialize" -> {
+                scannerView = ScannerView(textureRegistry.createSurfaceTexture())
+            }
+            "setFlashMode" -> {
+                val status = call.argument<Boolean>("status")
+                scannerView.enableTorch(status === java.lang.Boolean.TRUE)
+            }
+            "dispose" -> {
+                Tools.logInfo("关闭了")
+                scannerView.dispose()
+            }
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
-        if (this::result.isInitialized) {
-            if (resultCode == Activity.RESULT_OK && intent != null) {
-                if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
-                    this.result.success(PicturePicker.onResult(requestCode, intent))
-                }
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent): Boolean {
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
+                channelResult.success(PicturePicker.onResult(requestCode, intent))
             }
         }
         return true
+    }
+
+    override fun onListen(arguments: Any, events: EventChannel.EventSink) {
+        eventSink = events
+    }
+
+    override fun onCancel(arguments: Any?) {
+        eventSink
     }
 
 

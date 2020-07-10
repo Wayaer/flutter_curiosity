@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/Constant.dart';
+import 'package:flutter_curiosity/constant/constant.dart';
 import 'package:flutter_curiosity/constant/enum.dart';
 import 'package:flutter_curiosity/scanner/ScannerController.dart';
 import 'package:flutter_curiosity/tools/InternalTools.dart';
@@ -36,8 +37,7 @@ class Scanner extends StatefulWidget {
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
     this.androidOldCamera: false,
-  })
-      : assert(leftRatio * 2 + widthRatio == 1),
+  })  : assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
 
@@ -63,31 +63,19 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (controller?.textureId == null) return Container();
-    if (InternalTools.isAndroid()) {
-      return Texture(textureId: controller.textureId);
-    } else if (InternalTools.isIOS()) {
-      return UiKitView(
+    return Texture(textureId: controller.textureId);
+  }
 
-        ///与原生交互时唯一标识符，常见形式是包名+自定义名；
-        viewType: scanner,
-
-        ///hitTestBehavior: widget.hitTestBehavior,
-        ///创建视图后的回调
-//        onPlatformViewCreated: onPlatformViewCreated,
-
-        ///编解码器类型
-        creationParamsCodec: StandardMessageCodec(),
-      );
-    } else {
-      return Container(
-        child: Text('Not support ${Platform.operatingSystem} platform'),
-      );
-    }
+  @override
+  void dispose() {
+    controller.dispose();
+    super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.resumed) {
+      controller.dispose();
       controller.initialize();
     }
   }

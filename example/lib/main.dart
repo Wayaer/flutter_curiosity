@@ -1,8 +1,10 @@
+import 'package:curiosity/ScanPage.dart';
+import 'package:curiosity/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-
-import 'ScanPage.dart';
+import 'package:flutter_waya/flutter_waya.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   runApp(MaterialApp(
@@ -12,9 +14,16 @@ void main() async {
   ));
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  State<StatefulWidget> createState() {
+    return AppState();
+  }
+}
+
+class AppState extends State<App> {
   bool san = true;
-  StateSetter setState;
+  StateSetter textSetState;
   List<AssetMedia> list = List();
 
   @override
@@ -31,7 +40,7 @@ class App extends StatelessWidget {
           Center(),
           StatefulBuilder(
             builder: (BuildContext context, StateSetter state) {
-              setState = state;
+              textSetState = state;
               return Column(children: showText());
             },
           ),
@@ -82,7 +91,7 @@ class App extends StatelessWidget {
 
   shareImage() {
     if (list.length == 0) {
-      print('请先选择图片');
+      showToast('请先选择图片');
       return;
     }
     NativeTools.systemShare(
@@ -91,7 +100,7 @@ class App extends StatelessWidget {
 
   shareImages() {
     if (list.length == 0) {
-      print('请先选择图片');
+      showToast('请先选择图片');
       return;
     }
     List<String> listPath = [];
@@ -114,8 +123,17 @@ class App extends StatelessWidget {
     return widget;
   }
 
-  scan(BuildContext context) {
-    showCupertinoModalPopup(context: context, builder: (context) => ScanPage());
+  scan(BuildContext context) async {
+    var permission = await Utils.requestPermissions(Permission.camera, '相机',
+            showAlert: false) &&
+        await Utils.requestPermissions(Permission.storage, '手机存储',
+            showAlert: false);
+    if (permission) {
+      showCupertinoModalPopup(
+          context: context, builder: (context) => ScanPage());
+    } else {
+      openAppSettings();
+    }
   }
 
   select() async {

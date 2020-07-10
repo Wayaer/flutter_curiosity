@@ -14,6 +14,7 @@ import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
 import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.activity
+import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import io.flutter.plugin.common.MethodCall
 import java.io.File
@@ -52,7 +53,7 @@ object PicturePicker {
     private var setOutputCameraPath: String? = null
     private var selectList: List<LocalMedia>? = null
     private var pictureMimeType = 0
-    fun setValue(call: MethodCall) {
+    private fun setValue() {
         maxSelectNum = call.argument<Int>("maxSelectNum")!!
         minSelectNum = call.argument<Int>("minSelectNum")!!
         imageSpanCount = call.argument<Int>("imageSpanCount")!!
@@ -99,24 +100,24 @@ object PicturePicker {
     }
 
     @SuppressLint("NewApi")
-    fun openPicker(call: MethodCall) {
-        setValue(call)
+    fun openPicker() {
+        setValue()
         PictureSelector.create(activity)
                 .openGallery(pictureMimeType) //全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
-                .loadImageEngine(createGlideEngine())
+                .imageEngine(createGlideEngine())
                 .maxSelectNum(maxSelectNum) // 最大图片选择数量 int
                 .minSelectNum(minSelectNum) // 最小选择数量 int
                 .imageSpanCount(imageSpanCount) // 每行显示个数 int
                 .selectionMode(if (selectionMode == 1) PictureConfig.SINGLE else PictureConfig.MULTIPLE) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
-                .previewImage(previewImage) // 是否可预览图片 true or false
-                .previewVideo(previewVideo) // 是否可预览视频 true or false
-                .enablePreviewAudio(false) // 是否可播放音频 true or false
+                .isPreviewImage(previewImage) // 是否可预览图片 true or false
+                .isPreviewVideo(previewVideo) // 是否可预览视频 true or false
+//                .enablePreviewAudio(false) // 是否可播放音频 true or false
                 .isCamera(isCamera) // 是否显示拍照按钮 true or false
                 .imageFormat(PictureMimeType.JPEG) // 拍照保存图片格式后缀,默认jpeg
                 .isZoomAnim(isZoomAnim) // 图片列表点击 缩放效果 默认true
-                .sizeMultiplier(0.5F) // glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
-                .enableCrop(enableCrop) // 是否裁剪 true or false
-                .compress(compress) // 是否压缩 true or false
+//                .sizeMultiplier(0.5F) // glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
+                .isEnableCrop(enableCrop) // 是否裁剪 true or false
+                .isCompress(compress) // 是否压缩 true or false
                 .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
                 .hideBottomControls(hideBottomControls) // 是否显示uCrop工具栏，默认不显示 true or false
                 .isGif(isGif) // 是否显示gif图片 true or false
@@ -124,7 +125,7 @@ object PicturePicker {
                 .circleDimmedLayer(showCropCircle) // 是否圆形裁剪 true or false
                 .showCropFrame(showCropFrame) // 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
                 .showCropGrid(showCropGrid) // 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
-                .openClickSound(openClickSound) // 是否开启点击声音 true or false
+                .isOpenClickSound(openClickSound) // 是否开启点击声音 true or false
                 .cutOutQuality(cropCompressQuality) // 裁剪压缩质量 默认90 int
                 .minimumCompressSize(minimumCompressSize) // 小于100kb的图片不压缩
                 .synOrAsy(true) //同步true或异步false 压缩 默认同步
@@ -140,13 +141,13 @@ object PicturePicker {
     }
 
     @SuppressLint("NewApi")
-    fun openCamera(call: MethodCall) {
-        setValue(call)
+    fun openCamera() {
+        setValue()
         PictureSelector.create(activity)
                 .openCamera(pictureMimeType)
                 .imageFormat(PictureMimeType.JPEG) // 拍照保存图片格式后缀,默认jpeg
-                .enableCrop(enableCrop) // 是否裁剪 true or false
-                .compress(compress) // 是否压缩 true or false
+                .isEnableCrop(enableCrop) // 是否裁剪 true or false
+                .isCompress(compress) // 是否压缩 true or false
                 .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
                 .hideBottomControls(enableCrop) // 是否显示uCrop工具栏，默认不显示 true or false
                 .freeStyleCropEnabled(freeStyleCropEnabled) // 裁剪框是否可拖拽 true or false
@@ -158,13 +159,13 @@ object PicturePicker {
                 .synOrAsy(true) //同步true或异步false 压缩 默认同步
                 .rotateEnabled(rotateEnabled) // 裁剪是否可旋转图片 true or false
                 .scaleEnabled(scaleEnabled) // 裁剪是否可放大缩小图片 true or false
-                .openClickSound(openClickSound) // 是否开启点击声音 true or false
+                .isOpenClickSound(openClickSound) // 是否开启点击声音 true or false
                 .maxSelectNum(maxSelectNum) // 最大图片选择数量 int
                 .minSelectNum(minSelectNum) // 最小选择数量 int
                 .imageSpanCount(imageSpanCount) // 每行显示个数 int
                 .selectionMode(selectionMode) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
-                .previewImage(previewImage) // 是否可预览视频 true or false
-                .previewVideo(previewVideo) // 是否可预览视频 true or false
+                .isPreviewImage(previewImage) // 是否可预览视频 true or false
+                .isPreviewVideo(previewVideo) // 是否可预览视频 true or false
                 .videoQuality(videoQuality) // 视频录制质量 0 or 1 int
                 .videoMaxSecond(videoMaxSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .videoMinSecond(videoMinSecond) // 显示多少秒以内的视频or音频也可适用 int
@@ -173,7 +174,7 @@ object PicturePicker {
                 .forResult(PictureConfig.REQUEST_CAMERA)
     }
 
-    fun deleteCacheDirFile(call: MethodCall) {
+    fun deleteCacheDirFile() {
         val selectValueType = call.argument<Int>("selectValueType")
         if (BuildConfig.DEBUG && selectValueType == null) {
             error("Assertion failed")
@@ -234,17 +235,7 @@ object PicturePicker {
             resultList.add(resultMap)
         }
         return resultList;
-//        result.success(resultList)
     }
 
-    @RequiresApi(Build.VERSION_CODES.FROYO)
-    @Throws(Exception::class)
-    private fun encodeBase64(path: String): String {
-        val file = File(path)
-        val inputFile = FileInputStream(file)
-        val buffer = ByteArray(file.length().toInt())
-        inputFile.read(buffer)
-        inputFile.close()
-        return Base64.encodeToString(buffer, Base64.DEFAULT)
-    }
+
 }

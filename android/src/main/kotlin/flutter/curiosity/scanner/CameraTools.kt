@@ -8,7 +8,7 @@ import android.hardware.camera2.CameraMetadata
 import android.media.CamcorderProfile
 import android.util.Size
 
-object CameraUtils {
+object CameraTools {
     fun getAvailableCameras(activity: Activity): List<Map<String, Any>> {
         val cameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
         val cameraNames = cameraManager.cameraIdList

@@ -35,7 +35,7 @@ class ScannerController extends ChangeNotifier {
   Future<void> initialize() async {
     try {
       final Map<String, dynamic> reply =
-          await scannerChannel.invokeMapMethod('initialize', {
+          await curiosityChannel.invokeMapMethod('initialize', {
         'cameraId': cameraId,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
         "topRatio": topRatio,
@@ -46,7 +46,7 @@ class ScannerController extends ChangeNotifier {
       textureId = reply['textureId'];
       previewWidth = reply['previewWidth'];
       previewHeight = reply['previewHeight'];
-      eventChannel = EventChannel('$scanner/$textureId/event')
+      eventChannel = EventChannel('$curiosity/event')
           .receiveBroadcastStream({}).listen((data) {
         this.code = data['code'];
         this.type = data['type'];
@@ -58,26 +58,26 @@ class ScannerController extends ChangeNotifier {
   }
 
   Future<bool> setFlashMode(bool status) async {
-    return await scannerChannel
+    return await curiosityChannel
         .invokeMethod('setFlashMode', {'status': status});
   }
 
   static Future<String> scanImagePath(String path) async {
-    return await scannerChannel.invokeMethod('scanImagePath', {"path": path});
+    return await curiosityChannel.invokeMethod('scanImagePath', {"path": path});
   }
 
   static Future<String> scanImageUrl(String url) async {
-    return await scannerChannel.invokeMethod('scanImageUrl', {"url": url});
+    return await curiosityChannel.invokeMethod('scanImageUrl', {"url": url});
   }
 
   static Future<String> scanImageMemory(Uint8List uint8list) async {
-    return await scannerChannel
+    return await curiosityChannel
         .invokeMethod('scanImageMemory', {"uint8list": uint8list});
   }
 
   Future<List<Cameras>> availableCameras() async {
     try {
-      final List<Map<dynamic, dynamic>> cameras = await scannerChannel
+      final List<Map<dynamic, dynamic>> cameras = await curiosityChannel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
       return cameras.map((camera) {
         return Cameras(name: camera['name'], lensFacing: camera['lensFacing']);
@@ -92,9 +92,7 @@ class ScannerController extends ChangeNotifier {
   Future<void> dispose() async {
     super.dispose();
     eventChannel?.cancel();
-    notifyListeners();
-    if (textureId == null) return;
-    await scannerChannel.invokeMethod('dispose');
+    await curiosityChannel.invokeMethod('dispose');
   }
 }
 
