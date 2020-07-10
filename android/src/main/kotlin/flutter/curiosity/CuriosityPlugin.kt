@@ -121,6 +121,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
                 channelResult.success(CameraTools.getAvailableCameras(activity))
             "initializeCameras" -> {
                 scannerView = ScannerView(textureRegistry.createSurfaceTexture())
+                scannerView!!.initCameraView()
             }
             "setFlashMode" -> {
                 val status = call.argument<Boolean>("status")

@@ -41,10 +41,10 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
         val resolutionPreset = call.argument<String>("resolutionPreset")
         val preset = ResolutionPreset.valueOf(resolutionPreset!!)
         previewSize = CameraTools.computeBestPreviewSize(cameraId, preset)
-        initCameraView()
+
     }
 
-    private fun initCameraView() {
+    fun initCameraView() {
         cameraManager.openCamera(
                 cameraId,
                 object : CameraDevice.StateCallback() {
@@ -52,15 +52,14 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
                         cameraDevice = device
                         try {
                             createCaptureSession()
+                            val mutableMap: MutableMap<String, Any> = HashMap()
+                            mutableMap["textureId"] = texture.id()
+                            mutableMap["previewWidth"] = previewSize.width
+                            mutableMap["previewHeight"] = previewSize.height
+                            channelResult.success(mutableMap)
                         } catch (e: Exception) {
-                            Tools.logInfo("异常了")
+                            Tools.logInfo("CreateCaptureSession Exception")
                         }
-
-                        val mutableMap: MutableMap<String, Any> = HashMap()
-                        mutableMap["textureId"] = texture.id()
-                        mutableMap["previewWidth"] = previewSize.width
-                        mutableMap["previewHeight"] = previewSize.height
-                        channelResult.success(mutableMap)
                     }
 
                     override fun onDisconnected(cameraDevice: CameraDevice) {
@@ -122,7 +121,11 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
 
             override fun onConfigured(session: CameraCaptureSession) {
                 cameraCaptureSession = session
-                cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, Handler())
+                try {
+                    cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, Handler())
+                } catch (e: Exception) {
+//                    Tools.logInfo("CameraCaptureSession Exception")
+                }
             }
         }, handler)
     }
