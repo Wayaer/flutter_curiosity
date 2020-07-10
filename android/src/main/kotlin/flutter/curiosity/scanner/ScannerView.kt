@@ -41,7 +41,6 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
         val resolutionPreset = call.argument<String>("resolutionPreset")
         val preset = ResolutionPreset.valueOf(resolutionPreset!!)
         previewSize = CameraTools.computeBestPreviewSize(cameraId, preset)
-
     }
 
     fun initCameraView() {
