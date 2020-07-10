@@ -30,8 +30,7 @@ import io.flutter.view.TextureRegistry
  */
 class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventChannel.StreamHandler, ActivityResultListener {
     private lateinit var curiosityChannel: MethodChannel
-
-    private lateinit var scannerView: ScannerView
+    private var scannerView: ScannerView? = null
     private lateinit var binaryMessenger: BinaryMessenger
     private lateinit var textureRegistry: TextureRegistry
 
@@ -120,16 +119,15 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
             "scanImageMemory" -> ScannerTools.scanImageMemory()
             "availableCameras" ->
                 channelResult.success(CameraTools.getAvailableCameras(activity))
-            "initialize" -> {
+            "initializeCameras" -> {
                 scannerView = ScannerView(textureRegistry.createSurfaceTexture())
             }
             "setFlashMode" -> {
                 val status = call.argument<Boolean>("status")
-                scannerView.enableTorch(status === java.lang.Boolean.TRUE)
+                scannerView?.enableTorch(status === java.lang.Boolean.TRUE)
             }
-            "dispose" -> {
-                Tools.logInfo("关闭了")
-                scannerView.dispose()
+            "disposeCameras" -> {
+                scannerView?.dispose()
             }
         }
     }

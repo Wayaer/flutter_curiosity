@@ -35,7 +35,7 @@ class ScannerController extends ChangeNotifier {
   Future<void> initialize() async {
     try {
       final Map<String, dynamic> reply =
-          await curiosityChannel.invokeMapMethod('initialize', {
+          await curiosityChannel.invokeMapMethod('initializeCameras', {
         'cameraId': cameraId,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
         "topRatio": topRatio,
@@ -88,11 +88,9 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  @override
-  Future<void> dispose() async {
-    super.dispose();
+  Future<void> disposeCameras() async {
     eventChannel?.cancel();
-    await curiosityChannel.invokeMethod('dispose');
+    await curiosityChannel.invokeMethod('disposeCameras');
   }
 }
 

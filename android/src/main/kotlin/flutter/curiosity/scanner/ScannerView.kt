@@ -11,6 +11,7 @@ import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
 import flutter.curiosity.CuriosityPlugin.Companion.eventSink
+import flutter.curiosity.tools.Tools
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
@@ -20,7 +21,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
     private var previewSize: Size
     private var cameraDevice: CameraDevice? = null
     private var cameraCaptureSession: CameraCaptureSession? = null
-    private lateinit var imageStreamReader: ImageReader
+    private var imageStreamReader: ImageReader? = null
     private var captureRequestBuilder: CaptureRequest.Builder? = null
     private var lastCurrentTime = 0L
     private val handler = Handler()
@@ -49,7 +50,12 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
                 object : CameraDevice.StateCallback() {
                     override fun onOpened(device: CameraDevice) {
                         cameraDevice = device
-                        createCaptureSession()
+                        try {
+                            createCaptureSession()
+                        } catch (e: Exception) {
+                            Tools.logInfo("异常了")
+                        }
+
                         val mutableMap: MutableMap<String, Any> = HashMap()
                         mutableMap["textureId"] = texture.id()
                         mutableMap["previewWidth"] = previewSize.width
@@ -79,22 +85,26 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
         surfaceTexture.setDefaultBufferSize(previewSize.width, previewSize.height)
         val surface = Surface(surfaceTexture)
         captureRequestBuilder?.addTarget(surface)  // 将CaptureRequest的构建器与Surface对象绑定在一起
-        captureRequestBuilder?.addTarget(imageStreamReader.surface)
+        captureRequestBuilder?.addTarget(imageStreamReader!!.surface)
         captureRequestBuilder?.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE) // 自动对焦
-        imageStreamReader.setOnImageAvailableListener({ imageReader ->
+        imageStreamReader?.setOnImageAvailableListener({ imageReader ->
             singleThreadExecutor.execute {
                 val image = imageReader.acquireLatestImage()
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastCurrentTime >= 10L) {
                     if (ImageFormat.YUV_420_888 == image?.format) {
+
                         val buffer = image.planes[0].buffer
                         val byteArray = ByteArray(buffer.remaining())
                         buffer[byteArray, 0, byteArray.size]
-                        val result = ScannerTools.decodeImage(byteArray, image, true, topRatio, leftRatio, widthRatio, heightRatio)
-                        if (result != null) {
-                            handler.post {
-                                eventSink.success(ScannerTools.scanDataToMap(result))
+                        try {
+                            val result = ScannerTools.decodeImage(byteArray, image, true, topRatio, leftRatio, widthRatio, heightRatio)
+                            if (result != null) {
+                                handler.post {
+                                    eventSink.success(ScannerTools.scanDataToMap(result))
+                                }
                             }
+                        } catch (e: Exception) {
                         }
                         buffer.clear()
                         lastCurrentTime = currentTime
@@ -106,7 +116,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
         }, handler)
         // 为相机预览，创建一个CameraCaptureSession对象
         closeCaptureSession()
-        cameraDevice?.createCaptureSession(arrayListOf(surface, imageStreamReader.surface), object : CameraCaptureSession.StateCallback() {
+        cameraDevice?.createCaptureSession(arrayListOf(surface, imageStreamReader!!.surface), object : CameraCaptureSession.StateCallback() {
             override fun onConfigureFailed(session: CameraCaptureSession) {
             }
 
@@ -131,14 +141,16 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
     }
 
     private fun closeCaptureSession() {
-        cameraCaptureSession?.close()
-        cameraCaptureSession = null
+        if (cameraCaptureSession != null) {
+            cameraCaptureSession?.close()
+            cameraCaptureSession = null
+        }
     }
 
     fun close() {
         closeCaptureSession()
         cameraDevice?.close()
-        imageStreamReader.close()
+        imageStreamReader?.close()
     }
 
     fun dispose() {
