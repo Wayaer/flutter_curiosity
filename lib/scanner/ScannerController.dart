@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/constant.dart';
-import 'package:flutter_curiosity/constant/enum.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 
 class ScannerController extends ChangeNotifier {
   StreamSubscription eventChannel;

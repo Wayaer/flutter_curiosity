@@ -1,10 +1,8 @@
-import 'package:flutter_curiosity/constant/Constant.dart';
-import 'package:flutter_curiosity/gallery/AssetMedia.dart';
-import 'package:flutter_curiosity/gallery/PicturePickerOptions.dart';
+import 'package:flutter_curiosity/constant/constant.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class PicturePicker {
-
   ///  openPicker() async {
   ///    PicturePickerOptions pickerOptions = PicturePickerOptions();
   ///    pickerOptions.selectValueType = 0;
@@ -30,8 +28,8 @@ class PicturePicker {
       [PicturePickerOptions selectOptions]) async {
     InternalTools.supportPlatform();
     if (selectOptions == null) selectOptions = PicturePickerOptions();
-    final result =
-    await curiosityChannel.invokeMethod('openCamera', selectOptions.toJson());
+    final result = await curiosityChannel.invokeMethod(
+        'openCamera', selectOptions.toJson());
     if (result is List) {
       return Future.value(
           result.map((data) => AssetMedia.fromJson(data)).toList());
