@@ -17,9 +17,6 @@ class Scanner extends StatefulWidget {
   ///识别区域的宽高度比例
   final double heightRatio;
 
-  ///android 使用旧版Camera 识别率更快
-  final bool androidOldCamera;
-
   ///屏幕宽度比例=leftRatio + widthRatio + leftRatio
   ///屏幕高度比例=topRatio + heightRatio + topRatio
 
@@ -29,7 +26,6 @@ class Scanner extends StatefulWidget {
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-    this.androidOldCamera: false,
   })  : assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
