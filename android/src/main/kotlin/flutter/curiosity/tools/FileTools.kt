@@ -169,7 +169,7 @@ object FileTools {
                 }
                 val os = BufferedOutputStream(FileOutputStream(getRealFileName(filePath, ze.getName())))
                 val inputStream = BufferedInputStream(file.getInputStream(ze))
-                var readLen = 0
+                var readLen: Int
                 while (inputStream.read(buf, 0, 1024).also { readLen = it } != -1) {
                     os.write(buf, 0, readLen)
                 }

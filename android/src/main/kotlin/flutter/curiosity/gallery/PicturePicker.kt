@@ -15,6 +15,7 @@ import com.luck.picture.lib.tools.PictureFileUtils
 import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
+import flutter.curiosity.CuriosityPlugin.Companion.context
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import io.flutter.plugin.common.MethodCall
 import java.io.File
@@ -90,9 +91,6 @@ object PicturePicker {
             2 -> {
                 PictureMimeType.ofVideo()
             }
-            3 -> {
-                PictureMimeType.ofAudio()
-            }
             else -> {
                 PictureMimeType.ofAll()
             }
@@ -136,7 +134,7 @@ object PicturePicker {
                 .videoMaxSecond(videoMaxSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .videoMinSecond(videoMinSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .recordVideoSecond(recordVideoSecond) //视频秒数录制 默认60s int
-                .setOutputCameraPath(if (setOutputCameraPath === "") Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() else setOutputCameraPath)
+                .setOutputCameraPath(if (setOutputCameraPath === "") context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() else setOutputCameraPath)
                 .forResult(PictureConfig.CHOOSE_REQUEST) //结果回调onActivityResult code
     }
 
@@ -170,7 +168,7 @@ object PicturePicker {
                 .videoMaxSecond(videoMaxSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .videoMinSecond(videoMinSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .recordVideoSecond(recordVideoSecond)
-                .setOutputCameraPath(if (setOutputCameraPath === "") Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES).toString() else setOutputCameraPath)
+                .setOutputCameraPath(if (setOutputCameraPath === "") context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() else setOutputCameraPath)
                 .forResult(PictureConfig.REQUEST_CAMERA)
     }
 
@@ -179,16 +177,13 @@ object PicturePicker {
         if (BuildConfig.DEBUG && selectValueType == null) {
             error("Assertion failed")
         }
-        var pictureMimeType = 0
+        val pictureMimeType: Int
         pictureMimeType = when (selectValueType) {
             1 -> {
                 PictureMimeType.ofImage()
             }
             2 -> {
                 PictureMimeType.ofVideo()
-            }
-            3 -> {
-                PictureMimeType.ofAudio()
             }
             else -> {
                 PictureMimeType.ofAll()

@@ -14,10 +14,6 @@ dependencies:
     git:
       url: git://github.com/Wayaer/flutter_waya.git
       ref: master
-  r_scan:
-      git:
-        url: git://github.com/rhymelph/r_scan.git
-        ref: master
 
 dev_dependencies:
   flutter_test:
