@@ -78,7 +78,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
     private fun createCaptureSession() {
         imageStreamReader = ImageReader.newInstance(
                 previewSize.width, previewSize.height, ImageFormat.YUV_420_888, 2)
-        val captureRequestBuilder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
+        captureRequestBuilder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         val surfaceTexture = texture.surfaceTexture()
         surfaceTexture.setDefaultBufferSize(previewSize.width, previewSize.height)
         val surface = Surface(surfaceTexture)
@@ -131,14 +131,15 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
 
 
     fun enableTorch(status: Boolean) {
+        if (captureRequestBuilder == null || cameraCaptureSession == null) return
         if (status) {
-            captureRequestBuilder!!.set(
+            captureRequestBuilder?.set(
                     CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH)
-            cameraCaptureSession!!.setRepeatingRequest(captureRequestBuilder!!.build(), null, handler)
+            cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, null)
         } else {
-            captureRequestBuilder!!.set(
+            captureRequestBuilder?.set(
                     CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF)
-            cameraCaptureSession!!.setRepeatingRequest(captureRequestBuilder!!.build(), null, handler)
+            cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, null)
         }
     }
 

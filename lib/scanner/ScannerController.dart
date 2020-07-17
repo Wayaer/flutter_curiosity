@@ -57,7 +57,7 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  Future<bool> setFlashMode(bool status) async {
+  void setFlashMode(bool status) async {
     return await curiosityChannel
         .invokeMethod('setFlashMode', {'status': status});
   }
