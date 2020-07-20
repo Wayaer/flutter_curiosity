@@ -2,24 +2,18 @@ package flutter.curiosity.gallery
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.os.Build
 import android.os.Environment
-import android.util.Base64
-import androidx.annotation.RequiresApi
 import androidx.collection.ArrayMap
+import com.luck.picture.lib.BuildConfig
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
-import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.context
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
-import io.flutter.plugin.common.MethodCall
-import java.io.File
-import java.io.FileInputStream
 import java.util.*
 
 object PicturePicker {
@@ -192,7 +186,7 @@ object PicturePicker {
         PictureFileUtils.deleteCacheDirFile(activity, pictureMimeType)
     }
 
-    fun onResult(requestCode: Int, intent: Intent): MutableList<Map<String, Any>>? {
+    fun onResult(requestCode: Int, intent: Intent?): MutableList<Map<String, Any>>? {
         // 图片、视频、音频选择结果回调
         // 例如 LocalMedia 里面返回四种path
         // 1.media.getPath(); 为原图path

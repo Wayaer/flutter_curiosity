@@ -133,8 +133,8 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
         }
     }
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent): Boolean {
-        if (resultCode == Activity.RESULT_OK) {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
+        if (resultCode == Activity.RESULT_OK && intent != null) {
             if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
                 channelResult.success(PicturePicker.onResult(requestCode, intent))
             }
