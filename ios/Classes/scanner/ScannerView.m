@@ -125,8 +125,8 @@ FourCharCode const scannerViewFormat = kCVPixelFormatType_32BGRA;
     BOOL isSuccess = YES;
     if ([captureDevice hasFlash]) {
         if (status) {
-            captureDevice.flashMode=AVCaptureFlashModeOn;
-            captureDevice.torchMode=AVCaptureTorchModeOn;
+            captureDevice.flashMode = AVCaptureFlashModeOn;
+            captureDevice.torchMode = AVCaptureTorchModeOn;
         }else{
             captureDevice.flashMode = AVCaptureFlashModeOff;
             captureDevice.torchMode = AVCaptureTorchModeOff;
