@@ -7,9 +7,9 @@ import android.media.Image
 import android.os.Handler
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
-import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
+import io.flutter.BuildConfig
 import java.io.File
 import java.net.HttpURLConnection
 import java.net.URL
@@ -42,7 +42,6 @@ object ScannerTools {
             channelResult.success(null)
         }
     }
-
 
     fun scanImageUrl() {
         val url = call.argument<String>("url")

@@ -10,7 +10,7 @@ A new Flutter plugin.
                        DESC
   s.homepage         = 'https://github.com/Wayaer/flutter-curiosity.git'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'My Company' => 'wayaer@foxmail.com' }
+  s.author           = { 'email' => 'wayaer@foxmail.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/*.h'
@@ -18,6 +18,7 @@ A new Flutter plugin.
   s.platform = :ios, '8.0'
   s.dependency 'SSZipArchive'
   s.dependency 'TZImagePickerController'
+#  s.dependency 'ZXingObjC', '~> 3.6.5'
 #  s.swift_version = '5.1'
   
   # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.

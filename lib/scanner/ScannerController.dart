@@ -5,15 +5,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/constant.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class ScannerController extends ChangeNotifier {
   StreamSubscription eventChannel;
   String code;
   String type;
   int textureId;
-  int previewWidth;
-  int previewHeight;
-  final String cameraId;
+  double previewWidth;
+  double previewHeight;
+  final Cameras camera;
   final double topRatio;
   final double leftRatio;
   final double widthRatio;
@@ -23,20 +24,20 @@ class ScannerController extends ChangeNotifier {
   ScannerController({
     ResolutionPreset resolutionPreset,
     this.topRatio: 0.3,
-    this.cameraId: '0',
+    this.camera,
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
   })  : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
         assert(leftRatio * 2 + widthRatio == 1),
-        assert(cameraId != null),
         assert(topRatio * 2 + heightRatio == 1);
 
-  Future<void> initialize() async {
+  Future<void> initialize({Cameras cameras}) async {
+    if (cameras == null && camera == null) return;
     try {
       final Map<String, dynamic> reply =
           await curiosityChannel.invokeMapMethod('initializeCameras', {
-        'cameraId': cameraId,
+        'cameraId': cameras.name ?? camera.name,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
         "topRatio": topRatio,
         "leftRatio": leftRatio,
@@ -44,6 +45,7 @@ class ScannerController extends ChangeNotifier {
         "heightRatio": heightRatio,
       });
       textureId = reply['textureId'];
+      print(textureId.toString() + '==初始化成功');
       previewWidth = reply['previewWidth'];
       previewHeight = reply['previewHeight'];
       eventChannel = EventChannel('$curiosity/event')
@@ -80,7 +82,10 @@ class ScannerController extends ChangeNotifier {
       final List<Map<dynamic, dynamic>> cameras = await curiosityChannel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
       return cameras.map((camera) {
-        return Cameras(name: camera['name'], lensFacing: camera['lensFacing']);
+        return Cameras(
+            name: camera['name'],
+            lensFacing:
+                InternalTools.getCameraLensFacing(camera['lensFacing']));
       }).toList();
     } on PlatformException catch (e) {
       print(e);
@@ -96,7 +101,7 @@ class ScannerController extends ChangeNotifier {
 
 class Cameras {
   final String name;
-  final String lensFacing;
+  final CameraLensFacing lensFacing;
 
   Cameras({this.name, this.lensFacing});
 }

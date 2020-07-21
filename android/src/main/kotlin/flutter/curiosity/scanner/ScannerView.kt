@@ -18,7 +18,7 @@ import java.util.concurrent.Executors
 
 class ScannerView(private val texture: SurfaceTextureEntry) {
     private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
-    private var previewSize: Size
+    private lateinit var previewSize: Size
     private var cameraDevice: CameraDevice? = null
     private var cameraCaptureSession: CameraCaptureSession? = null
     private var imageStreamReader: ImageReader? = null
@@ -32,15 +32,10 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
     private val widthRatio: Double = call.argument<Double>("widthRatio")!!
     private val heightRatio: Double = call.argument<Double>("heightRatio")!!
 
-    enum class ResolutionPreset {
-        Low, Medium, High, VeryHigh, UltraHigh, Max
-    }
-
     init {
         //获取预览大小
-        val resolutionPreset = call.argument<String>("resolutionPreset")
-        val preset = ResolutionPreset.valueOf(resolutionPreset!!)
-        previewSize = CameraTools.computeBestPreviewSize(cameraId, preset)
+        val preset = call.argument<String>("resolutionPreset")
+        if (preset != null) previewSize = CameraTools.computeBestPreviewSize(cameraId, preset)
     }
 
     fun initCameraView() {

@@ -28,9 +28,9 @@ object CameraTools {
     }
 
     private fun getBestAvailableCamcorderProfileForResolutionPreset(
-            cameraId: Int, preset: ScannerView.ResolutionPreset?): CamcorderProfile {
+            cameraId: Int, preset: String): CamcorderProfile {
         return when (preset) {
-            ScannerView.ResolutionPreset.Max -> {
+            "Max" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_HIGH)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH)
                 }
@@ -56,7 +56,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            ScannerView.ResolutionPreset.UltraHigh -> {
+            "UltraHigh" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_2160P)
                 }
@@ -79,7 +79,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            ScannerView.ResolutionPreset.VeryHigh -> {
+            "VeryHigh" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_1080P)
                 }
@@ -99,7 +99,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            ScannerView.ResolutionPreset.High -> {
+            "High" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P)
                 }
@@ -116,7 +116,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            ScannerView.ResolutionPreset.Medium -> {
+            "Medium" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P)
                 }
@@ -130,7 +130,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            ScannerView.ResolutionPreset.Low -> {
+            "Low" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_QVGA)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_QVGA)
                 }
@@ -150,11 +150,7 @@ object CameraTools {
         }
     }
 
-    fun computeBestPreviewSize(cameraId: String, resolutionPreset: ScannerView.ResolutionPreset): Size {
-        var preset = resolutionPreset
-        if (preset.ordinal > ScannerView.ResolutionPreset.High.ordinal) {
-            preset = ScannerView.ResolutionPreset.High
-        }
+    fun computeBestPreviewSize(cameraId: String, preset: String): Size {
         val profile = getBestAvailableCamcorderProfileForResolutionPreset(cameraId.toInt(), preset)
         return Size(profile.videoFrameWidth, profile.videoFrameHeight)
     }

@@ -66,7 +66,7 @@
  *  NSArray *items = @[urlToShare,textToShare,imageToShare];
  */
 + (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result{
-    NSString * title=[call.arguments valueForKey:@"title"];
+//    NSString * title=[call.arguments valueForKey:@"title"];
     NSString * content=[call.arguments valueForKey:@"content"];
     NSString * type=[call.arguments valueForKey:@"type"];
     NSArray * imagesPath=[call.arguments valueForKey:@"imagesPath"];

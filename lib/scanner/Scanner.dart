@@ -3,6 +3,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 
 class Scanner extends StatefulWidget {
   final ScannerController controller;
+  final CameraLensFacing cameraLensFacing;
 
   ///识别区域 比例 0-1
   ///距离屏幕头部
@@ -21,12 +22,14 @@ class Scanner extends StatefulWidget {
   ///屏幕高度比例=topRatio + heightRatio + topRatio
 
   Scanner({
+    CameraLensFacing cameraLensFacing,
     this.controller,
     this.topRatio: 0.3,
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-  })  : assert(leftRatio * 2 + widthRatio == 1),
+  })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.front,
+        assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
 
@@ -44,13 +47,22 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     controller = widget.controller ??
         ScannerController(resolutionPreset: ResolutionPreset.VeryHigh);
-    controller.initialize().then((value) {
-      setState(() {});
-    });
+    getCameras();
+  }
+
+  getCameras() async {
+    var cameras = await controller.availableCameras();
+    cameras.map((camera) {
+      if (camera.lensFacing == widget.cameraLensFacing)
+        controller.initialize(cameras: camera).then((value) {
+          setState(() {});
+        });
+    }).toList();
   }
 
   @override
   Widget build(BuildContext context) {
+    print(controller?.textureId);
     if (controller?.textureId == null) return Container();
     return Texture(textureId: controller.textureId);
   }
