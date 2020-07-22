@@ -124,6 +124,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "setFlashMode" -> {
                 val status = call.argument<Boolean>("status")
                 scannerView?.enableTorch(status === java.lang.Boolean.TRUE)
+                channelResult.success("setFlashMode")
             }
             "disposeCameras" -> {
                 scannerView?.dispose()

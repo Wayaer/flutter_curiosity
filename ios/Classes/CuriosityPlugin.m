@@ -100,10 +100,12 @@ NSString * const curiosityEvent=@"Curiosity/event";
         NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
         if(scannerView)[scannerView close];
         if(textureId) [registry unregisterTexture:textureId];
+        result(@"dispose");
     }
     if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
         if(scannerView)[scannerView setFlashMode:[status boolValue]];
+        result(@"setFlashMode");
     }
     
 }
