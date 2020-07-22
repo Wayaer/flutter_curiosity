@@ -53,7 +53,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                             mutableMap["previewHeight"] = previewSize.height
                             channelResult.success(mutableMap)
                         } catch (e: Exception) {
-                            Tools.logInfo("CreateCaptureSession Exception")
+//                            Tools.logInfo("CreateCaptureSession Exception")
                         }
                     }
 

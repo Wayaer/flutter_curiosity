@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class Scanner extends StatefulWidget {
   final ScannerController controller;
@@ -73,10 +74,10 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
     if (state == AppLifecycleState.resumed) {
-      controller.disposeCameras();
-      controller.initialize().then((value) => setState(() {}));
+      await controller.disposeCameras();
+      getCameras();
     } else {
       controller.disposeCameras();
     }

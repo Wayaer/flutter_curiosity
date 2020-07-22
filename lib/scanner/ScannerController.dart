@@ -92,7 +92,7 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  Future<void> disposeCameras() async {
+  Future disposeCameras() async {
     eventChannel?.cancel();
     await curiosityChannel
         .invokeMethod('disposeCameras', {'textureId': textureId});

@@ -12,6 +12,7 @@ import flutter.curiosity.scanner.ScannerView
 import flutter.curiosity.tools.AppInfo
 import flutter.curiosity.tools.FileTools
 import flutter.curiosity.tools.NativeTools
+import flutter.curiosity.tools.Tools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -127,6 +128,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "disposeCameras" -> {
                 scannerView?.dispose()
                 eventChannel.setStreamHandler(null)
+                channelResult.success("dispose")
             }
         }
     }
