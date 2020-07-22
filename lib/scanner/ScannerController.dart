@@ -54,7 +54,7 @@ class ScannerController extends ChangeNotifier {
         notifyListeners();
       });
     } on PlatformException catch (e) {
-      //当发生权限问题的异常时会抛出
+      //原生异常抛出
     }
   }
 

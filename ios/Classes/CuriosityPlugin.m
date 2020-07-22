@@ -19,7 +19,6 @@ NSString * const curiosity=@"Curiosity";
 NSString * const curiosityEvent=@"Curiosity/event";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-    
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:curiosity
                                      binaryMessenger:[registrar messenger]];

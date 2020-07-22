@@ -10,13 +10,13 @@ import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
-import flutter.curiosity.CuriosityPlugin.Companion.eventSink
 import flutter.curiosity.tools.Tools
+import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
-class ScannerView(private val texture: SurfaceTextureEntry) {
+class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.StreamHandler {
     private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private lateinit var previewSize: Size
     private var cameraDevice: CameraDevice? = null
@@ -31,6 +31,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
     private val leftRatio: Double = call.argument<Double>("leftRatio")!!
     private val widthRatio: Double = call.argument<Double>("widthRatio")!!
     private val heightRatio: Double = call.argument<Double>("heightRatio")!!
+    private lateinit var eventSink: EventChannel.EventSink
 
     init {
         //获取预览大小
@@ -153,6 +154,15 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
     fun dispose() {
         close()
         texture.release()
+        eventSink.endOfStream()
+    }
+
+    override fun onListen(arguments: Any, events: EventChannel.EventSink) {
+        eventSink = events
+    }
+
+    override fun onCancel(arguments: Any?) {
+        eventSink.endOfStream()
     }
 
 

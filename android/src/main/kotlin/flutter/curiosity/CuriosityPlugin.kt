@@ -16,7 +16,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -27,18 +26,17 @@ import io.flutter.view.TextureRegistry
 /**
  * CuriosityPlugin
  */
-class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventChannel.StreamHandler, ActivityResultListener {
+class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, ActivityResultListener {
     private lateinit var curiosityChannel: MethodChannel
     private var scannerView: ScannerView? = null
-    private lateinit var binaryMessenger: BinaryMessenger
-    private lateinit var textureRegistry: TextureRegistry
+    private lateinit var registry: TextureRegistry
+    private lateinit var eventChannel: EventChannel
 
     companion object {
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
         lateinit var channelResult: MethodChannel.Result
-        lateinit var eventSink: EventChannel.EventSink
     }
 
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
@@ -46,10 +44,9 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
         curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
         curiosityChannel.setMethodCallHandler(this)
         context = plugin.applicationContext
-        binaryMessenger = plugin.binaryMessenger
-        textureRegistry = plugin.textureRegistry
-        val eventChannel = EventChannel(binaryMessenger, "$curiosity/event")
-        eventChannel.setStreamHandler(this)
+        registry = plugin.textureRegistry
+        eventChannel = EventChannel(plugin.binaryMessenger, "$curiosity/event")
+
     }
 
     ///主要是用于获取当前flutter页面所处的Activity.
@@ -69,12 +66,12 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
 
     override fun onDetachedFromActivityForConfigChanges() {
         curiosityChannel.setMethodCallHandler(null)
-        eventSink.endOfStream()
+        eventChannel.setStreamHandler(null)
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         curiosityChannel.setMethodCallHandler(null)
-        eventSink.endOfStream()
+        eventChannel.setStreamHandler(null)
     }
 
     ///主要用于接收Flutter端对原生方法调用的实现.
@@ -119,7 +116,8 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
             "availableCameras" ->
                 channelResult.success(CameraTools.getAvailableCameras(activity))
             "initializeCameras" -> {
-                scannerView = ScannerView(textureRegistry.createSurfaceTexture())
+                scannerView = ScannerView(registry.createSurfaceTexture())
+                eventChannel.setStreamHandler(scannerView)
                 scannerView!!.initCameraView()
             }
             "setFlashMode" -> {
@@ -128,6 +126,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
             }
             "disposeCameras" -> {
                 scannerView?.dispose()
+                eventChannel.setStreamHandler(null)
             }
         }
     }
@@ -139,14 +138,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, EventCh
             }
         }
         return true
-    }
-
-    override fun onListen(arguments: Any, events: EventChannel.EventSink) {
-        eventSink = events
-    }
-
-    override fun onCancel(arguments: Any?) {
-        eventSink
     }
 
 
