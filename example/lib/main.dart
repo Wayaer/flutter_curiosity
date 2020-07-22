@@ -2,8 +2,8 @@ import 'package:curiosity/ScanCodePage.dart';
 import 'package:curiosity/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/tools/InternalTools.dart';
+import '../flutter_curiosity.dart';
 
 class Scanner extends StatefulWidget {
   final ScannerController controller;
