@@ -1,4 +1,4 @@
-import 'package:curiosity/ScanPage.dart';
+import 'package:curiosity/ScanCodePage.dart';
 import 'package:curiosity/Utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,7 +130,7 @@ class AppState extends State<App> {
             showAlert: false);
     if (permission) {
       showCupertinoModalPopup(
-          context: context, builder: (context) => ScanPage());
+          context: context, builder: (context) => ScanCodePage());
     } else {
       openAppSettings();
     }

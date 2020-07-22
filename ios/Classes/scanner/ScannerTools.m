@@ -1,16 +1,7 @@
-#import "Scanner.h"
 #import "ScannerTools.h"
-typedef enum {
-    VeryLow,
-    Low,
-    Medium,
-    High,
-    VeryHigh,
-    UltraHigh,
-    Max,
-} ResolutionPreset;
 
 @implementation ScannerTools
+
 + (void)scanImagePath:(FlutterMethodCall*)call result:(FlutterResult)result{
     NSString * path=[call.arguments valueForKey:@"path"];
     if([path isKindOfClass:[NSNull class]]){
@@ -89,65 +80,6 @@ typedef enum {
     return result;
 }
 
-
-
-+ (void)setCaptureSessionPreset:(NSString *)resolutionPreset :(AVCaptureSession*)captureSession :(AVCaptureDevice*)captureDevice  :(CGSize)previewSize {
-    
-    if ([@"Max" isEqualToString:resolutionPreset]) {
-        if ([captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
-            captureSession.sessionPreset = AVCaptureSessionPresetHigh;
-            previewSize =
-            CGSizeMake(captureDevice.activeFormat.highResolutionStillImageDimensions.width,
-                       captureDevice.activeFormat.highResolutionStillImageDimensions.height);
-        }
-    }else if ([@"UltraHigh" isEqualToString:resolutionPreset]) {
-        if (@available(iOS 9.0, *)) {
-            if ([captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-                captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
-                previewSize = CGSizeMake(3840, 2160);
-            }
-        } else {
-            // Fallback on earlier versions
-        }
-    }else if ([@"VeryHigh" isEqualToString:resolutionPreset]) {
-        if ([captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
-            captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
-            previewSize = CGSizeMake(1920, 1080);
-            
-        }
-    }else if ([@"High" isEqualToString:resolutionPreset]) {
-        if ([captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
-            captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
-            previewSize = CGSizeMake(1280, 720);
-        }
-    }else if ([@"Medium" isEqualToString:resolutionPreset]) {
-        if ([captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
-            captureSession.sessionPreset = AVCaptureSessionPreset640x480;
-            previewSize = CGSizeMake(640, 480);
-            
-        }
-    }else  if ([@"Low" isEqualToString:resolutionPreset]) {
-        if ([captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
-            captureSession.sessionPreset = AVCaptureSessionPreset352x288;
-            previewSize = CGSizeMake(352, 288);
-        }
-    }else{
-        if ([captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
-            captureSession.sessionPreset = AVCaptureSessionPresetLow;
-            previewSize = CGSizeMake(352, 288);
-        } else {
-            NSError *error =
-            [NSError errorWithDomain:NSCocoaErrorDomain
-                                code:NSURLErrorUnknown
-                            userInfo:@{
-                                NSLocalizedDescriptionKey :
-                                    @"No capture session available for current capture session."
-                            }];
-            @throw error;
-        }
-    }
-    
-}
 
 /**
  获取可用的摄像头

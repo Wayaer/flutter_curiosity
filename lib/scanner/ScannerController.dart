@@ -28,7 +28,7 @@ class ScannerController extends ChangeNotifier {
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-  })  : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
+  })  : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.Max,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1);
 
@@ -45,9 +45,8 @@ class ScannerController extends ChangeNotifier {
         "heightRatio": heightRatio,
       });
       textureId = reply['textureId'];
-      print(textureId.toString() + '==初始化成功');
-      previewWidth = reply['previewWidth'];
-      previewHeight = reply['previewHeight'];
+      previewWidth = double.parse(reply['previewWidth'].toString());
+      previewHeight = double.parse(reply['previewHeight'].toString());
       eventChannel = EventChannel('$curiosity/event')
           .receiveBroadcastStream({}).listen((data) {
         this.code = data['code'];
@@ -95,7 +94,8 @@ class ScannerController extends ChangeNotifier {
 
   Future<void> disposeCameras() async {
     eventChannel?.cancel();
-    await curiosityChannel.invokeMethod('disposeCameras');
+    await curiosityChannel
+        .invokeMethod('disposeCameras', {'textureId': textureId});
   }
 }
 

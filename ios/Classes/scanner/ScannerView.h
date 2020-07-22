@@ -1,12 +1,14 @@
 #import <Foundation/Foundation.h>
 #import <Flutter/Flutter.h>
 #import <AVFoundation/AVFoundation.h>
-#import "NativeTools.h"
-@interface ScannerView : NSObject<AVCaptureMetadataOutputObjectsDelegate,FlutterTexture,AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property(nonatomic) FlutterEventSink eventSink;
+API_AVAILABLE(ios(10.0))
+@interface ScannerView : NSObject<FlutterTexture,FlutterStreamHandler,AVCaptureMetadataOutputObjectsDelegate,AVCaptureVideoDataOutputSampleBufferDelegate>
+
 
 @property(readonly, nonatomic) CGSize previewSize;
+
+@property(nonatomic) FlutterEventChannel *eventChannel;
 
 //第一帧回掉
 @property(nonatomic, copy) void (^onFrameAvailable)(void);

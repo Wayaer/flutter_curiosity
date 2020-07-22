@@ -194,7 +194,6 @@ object ScannerTools {
         } catch (e: NotFoundException) {
             if (verticalScreen) result = decodeImage(byteArray, image, false, topRatio, leftRatio, widthRatio, heightRatio)
         }
-        image.close()
         return result
     }
 

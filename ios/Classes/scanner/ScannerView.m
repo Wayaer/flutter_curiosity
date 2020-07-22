@@ -5,74 +5,80 @@
 
 
 @implementation ScannerView{
-  
     //链接相机用的
-    AVCaptureSession *captureSession;
+    AVCaptureSession *_captureSession;
     //获取相机设备
-    AVCaptureDevice *captureDevice;
+    AVCaptureDevice *_captureDevice;
     //视频输入
-    AVCaptureInput *captureVideoInput;
+    AVCaptureInput *_captureVideoInput;
     //视频输出
-    AVCaptureMetadataOutput * captureOutput;
+    AVCaptureMetadataOutput *_captureOutput;
     //视频输出2
-    AVCaptureVideoDataOutput *captureVideoOutput;
-//    CGSize previewSize;
-    //channel用于返回数据给data
-//    FlutterEventSink eventSink;
-    CVPixelBufferRef volatile latestPixelBuffer;
+    AVCaptureVideoDataOutput *_captureVideoOutput;
+    
+    CVPixelBufferRef volatile _latestPixelBuffer;
+    
+    FlutterEventSink eventSink;
 }
 
-FourCharCode const scannerViewFormat = kCVPixelFormatType_32BGRA;
+FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (instancetype)initWitchCamera:(NSString*)cameraId :(NSString*)resolutionPreset :(NSError **)error{
     self = [super init];
     NSAssert(self, @"super init cannot be nil");
-  
-    captureSession = [[AVCaptureSession alloc]init];
-    captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraId];
+    
+    _captureSession = [[AVCaptureSession alloc]init];
+    _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraId];
     
     NSError *localError =nil;
-    captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:captureDevice error:&localError];
+    _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice error:&localError];
     
     if(localError){
         *error = localError;
         return nil;
     }
     
-    captureVideoOutput = [AVCaptureVideoDataOutput new];
-    captureVideoOutput.videoSettings = @{(NSString*)kCVPixelBufferPixelFormatTypeKey: @(scannerViewFormat)};
-    [captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
-    [captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
+    _captureVideoOutput = [AVCaptureVideoDataOutput new];
+    _captureVideoOutput.videoSettings = @{(NSString*)kCVPixelBufferPixelFormatTypeKey: @(videoFormat)};
+    [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
+    [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
     
     //链接
-    AVCaptureConnection* connection =[AVCaptureConnection connectionWithInputPorts:captureVideoInput.ports output:captureVideoOutput];
+    AVCaptureConnection* connection =[AVCaptureConnection connectionWithInputPorts:_captureVideoInput.ports output:_captureVideoOutput];
     
-    if ([captureDevice position] == AVCaptureDevicePositionFront) {
+    if ([_captureDevice position] == AVCaptureDevicePositionFront) {
         connection.videoMirrored = YES;
     }
     if([connection isVideoOrientationSupported]){
         connection.videoOrientation =AVCaptureVideoOrientationPortrait;
     }
-    [captureSession addInputWithNoConnections:captureVideoInput];
-    [captureSession addOutputWithNoConnections:captureVideoOutput];
+    [_captureSession addInputWithNoConnections:_captureVideoInput];
+    [_captureSession addOutputWithNoConnections:_captureVideoOutput];
     
-    captureOutput=[[AVCaptureMetadataOutput alloc]init];
-    
+    _captureOutput=[[AVCaptureMetadataOutput alloc]init];
     
     //设置代理，在主线程刷新
-    [captureOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
-    [captureSession addOutput:captureOutput];
-    captureOutput.metadataObjectTypes=captureOutput.availableMetadataObjectTypes;
+    [_captureOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+    [_captureSession addOutput:_captureOutput];
+    _captureOutput.metadataObjectTypes=_captureOutput.availableMetadataObjectTypes;
     //扫码区域的大小
-    AVCaptureVideoPreviewLayer *layer = [AVCaptureVideoPreviewLayer layerWithSession:captureSession];
+    AVCaptureVideoPreviewLayer *layer = [AVCaptureVideoPreviewLayer layerWithSession:_captureSession];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
     //    layer.frame = CGRectMake(left, top, size, size);
     //        [_captureOutput rectOfInterest];
-    [captureOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
-    [captureOutput setMetadataObjectTypes:@[AVMetadataObjectTypeAztecCode,AVMetadataObjectTypeCode39Code,
-                                            AVMetadataObjectTypeCode93Code,AVMetadataObjectTypeCode128Code, AVMetadataObjectTypeDataMatrixCode,AVMetadataObjectTypeEAN8Code,AVMetadataObjectTypeEAN13Code,AVMetadataObjectTypeITF14Code,AVMetadataObjectTypePDF417Code,AVMetadataObjectTypeQRCode,AVMetadataObjectTypeUPCECode]];
-    [captureSession addConnection:connection];
-    [ScannerTools setCaptureSessionPreset:resolutionPreset :captureSession :captureDevice :_previewSize];
-    [NativeTools log:@"原生初始化相机完成"];
+    [_captureOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
+    [_captureOutput setMetadataObjectTypes:@[AVMetadataObjectTypeAztecCode,
+                                             AVMetadataObjectTypeCode39Code,
+                                             AVMetadataObjectTypeCode93Code,
+                                             AVMetadataObjectTypeCode128Code,
+                                             AVMetadataObjectTypeDataMatrixCode,
+                                             AVMetadataObjectTypeEAN8Code,
+                                             AVMetadataObjectTypeEAN13Code,
+                                             AVMetadataObjectTypeITF14Code,
+                                             AVMetadataObjectTypePDF417Code,
+                                             AVMetadataObjectTypeQRCode,
+                                             AVMetadataObjectTypeUPCECode]];
+    [_captureSession addConnection:connection];
+    [self setCaptureSessionPreset:resolutionPreset];
     return self;
 }
 
@@ -80,82 +86,146 @@ FourCharCode const scannerViewFormat = kCVPixelFormatType_32BGRA;
 - (void)captureOutput:(AVCaptureOutput *)output didOutputMetadataObjects:(NSArray<__kindof AVMetadataObject *> *)metadataObjects fromConnection:(AVCaptureConnection *)connection{
     if (metadataObjects.count>0) {
         AVMetadataMachineReadableCodeObject * metaObject=metadataObjects[0];
-        if(_eventSink)_eventSink([ScannerTools scanDataToMap:metaObject]);
+        if(eventSink)eventSink([ScannerTools scanDataToMap:metaObject]);
     }
     
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
-    if (output == captureVideoOutput) {
+    if (output == _captureVideoOutput) {
         CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         CFRetain(newBuffer);
-        CVPixelBufferRef old = latestPixelBuffer;
-        while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&latestPixelBuffer)) {
-            old = latestPixelBuffer;
+        CVPixelBufferRef old = _latestPixelBuffer;
+        while (!OSAtomicCompareAndSwapPtrBarrier(old, newBuffer, (void **)&_latestPixelBuffer)) {
+            old = _latestPixelBuffer;
         }
         if (old != nil)
             CFRelease(old);
-        if (_onFrameAvailable)
-            _onFrameAvailable();
+        if (_onFrameAvailable)_onFrameAvailable();
         
     }
 }
 
 
 - (void)start{
-    [captureSession startRunning];
-    [NativeTools log:@"原生相机开始完成"];
+    [_captureSession startRunning];
 }
 
 -(void)resume{
-    if(![captureSession isRunning]){
-        [captureSession startRunning];
-    }
+    if(![_captureSession isRunning])
+        [_captureSession startRunning];
+    
 }
 
 -(void)pause{
-    if ([captureSession isRunning]) {
-        [captureSession stopRunning];
-    }
+    if ([_captureSession isRunning])
+        [_captureSession stopRunning];
+    
 }
 
 //打开/关闭 闪光灯
 -(BOOL)setFlashMode:(BOOL) status{
-    [captureDevice lockForConfiguration:nil];
+    [_captureDevice lockForConfiguration:nil];
     BOOL isSuccess = YES;
-    if ([captureDevice hasFlash]) {
+    if ([_captureDevice hasFlash]) {
         if (status) {
-            captureDevice.flashMode = AVCaptureFlashModeOn;
-            captureDevice.torchMode = AVCaptureTorchModeOn;
+            _captureDevice.flashMode = AVCaptureFlashModeOn;
+            _captureDevice.torchMode = AVCaptureTorchModeOn;
         }else{
-            captureDevice.flashMode = AVCaptureFlashModeOff;
-            captureDevice.torchMode = AVCaptureTorchModeOff;
+            _captureDevice.flashMode = AVCaptureFlashModeOff;
+            _captureDevice.torchMode = AVCaptureTorchModeOff;
         }
     }else{
         isSuccess=NO;
     }
-    [captureDevice unlockForConfiguration];
+    [_captureDevice unlockForConfiguration];
     return isSuccess;
     
 }
 
 - (void)close {
-    [captureSession stopRunning];
-    for (AVCaptureInput *input in [captureSession inputs]) {
-        [captureSession removeInput:input];
+    [_captureSession stopRunning];
+    for (AVCaptureInput *input in [_captureSession inputs]) {
+        [_captureSession removeInput:input];
     }
-    for (AVCaptureOutput *output in [captureSession outputs]) {
-        [captureSession removeOutput:output];
+    for (AVCaptureOutput *output in [_captureSession outputs]) {
+        [_captureSession removeOutput:output];
     }
 }
 - (CVPixelBufferRef _Nullable)copyPixelBuffer {
-    CVPixelBufferRef pixelBuffer = latestPixelBuffer;
-    while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&latestPixelBuffer)) {
-        pixelBuffer = latestPixelBuffer;
+    CVPixelBufferRef pixelBuffer = _latestPixelBuffer;
+    while (!OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, (void **)&_latestPixelBuffer)) {
+        pixelBuffer = _latestPixelBuffer;
     }
     return pixelBuffer;
 }
 
+
+- (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
+    if ([@"Max" isEqualToString:resolutionPreset]) {
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
+            _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+            _previewSize = CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
+                                      _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
+        }
+    }else if ([@"UltraHigh" isEqualToString:resolutionPreset]) {
+        if (@available(iOS 9.0, *)) {
+            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+                _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+                _previewSize = CGSizeMake(3840, 2160);
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+    }else if ([@"VeryHigh" isEqualToString:resolutionPreset]) {
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+            _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+            _previewSize = CGSizeMake(1920, 1080);
+            
+        }
+    }else if ([@"High" isEqualToString:resolutionPreset]) {
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+            _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+            _previewSize = CGSizeMake(1280, 720);
+        }
+    }else if ([@"Medium" isEqualToString:resolutionPreset]) {
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+            _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+            _previewSize = CGSizeMake(640, 480);
+            
+        }
+    }else  if ([@"Low" isEqualToString:resolutionPreset]) {
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+            _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+            _previewSize = CGSizeMake(352, 288);
+        }
+    }else{
+        if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
+            _captureSession.sessionPreset = AVCaptureSessionPresetLow;
+            _previewSize = CGSizeMake(352, 288);
+        } else {
+            NSError *error =
+            [NSError errorWithDomain:NSCocoaErrorDomain
+                                code:NSURLErrorUnknown
+                            userInfo:@{
+                                NSLocalizedDescriptionKey :
+                                    @"No capture session available for current capture session."
+                            }];
+            @throw error;
+        }
+    }
+    
+}
+- (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
+    eventSink = nil;
+    [_eventChannel setStreamHandler:nil];
+    return nil;
+}
+
+- (FlutterError * _Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(nonnull FlutterEventSink)events {
+    eventSink = events;
+    return nil;
+}
 @end
 
 

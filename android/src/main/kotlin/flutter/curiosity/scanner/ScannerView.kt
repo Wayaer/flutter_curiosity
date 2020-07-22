@@ -102,9 +102,8 @@ class ScannerView(private val texture: SurfaceTextureEntry) {
                         buffer.clear()
                         lastCurrentTime = currentTime
                     }
-                } else {
-                    image?.close()
                 }
+                image?.close()
             }
         }, handler)
         // 为相机预览，创建一个CameraCaptureSession对象

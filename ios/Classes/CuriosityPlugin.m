@@ -1,43 +1,38 @@
 #import "CuriosityPlugin.h"
 #import "ScannerTools.h"
-#import "ScannerFactory.h"
 #import "NativeTools.h"
 #import "FileTools.h"
 #import "PicturePicker.h"
 #import "ScannerView.h"
 
+API_AVAILABLE(ios(10.0))
+
 @implementation CuriosityPlugin{
     UIViewController *viewController;
-    NSObject<FlutterPluginRegistrar>*registrar;
+    NSObject<FlutterTextureRegistry> *registry;
+    FlutterEventChannel *eventChannel;
     FlutterMethodCall *call;
     FlutterResult result;
-    FlutterEventChannel *eventChannel;
-    FlutterEventSink eventSink;
     ScannerView *scannerView;
-    int64_t scannerViewId;
 }
 NSString * const curiosity=@"Curiosity";
+NSString * const curiosityEvent=@"Curiosity/event";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:curiosity
                                      binaryMessenger:[registrar messenger]];
-    UIViewController *viewController =
-    [UIApplication sharedApplication].delegate.window.rootViewController;
-    FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:@"Curiosity/event" binaryMessenger:[registrar messenger]];
-    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosityPlugin:viewController :registrar :eventChannel];
+    UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:viewController registrar:registrar];
     [registrar addMethodCallDelegate:plugin channel:channel];
 }
-- (instancetype)initWithCuriosityPlugin:(UIViewController *)_viewController :(NSObject<FlutterPluginRegistrar>*)_registrar
-                                       :( FlutterEventChannel *)_eventChannel {
+- (instancetype)initWithCuriosity:(UIViewController *)_viewController
+                        registrar:(NSObject<FlutterPluginRegistrar>*)_registrar {
     self = [super init];
-    if (self){
-        viewController = _viewController;
-        registrar = _registrar;
-        [_eventChannel setStreamHandler:self];
-        
-    }
+    viewController = _viewController;
+    registry =[_registrar textures];
+    eventChannel = [FlutterEventChannel eventChannelWithName:curiosityEvent binaryMessenger:[_registrar messenger]];
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
@@ -73,34 +68,43 @@ NSString * const curiosity=@"Curiosity";
         [ScannerTools availableCameras:call result:result];
     }
     if([@"initializeCameras" isEqualToString:call.method]){
-        [NativeTools log:@"开始初始化相机"];
         NSString *cameraId = call.arguments[@"cameraId"];
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
         NSError * error;
-        [NativeTools log:cameraId];
-        scannerView = [[ScannerView alloc] initWitchCamera:cameraId :resolutionPreset :&error];
-        if(error){
-            result(getFlutterError(error));
-            return;
+        if (@available(iOS 10.0, *)) {
+            ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :resolutionPreset :&error];
+            if(error){
+                result(getFlutterError(error));
+                return;
+            }else{
+                if(scannerView)[scannerView close];
+                int64_t scannerViewId = [registry registerTexture:view];
+                scannerView = view;
+                [eventChannel setStreamHandler:view];
+                view.eventChannel = eventChannel;
+                view.onFrameAvailable = ^{
+                    [self->registry textureFrameAvailable:scannerViewId];
+                };
+                result(@{
+                    @"textureId":@(scannerViewId),
+                    @"previewWidth":@(view.previewSize.width),
+                    @"previewHeight":@(view.previewSize.height)
+                       });
+                [view start];
+            }
         }else{
-            if(scannerView)[scannerView close];
-            scannerViewId = [[registrar textures] registerTexture:scannerView];
-            scannerView.eventSink = eventSink;
-            result(@{
-                @"textureId":@(scannerViewId),
-                @"previewWidth":@(scannerView.previewSize.width),
-                @"previewHeight":@(scannerView.previewSize.height)
-                   });
-            [scannerView start];
+            result(@"Not supported below ios10");
         }
     }
     if([@"disposeCameras" isEqualToString:call.method]){
+        NSDictionary *arguments = call.arguments;
+        NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
         if(scannerView)[scannerView close];
-        if(scannerViewId) [[registrar textures] unregisterTexture:scannerViewId];
+        if(textureId) [registry unregisterTexture:textureId];
     }
     if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
-       if(scannerView)[scannerView setFlashMode:[status boolValue]];
+        if(scannerView)[scannerView setFlashMode:[status boolValue]];
     }
     
 }
@@ -137,16 +141,7 @@ NSString * const curiosity=@"Curiosity";
         exit(0);
     }
 }
-- (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
-    eventSink = nil;
-    [eventChannel setStreamHandler:nil];
-    return nil;
-}
 
-- (FlutterError * _Nullable)onListenWithArguments:(id _Nullable)arguments eventSink:(FlutterEventSink)_eventSink {
-    eventSink = _eventSink;
-    return nil;
-}
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]
                                message:error.localizedDescription

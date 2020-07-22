@@ -28,7 +28,7 @@ class Scanner extends StatefulWidget {
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-  })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.front,
+  })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
@@ -46,7 +46,7 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     controller = widget.controller ??
-        ScannerController(resolutionPreset: ResolutionPreset.VeryHigh);
+        ScannerController(resolutionPreset: ResolutionPreset.Max);
     getCameras();
   }
 
@@ -62,7 +62,6 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    print(controller?.textureId);
     if (controller?.textureId == null) return Container();
     return Texture(textureId: controller.textureId);
   }
