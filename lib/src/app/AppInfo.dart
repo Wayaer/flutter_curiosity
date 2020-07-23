@@ -1,7 +1,7 @@
 import 'dart:io';
 
-import 'package:flutter_curiosity/constant/constant.dart';
-import 'package:flutter_curiosity/tools/InternalTools.dart';
+import 'package:flutter_curiosity/src/constant/constant.dart';
+import 'package:flutter_curiosity/src/tools/InternalTools.dart';
 
 import 'AppInfoModel.dart';
 

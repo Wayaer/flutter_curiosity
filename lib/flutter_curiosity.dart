@@ -1,13 +1,13 @@
 library flutter_curiosity;
 
-export 'app/AppInfo.dart';
-export 'app/AppInfoModel.dart';
-export 'constant/enum.dart';
-export 'gallery/AssetMedia.dart';
-export 'gallery/PicturePicker.dart';
-export 'gallery/PicturePickerOptions.dart';
-export 'scanner/Scanner.dart';
-export 'scanner/ScannerController.dart';
-export 'scanner/view/ScannerBox.dart';
-export 'scanner/view/ScannerPainter.dart';
-export 'tools/NativeTools.dart';
+export 'src/app/AppInfo.dart';
+export 'src/app/AppInfoModel.dart';
+export 'src/constant/enum.dart';
+export 'src/gallery/AssetMedia.dart';
+export 'src/gallery/PicturePicker.dart';
+export 'src/gallery/PicturePickerOptions.dart';
+export 'src/scanner/Scanner.dart';
+export 'src/scanner/ScannerController.dart';
+export 'src/scanner/view/ScannerBox.dart';
+export 'src/scanner/view/ScannerPainter.dart';
+export 'src/tools/NativeTools.dart';
