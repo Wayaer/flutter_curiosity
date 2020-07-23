@@ -1,10 +1,10 @@
 # flutter_curiosity
 集成部分原生功能，支持ios android
 
-## 1.原生多个方法 [点击查看](./lib/src/tools/NativeTools.dart)
+## 1.原生方法 [点击查看](./lib/src/tools/NativeTools.dart)
 
 ## 2.二维码扫描 [点击查看](./lib/src/scanner) 
-##### 1、添加相机相关权限：
+##### 添加相机相关权限：
 
 - 项目目录->Info.plist->增加
 
@@ -18,7 +18,7 @@
 ```
 ## 3.图片选择 [点击查看](./lib/src/gallery/PicturePicker.dart)
 #### ios
-##### 1、添加相册相关权限：
+##### 添加相册相关权限：
 
 - 项目目录->Info.plist->增加
 使用了相机、定位、麦克风、相册，请参考Demo添加下列属性到info.plist文件：
@@ -36,7 +36,7 @@
 	<string>是否允许此App使用你的相机进行拍照？</string>
 ```
 
-##### 2、中文适配：    
+##### 中文适配：    
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
 ## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/src/app/AppInfo.dart)
