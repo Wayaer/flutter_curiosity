@@ -1,6 +1,6 @@
-import '../constant/constant.dart';
-import '../flutter_curiosity.dart';
-import '../tools/InternalTools.dart';
+import 'package:flutter_curiosity/constant/constant.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class PicturePicker {
   ///  openPicker() async {

@@ -3,9 +3,9 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../constant/constant.dart';
-import '../tools/InternalTools.dart';
-import '../flutter_curiosity.dart';
+import 'package:flutter_curiosity/constant/constant.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/tools/InternalTools.dart';
 
 class ScannerController extends ChangeNotifier {
   StreamSubscription eventChannel;
