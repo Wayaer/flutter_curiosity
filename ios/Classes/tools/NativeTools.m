@@ -47,7 +47,7 @@
     [info setObject:[app objectForKey:@"CFBundleName"] forKey:@"appName"];
     [info setObject:[app objectForKey:@"DTSDKBuild"] forKey:@"sdkBuild"];
     [info setObject:[app objectForKey:@"DTPlatformName"] forKey:@"platformName"];
-    [info setObject:[app objectForKey:@"MinimumOSVersion"] forKey:@"pinimumOSVersion"];
+    [info setObject:[app objectForKey:@"MinimumOSVersion"] forKey:@"minimumOSVersion"];
     [info setObject:[app objectForKey:@"DTPlatformVersion"] forKey:@"platformVersion"];
     UIDevice *device = [UIDevice currentDevice];
     [info setObject:device.systemName forKey:@"systemName"];

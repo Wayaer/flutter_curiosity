@@ -8,7 +8,6 @@ class AppInfoModel {
   double statusBarHeight;
 
   ///only android
-  ///
   String cacheDir;
   String directoryMusic;
   String directoryAlarms;
@@ -32,10 +31,9 @@ class AppInfoModel {
   double navigationBarHeight;
 
   ///only ios
-  ///
   String cachesDirectory;
   String homeDirectory;
-  String pinimumOSVersion;
+  String minimumOSVersion;
   String platformVersion;
   String sdkBuild;
   String documentDirectory;
@@ -45,45 +43,46 @@ class AppInfoModel {
   String platformName;
   String systemName;
 
-  AppInfoModel({this.cacheDir,
-    this.versionName,
-    this.directoryMusic,
-    this.systemVersion,
-    this.buildNumber,
-    this.directoryAlarms,
-    this.directoryDocuments,
-    this.firstInstallTime,
-    this.phoneModel,
-    this.phoneBrand,
-    this.packageName,
-    this.directoryMovies,
-    this.directoryPictures,
-    this.filesDir,
-    this.directoryDCIM,
-    this.appName,
-    this.navigationBarHeight,
-    this.directoryNotifications,
-    this.directoryRINGTONES,
-    this.directoryDownloads,
-    this.versionCode,
-    this.externalCacheDir,
-    this.externalFilesDir,
-    this.directoryPODCASTS,
-    this.externalStorageDirectory,
-    this.sdkVersion,
-    this.cachesDirectory,
-    this.homeDirectory,
-    this.pinimumOSVersion,
-    this.platformVersion,
-    this.sdkBuild,
-    this.documentDirectory,
-    this.temporaryDirectory,
-    this.statusBarWidth,
-    this.libraryDirectory,
-    this.statusBarHeight,
-    this.platformName,
-    this.systemName,
-    this.lastUpdateTime});
+  AppInfoModel(
+      {this.cacheDir,
+      this.versionName,
+      this.directoryMusic,
+      this.systemVersion,
+      this.buildNumber,
+      this.directoryAlarms,
+      this.directoryDocuments,
+      this.firstInstallTime,
+      this.phoneModel,
+      this.phoneBrand,
+      this.packageName,
+      this.directoryMovies,
+      this.directoryPictures,
+      this.filesDir,
+      this.directoryDCIM,
+      this.appName,
+      this.navigationBarHeight,
+      this.directoryNotifications,
+      this.directoryRINGTONES,
+      this.directoryDownloads,
+      this.versionCode,
+      this.externalCacheDir,
+      this.externalFilesDir,
+      this.directoryPODCASTS,
+      this.externalStorageDirectory,
+      this.sdkVersion,
+      this.cachesDirectory,
+      this.homeDirectory,
+      this.minimumOSVersion,
+      this.platformVersion,
+      this.sdkBuild,
+      this.documentDirectory,
+      this.temporaryDirectory,
+      this.statusBarWidth,
+      this.libraryDirectory,
+      this.statusBarHeight,
+      this.platformName,
+      this.systemName,
+      this.lastUpdateTime});
 
   AppInfoModel.fromJson(Map<String, dynamic> json) {
     cacheDir = json['cacheDir'];
@@ -115,7 +114,7 @@ class AppInfoModel {
     lastUpdateTime = json['lastUpdateTime'];
     cachesDirectory = json['cachesDirectory'];
     homeDirectory = json['homeDirectory'];
-    pinimumOSVersion = json['pinimumOSVersion'];
+    minimumOSVersion = json['minimumOSVersion'];
     platformVersion = json['platformVersion'];
     sdkBuild = json['sdkBuild'];
     documentDirectory = json['documentDirectory'];
@@ -157,7 +156,7 @@ class AppInfoModel {
     data['lastUpdateTime'] = this.lastUpdateTime;
     data['cachesDirectory'] = this.cachesDirectory;
     data['homeDirectory'] = this.homeDirectory;
-    data['pinimumOSVersion'] = this.pinimumOSVersion;
+    data['minimumOSVersion'] = this.minimumOSVersion;
     data['platformVersion'] = this.platformVersion;
     data['sdkBuild'] = this.sdkBuild;
     data['documentDirectory'] = this.documentDirectory;

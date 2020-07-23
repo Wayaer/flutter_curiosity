@@ -54,6 +54,8 @@ class ScannerController extends ChangeNotifier {
       });
     } on PlatformException catch (e) {
       //原生异常抛出
+      print("initializeCameras PlatformException");
+      print(e);
     }
   }
 
