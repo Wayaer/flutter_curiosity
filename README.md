@@ -1,15 +1,9 @@
 # flutter_curiosity
-集成部分原生功能，支持ios&amp;android
+集成部分原生功能，支持ios android
 
-## 1.原生多个方法 [点击查看](./lib/tools/NativeTools.dart)
+## 1.原生多个方法 [点击查看](./lib/src/tools/NativeTools.dart)
 
-## 2.二维码扫描 [点击查看](./lib/scanner) 
-```
-   anroid 分 CameraX最新版预览识别 和旧版 Camera API预览识别
-   新版API对于条形码的识别率 相对于 旧版的API正确率会低一些
-   旧版不支持设置区域识别，新版 仅android支持指定区域识别
-   打开闪光灯  android 暂时无效
-```
+## 2.二维码扫描 [点击查看](./lib/src/scanner) 
 ##### 1、添加相机相关权限：
 
 - 项目目录->Info.plist->增加
@@ -22,7 +16,7 @@
     <key>io.flutter.embedded_views_preview</key>
     <true/>
 ```
-## 3.图片选择 [点击查看](./lib/gallery/PicturePicker.dart)
+## 3.图片选择 [点击查看](./lib/src/gallery/PicturePicker.dart)
 #### ios
 ##### 1、添加相册相关权限：
 
@@ -45,5 +39,5 @@
 ##### 2、中文适配：    
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
-## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/app/AppInfo.dart)
+## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/src/app/AppInfo.dart)
 

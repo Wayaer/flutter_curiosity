@@ -4,7 +4,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/src/constant/constant.dart';
 import 'package:flutter_curiosity/src/tools/InternalTools.dart';
 
 class ScannerController extends ChangeNotifier {
