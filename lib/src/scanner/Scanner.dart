@@ -68,17 +68,20 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
 
   @override
   void dispose() {
-    super.dispose();
     controller.disposeCameras();
+    controller.dispose();
+    controller = null;
+    super.dispose();
   }
 
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) async {
-    if (state == AppLifecycleState.resumed) {
-      await controller.disposeCameras();
-      getCameras();
-    } else {
-      controller.disposeCameras();
+    if (controller != null) {
+      if (state == AppLifecycleState.resumed) {
+        getCameras();
+      } else {
+        controller.disposeCameras();
+      }
     }
   }
 }

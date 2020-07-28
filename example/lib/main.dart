@@ -112,7 +112,6 @@ class AppState extends State<App> {
 
   getGPS() async {
     var data = await NativeTools.getGPSStatus();
-    print(data);
   }
 
   List<Widget> showText() {
