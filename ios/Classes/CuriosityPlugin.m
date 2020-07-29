@@ -132,7 +132,7 @@ NSString * const curiosityEvent=@"Curiosity/event";
         result( @"success");
     }
     if ([@"callPhone" isEqualToString:call.method]) {
-        [NativeTools callPhone:call.arguments[@"phoneNumber"] :call.arguments[@"directDial"]];
+        [NativeTools callPhone:call.arguments[@"phoneNumber"]];
         result( @"success");
     }
     if ([@"systemShare" isEqualToString:call.method]) {

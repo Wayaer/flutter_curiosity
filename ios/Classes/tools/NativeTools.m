@@ -14,16 +14,8 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
 }
 
-+ (void)callPhone:(NSString *)phoneNumber :(NSNumber*)directDial {
-    
-    if ([directDial intValue]==1) {
++ (void)callPhone:(NSString *)phoneNumber {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
-    }else{
-        UIWebView * callWebview = [[UIWebView alloc] init];
-        [callWebview loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:[@"tel:" stringByAppendingString:phoneNumber] ]]];
-        [[UIApplication sharedApplication].keyWindow addSubview:callWebview];
-    }
-    
 }
 + (NSMutableDictionary *)getAppInfo
 {

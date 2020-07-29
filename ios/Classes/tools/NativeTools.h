@@ -9,7 +9,7 @@
 + (void)goToMarket:(NSString *)props;
 
 //跳转拨号
-+ (void)callPhone:(NSString *)phoneNumber :(NSNumber *)directDial;
++ (void)callPhone:(NSString *)phoneNumber;
 
 //获取app信息
 + (NSMutableDictionary *)getAppInfo;
