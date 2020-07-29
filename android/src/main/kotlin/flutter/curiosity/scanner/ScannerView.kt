@@ -10,6 +10,7 @@ import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
+import flutter.curiosity.tools.Tools
 import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
@@ -47,28 +48,35 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                         cameraDevice = device
                         try {
                             createCaptureSession()
-                            val mutableMap: MutableMap<String, Any> = HashMap()
-                            mutableMap["textureId"] = texture.id()
-                            mutableMap["previewWidth"] = previewSize.width
-                            mutableMap["previewHeight"] = previewSize.height
-                            channelResult.success(mutableMap)
+                            resultMap("onOpened")
                         } catch (e: Exception) {
-//                            Tools.logInfo("CreateCaptureSession Exception")
+                            resultMap("CreateCaptureSession Exception")
                         }
                     }
 
                     override fun onDisconnected(cameraDevice: CameraDevice) {
+                        resultMap("onDisconnected")
+//                        Tools.logInfo("openCamera onDisconnected")
                         close()
                     }
 
                     override fun onError(cameraDevice: CameraDevice, errorCode: Int) {
+                        resultMap("onError")
+//                        Tools.logInfo("openCamera errorCode==$errorCode")
                         close()
                     }
                 },
-                null)
+                Handler())
     }
 
-    private val IMAGES_PRODUCED = 0;
+    private fun resultMap(cameraState: String) {
+        val mutableMap: MutableMap<String, Any> = HashMap()
+        mutableMap["cameraState"] = cameraState
+        mutableMap["textureId"] = texture.id()
+        mutableMap["previewWidth"] = previewSize.width
+        mutableMap["previewHeight"] = previewSize.height
+        channelResult.success(mutableMap)
+    }
 
     /**
      * 创建预览会话
@@ -119,7 +127,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                 try {
                     cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, Handler())
                 } catch (e: Exception) {
-//                    Tools.logInfo("CameraCaptureSession Exception")
+                    resultMap("CreateCaptureSession Exception")
                 }
             }
         }, handler)

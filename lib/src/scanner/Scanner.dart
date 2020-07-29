@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/src/tools/InternalTools.dart';
 
 class Scanner extends StatefulWidget {
   final ScannerController controller;
   final CameraLensFacing cameraLensFacing;
+  final Cameras camera;
 
   ///识别区域 比例 0-1
   ///距离屏幕头部
@@ -28,6 +30,7 @@ class Scanner extends StatefulWidget {
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
+    this.camera,
   })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
@@ -51,13 +54,20 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
   }
 
   getCameras() async {
-    var cameras = await controller.availableCameras();
-    cameras.map((camera) {
-      if (camera.lensFacing == widget.cameraLensFacing)
-        controller.initialize(cameras: camera).then((value) {
-          setState(() {});
-        });
-    }).toList();
+    Cameras camera = widget.camera;
+    if (camera == null) {
+      var cameras = await controller.availableCameras();
+      for (Cameras cameraInfo in cameras) {
+        if (cameraInfo.lensFacing == widget.cameraLensFacing) {
+          camera = cameraInfo;
+          break;
+        }
+      }
+    }
+    if (camera == null) return;
+    controller.initialize(cameras: camera).then((value) {
+      setState(() {});
+    });
   }
 
   @override

@@ -13,6 +13,7 @@ class ScannerController extends ChangeNotifier {
   int textureId;
   double previewWidth;
   double previewHeight;
+  String cameraState;
   final Cameras camera;
   final double topRatio;
   final double leftRatio;
@@ -44,6 +45,7 @@ class ScannerController extends ChangeNotifier {
         "heightRatio": heightRatio,
       });
       textureId = reply['textureId'];
+      cameraState = reply['cameraState'] ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
       eventChannel = EventChannel('$curiosity/event')
