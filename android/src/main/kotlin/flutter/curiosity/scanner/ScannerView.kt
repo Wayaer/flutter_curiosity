@@ -10,11 +10,11 @@ import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
-import flutter.curiosity.tools.Tools
 import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
+
 
 class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.StreamHandler {
     private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
@@ -68,6 +68,8 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                 null)
     }
 
+    private val IMAGES_PRODUCED = 0;
+
     /**
      * 创建预览会话
      */
@@ -85,19 +87,18 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
             singleThreadExecutor.execute {
                 val image = imageReader.acquireLatestImage()
                 val currentTime = System.currentTimeMillis()
-                if (currentTime - lastCurrentTime >= 10L) {
+                if (currentTime - lastCurrentTime >= 1L) {
+                    val name = System.currentTimeMillis().toString()
                     if (ImageFormat.YUV_420_888 == image?.format) {
-
                         val buffer = image.planes[0].buffer
                         val byteArray = ByteArray(buffer.remaining())
                         buffer[byteArray, 0, byteArray.size]
                         try {
                             val result = ScannerTools.decodeImage(byteArray, image, true, topRatio, leftRatio, widthRatio, heightRatio)
-                            if (result != null) {
-                                handler.post {
-                                    eventSink.success(ScannerTools.scanDataToMap(result))
-                                }
+                            if (result != null) handler.post {
+                                eventSink.success(ScannerTools.scanDataToMap(result))
                             }
+
                         } catch (e: Exception) {
                         }
                         buffer.clear()

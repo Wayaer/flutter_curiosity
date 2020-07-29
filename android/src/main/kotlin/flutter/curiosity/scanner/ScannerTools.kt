@@ -166,7 +166,6 @@ object ScannerTools {
 
 
     fun decodeImage(byteArray: ByteArray, image: Image, verticalScreen: Boolean, topRatio: Double, leftRatio: Double, widthRatio: Double, heightRatio: Double): Result? {
-        multiFormatReader.setHints(hints)
         val width: Int
         val height: Int
         val array: ByteArray
@@ -190,7 +189,7 @@ object ScannerTools {
         val binaryBitmap = BinaryBitmap(GlobalHistogramBinarizer(source))
         var result: Result? = null
         try {
-            result = multiFormatReader.decodeWithState(binaryBitmap)
+            result = multiFormatReader.decode(binaryBitmap, hints)
         } catch (e: NotFoundException) {
             if (verticalScreen) result = decodeImage(byteArray, image, false, topRatio, leftRatio, widthRatio, heightRatio)
         }
