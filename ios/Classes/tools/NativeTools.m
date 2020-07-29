@@ -8,8 +8,7 @@
 }
 
 //跳转到AppStore
-+ (void)goToMarket:(NSString *)props
-{
++ (void)goToMarket:(NSString *)props{
     NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
 }
