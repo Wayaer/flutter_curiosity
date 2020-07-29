@@ -31,7 +31,8 @@ class Scanner extends StatefulWidget {
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
     this.camera,
-  })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
+  })
+      : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         assert(controller != null);
@@ -65,9 +66,10 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
       }
     }
     if (camera == null) return;
-    controller.initialize(cameras: camera).then((value) {
+    await controller.initialize(cameras: camera).then((value) {
       setState(() {});
     });
+    print('cameraState ' + controller.cameraState);
   }
 
   @override
