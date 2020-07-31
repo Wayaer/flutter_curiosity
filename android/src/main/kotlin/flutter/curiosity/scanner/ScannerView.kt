@@ -96,7 +96,6 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                 val image = imageReader.acquireLatestImage()
                 val currentTime = System.currentTimeMillis()
                 if (currentTime - lastCurrentTime >= 1L) {
-                    val name = System.currentTimeMillis().toString()
                     if (ImageFormat.YUV_420_888 == image?.format) {
                         val buffer = image.planes[0].buffer
                         val byteArray = ByteArray(buffer.remaining())
@@ -106,7 +105,6 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                             if (result != null) handler.post {
                                 eventSink.success(ScannerTools.scanDataToMap(result))
                             }
-
                         } catch (e: Exception) {
                         }
                         buffer.clear()

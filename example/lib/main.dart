@@ -7,7 +7,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
-  runApp(MaterialApp(
+  runApp(OverlayMaterial(
     debugShowCheckedModeBanner: false,
     title: 'Curiosity',
     home: App(),

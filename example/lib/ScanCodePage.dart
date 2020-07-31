@@ -11,7 +11,8 @@ class ScanCodePage extends StatefulWidget {
 }
 
 class ScanCodePageState extends State<ScanCodePage> {
-  ScannerController controller = ScannerController();
+  ScannerController controller =
+      ScannerController(resolutionPreset: ResolutionPreset.High);
   bool showScanner = false;
 
   @override
@@ -35,17 +36,19 @@ class ScanCodePageState extends State<ScanCodePage> {
       if (code != null) {
         if (isFirst && code != null && code.length > 0) {
           print(code);
+          showToast(code);
         }
       }
     });
     controller.setFlashMode(false);
   }
 
-  double widthRatio = 0.6;
+  double widthRatio = 0.95;
 
   @override
   Widget build(BuildContext context) {
-    double w = ScreenFit.getWidth(0) * widthRatio;
+    double boxWidth = ScreenFit.getWidth(0) * 0.55;
+    double scannerWidth = ScreenFit.getWidth(0) * widthRatio;
     return Scaffold(
       body: Universal(
         isStack: true,
@@ -53,14 +56,14 @@ class ScanCodePageState extends State<ScanCodePage> {
           ScannerBox(
               borderColor: Color(0xFF51BEF7),
               scannerColor: Color(0xFF51BEF7),
-              size: Size(w, w),
+              size: Size(boxWidth, boxWidth),
               child: Universal(
                 visible: showScanner,
                 child: Scanner(
                   leftRatio: (1 - widthRatio) / 2,
                   widthRatio: widthRatio,
-                  topRatio: (1 - (w / ScreenFit.getHeight(0))) / 2,
-                  heightRatio: w / ScreenFit.getHeight(0),
+                  topRatio: (1 - (scannerWidth / ScreenFit.getHeight(0))) / 2,
+                  heightRatio: scannerWidth / ScreenFit.getHeight(0),
                   controller: controller,
                 ),
               )),

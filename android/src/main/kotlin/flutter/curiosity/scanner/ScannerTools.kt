@@ -7,8 +7,11 @@ import android.media.Image
 import android.os.Handler
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
+import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
+import flutter.curiosity.tools.NativeTools
+import flutter.curiosity.tools.Tools
 import io.flutter.BuildConfig
 import java.io.File
 import java.net.HttpURLConnection
@@ -168,20 +171,29 @@ object ScannerTools {
     fun decodeImage(byteArray: ByteArray, image: Image, verticalScreen: Boolean, topRatio: Double, leftRatio: Double, widthRatio: Double, heightRatio: Double): Result? {
         val width: Int
         val height: Int
+        val left: Int
+        val top: Int
+        val identifyWidth: Int
+        val identifyHeight: Int
         val array: ByteArray
         if (verticalScreen) {
             array = rotateByteArray(byteArray, image)
             width = image.height
             height = image.width
+            identifyWidth = (width * widthRatio).toInt()
+            identifyHeight = (height * heightRatio).toInt()
+            left = (width * leftRatio).toInt()
+            top = (height * topRatio).toInt()
         } else {
             width = image.width
             height = image.height
+            top = (width * leftRatio).toInt()
+            left = (height * topRatio).toInt()
+            identifyWidth = (width * heightRatio).toInt()
+            identifyHeight = (height * widthRatio).toInt()
             array = byteArray
         }
-        val left = (width * leftRatio).toInt()
-        val top = (width * topRatio).toInt()
-        val identifyWidth = (width * widthRatio).toInt()
-        val identifyHeight = (height * heightRatio).toInt()
+
         val source = PlanarYUVLuminanceSource(
                 array, width, height, left,
                 top,
