@@ -28,7 +28,8 @@ class ScannerController extends ChangeNotifier {
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-  })  : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.Max,
+  })
+      : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1);
 
@@ -36,7 +37,7 @@ class ScannerController extends ChangeNotifier {
     if (cameras == null && camera == null) return;
     try {
       final Map<String, dynamic> reply =
-          await curiosityChannel.invokeMapMethod('initializeCameras', {
+      await curiosityChannel.invokeMapMethod('initializeCameras', {
         'cameraId': cameras.name ?? camera.name,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
         "topRatio": topRatio,
@@ -87,7 +88,7 @@ class ScannerController extends ChangeNotifier {
         return Cameras(
             name: camera['name'],
             lensFacing:
-                InternalTools.getCameraLensFacing(camera['lensFacing']));
+            InternalTools.getCameraLensFacing(camera['lensFacing']));
       }).toList();
     } on PlatformException catch (e) {
       print(e);
