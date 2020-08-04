@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
@@ -44,44 +45,32 @@ class AppState extends State<App> {
               return Column(children: showText());
             },
           ),
+          RaisedButton(onPressed: () => scan(context), child: Text('扫码')),
+          RaisedButton(onPressed: () => select(), child: Text('图片选择')),
           RaisedButton(
-              onPressed: () {
-                scan(context);
-              },
-              child: Text('扫码')),
+              onPressed: () => openSystemGallery(), child: Text('打开系统相册')),
           RaisedButton(
-              onPressed: () {
-                select();
-              },
-              child: Text('图片选择')),
+              onPressed: () => openSystemCamera(), child: Text('打开系统相机')),
+          RaisedButton(onPressed: () => shareText(), child: Text('分享文字')),
+          RaisedButton(onPressed: () => shareImage(), child: Text('分享图片')),
+          RaisedButton(onPressed: () => shareImages(), child: Text('分享多张图片')),
+          RaisedButton(onPressed: () => getGPS(), child: Text('获取gps状态')),
           RaisedButton(
-              onPressed: () {
-                shareText();
-              },
-              child: Text('分享文字')),
-          RaisedButton(
-              onPressed: () {
-                shareImage();
-              },
-              child: Text('分享图片')),
-          RaisedButton(
-              onPressed: () {
-                shareImages();
-              },
-              child: Text('分享多张图片')),
-          RaisedButton(
-              onPressed: () {
-                getGPS();
-              },
-              child: Text('获取gps状态')),
-          RaisedButton(
-              onPressed: () {
-                NativeTools.jumpGPSSetting();
-              },
+              onPressed: () => NativeTools.jumpGPSSetting(),
               child: Text('跳转GPS设置')),
         ],
       ),
     );
+  }
+
+  openSystemGallery() async {
+    var data = await NativeTools.openSystemGallery();
+    showToast(data.toString());
+  }
+
+  openSystemCamera() async {
+    var data = await NativeTools.openSystemCamera();
+    showToast(data);
   }
 
   shareText() {
@@ -112,6 +101,7 @@ class AppState extends State<App> {
 
   getGPS() async {
     var data = await NativeTools.getGPSStatus();
+    showToast(data.toString());
   }
 
   List<Widget> showText() {

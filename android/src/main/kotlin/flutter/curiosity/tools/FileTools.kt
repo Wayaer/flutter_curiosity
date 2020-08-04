@@ -5,7 +5,6 @@ import flutter.curiosity.BuildConfig
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import java.io.*
 import java.text.DecimalFormat
-import java.util.*
 import java.util.zip.ZipEntry
 import java.util.zip.ZipFile
 

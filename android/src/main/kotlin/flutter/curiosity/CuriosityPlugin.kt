@@ -3,6 +3,9 @@ package flutter.curiosity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.PicturePicker
@@ -23,6 +26,8 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 import io.flutter.view.TextureRegistry
+import java.io.File
+
 
 /**
  * CuriosityPlugin
@@ -34,6 +39,8 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     private lateinit var eventChannel: EventChannel
 
     companion object {
+        var openSystemGalleryCode = 100
+        var openSystemCameraCode = 101
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
@@ -42,6 +49,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
         val curiosity = "Curiosity"
+
         curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
         curiosityChannel.setMethodCallHandler(this)
         context = plugin.applicationContext
@@ -105,6 +113,8 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "openPicker" -> PicturePicker.openPicker()
             "openCamera" -> PicturePicker.openCamera()
             "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile()
+            "openSystemGallery" -> NativeTools.openSystemGallery()
+            "openSystemCamera" -> NativeTools.openSystemCamera()
         }
     }
 
@@ -135,9 +145,21 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
-        if (resultCode == Activity.RESULT_OK && intent != null) {
+        if (resultCode == Activity.RESULT_OK) {
             if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
                 channelResult.success(PicturePicker.onResult(requestCode, intent))
+            }
+            if (requestCode == openSystemGalleryCode) {
+                val uri: Uri? = intent?.data
+                channelResult.success(Tools.getRealPathFromURI(uri));
+            }
+            if (requestCode == openSystemCameraCode) {
+                val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/temp.JPG"
+                } else {
+                    intent?.data?.encodedPath.toString();
+                }
+                channelResult.success(photoPath);
             }
         }
         return true
