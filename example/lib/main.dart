@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
@@ -47,13 +46,13 @@ class AppState extends State<App> {
           ),
           RaisedButton(onPressed: () => scan(context), child: Text('扫码')),
           RaisedButton(onPressed: () => select(), child: Text('图片选择')),
+          RaisedButton(onPressed: () => shareText(), child: Text('分享文字')),
+          RaisedButton(onPressed: () => shareImage(), child: Text('分享图片')),
+          RaisedButton(onPressed: () => shareImages(), child: Text('分享多张图片')),
           RaisedButton(
               onPressed: () => openSystemGallery(), child: Text('打开系统相册')),
           RaisedButton(
               onPressed: () => openSystemCamera(), child: Text('打开系统相机')),
-          RaisedButton(onPressed: () => shareText(), child: Text('分享文字')),
-          RaisedButton(onPressed: () => shareImage(), child: Text('分享图片')),
-          RaisedButton(onPressed: () => shareImages(), child: Text('分享多张图片')),
           RaisedButton(onPressed: () => getGPS(), child: Text('获取gps状态')),
           RaisedButton(
               onPressed: () => NativeTools.jumpGPSSetting(),
@@ -104,14 +103,6 @@ class AppState extends State<App> {
     showToast(data.toString());
   }
 
-  List<Widget> showText() {
-    List<Widget> widget = List();
-    list.map((value) {
-      widget.add(Text(value.path + '==' + value.fileName));
-    }).toList();
-    return widget;
-  }
-
   scan(BuildContext context) async {
     var permission = await Utils.requestPermissions(Permission.camera, '相机',
             showAlert: false) &&
@@ -127,7 +118,16 @@ class AppState extends State<App> {
 
   select() async {
     PicturePickerOptions options = PicturePickerOptions();
+    options.isCamera = true;
     list = await PicturePicker.openPicker(options);
     setState(() {});
+  }
+
+  List<Widget> showText() {
+    List<Widget> widget = List();
+    list.map((value) {
+      widget.add(Text(value.path + '==' + value.fileName));
+    }).toList();
+    return widget;
   }
 }

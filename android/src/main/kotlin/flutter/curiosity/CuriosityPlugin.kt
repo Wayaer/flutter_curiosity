@@ -155,7 +155,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             }
             if (requestCode == openSystemCameraCode) {
                 val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/temp.JPG"
+                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
                 } else {
                     intent?.data?.encodedPath.toString();
                 }
