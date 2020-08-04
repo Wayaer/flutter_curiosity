@@ -2,7 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CuriosityPlugin : NSObject<FlutterPlugin>
+@interface CuriosityPlugin : NSObject<FlutterPlugin,UINavigationControllerDelegate,UIImagePickerControllerDelegate>
 
 +(void) registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar;
 

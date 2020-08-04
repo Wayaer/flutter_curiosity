@@ -207,13 +207,13 @@ object PicturePicker {
         val resultList: MutableList<Map<String, Any>> = ArrayList()
         for (localMedia in selectList) {
             val resultMap: MutableMap<String, Any> = ArrayMap()
-            resultMap["path"] = localMedia.path
             resultMap["size"] = localMedia.size
+            if (localMedia.path != null) resultMap["path"] = localMedia.path
             if (localMedia.isCut) {
-                resultMap["cutPath"] = localMedia.cutPath
+                if (localMedia.cutPath != null) resultMap["cutPath"] = localMedia.cutPath
             }
             if (localMedia.isCompressed) {
-                resultMap["compressPath"] = localMedia.compressPath
+                if (localMedia.compressPath != null) resultMap["compressPath"] = localMedia.compressPath
             }
             if (localMedia.chooseModel == PictureMimeType.ofVideo()) {
                 resultMap["duration"] = localMedia.duration

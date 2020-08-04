@@ -130,4 +130,35 @@
 + (BOOL) getGPSStatus {
     return [CLLocationManager locationServicesEnabled];
 }
+
+// 打开相机
++ (NSString *) openSystemCamera:(UIViewController *)viewController{
+   UIImagePickerController *picker = [[UIImagePickerController alloc] init];
+   picker.allowsEditing = YES; //可编辑
+   //判断是否可以打开照相机
+   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
+       //摄像头
+       picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+       [viewController presentViewController:picker animated:YES completion:nil];
+     return @"openSystemCamera";
+   }else{
+    return @"Can't open album";
+   }
+}
+
+// 打开相册
++ (NSString *) openSystemGallery:(UIViewController *)viewController{
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])  {
+        UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
+        imagePicker.allowsEditing = YES;
+        imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        [viewController presentViewController:imagePicker animated:YES completion:^{
+//            NSLog(@"打开相册");
+
+        }];
+      return @"openSystemGallery";
+    }else{
+       return @"Can't open album";
+    }
+}
 @end

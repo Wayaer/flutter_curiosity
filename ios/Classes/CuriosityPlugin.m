@@ -22,14 +22,14 @@ NSString * const curiosityEvent=@"Curiosity/event";
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:curiosity
                                      binaryMessenger:[registrar messenger]];
-    UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:viewController registrar:registrar];
+    id<UIApplicationDelegate> delegate = [UIApplication sharedApplication].delegate;
+    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar delegate:delegate];
     [registrar addMethodCallDelegate:plugin channel:channel];
 }
-- (instancetype)initWithCuriosity:(UIViewController *)_viewController
-                        registrar:(NSObject<FlutterPluginRegistrar>*)_registrar {
+- (instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar
+                         delegate:(id<UIApplicationDelegate>)_delegate{
     self = [super init];
-    viewController = _viewController;
+    viewController = _delegate.window.rootViewController;
     registry =[_registrar textures];
     eventChannel = [FlutterEventChannel eventChannelWithName:curiosityEvent binaryMessenger:[_registrar messenger]];
     return self;
@@ -51,6 +51,12 @@ NSString * const curiosityEvent=@"Curiosity/event";
     }
     if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
         [PicturePicker deleteCacheDirFile];
+    }
+    if ([@"openSystemGallery" isEqualToString:call.method]) {
+        result([NativeTools openSystemGallery:viewController]);
+    }
+    if ([@"openSystemCamera" isEqualToString:call.method]) {
+         result([NativeTools openSystemCamera:viewController]);
     }
 }
 -(void)scanner{
@@ -142,6 +148,25 @@ NSString * const curiosityEvent=@"Curiosity/event";
         exit(0);
     }
 }
+
+//#pragma mark - UIImagePickerControllerDelegate
+//
+//// 拍照完成回调
+//
+//- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(nullableNSDictionary<NSString *,id> *)editingInfo NS_DEPRECATED_IOS(2_0, 3_0){
+//    NSLog(@"finish..");
+//  if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
+//        //图片存入相册
+//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+//    }
+//    [self dismissViewControllerAnimated:YES completion:nil];
+//
+//}
+//
+////进入拍摄页面点击取消按钮
+//- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+// [self dismissViewControllerAnimated:YES completion:nil];
+//}
 
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]
