@@ -119,6 +119,8 @@ class AppState extends State<App> {
   select() async {
     PicturePickerOptions options = PicturePickerOptions();
     options.isCamera = true;
+    options.selectionMode = 0;
+    options.isGif = true;
     list = await PicturePicker.openPicker(options);
     setState(() {});
   }
