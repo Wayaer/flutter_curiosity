@@ -10,7 +10,6 @@ import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
-import flutter.curiosity.tools.Tools
 import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
