@@ -14,7 +14,7 @@
 }
 
 + (void)callPhone:(NSString *)phoneNumber {
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
 }
 + (NSMutableDictionary *)getAppInfo
 {
@@ -57,7 +57,7 @@
  *  NSArray *items = @[urlToShare,textToShare,imageToShare];
  */
 + (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result{
-//    NSString * title=[call.arguments valueForKey:@"title"];
+    //    NSString * title=[call.arguments valueForKey:@"title"];
     NSString * content=[call.arguments valueForKey:@"content"];
     NSString * type=[call.arguments valueForKey:@"type"];
     NSArray * imagesPath=[call.arguments valueForKey:@"imagesPath"];
@@ -132,33 +132,26 @@
 }
 
 // 打开相机
-+ (NSString *) openSystemCamera:(UIViewController *)viewController{
-   UIImagePickerController *picker = [[UIImagePickerController alloc] init];
-   picker.allowsEditing = YES; //可编辑
-   //判断是否可以打开照相机
-   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
-       //摄像头
-       picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-       [viewController presentViewController:picker animated:YES completion:nil];
-     return @"openSystemCamera";
-   }else{
-    return @"Can't open album";
-   }
++ (void) openSystemCamera:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result{
+    picker.allowsEditing = YES; //可编辑
+    //判断是否可以打开照相机
+    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
+        //摄像头
+        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+        [viewController presentViewController:picker animated:YES completion:nil];
+    }else{
+        result( @"Can't open album");
+    }
 }
 
 // 打开相册
-+ (NSString *) openSystemGallery:(UIViewController *)viewController{
++ (void) openSystemGallery:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result{
     if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])  {
-        UIImagePickerController *imagePicker = [[UIImagePickerController alloc]init];
-        imagePicker.allowsEditing = YES;
-        imagePicker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        [viewController presentViewController:imagePicker animated:YES completion:^{
-//            NSLog(@"打开相册");
-
-        }];
-      return @"openSystemGallery";
+        picker.allowsEditing = YES;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        [viewController presentViewController:picker animated:YES completion: nil];
     }else{
-       return @"Can't open album";
+        result(@"Can't open album");
     }
 }
 @end

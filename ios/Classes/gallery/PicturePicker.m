@@ -91,7 +91,6 @@
     TZImageManager *manager= [TZImageManager manager];
     __weak TZImagePickerController *weakPicker = picker;
     [picker setDidFinishPickingPhotosHandle:^(NSArray<UIImage *> *photos, NSArray *assets, BOOL isSelectOriginalPhoto) {
-        
         [weakPicker showProgressHUD];
         if (selectionMode == 1 && enableCrop) {
             result([self resultImage:(UIImage *)photos asset:assets[0] quality:cropCompressQuality]);
@@ -156,7 +155,6 @@
     [picker setDidFinishPickingGifImageHandle:^(UIImage *animatedImage, id sourceAssets) {
         //        NSLog(@"LogInfo%@",sourceAssets);
     }];
-    
     
     [viewController presentViewController:picker animated:YES completion:nil];
 }

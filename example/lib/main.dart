@@ -69,7 +69,7 @@ class AppState extends State<App> {
 
   openSystemCamera() async {
     var data = await NativeTools.openSystemCamera();
-    showToast(data);
+    showToast(data.toString());
   }
 
   shareText() {

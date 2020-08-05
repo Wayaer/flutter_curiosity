@@ -4,6 +4,7 @@
 #import "FileTools.h"
 #import "PicturePicker.h"
 #import "ScannerView.h"
+#import <Photos/Photos.h>
 
 API_AVAILABLE(ios(10.0))
 
@@ -53,10 +54,14 @@ NSString * const curiosityEvent=@"Curiosity/event";
         [PicturePicker deleteCacheDirFile];
     }
     if ([@"openSystemGallery" isEqualToString:call.method]) {
-        result([NativeTools openSystemGallery:viewController]);
+        UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+        picker.delegate = self;
+        [NativeTools openSystemGallery:viewController :picker :result];
     }
     if ([@"openSystemCamera" isEqualToString:call.method]) {
-         result([NativeTools openSystemCamera:viewController]);
+        UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+        picker.delegate = self;
+        [NativeTools openSystemCamera:viewController :picker :result];
     }
 }
 -(void)scanner{
@@ -149,24 +154,41 @@ NSString * const curiosityEvent=@"Curiosity/event";
     }
 }
 
-//#pragma mark - UIImagePickerControllerDelegate
-//
-//// 拍照完成回调
-//
-//- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingImage:(UIImage *)image editingInfo:(nullableNSDictionary<NSString *,id> *)editingInfo NS_DEPRECATED_IOS(2_0, 3_0){
-//    NSLog(@"finish..");
-//  if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
-//        //图片存入相册
-//        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
-//    }
-//    [self dismissViewControllerAnimated:YES completion:nil];
-//
-//}
-//
-////进入拍摄页面点击取消按钮
-//- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
-// [self dismissViewControllerAnimated:YES completion:nil];
-//}
+#pragma mark - UIImagePickerControllerDelegate
+
+//选择拍照和图库回调
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary<NSString *,id> *)info{
+    [picker dismissViewControllerAnimated:YES completion:^{
+        //图库选择图片
+        if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary){
+            NSString * imageUrl = [NSString stringWithFormat:@"%@",info[@"UIImagePickerControllerImageURL"]];
+            self->result(imageUrl);
+        }
+        //拍照回调
+        if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
+            UIImage *image = info[UIImagePickerControllerOriginalImage];
+            __block NSString* localId;
+            [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+                PHAssetChangeRequest * assetChangeRequest = [PHAssetChangeRequest creationRequestForAssetFromImage:image];
+                localId = [[assetChangeRequest placeholderForCreatedAsset] localIdentifier];
+            } completionHandler:^(BOOL success, NSError *error) {
+                PHFetchResult* assetResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localId] options:nil];
+                PHAsset * asset = [assetResult firstObject];
+                [asset requestContentEditingInputWithOptions:nil completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
+                    self->result(contentEditingInput.fullSizeImageURL.absoluteString);
+                }];
+            }];
+        }
+    }];
+}
+
+
+//进入拍摄页面点击取消按钮
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
+    [picker dismissViewControllerAnimated:YES completion:^{
+        self->result(@"cancel");
+    }];
+}
 
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]

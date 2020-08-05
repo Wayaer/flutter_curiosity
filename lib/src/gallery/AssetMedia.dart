@@ -48,44 +48,41 @@ class AssetMedia {
   int width;
   String fileName;
 
-  AssetMedia({
-    this.compressPath,
-    this.cropPath,
-    this.duration,
-    this.height,
-    this.path,
-    this.size,
-    this.width,
-    this.fileName,
-    this.mediaType
-  });
+  AssetMedia(
+      {this.compressPath,
+      this.cropPath,
+      this.duration,
+      this.height,
+      this.path,
+      this.size,
+      this.width,
+      this.fileName,
+      this.mediaType});
 
-  factory AssetMedia.fromJson(jsonRes) =>
-      jsonRes == null
-          ? null
-          : AssetMedia(
-        compressPath: convertValueByType(jsonRes['compressPath'], String,
-            stack: "AssetMedia-compressPath"),
-        mediaType: convertValueByType(jsonRes['mediaType'], String,
-            stack: "AssetMedia-mediaType"),
-        fileName: convertValueByType(jsonRes['fileName'], String,
-            stack: "AssetMedia-fileName"),
-        cropPath: convertValueByType(jsonRes['cutPath'], String,
-            stack: "AssetMedia-cutPath"),
-        duration: convertValueByType(jsonRes['duration'], int,
-            stack: "AssetMedia-duration"),
-        height: convertValueByType(jsonRes['height'], int,
-            stack: "AssetMedia-height"),
-        path: convertValueByType(jsonRes['path'], String,
-            stack: "AssetMedia-path"),
-        size: convertValueByType(jsonRes['size'], int,
-            stack: "AssetMedia-size"),
-        width: convertValueByType(jsonRes['width'], int,
-            stack: "AssetMedia-width"),
-      );
+  factory AssetMedia.fromJson(jsonRes) => jsonRes == null
+      ? null
+      : AssetMedia(
+          compressPath: convertValueByType(jsonRes['compressPath'], String,
+              stack: "AssetMedia-compressPath"),
+          mediaType: convertValueByType(jsonRes['mediaType'], String,
+              stack: "AssetMedia-mediaType"),
+          fileName: convertValueByType(jsonRes['fileName'], String,
+              stack: "AssetMedia-fileName"),
+          cropPath: convertValueByType(jsonRes['cutPath'], String,
+              stack: "AssetMedia-cutPath"),
+          duration: convertValueByType(jsonRes['duration'], int,
+              stack: "AssetMedia-duration"),
+          height: convertValueByType(jsonRes['height'], int,
+              stack: "AssetMedia-height"),
+          path: convertValueByType(jsonRes['path'], String,
+              stack: "AssetMedia-path"),
+          size: convertValueByType(jsonRes['size'], int,
+              stack: "AssetMedia-size"),
+          width: convertValueByType(jsonRes['width'], int,
+              stack: "AssetMedia-width"),
+        );
 
-  Map<String, dynamic> toJson() =>
-      {
+  Map<String, dynamic> toJson() => {
         'compressPath': compressPath,
         'cutPath': cropPath,
         'duration': duration,

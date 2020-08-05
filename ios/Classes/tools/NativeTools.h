@@ -28,9 +28,9 @@
 + (BOOL)getGPSStatus;
 
 //打开系统相册
-+ (NSString *)openSystemGallery:(UIViewController *)viewController;
++ (void)openSystemGallery:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result;
 
 //打开系统相机
-+ (NSString *)openSystemCamera:(UIViewController *)viewController;
++ (void)openSystemCamera:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result;
 
 @end
