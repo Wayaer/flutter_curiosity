@@ -23,14 +23,14 @@ NSString * const curiosityEvent=@"Curiosity/event";
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:curiosity
                                      binaryMessenger:[registrar messenger]];
-    id<UIApplicationDelegate> delegate = [UIApplication sharedApplication].delegate;
-    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar delegate:delegate];
+    UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
+    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar :viewController];
     [registrar addMethodCallDelegate:plugin channel:channel];
 }
 - (instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar
-                         delegate:(id<UIApplicationDelegate>)_delegate{
+                                 :(UIViewController *)_viewController{
     self = [super init];
-    viewController = _delegate.window.rootViewController;
+    viewController = _viewController;
     registry =[_registrar textures];
     eventChannel = [FlutterEventChannel eventChannelWithName:curiosityEvent binaryMessenger:[_registrar messenger]];
     return self;
@@ -44,14 +44,16 @@ NSString * const curiosityEvent=@"Curiosity/event";
 }
 
 -(void)gallery{
-    if ([@"openPicker" isEqualToString:call.method]) {
-        [PicturePicker openPicker:call viewController:viewController result:result];
+    if ([@"openImagePicker" isEqualToString:call.method]) {
+        [PicturePicker openImagePicker:call :viewController :result];
     }
+    UIImagePickerController *picker = [[UIImagePickerController alloc]init];
+    picker.delegate = self;
     if ([@"openCamera" isEqualToString:call.method]) {
-        [PicturePicker openCamera:viewController result:result];
+        [PicturePicker openCamera:viewController :picker :result];
     }
     if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
-        [PicturePicker deleteCacheDirFile];
+        [PicturePicker deleteCacheDirFile:result];
     }
     if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];

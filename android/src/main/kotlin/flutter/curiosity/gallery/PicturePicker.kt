@@ -10,17 +10,19 @@ import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
+import flutter.curiosity.CuriosityPlugin
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
+import flutter.curiosity.CuriosityPlugin.Companion.channelResult
 import flutter.curiosity.CuriosityPlugin.Companion.context
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
+import flutter.curiosity.tools.Tools
 import java.util.*
 
 object PicturePicker {
     private var maxSelectNum = 0
     private var minSelectNum = 0
     private var imageSpanCount = 0
-    private var selectionMode = 0
     private var previewImage = false
     private var isZoomAnim = false
     private var isCamera = false
@@ -52,7 +54,6 @@ object PicturePicker {
         maxSelectNum = call.argument<Int>("maxSelectNum")!!
         minSelectNum = call.argument<Int>("minSelectNum")!!
         imageSpanCount = call.argument<Int>("imageSpanCount")!!
-        selectionMode = call.argument<Int>("selectionMode")!!
         previewImage = call.argument<Boolean>("previewImage")!!
         isZoomAnim = call.argument<Boolean>("isZoomAnim")!!
         isCamera = call.argument<Boolean>("isCamera")!!
@@ -92,7 +93,7 @@ object PicturePicker {
     }
 
     @SuppressLint("NewApi")
-    fun openPicker() {
+    fun openImagePicker() {
         setValue()
         PictureSelector.create(activity)
                 .openGallery(pictureMimeType) //全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
@@ -100,7 +101,7 @@ object PicturePicker {
                 .maxSelectNum(maxSelectNum) // 最大图片选择数量 int
                 .minSelectNum(minSelectNum) // 最小选择数量 int
                 .imageSpanCount(imageSpanCount) // 每行显示个数 int
-                .selectionMode(if (selectionMode == 1) PictureConfig.SINGLE else PictureConfig.MULTIPLE) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
+                .selectionMode(if (maxSelectNum == 1) PictureConfig.SINGLE else PictureConfig.MULTIPLE) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
                 .isPreviewImage(previewImage) // 是否可预览图片 true or false
                 .isPreviewVideo(previewVideo) // 是否可预览视频 true or false
 //                .enablePreviewAudio(false) // 是否可播放音频 true or false
@@ -155,7 +156,7 @@ object PicturePicker {
                 .maxSelectNum(maxSelectNum) // 最大图片选择数量 int
                 .minSelectNum(minSelectNum) // 最小选择数量 int
                 .imageSpanCount(imageSpanCount) // 每行显示个数 int
-                .selectionMode(selectionMode) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
+                .selectionMode(if (maxSelectNum == 1) PictureConfig.SINGLE else PictureConfig.MULTIPLE) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
                 .isPreviewImage(previewImage) // 是否可预览视频 true or false
                 .isPreviewVideo(previewVideo) // 是否可预览视频 true or false
                 .videoQuality(videoQuality) // 视频录制质量 0 or 1 int
@@ -168,9 +169,6 @@ object PicturePicker {
 
     fun deleteCacheDirFile() {
         val selectValueType = call.argument<Int>("selectValueType")
-        if (BuildConfig.DEBUG && selectValueType == null) {
-            error("Assertion failed")
-        }
         val pictureMimeType: Int
         pictureMimeType = when (selectValueType) {
             1 -> {
@@ -179,11 +177,16 @@ object PicturePicker {
             2 -> {
                 PictureMimeType.ofVideo()
             }
+            3 -> {
+                PictureMimeType.ofAudio()
+            }
             else -> {
                 PictureMimeType.ofAll()
             }
         }
         PictureFileUtils.deleteCacheDirFile(activity, pictureMimeType)
+        channelResult.success(Tools.resultSuccess(null))
+
     }
 
     fun onResult(requestCode: Int, intent: Intent?): MutableList<Map<String, Any>>? {

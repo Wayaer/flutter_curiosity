@@ -7,9 +7,6 @@ class PicturePickerOptions {
   /// 最小选择数量 int
   int minSelectNum;
 
-  ///多选0 or 单选=1
-  int selectionMode;
-
   ///裁剪比例 如16:9 3:2 3:4 1:1 可自定义  宽
   int cropW;
 
@@ -19,7 +16,7 @@ class PicturePickerOptions {
   ///显示多少秒以内的视频or音频也可适用 int
   int videoMaxSecond;
 
-  ///全部0、图片1、视频2、 音频3（3仅支持android）
+//  ///全部0、图片1、视频2
   int pickerSelectType;
 
   /// 是否裁剪 true or false
@@ -34,14 +31,13 @@ class PicturePickerOptions {
   /// 是否显示gif图片 true or false
   bool isGif;
 
-  /// 裁剪压缩质量 默认90 int
-  int cropCompressQuality;
-
-
   ///android 以下为仅支持 android
   ///
   /// 每行显示个数 int
   int imageSpanCount;
+
+  /// 裁剪压缩质量 默认90 int
+  int cropCompressQuality;
 
   /// 小于100kb的图片不压缩
   int minimumCompressSize;
@@ -91,7 +87,6 @@ class PicturePickerOptions {
   /// 自定义拍照保存路径,可不填
   String setOutputCameraPath;
 
-
   ///ios 以下为仅支持 ios
   ///
   ///圆形裁剪框半径大小  在单选模式下，照片列表页中，显示选择按钮,默认为false
@@ -103,45 +98,43 @@ class PicturePickerOptions {
   ///是否显示原图按钮
   bool originalPhoto;
 
-
-  PicturePickerOptions({this.maxSelectNum: 6,
-    this.minSelectNum: 1,
-    this.imageSpanCount: 4,
-    this.selectionMode: 1,
-    this.minimumCompressSize: 100,
-    this.cropW: 4,
-    this.cropH: 3,
-    this.cropCompressQuality: 90,
-    this.videoQuality: 0,
-    this.videoMaxSecond: 60,
-    this.videoMinSecond: 5,
-    this.recordVideoSecond: 60,
-    this.previewImage: false,
-    this.previewVideo: false,
-    this.isZoomAnim: true,
-    this.isCamera: false,
-    this.enableCrop: false,
-    this.compress: false,
-    this.hideBottomControls: false,
-    this.freeStyleCropEnabled: false,
-    this.showCropCircle: false,
-    this.showCropFrame: false,
-    this.showCropGrid: false,
-    this.openClickSound: false,
-    this.isGif: false,
-    this.scaleAspectFillCrop: false,
-    this.setOutputCameraPath: "",
-    this.rotateEnabled: false,
-    this.originalPhoto: false,
-    this.scaleEnabled: false,
-    this.pickerSelectType: 0});
+  PicturePickerOptions(
+      {this.maxSelectNum: 6,
+      this.minSelectNum: 1,
+      this.imageSpanCount: 4,
+      this.minimumCompressSize: 100,
+      this.cropW: 4,
+      this.cropH: 3,
+      this.cropCompressQuality: 90,
+      this.videoQuality: 0,
+      this.videoMaxSecond: 60,
+      this.videoMinSecond: 5,
+      this.recordVideoSecond: 60,
+      this.previewImage: false,
+      this.previewVideo: false,
+      this.isZoomAnim: true,
+      this.isCamera: false,
+      this.enableCrop: false,
+      this.compress: false,
+      this.hideBottomControls: false,
+      this.freeStyleCropEnabled: false,
+      this.showCropCircle: false,
+      this.showCropFrame: false,
+      this.showCropGrid: false,
+      this.openClickSound: false,
+      this.isGif: false,
+      this.scaleAspectFillCrop: false,
+      this.setOutputCameraPath: "",
+      this.rotateEnabled: false,
+      this.originalPhoto: false,
+      this.scaleEnabled: false,
+      this.pickerSelectType: 0});
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['maxSelectNum'] = this.maxSelectNum ?? 6;
     data['minSelectNum'] = this.minSelectNum;
     data['imageSpanCount'] = this.imageSpanCount;
-    data['selectionMode'] = this.selectionMode;
     data['minimumCompressSize'] = this.minimumCompressSize;
     data['cropW'] = this.cropW;
     data['cropH'] = this.cropH;

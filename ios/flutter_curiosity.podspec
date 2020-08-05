@@ -15,12 +15,9 @@ A new Flutter plugin.
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/*.h'
   s.dependency 'Flutter'
-  s.platform = :ios, '8.0'
-  s.dependency 'SSZipArchive', '~> 2.2'
-  s.dependency 'TZImagePickerController', '~> 3.4'
-#  s.swift_version = '5.1'
-  
-  # Flutter.framework does not contain a i386 slice. Only x86_64 simulators are supported.
+  s.platform = :ios, '9.0'
+  s.dependency 'SSZipArchive', '~> 2.2.3'
+  s.dependency 'TZImagePickerController', '~> 3.4.1'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
 end
 
