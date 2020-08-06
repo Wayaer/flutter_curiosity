@@ -110,8 +110,8 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         when (call.method) {
             "openImagePicker" -> PicturePicker.openImagePicker()
             "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile()
-            "openSystemGallery" -> NativeTools.openSystemGallery()
-            "openSystemCamera" -> NativeTools.openSystemCamera()
+            "openSystemGallery" -> PicturePicker.openSystemGallery()
+            "openSystemCamera" -> PicturePicker.openSystemCamera()
         }
     }
 

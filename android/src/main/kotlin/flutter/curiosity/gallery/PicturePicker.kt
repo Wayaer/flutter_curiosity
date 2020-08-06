@@ -1,19 +1,24 @@
 package flutter.curiosity.gallery
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import androidx.collection.ArrayMap
+import androidx.core.content.FileProvider
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
 import com.luck.picture.lib.tools.PictureFileUtils
+import flutter.curiosity.CuriosityPlugin
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
 import flutter.curiosity.CuriosityPlugin.Companion.context
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import flutter.curiosity.tools.Tools
+import java.io.File
 import java.util.*
 
 object PicturePicker {
@@ -151,5 +156,26 @@ object PicturePicker {
         return resultList;
     }
 
+    fun openSystemGallery() {
+        val intent = Intent(Intent.ACTION_PICK) //跳转到 ACTION_IMAGE_CAPTURE
+        intent.type = "image/*"
+        activity.startActivityForResult(intent, CuriosityPlugin.openSystemGalleryCode)
+    }
+
+    fun openSystemCamera() {
+        var cameraSavePath = call.argument<String>("path")
+        if (cameraSavePath == null) cameraSavePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val uri: Uri
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            //第二个参数为 包名.fileprovider
+            uri = FileProvider.getUriForFile(activity, context.packageName.toString() + ".fileprovider", File(cameraSavePath));
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        } else {
+            uri = Uri.fromFile(File(cameraSavePath))
+        }
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+        activity.startActivityForResult(intent, CuriosityPlugin.openSystemCameraCode)
+    }
 
 }
