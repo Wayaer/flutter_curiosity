@@ -60,9 +60,9 @@ class PicturePicker {
   ///</application>
   ///ios info.plist add
   ///     <key>NSCameraUsageDescription</key>
-  ///       <string>是否允许Curiosity使用你的相机？</string>
+  ///       <string>是否允许APP使用你的相机？</string>
   ///      <key>NSPhotoLibraryUsageDescription</key>
-  ///       <string>是否允许Curiosity访问你的相册？</string>
+  ///       <string>是否允许APP访问你的相册？</string>
   ///ios path 包含 file:///
   static Future<String> openSystemCamera({String savePath}) async {
     ///savePath => android 图片临时储存位置 (仅支持android)
