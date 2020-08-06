@@ -16,7 +16,6 @@ class PicturePicker {
     if (selectOptions.maxSelectNum < 1) selectOptions.maxSelectNum = 1;
     final result = await curiosityChannel.invokeMethod(
         'openImagePicker', selectOptions.toJson());
-//    print(result);
     if (result is List) {
       print(result.length);
       return Future.value(
@@ -47,6 +46,8 @@ class PicturePicker {
   ///打开系统相机
   ///返回文件路径
   ///Android AndroidManifest.xml 添加以下内容
+  ///<application
+  ///          ...>
   ///   <provider
   ///            android:name="androidx.core.content.FileProvider"
   ///            android:authorities="${applicationId}.fileprovider"
@@ -56,6 +57,7 @@ class PicturePicker {
   ///                android:name="android.support.FILE_PROVIDER_PATHS"
   ///                android:resource="@xml/file_paths" />
   ///   </provider>
+  ///</application>
   ///ios info.plist add
   ///     <key>NSCameraUsageDescription</key>
   ///       <string>是否允许Curiosity使用你的相机？</string>
@@ -68,7 +70,6 @@ class PicturePicker {
     InternalTools.supportPlatform();
     var path = await curiosityChannel
         .invokeMethod('openSystemCamera', {"path": savePath});
-    print('返回了一些性息：'+path);
     if (savePath != null) path = savePath;
     return path;
   }
