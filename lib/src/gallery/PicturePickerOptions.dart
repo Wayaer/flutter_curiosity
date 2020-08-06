@@ -4,6 +4,9 @@ class PicturePickerOptions {
   /// 最大图片选择数量 int
   int maxSelectNum;
 
+  ///是否显示原图按钮
+  bool originalPhoto;
+
   /// 最小选择数量 int
   int minSelectNum;
 
@@ -94,9 +97,6 @@ class PicturePickerOptions {
 
   ///是否图片等比缩放填充cropRect区域   在单选模式下，照片列表页中，显示选择按钮,默认为false
   bool scaleAspectFillCrop;
-
-  ///是否显示原图按钮
-  bool originalPhoto;
 
   PicturePickerOptions(
       {this.maxSelectNum: 6,

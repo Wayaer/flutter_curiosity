@@ -1,16 +1,13 @@
 package flutter.curiosity.gallery
 
-import android.annotation.SuppressLint
 import android.content.Intent
+import android.os.Build
 import android.os.Environment
 import androidx.collection.ArrayMap
-import com.luck.picture.lib.BuildConfig
 import com.luck.picture.lib.PictureSelector
 import com.luck.picture.lib.config.PictureConfig
 import com.luck.picture.lib.config.PictureMimeType
-import com.luck.picture.lib.entity.LocalMedia
 import com.luck.picture.lib.tools.PictureFileUtils
-import flutter.curiosity.CuriosityPlugin
 import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
@@ -20,66 +17,38 @@ import flutter.curiosity.tools.Tools
 import java.util.*
 
 object PicturePicker {
-    private var maxSelectNum = 0
-    private var minSelectNum = 0
-    private var imageSpanCount = 0
-    private var previewImage = false
-    private var isZoomAnim = false
-    private var isCamera = false
-    private var enableCrop = false
-    private var compress = false
-    private var hideBottomControls = false
-    private var freeStyleCropEnabled = false
-    private var showCropCircle = false
-    private var showCropFrame = false
-    private var showCropGrid = false
-    private var openClickSound = false
-    private var previewVideo = false
-    private var minimumCompressSize = 0
-    private var isGif = false
-    private var rotateEnabled = false
-    private var scaleEnabled = false
-    private var cropW = 0
-    private var cropH = 0
-    private var cropCompressQuality = 0
-    private var pickerSelectType = 0
-    private var videoQuality = 0
-    private var videoMaxSecond = 0
-    private var videoMinSecond = 0
-    private var recordVideoSecond = 0
-    private var setOutputCameraPath: String? = null
-    private var selectList: List<LocalMedia>? = null
-    private var pictureMimeType = 0
-    private fun setValue() {
-        maxSelectNum = call.argument<Int>("maxSelectNum")!!
-        minSelectNum = call.argument<Int>("minSelectNum")!!
-        imageSpanCount = call.argument<Int>("imageSpanCount")!!
-        previewImage = call.argument<Boolean>("previewImage")!!
-        isZoomAnim = call.argument<Boolean>("isZoomAnim")!!
-        isCamera = call.argument<Boolean>("isCamera")!!
-        enableCrop = call.argument<Boolean>("enableCrop")!!
-        compress = call.argument<Boolean>("compress")!!
-        hideBottomControls = call.argument<Boolean>("hideBottomControls")!!
-        freeStyleCropEnabled = call.argument<Boolean>("freeStyleCropEnabled")!!
-        showCropCircle = call.argument<Boolean>("showCropCircle")!!
-        showCropFrame = call.argument<Boolean>("showCropFrame")!!
-        showCropGrid = call.argument<Boolean>("showCropGrid")!!
-        openClickSound = call.argument<Boolean>("openClickSound")!!
-        minimumCompressSize = call.argument<Int>("minimumCompressSize")!!
-        isGif = call.argument<Boolean>("isGif")!!
-        rotateEnabled = call.argument<Boolean>("rotateEnabled")!!
-        scaleEnabled = call.argument<Boolean>("scaleEnabled")!!
-        //        selectList = call.argument("selectList");
-        cropW = call.argument<Int>("cropW")!!
-        cropH = call.argument<Int>("cropH")!!
-        cropCompressQuality = call.argument<Int>("cropCompressQuality")!!
-        pickerSelectType = call.argument<Int>("pickerSelectType")!!
-        videoQuality = call.argument<Int>("videoQuality")!!
-        videoMaxSecond = call.argument<Int>("videoMaxSecond")!!
-        videoMinSecond = call.argument<Int>("videoMinSecond")!!
-        recordVideoSecond = call.argument<Int>("recordVideoSecond")!!
-        setOutputCameraPath = call.argument<String>("setOutputCameraPath")
-        pictureMimeType = when (pickerSelectType) {
+
+    fun openImagePicker() {
+        val maxSelectNum = call.argument<Int>("maxSelectNum")!!
+        val minSelectNum = call.argument<Int>("minSelectNum")!!
+        val imageSpanCount = call.argument<Int>("imageSpanCount")!!
+        val previewImage = call.argument<Boolean>("previewImage")!!
+        val isZoomAnim = call.argument<Boolean>("isZoomAnim")!!
+        val isCamera = call.argument<Boolean>("isCamera")!!
+        val enableCrop = call.argument<Boolean>("enableCrop")!!
+        val compress = call.argument<Boolean>("compress")!!
+        val hideBottomControls = call.argument<Boolean>("hideBottomControls")!!
+        val freeStyleCropEnabled = call.argument<Boolean>("freeStyleCropEnabled")!!
+        val showCropCircle = call.argument<Boolean>("showCropCircle")!!
+        val showCropFrame = call.argument<Boolean>("showCropFrame")!!
+        val showCropGrid = call.argument<Boolean>("showCropGrid")!!
+        val openClickSound = call.argument<Boolean>("openClickSound")!!
+        val minimumCompressSize = call.argument<Int>("minimumCompressSize")!!
+        val isGif = call.argument<Boolean>("isGif")!!
+        val rotateEnabled = call.argument<Boolean>("rotateEnabled")!!
+        val scaleEnabled = call.argument<Boolean>("scaleEnabled")!!
+        val cropW = call.argument<Int>("cropW")!!
+        val cropH = call.argument<Int>("cropH")!!
+        val cropCompressQuality = call.argument<Int>("cropCompressQuality")!!
+        val pickerSelectType = call.argument<Int>("pickerSelectType")!!
+        val videoQuality = call.argument<Int>("videoQuality")!!
+        val videoMaxSecond = call.argument<Int>("videoMaxSecond")!!
+        val videoMinSecond = call.argument<Int>("videoMinSecond")!!
+        val recordVideoSecond = call.argument<Int>("recordVideoSecond")!!
+        val previewVideo = call.argument<Boolean>("previewVideo")!!
+        val originalPhoto = call.argument<Boolean>("originalPhoto")!!
+        val setOutputCameraPath = call.argument<String>("setOutputCameraPath")
+        val pictureMimeType = when (pickerSelectType) {
             1 -> {
                 PictureMimeType.ofImage()
             }
@@ -90,11 +59,8 @@ object PicturePicker {
                 PictureMimeType.ofAll()
             }
         }
-    }
-
-    @SuppressLint("NewApi")
-    fun openImagePicker() {
-        setValue()
+        var suffixType = PictureMimeType.JPEG
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) suffixType = PictureMimeType.PNG_Q
         PictureSelector.create(activity)
                 .openGallery(pictureMimeType) //全部.PictureMimeType.ofAll()、图片.ofImage()、视频.ofVideo()、音频.ofAudio()
                 .imageEngine(createGlideEngine())
@@ -104,11 +70,9 @@ object PicturePicker {
                 .selectionMode(if (maxSelectNum == 1) PictureConfig.SINGLE else PictureConfig.MULTIPLE) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
                 .isPreviewImage(previewImage) // 是否可预览图片 true or false
                 .isPreviewVideo(previewVideo) // 是否可预览视频 true or false
-//                .enablePreviewAudio(false) // 是否可播放音频 true or false
                 .isCamera(isCamera) // 是否显示拍照按钮 true or false
-                .imageFormat(PictureMimeType.JPEG) // 拍照保存图片格式后缀,默认jpeg
+                .imageFormat(suffixType) // 拍照保存图片格式后缀,默认jpeg
                 .isZoomAnim(isZoomAnim) // 图片列表点击 缩放效果 默认true
-//                .sizeMultiplier(0.5F) // glide 加载图片大小 0~1之间 如设置 .glideOverride()无效
                 .isEnableCrop(enableCrop) // 是否裁剪 true or false
                 .isCompress(compress) // 是否压缩 true or false
                 .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
@@ -124,11 +88,11 @@ object PicturePicker {
                 .synOrAsy(true) //同步true或异步false 压缩 默认同步
                 .rotateEnabled(rotateEnabled) // 裁剪是否可旋转图片 true or false
                 .scaleEnabled(scaleEnabled) // 裁剪是否可放大缩小图片 true or false
-//                .selectionMedia(selectList) // 当前已选中的图片 List
                 .videoQuality(videoQuality) // 视频录制质量 0 or 1 int
                 .videoMaxSecond(videoMaxSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .videoMinSecond(videoMinSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .recordVideoSecond(recordVideoSecond) //视频秒数录制 默认60s int
+                .isOriginalImageControl(originalPhoto)//是否显示原图按钮
                 .setOutputCameraPath(if (setOutputCameraPath === "") context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() else setOutputCameraPath)
                 .forResult(PictureConfig.CHOOSE_REQUEST) //结果回调onActivityResult code
     }

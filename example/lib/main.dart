@@ -120,7 +120,7 @@ class AppState extends State<App> {
 
   select() async {
     PicturePickerOptions options = PicturePickerOptions();
-    options.pickerSelectType = 2;
+    options.pickerSelectType = 1;
     options.enableCrop = true;
     options.scaleEnabled = true;
     options.isGif = true;
