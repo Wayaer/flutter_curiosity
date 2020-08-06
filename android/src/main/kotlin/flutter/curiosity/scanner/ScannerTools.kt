@@ -48,9 +48,6 @@ object ScannerTools {
         executor.execute {
             val myUrl = URL(url)
             val bitmap: Bitmap
-            if (BuildConfig.DEBUG && url == null) {
-                error("Assertion failed")
-            }
             if (url!!.startsWith("https")) {
                 val connection = myUrl.openConnection() as HttpsURLConnection
                 connection.readTimeout = 6 * 60 * 1000
@@ -76,9 +73,6 @@ object ScannerTools {
 
     fun scanImageMemory() {
         val unit8List = call.argument<ByteArray>("unit8List")
-        if (BuildConfig.DEBUG && unit8List == null) {
-            error("Assertion failed")
-        }
         executor.execute {
             val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
             Handler().post { channelResult.success(decodeBitmap(bitmap)) }

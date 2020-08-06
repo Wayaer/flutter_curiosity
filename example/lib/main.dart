@@ -46,7 +46,6 @@ class AppState extends State<App> {
           ),
           RaisedButton(onPressed: () => scan(context), child: Text('扫码')),
           RaisedButton(onPressed: () => select(), child: Text('图片选择')),
-          RaisedButton(onPressed: () => openCamera(), child: Text('打开相机')),
           RaisedButton(
               onPressed: () => deleteCacheDirFile(), child: Text('清除图片选择缓存')),
           RaisedButton(onPressed: () => shareText(), child: Text('分享文字')),
@@ -58,20 +57,20 @@ class AppState extends State<App> {
               onPressed: () => openSystemCamera(), child: Text('打开系统相机')),
           RaisedButton(onPressed: () => getGPS(), child: Text('获取gps状态')),
           RaisedButton(
-              onPressed: () => NativeTools.jumpGPSSetting(),
-              child: Text('跳转GPS设置')),
+              onPressed: () => NativeTools.jumpAppSetting(),
+              child: Text('跳转APP设置')),
         ],
       ),
     );
   }
 
   openSystemGallery() async {
-    var data = await NativeTools.openSystemGallery();
+    var data = await PicturePicker.openSystemGallery();
     showToast(data.toString());
   }
 
   openSystemCamera() async {
-    var data = await NativeTools.openSystemCamera();
+    var data = await PicturePicker.openSystemCamera();
     showToast(data.toString());
   }
 
@@ -137,11 +136,6 @@ class AppState extends State<App> {
 
   deleteCacheDirFile() async {
     var data = await PicturePicker.deleteCacheDirFile();
-    showToast(data);
-  }
-
-  openCamera() async {
-    var data = await PicturePicker.openCamera();
     showToast(data);
   }
 

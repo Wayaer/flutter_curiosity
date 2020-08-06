@@ -1,5 +1,6 @@
 #import <Flutter/Flutter.h>
 #import <AVFoundation/AVFoundation.h>
+#import "Tools.h"
 
 @interface ScannerTools : NSObject
 

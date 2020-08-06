@@ -1,7 +1,6 @@
 #import "CuriosityPlugin.h"
 #import "ScannerTools.h"
 #import "NativeTools.h"
-#import "FileTools.h"
 #import "PicturePicker.h"
 #import "ScannerView.h"
 #import <Photos/Photos.h>
@@ -47,23 +46,18 @@ NSString * const curiosityEvent=@"Curiosity/event";
     if ([@"openImagePicker" isEqualToString:call.method]) {
         [PicturePicker openImagePicker:call :viewController :result];
     }
-    UIImagePickerController *picker = [[UIImagePickerController alloc]init];
-    picker.delegate = self;
-    if ([@"openCamera" isEqualToString:call.method]) {
-        [PicturePicker openCamera:viewController :picker :result];
-    }
     if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
         [PicturePicker deleteCacheDirFile:result];
     }
     if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [NativeTools openSystemGallery:viewController :picker :result];
+        [PicturePicker openSystemGallery:viewController :picker :result];
     }
     if ([@"openSystemCamera" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [NativeTools openSystemCamera:viewController :picker :result];
+        [PicturePicker openSystemCamera:viewController :picker :result];
     }
 }
 -(void)scanner{
@@ -105,7 +99,7 @@ NSString * const curiosityEvent=@"Curiosity/event";
                 [view start];
             }
         }else{
-            result(@"Not supported below ios10");
+            result([Tools resultInfo:@"Not supported below ios10"]);
         }
     }
     if([@"disposeCameras" isEqualToString:call.method]){
@@ -113,40 +107,40 @@ NSString * const curiosityEvent=@"Curiosity/event";
         NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
         if(scannerView)[scannerView close];
         if(textureId) [registry unregisterTexture:textureId];
-        result(@"dispose");
+        result([Tools resultInfo:@"dispose"]);
     }
     if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
         if(scannerView)[scannerView setFlashMode:[status boolValue]];
-        result(@"setFlashMode");
+        result([Tools resultInfo:@"setFlashMode"]);
     }
     
 }
 
 -(void)tools{
     if ([@"getGPSStatus" isEqualToString:call.method]) {
-        [NativeTools getGPSStatus];
+        result([NativeTools getGPSStatus]?@"true":@"false");
     }
-    if ([@"jumpGPSSetting" isEqualToString:call.method]) {
-        [NativeTools jumpGPSSetting];
+    if ([@"jumpAppSetting" isEqualToString:call.method]) {
+        result([NativeTools jumpAppSetting]?@"true":@"false");
     }
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
     }
     if ([@"getFilePathSize" isEqualToString:call.method]) {
-        result([FileTools getFilePathSize:call.arguments[@"filePath"]]);
+        result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
     }
     if ([@"unZipFile" isEqualToString:call.method]) {
-        [FileTools unZipFile:call.arguments[@"filePath"]];
-        result( @"success");
+        [NativeTools unZipFile:call.arguments[@"filePath"]];
+        result([Tools resultInfo:@"success"]);
     }
     if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeTools goToMarket:call.arguments[@"packageName"]];
-        result( @"success");
+        result([Tools resultInfo:@"success"]);
     }
     if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"]];
-        result( @"success");
+        result([Tools resultInfo:@"success"]);
     }
     if ([@"systemShare" isEqualToString:call.method]) {
         [NativeTools systemShare:call result:result];

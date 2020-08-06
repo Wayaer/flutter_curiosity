@@ -85,7 +85,7 @@ NSString * const curiosityCaches =@"CuriosityCaches";
         [assets enumerateObjectsUsingBlock:^(PHAsset* _Nonnull asset, NSUInteger index, BOOL * _Nonnull stop) {
             if (asset.mediaType == PHAssetMediaTypeVideo) {
                 [manager getVideoOutputPathWithAsset:asset presetName:AVAssetExportPresetHighestQuality success:^(NSString *outputPath) {
-                    [selected addObject:[self resultVideo:outputPath asset:asset coverImage:photos[index]]];
+                    [selected addObject:[self resultVideo:outputPath :asset :photos[index]]];
                     if(index + 1 == [assets count]) result(selected);
                 } failure:^(NSString *errorMessage, NSError *error) {
                 }];
@@ -104,41 +104,12 @@ NSString * const curiosityCaches =@"CuriosityCaches";
 }
 
 
-+ (void)openCamera:(UIViewController*)viewController
-                  :(UIImagePickerController *)picker
-                  :(FlutterResult)result{
-    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-    if (authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied) {
-        // 无相机权限 做一个友好的提示
-        [UIAlertController alertControllerWithTitle:@"无法使用相机" message:@"请在iPhone的""设置-隐私-相机""中允许访问相机" preferredStyle:UIAlertControllerStyleAlert];
-    } else if (authStatus == AVAuthorizationStatusNotDetermined) {
-        // fix issue 466, 防止用户首次拍照拒绝授权时相机页黑屏
-        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
-            if (granted) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    [PicturePicker openCamera:viewController :picker :result];
-                });
-            }
-        }];
-        // 拍照之前还需要检查相册权限
-    } else if ([PHPhotoLibrary authorizationStatus] == 2) { // 已被拒绝，没有相册权限，将无法保存拍的照片
-        [UIAlertController alertControllerWithTitle:@"无法访问相册" message:@"请在iPhone的""设置-隐私-相册""中允许访问相册" preferredStyle:UIAlertControllerStyleAlert];
-    } else if ([PHPhotoLibrary authorizationStatus] == 0) { // 未请求过相册权限
-        [[TZImageManager manager] requestAuthorizationWithCompletion:^{
-            [PicturePicker openCamera:viewController :picker :result];
-        }];
-    } else {
-        [NativeTools openSystemCamera:viewController :picker :result];
-    }
-    
-}
-
 + (void)deleteCacheDirFile:(FlutterResult)result{
     NSError *error;
     NSString *dir = [NSString stringWithFormat:@"%@CuriosityCaches/", NSTemporaryDirectory()];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     [fileManager removeItemAtPath:dir error:&error];
-    result(error?@"success":@"fail");
+    result([Tools resultInfo:error?@"success":@"fail"]);
 }
 // 处理图片数组
 + (NSDictionary *)resultPhoto:(NSData *)data phAsset:(PHAsset *)asset isGIF:(BOOL)isGIF {
@@ -161,7 +132,9 @@ NSString * const curiosityCaches =@"CuriosityCaches";
 }
 
 // 视频数据
-+ (NSDictionary *)resultVideo:(NSString *)outputPath asset:(PHAsset *)asset coverImage:(UIImage *)coverImage{
++ (NSDictionary *)resultVideo:(NSString *)outputPath
+                             :(PHAsset *)asset
+                             :(UIImage *)coverImage{
     NSMutableDictionary *video = [NSMutableDictionary dictionary];
     video[@"path"] = outputPath;
     NSInteger size = [[NSFileManager defaultManager] attributesOfItemAtPath:outputPath error:nil].fileSize;
@@ -174,20 +147,69 @@ NSString * const curiosityCaches =@"CuriosityCaches";
 }
 /// 创建缓存目录
 + (BOOL)createCache {
-    NSString * path = [NSString stringWithFormat:@"%@CuriosityCaches", NSTemporaryDirectory()];;
+    NSString * path = [NSString stringWithFormat:@"%@CuriosityCaches", NSTemporaryDirectory()];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDir;
     if  (![fileManager fileExistsAtPath:path isDirectory:&isDir]) {
         //先判断目录是否存在，不存在才创建
-        BOOL res = [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
-        return res;
+        return [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:nil];
     } else return NO;
 }
 
 
-- (dispatch_queue_t)methodQueue {
-    return dispatch_get_main_queue();
+
+// 打开相机
++ (void) openSystemCamera:(UIViewController *)viewController
+                         :(UIImagePickerController *)picker
+                         :(FlutterResult) result{
+    AVAuthorizationStatus authStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if (authStatus == AVAuthorizationStatusRestricted || authStatus == AVAuthorizationStatusDenied) {
+        //无相机权限 做一个友好的提示
+        result([Tools resultInfo:@"No camera permission"]);
+    } else if (authStatus == AVAuthorizationStatusNotDetermined) {
+        // fix issue 466, 防止用户首次拍照拒绝授权时相机页黑屏
+        [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
+            if (granted) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [PicturePicker openSystemCamera:viewController :picker :result];
+                });
+            }
+        }];
+        // 拍照之前还需要检查相册权限
+    } else if ([PHPhotoLibrary authorizationStatus] == 2) {
+        // 已被拒绝，没有相册权限，将无法保存拍的照片
+        result([Tools resultInfo:@"Can't open camera, No photo album permission"]);
+    } else if ([PHPhotoLibrary authorizationStatus] == 0) {
+        // 未请求过相册权限
+        [[TZImageManager manager] requestAuthorizationWithCompletion:^{
+            [PicturePicker openSystemCamera:viewController :picker :result];
+        }];
+    } else {
+        picker.allowsEditing = YES; //可编辑
+        //判断是否可以打开照相机
+        if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
+            //摄像头
+            picker.sourceType = UIImagePickerControllerSourceTypeCamera;
+            [viewController presentViewController:picker animated:YES completion:nil];
+        }else{
+           result([Tools resultInfo:@"Can't open camera"]);
+      
+        }
+    }
 }
+
+
+// 打开相册
++ (void) openSystemGallery:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result{
+    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])  {
+        picker.allowsEditing = YES;
+        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+        [viewController presentViewController:picker animated:YES completion: nil];
+    }else{
+        result(@"fail,Can't open album");
+    }
+}
+
 
 @end
 

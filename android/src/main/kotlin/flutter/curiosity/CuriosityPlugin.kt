@@ -12,8 +12,6 @@ import flutter.curiosity.gallery.PicturePicker
 import flutter.curiosity.scanner.CameraTools
 import flutter.curiosity.scanner.ScannerTools
 import flutter.curiosity.scanner.ScannerView
-import flutter.curiosity.tools.AppInfo
-import flutter.curiosity.tools.FileTools
 import flutter.curiosity.tools.NativeTools
 import flutter.curiosity.tools.Tools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -26,7 +24,6 @@ import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 import io.flutter.view.TextureRegistry
-import java.io.File
 
 
 /**
@@ -96,22 +93,22 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         when (call.method) {
             "installApp" -> channelResult.success(NativeTools.installApp())
             "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
-            "unZipFile" -> channelResult.success(FileTools.unZipFile())
+            "unZipFile" -> channelResult.success(NativeTools.unZipFile())
             "callPhone" -> channelResult.success(NativeTools.callPhone())
             "goToMarket" -> channelResult.success(NativeTools.goToMarket())
             "isInstallApp" -> channelResult.success(NativeTools.isInstallApp())
             "exitApp" -> NativeTools.exitApp()
-            "getAppInfo" -> channelResult.success(AppInfo.getAppInfo())
+            "getAppInfo" -> channelResult.success(NativeTools.getAppInfo())
             "systemShare" -> channelResult.success(NativeTools.systemShare())
             "getGPSStatus" -> channelResult.success(NativeTools.getGPSStatus())
             "jumpGPSSetting" -> NativeTools.jumpGPSSetting()
+            "jumpAppSetting" -> NativeTools.jumpAppSetting()
         }
     }
 
     private fun gallery() {
         when (call.method) {
             "openImagePicker" -> PicturePicker.openImagePicker()
-            "openCamera" -> PicturePicker.openCamera()
             "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile()
             "openSystemGallery" -> NativeTools.openSystemGallery()
             "openSystemCamera" -> NativeTools.openSystemCamera()
@@ -147,7 +144,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
-                channelResult.success(PicturePicker.onResult(requestCode, intent))
+                channelResult.success(PicturePicker.onResult(intent))
             }
             if (requestCode == openSystemGalleryCode) {
                 val uri: Uri? = intent?.data

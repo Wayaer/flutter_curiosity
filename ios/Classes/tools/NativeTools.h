@@ -1,9 +1,8 @@
 #import <Foundation/Foundation.h>
 #import <Flutter/Flutter.h>
+#import "Tools.h"
 
 @interface NativeTools : NSObject
-//Log
-+ (void)log:(id)props;
 
 //跳转应用商店
 + (void)goToMarket:(NSString *)props;
@@ -18,19 +17,17 @@
 + (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result;
 
 
-//强制帮用户打开GPS
-+ (void)open;
-
-//跳转到设置页面让用户自己手动开启
-+ (void)jumpGPSSetting;
+//跳转到APP权限设置页面
++ (BOOL)jumpAppSetting;
 
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL)getGPSStatus;
 
-//打开系统相册
-+ (void)openSystemGallery:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result;
+// 获取文件或文件夹大小
++ (NSString *)getFilePathSize:(NSString *)props;
 
-//打开系统相机
-+ (void)openSystemCamera:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result;
+
+// 解压文件
++ (NSString *)unZipFile:(NSString *)props;
 
 @end

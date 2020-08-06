@@ -48,29 +48,6 @@
     }
     return nil;
 }
-+(NSDictionary *) nativeCode:(NSData *)data{
-    if (data) {
-        CIImage * detectImage=[CIImage imageWithData:data];
-        CIDetector*detector = [CIDetector detectorOfType:CIDetectorTypeQRCode context:nil options:@{CIDetectorAccuracy: CIDetectorAccuracyHigh}];
-        NSArray* feature = [detector featuresInImage:detectImage options: nil];
-        if(feature.count==0){
-            return nil;
-        }else{
-            for(int index=0;index<[feature count];index ++){
-                CIQRCodeFeature * qrCode=[feature objectAtIndex:index];
-                NSString *resultStr=qrCode.messageString;
-                if(resultStr!=nil){
-                    NSMutableDictionary *dict =[NSMutableDictionary dictionary];
-                    [dict setValue:resultStr forKey:@"code"];
-                    [dict setValue:AVMetadataObjectTypeQRCode forKey:@"type"];
-                    return dict;
-                }
-                
-            }
-        }
-    }
-    return nil;
-}
 
 +(NSDictionary*) scanDataToMap:(AVMetadataMachineReadableCodeObject*) data{
     if (data == nil)return nil;

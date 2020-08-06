@@ -133,39 +133,6 @@ object PicturePicker {
                 .forResult(PictureConfig.CHOOSE_REQUEST) //结果回调onActivityResult code
     }
 
-    @SuppressLint("NewApi")
-    fun openCamera() {
-        setValue()
-        PictureSelector.create(activity)
-                .openCamera(pictureMimeType)
-                .imageFormat(PictureMimeType.JPEG) // 拍照保存图片格式后缀,默认jpeg
-                .isEnableCrop(enableCrop) // 是否裁剪 true or false
-                .isCompress(compress) // 是否压缩 true or false
-                .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
-                .hideBottomControls(enableCrop) // 是否显示uCrop工具栏，默认不显示 true or false
-                .freeStyleCropEnabled(freeStyleCropEnabled) // 裁剪框是否可拖拽 true or false
-                .circleDimmedLayer(showCropCircle) // 是否圆形裁剪 true or false
-                .showCropFrame(showCropFrame) // 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
-                .showCropGrid(showCropGrid) // 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
-                .cutOutQuality(cropCompressQuality) // 裁剪压缩质量 默认90 int
-                .minimumCompressSize(minimumCompressSize) // 小于100kb的图片不压缩
-                .synOrAsy(true) //同步true或异步false 压缩 默认同步
-                .rotateEnabled(rotateEnabled) // 裁剪是否可旋转图片 true or false
-                .scaleEnabled(scaleEnabled) // 裁剪是否可放大缩小图片 true or false
-                .isOpenClickSound(openClickSound) // 是否开启点击声音 true or false
-                .maxSelectNum(maxSelectNum) // 最大图片选择数量 int
-                .minSelectNum(minSelectNum) // 最小选择数量 int
-                .imageSpanCount(imageSpanCount) // 每行显示个数 int
-                .selectionMode(if (maxSelectNum == 1) PictureConfig.SINGLE else PictureConfig.MULTIPLE) // 多选 or 单选 PictureConfig.MULTIPLE or PictureConfig.SINGLE
-                .isPreviewImage(previewImage) // 是否可预览视频 true or false
-                .isPreviewVideo(previewVideo) // 是否可预览视频 true or false
-                .videoQuality(videoQuality) // 视频录制质量 0 or 1 int
-                .videoMaxSecond(videoMaxSecond) // 显示多少秒以内的视频or音频也可适用 int
-                .videoMinSecond(videoMinSecond) // 显示多少秒以内的视频or音频也可适用 int
-                .recordVideoSecond(recordVideoSecond)
-                .setOutputCameraPath(if (setOutputCameraPath === "") context.getExternalFilesDir(Environment.DIRECTORY_PICTURES).toString() else setOutputCameraPath)
-                .forResult(PictureConfig.REQUEST_CAMERA)
-    }
 
     fun deleteCacheDirFile() {
         val selectValueType = call.argument<Int>("selectValueType")
@@ -185,11 +152,11 @@ object PicturePicker {
             }
         }
         PictureFileUtils.deleteCacheDirFile(activity, pictureMimeType)
-        channelResult.success(Tools.resultSuccess(null))
+        channelResult.success(Tools.resultSuccess())
 
     }
 
-    fun onResult(requestCode: Int, intent: Intent?): MutableList<Map<String, Any>>? {
+    fun onResult(intent: Intent?): MutableList<Map<String, Any>>? {
         // 图片、视频、音频选择结果回调
         // 例如 LocalMedia 里面返回四种path
         // 1.media.getPath(); 为原图path
@@ -198,15 +165,6 @@ object PicturePicker {
         // 如果裁剪并压缩了，以取压缩路径为准，因为是先裁剪后压缩的
         // 4.media.getAndroidQToPath();为Android Q版本特有返回的字段，此字段有值就用来做上传使用
         val selectList = PictureSelector.obtainMultipleResult(intent)
-        if (requestCode == PictureConfig.REQUEST_CAMERA) {
-            return onChooseResult(selectList)
-        } else if (requestCode == PictureConfig.CHOOSE_REQUEST) {
-            return onChooseResult(selectList)
-        }
-        return null
-    }
-
-    private fun onChooseResult(selectList: MutableList<LocalMedia>): MutableList<Map<String, Any>> {
         val resultList: MutableList<Map<String, Any>> = ArrayList()
         for (localMedia in selectList) {
             val resultMap: MutableMap<String, Any> = ArrayMap()

@@ -1,11 +1,9 @@
 #import "NativeTools.h"
 #import <CoreLocation/CoreLocation.h>
-@implementation NativeTools
+#import "SSZipArchive.h"
+#define fileManager [NSFileManager defaultManager]
 
-//Log
-+ (void)log:(id)info{
-    NSLog(@"Curiosity--- %@", info);
-}
+@implementation NativeTools
 
 //跳转到AppStore
 + (void)goToMarket:(NSString *)props{
@@ -43,10 +41,64 @@
     UIDevice *device = [UIDevice currentDevice];
     [info setObject:device.systemName forKey:@"systemName"];
     [info setObject:device.systemVersion forKey:@"systemVersion"];
-    
     return  info;
 }
 
+
+//获取目录文件或文件夹大小
++ (NSString *)getFilePathSize:(NSString *)path{
+    // 获取“path”文件夹下的所有文件
+    NSArray *subPathArr = [[NSFileManager defaultManager] subpathsAtPath:path];
+    NSString *filePath  = nil;
+    NSInteger totalSize = 0;
+    for (NSString *subPath in subPathArr){
+        // 1. 拼接每一个文件的全路径
+        filePath =[path stringByAppendingPathComponent:subPath];
+        // 2. 是否是文件夹，默认不是
+        BOOL isDirectory = [Tools isDirectory:path];
+        // 3. 判断文件是否存在
+        BOOL isExist = [Tools isDirectoryExist:path];
+        // 4. 以上判断目的是忽略不需要计算的文件
+        if (!isExist || isDirectory || [filePath containsString:@".DS"]){
+            // 过滤: 1. 文件夹不存在  2. 过滤文件夹  3. 隐藏文件
+            continue;
+        }
+        // 5. 指定路径，获取这个路径的属性
+        NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
+        /**
+         attributesOfItemAtPath: 文件夹路径
+         该方法只能获取文件的属性, 无法获取文件夹属性, 所以也是需要遍历文件夹的每一个文件的原因
+         */
+        // 6. 获取每一个文件的大小
+        NSInteger size = [dict[@"NSFileSize"] integerValue];
+        // 7. 计算总大小
+        totalSize += size;
+    }
+    //8. 将文件夹大小转换为 M/KB/B
+    NSString *totalStr = nil;
+    if (totalSize > 1000 * 1000){
+        totalStr = [NSString stringWithFormat:@"%.2fMB",totalSize / 1000.00f /1000.00f];
+        
+    }else if (totalSize > 1000){
+        totalStr = [NSString stringWithFormat:@"%.2fKB",totalSize / 1000.00f ];
+        
+    }else{
+        totalStr = [NSString stringWithFormat:@"%.2fB",totalSize / 1.00f];
+    }
+    return totalStr;
+}
+
+
+
+//解压文件
++ (NSString *)unZipFile:(NSString *)filePath {
+    if ([Tools isDirectoryExist:filePath]) {
+        [SSZipArchive unzipFileAtPath:filePath toDestination:[filePath substringToIndex:filePath.length-[[[filePath componentsSeparatedByString:@"/"] lastObject] length]]];
+        return [Tools resultInfo:@"success"];
+    }else{
+        return [Tools resultInfo:@"not file"];
+    }
+}
 /**
  *  分享
  *  多图分享，items里面直接放图片
@@ -69,7 +121,7 @@
                 [items addObject:image];
             }
         }else{
-            result(@"imagesPath is null");
+            result([Tools resultInfo:@"imagesPath is null"]);
         }
     }else{
         if(content!=nil){
@@ -77,13 +129,13 @@
             if([type isEqual: @"url"])[items addObject:[NSURL URLWithString:content]];
             if([type isEqual: @"image"])[items addObject:[UIImage imageNamed:content]];
         }else{
-            result(@"content is null");
+            result([Tools resultInfo:@"content is null"]);
             return;
         }
     }
     
     if (0 == items.count) {
-        result([@"not find " stringByAppendingString:type]);
+        result([Tools resultInfo:[@"not find " stringByAppendingString:type]]);
         return;
     }
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
@@ -98,9 +150,9 @@
     }
     activityVC.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
         if (completed) {
-            result(@"success");
+            result([Tools resultInfo:@"success"]);
         }else{
-            result(@"cancel");
+            result([Tools resultInfo:@"cancel"]);
         }
     };
     //这儿一定要做iPhone与iPad的判断，因为这儿只有iPhone可以present，iPad需pop，所以这儿actVC.popoverPresentationController.sourceView = self.view;在iPad下必须有，不然iPad会crash，self.view你可以换成任何view，你可以理解为弹出的窗需要找个依托。
@@ -113,45 +165,19 @@
     }
 }
 
-//强制帮用户打开GPS
-+ (void) open {
-    
-    
-}
 
 //跳转到设置页面让用户自己手动开启
-+ (void) jumpGPSSetting {
++ (BOOL) jumpAppSetting {
     NSURL *url = [[NSURL alloc] initWithString:UIApplicationOpenSettingsURLString];
     if( [[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
+        return YES;
     }
+    return NO;
 }
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL) getGPSStatus {
     return [CLLocationManager locationServicesEnabled];
 }
 
-// 打开相机
-+ (void) openSystemCamera:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result{
-    picker.allowsEditing = YES; //可编辑
-    //判断是否可以打开照相机
-    if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]){
-        //摄像头
-        picker.sourceType = UIImagePickerControllerSourceTypeCamera;
-        [viewController presentViewController:picker animated:YES completion:nil];
-    }else{
-        result( @"Can't open album");
-    }
-}
-
-// 打开相册
-+ (void) openSystemGallery:(UIViewController *)viewController :(UIImagePickerController *)picker :(FlutterResult) result{
-    if([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypePhotoLibrary])  {
-        picker.allowsEditing = YES;
-        picker.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        [viewController presentViewController:picker animated:YES completion: nil];
-    }else{
-        result(@"Can't open album");
-    }
-}
 @end

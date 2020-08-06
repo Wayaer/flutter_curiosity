@@ -25,7 +25,6 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 - (instancetype)initWitchCamera:(NSString*)cameraId :(NSString*)resolutionPreset :(NSError **)error{
     self = [super init];
     NSAssert(self, @"super init cannot be nil");
-    
     _captureSession = [[AVCaptureSession alloc]init];
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraId];
     
