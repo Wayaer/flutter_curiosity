@@ -1,6 +1,10 @@
 package flutter.curiosity.gallery
 
 import android.content.Intent
+import android.content.pm.ApplicationInfo
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
@@ -19,9 +23,11 @@ import flutter.curiosity.CuriosityPlugin.Companion.context
 import flutter.curiosity.gallery.GlideEngine.Companion.createGlideEngine
 import flutter.curiosity.tools.Tools
 import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
 import java.util.*
 
-object PicturePicker {
+object GalleryTools {
 
     fun openImagePicker() {
         val maxSelectNum = call.argument<Int>("maxSelectNum")!!
@@ -176,6 +182,75 @@ object PicturePicker {
         }
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         activity.startActivityForResult(intent, CuriosityPlugin.openSystemCameraCode)
+    }
+
+    fun saveImageToGallery() {
+        val image = call.argument<ByteArray>("imageBytes") ?: return
+        val quality = call.argument<Int>("quality") ?: return
+        val name = call.argument<String>("name")
+        channelResult.success(saveImage(BitmapFactory.decodeByteArray(image, 0, image.size), quality, name))
+    }
+
+    fun saveFileToGallery() {
+        val filePath = call.arguments as String
+        try {
+            val originalFile = File(filePath)
+            val file = generateFile(originalFile.extension)
+            originalFile.copyTo(file)
+            val uri = Uri.fromFile(file)
+            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
+            channelResult.success(uri.toString())
+        } catch (e: IOException) {
+            e.printStackTrace()
+            channelResult.error(e.printStackTrace().toString(), null, null)
+        }
+    }
+
+    private fun saveImage(bmp: Bitmap, quality: Int, name: String?): String {
+        val file = generateFile("jpg", name = name)
+        try {
+            val fos = FileOutputStream(file)
+            println("ImageGallerySaverPlugin $quality")
+            bmp.compress(Bitmap.CompressFormat.JPEG, quality, fos)
+            fos.flush()
+            fos.close()
+            val uri = Uri.fromFile(file)
+            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
+            bmp.recycle()
+            return uri.toString()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        return ""
+    }
+
+    private fun generateFile(extension: String = "", name: String? = null): File {
+        val storePath = Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName()
+        val appDir = File(storePath)
+        if (!appDir.exists()) {
+            appDir.mkdir()
+        }
+        var fileName = name ?: System.currentTimeMillis().toString()
+        if (extension.isNotEmpty()) {
+            fileName += (".$extension")
+        }
+        return File(appDir, fileName)
+    }
+
+    private fun getApplicationName(): String {
+        var ai: ApplicationInfo? = null
+        try {
+            ai = context.packageManager.getApplicationInfo(context.packageName, 0)
+        } catch (e: PackageManager.NameNotFoundException) {
+        }
+        val appName: String
+        appName = if (ai != null) {
+            val charSequence = context.packageManager.getApplicationLabel(ai)
+            StringBuilder(charSequence.length).append(charSequence).toString()
+        } else {
+            "curiosity_temp_saver"
+        }
+        return appName
     }
 
 }

@@ -1,7 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/tools/InternalTools.dart';
 
-class PicturePicker {
+class GalleryTools {
   ///  openPicker() async {
   ///    PicturePickerOptions pickerOptions = PicturePickerOptions();
   ///    pickerOptions.selectValueType = 0;
@@ -72,5 +74,27 @@ class PicturePicker {
         .invokeMethod('openSystemCamera', {"path": savePath});
     if (savePath != null) path = savePath;
     return path;
+  }
+
+  /// save image to Gallery
+  /// imageBytes can't null
+  static Future saveImageToGallery(Uint8List imageBytes,
+      {int quality = 80, String name}) async {
+    assert(imageBytes != null);
+    final result = await curiosityChannel.invokeMethod(
+        'saveImageToGallery', <String, dynamic>{
+      'imageBytes': imageBytes,
+      'quality': quality,
+      'name': name
+    });
+    return result;
+  }
+
+  /// Save the PNG，JPG，JPEG image or video located at [file] to the local device media gallery.
+  static Future saveFileToGallery(String file) async {
+    assert(file != null);
+    final result =
+        await curiosityChannel.invokeMethod('saveFileToGallery', file);
+    return result;
   }
 }

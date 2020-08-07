@@ -1,10 +1,10 @@
-#import "PicturePicker.h"
+#import "GalleryTools.h"
 #import "TZImageManager.h"
 #import "TZImageCropManager.h"
 #import "NativeTools.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
-@implementation PicturePicker
+@implementation GalleryTools
 
 NSString * const curiosityCaches =@"CuriosityCaches";
 
@@ -210,6 +210,21 @@ NSString * const curiosityCaches =@"CuriosityCaches";
     }
 }
 
+
++ (void)saveImageToGallery:(FlutterMethodCall *)call
+                          :(FlutterResult) result{
+       NSDictionary * arguments = call.arguments;
+//      int maxSelectNum = [[arguments objectForKey:@"imageBytes"] intValue];
+    int quality = [[arguments objectForKey:@"quality"] intValue];
+    int name = [[arguments objectForKey:@"name"] stringValue];
+    
+}
+
++ (void)saveFileToGallery:(FlutterMethodCall *)call
+                        :(FlutterResult) result{
+    NSString * path = call.arguments;
+    
+}
 
 @end
 

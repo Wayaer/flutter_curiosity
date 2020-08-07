@@ -65,12 +65,12 @@ class AppState extends State<App> {
   }
 
   openSystemGallery() async {
-    var data = await PicturePicker.openSystemGallery();
+    var data = await GalleryTools.openSystemGallery();
     showToast(data.toString());
   }
 
   openSystemCamera() async {
-    var data = await PicturePicker.openSystemCamera();
+    var data = await GalleryTools.openSystemCamera();
     showToast(data.toString());
   }
 
@@ -130,12 +130,12 @@ class AppState extends State<App> {
     options.freeStyleCropEnabled = true;
     options.originalPhoto = true;
     options.maxSelectNum = 4;
-    list = await PicturePicker.openImagePicker(options);
+    list = await GalleryTools.openImagePicker(options);
     setState(() {});
   }
 
   deleteCacheDirFile() async {
-    var data = await PicturePicker.deleteCacheDirFile();
+    var data = await GalleryTools.deleteCacheDirFile();
     showToast(data);
   }
 

@@ -8,7 +8,7 @@ import android.os.Build
 import android.os.Environment
 import androidx.annotation.NonNull
 import com.luck.picture.lib.config.PictureConfig
-import flutter.curiosity.gallery.PicturePicker
+import flutter.curiosity.gallery.GalleryTools
 import flutter.curiosity.scanner.CameraTools
 import flutter.curiosity.scanner.ScannerTools
 import flutter.curiosity.scanner.ScannerView
@@ -108,10 +108,12 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     private fun gallery() {
         when (call.method) {
-            "openImagePicker" -> PicturePicker.openImagePicker()
-            "deleteCacheDirFile" -> PicturePicker.deleteCacheDirFile()
-            "openSystemGallery" -> PicturePicker.openSystemGallery()
-            "openSystemCamera" -> PicturePicker.openSystemCamera()
+            "openImagePicker" -> GalleryTools.openImagePicker()
+            "deleteCacheDirFile" -> GalleryTools.deleteCacheDirFile()
+            "openSystemGallery" -> GalleryTools.openSystemGallery()
+            "openSystemCamera" -> GalleryTools.openSystemCamera()
+            "saveFileToGallery" -> GalleryTools.saveFileToGallery()
+            "saveImageToGallery" -> GalleryTools.saveImageToGallery()
         }
     }
 
@@ -144,7 +146,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
-                channelResult.success(PicturePicker.onResult(intent))
+                channelResult.success(GalleryTools.onResult(intent))
             }
             if (requestCode == openSystemGalleryCode) {
                 val uri: Uri? = intent?.data

@@ -3,7 +3,7 @@
 #import "TZImagePickerController.h"
 #import "Tools.h"
 
-@interface PicturePicker : NSObject <TZImagePickerControllerDelegate>
+@interface GalleryTools : NSObject <TZImagePickerControllerDelegate>
 
 + (void)openImagePicker:(FlutterMethodCall*)call
                        :(UIViewController*)viewController
@@ -19,6 +19,12 @@
 //打开系统相机
 + (void)openSystemCamera:(UIViewController *)viewController
                         :(UIImagePickerController *)picker
+                        :(FlutterResult) result;
+
++ (void)saveImageToGallery:(FlutterMethodCall *)call
+                        :(FlutterResult) result;
+
++ (void)saveFileToGallery:(FlutterMethodCall *)call
                         :(FlutterResult) result;
 
 @end

@@ -1,7 +1,7 @@
 #import "CuriosityPlugin.h"
 #import "ScannerTools.h"
 #import "NativeTools.h"
-#import "PicturePicker.h"
+#import "GalleryTools.h"
 #import "ScannerView.h"
 #import <Photos/Photos.h>
 
@@ -44,20 +44,26 @@ NSString * const curiosityEvent=@"Curiosity/event";
 
 -(void)gallery{
     if ([@"openImagePicker" isEqualToString:call.method]) {
-        [PicturePicker openImagePicker:call :viewController :result];
+        [GalleryTools openImagePicker:call :viewController :result];
     }
     if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
-        [PicturePicker deleteCacheDirFile:result];
+        [GalleryTools deleteCacheDirFile:result];
     }
     if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [PicturePicker openSystemGallery:viewController :picker :result];
+        [GalleryTools openSystemGallery:viewController :picker :result];
     }
     if ([@"openSystemCamera" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [PicturePicker openSystemCamera:viewController :picker :result];
+        [GalleryTools openSystemCamera:viewController :picker :result];
+    }
+    if ([@"saveImageToGallery" isEqualToString:call.method]) {
+        [GalleryTools saveImageToGallery:call :result];
+    }
+    if ([@"saveFileToGallery" isEqualToString:call.method]) {
+        [GalleryTools saveFileToGallery:call :result];
     }
 }
 -(void)scanner{
