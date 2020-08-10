@@ -94,7 +94,7 @@
 + (NSString *)unZipFile:(NSString *)filePath {
     if ([Tools isDirectoryExist:filePath]) {
         [SSZipArchive unzipFileAtPath:filePath toDestination:[filePath substringToIndex:filePath.length-[[[filePath componentsSeparatedByString:@"/"] lastObject] length]]];
-        return [Tools resultInfo:@"success"];
+        return [Tools resultSuccess];
     }else{
         return [Tools resultInfo:@"not file"];
     }
@@ -149,11 +149,7 @@
         activityVC.excludedActivityTypes = @[UIActivityTypeMessage, UIActivityTypeMail];
     }
     activityVC.completionWithItemsHandler = ^(UIActivityType  _Nullable activityType, BOOL completed, NSArray * _Nullable returnedItems, NSError * _Nullable activityError) {
-        if (completed) {
-            result([Tools resultInfo:@"success"]);
-        }else{
-            result([Tools resultInfo:@"cancel"]);
-        }
+        result(completed?[Tools resultSuccess]:[Tools resultFail]);
     };
     //这儿一定要做iPhone与iPad的判断，因为这儿只有iPhone可以present，iPad需pop，所以这儿actVC.popoverPresentationController.sourceView = self.view;在iPad下必须有，不然iPad会crash，self.view你可以换成任何view，你可以理解为弹出的窗需要找个依托。
     UIViewController *vc = [UIApplication sharedApplication].keyWindow.rootViewController;

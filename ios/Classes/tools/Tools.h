@@ -7,6 +7,8 @@
 
 //返回标识信息
 + (NSString *)resultInfo:(NSString *)info;
++ (NSString *)resultFail;
++ (NSString *)resultSuccess;
 
 // 沙盒是否有指定路径文件夹或文件
 + (BOOL)isDirectoryExist:(NSString *)path;

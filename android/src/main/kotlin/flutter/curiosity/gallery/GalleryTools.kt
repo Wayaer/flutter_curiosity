@@ -199,10 +199,11 @@ object GalleryTools {
             originalFile.copyTo(file)
             val uri = Uri.fromFile(file)
             context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-            channelResult.success(uri.toString())
+            channelResult.success(Tools.resultSuccess())
         } catch (e: IOException) {
             e.printStackTrace()
-            channelResult.error(e.printStackTrace().toString(), null, null)
+            channelResult.success(Tools.resultFail())
+//            channelResult.error(e.printStackTrace().toString(), null, null)
         }
     }
 
@@ -210,18 +211,18 @@ object GalleryTools {
         val file = generateFile("jpg", name = name)
         try {
             val fos = FileOutputStream(file)
-            println("ImageGallerySaverPlugin $quality")
             bmp.compress(Bitmap.CompressFormat.JPEG, quality, fos)
             fos.flush()
             fos.close()
             val uri = Uri.fromFile(file)
             context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
             bmp.recycle()
-            return uri.toString()
+//            return uri.toString()
+            return Tools.resultSuccess()
         } catch (e: IOException) {
             e.printStackTrace()
         }
-        return ""
+        return Tools.resultFail()
     }
 
     private fun generateFile(extension: String = "", name: String? = null): File {

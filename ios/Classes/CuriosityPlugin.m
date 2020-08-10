@@ -125,10 +125,10 @@ NSString * const curiosityEvent=@"Curiosity/event";
 
 -(void)tools{
     if ([@"getGPSStatus" isEqualToString:call.method]) {
-        result([NativeTools getGPSStatus]?@"true":@"false");
+        result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
     }
     if ([@"jumpAppSetting" isEqualToString:call.method]) {
-        result([NativeTools jumpAppSetting]?@"true":@"false");
+        result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
     }
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
@@ -138,15 +138,15 @@ NSString * const curiosityEvent=@"Curiosity/event";
     }
     if ([@"unZipFile" isEqualToString:call.method]) {
         [NativeTools unZipFile:call.arguments[@"filePath"]];
-        result([Tools resultInfo:@"success"]);
+        result([Tools resultSuccess]);
     }
     if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeTools goToMarket:call.arguments[@"packageName"]];
-        result([Tools resultInfo:@"success"]);
+        result([Tools resultSuccess]);
     }
     if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"]];
-        result([Tools resultInfo:@"success"]);
+        result([Tools resultSuccess]);
     }
     if ([@"systemShare" isEqualToString:call.method]) {
         [NativeTools systemShare:call result:result];
@@ -215,12 +215,11 @@ NSString * const curiosityEvent=@"Curiosity/event";
 #pragma mark - 保存图片或视频完成的回调
 - (void)saveImage:(UIImage *)image didFinishSavingWithError:(NSError *)error
       contextInfo:(void *)contextInfo {
-    result([Tools resultInfo:error?@"success":@"fail"]);
-    
+    result(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 - (void)saveVideo:(NSString *)videoPath didFinishSavingWithError:(NSError *)error
       contextInfo:(void *)contextInfo {
-    result([Tools resultInfo:error?@"success":@"fail"]);
+    result(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]

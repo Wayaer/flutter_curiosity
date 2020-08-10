@@ -109,7 +109,7 @@ NSString * const curiosityCaches =@"CuriosityCaches";
     NSString *dir = [NSString stringWithFormat:@"%@CuriosityCaches/", NSTemporaryDirectory()];
     NSFileManager *fileManager = [NSFileManager defaultManager];
     [fileManager removeItemAtPath:dir error:&error];
-    result([Tools resultInfo:error?@"success":@"fail"]);
+    result(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 // 处理图片数组
 + (NSDictionary *)resultPhoto:(NSData *)data phAsset:(PHAsset *)asset isGIF:(BOOL)isGIF {

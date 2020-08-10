@@ -11,6 +11,12 @@
     return [NSString stringWithFormat:@"Curiosity:%@",info];
 }
 
++ (NSString *)resultFail{
+    return @"Curiosity:fail";
+}
++ (NSString *)resultSuccess{
+    return @"Curiosity:success";
+}
 // 沙盒是否有指定路径文件夹或文件
 +(BOOL)isDirectoryExist:(NSString *)path {
     return [fileManager fileExistsAtPath:path];

@@ -78,8 +78,8 @@ class GalleryTools {
 
   /// save image to Gallery
   /// imageBytes can't null
-  static Future saveImageToGallery(Uint8List imageBytes,
-      {int quality = 80, String name}) async {
+  static Future<String> saveImageToGallery(Uint8List imageBytes,
+      {int quality = 100, String name}) async {
     assert(imageBytes != null);
     final result = await curiosityChannel.invokeMethod(
         'saveImageToGallery', <String, dynamic>{
@@ -91,7 +91,7 @@ class GalleryTools {
   }
 
   /// Save the PNG，JPG，JPEG image or video located at [file] to the local device media gallery.
-  static Future saveFileToGallery(String file) async {
+  static Future<String> saveFileToGallery(String file) async {
     assert(file != null);
     final result =
         await curiosityChannel.invokeMethod('saveFileToGallery', file);
