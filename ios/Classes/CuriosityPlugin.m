@@ -60,10 +60,10 @@ NSString * const curiosityEvent=@"Curiosity/event";
         [GalleryTools openSystemCamera:viewController :picker :result];
     }
     if ([@"saveImageToGallery" isEqualToString:call.method]) {
-        [GalleryTools saveImageToGallery:call :result];
+        [self saveImageToGallery];
     }
     if ([@"saveFileToGallery" isEqualToString:call.method]) {
-        [GalleryTools saveFileToGallery:call :result];
+        [self saveFileToGallery];
     }
 }
 -(void)scanner{
@@ -192,6 +192,36 @@ NSString * const curiosityEvent=@"Curiosity/event";
     }];
 }
 
+- (void)saveImageToGallery{
+    NSDictionary * arguments = call.arguments;
+    FlutterStandardTypedData *imageBytes = [arguments objectForKey:@"imageBytes"];
+    int quality = [[arguments objectForKey:@"quality"] intValue];
+    //    NSString *name = [[arguments objectForKey:@"name"] stringValue];
+    UIImage *image = [UIImage imageWithData:imageBytes.data];
+    UIImageWriteToSavedPhotosAlbum([UIImage imageWithData:UIImageJPEGRepresentation(image, quality/100)], self,@selector(saveImage:didFinishSavingWithError:contextInfo:), nil);
+}
+
+- (void)saveFileToGallery{
+    NSString * path = call.arguments;
+    if([Tools isImageFile:path]){
+        UIImageWriteToSavedPhotosAlbum([UIImage imageWithContentsOfFile:path],self,@selector(saveImage:didFinishSavingWithError:contextInfo:),nil);
+    }else if(UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path)){
+        UISaveVideoAtPathToSavedPhotosAlbum(path,self,@selector(saveVideo:didFinishSavingWithError:contextInfo:),nil);
+    }else{
+        result([Tools resultInfo:@"File types that cannot be saved"]);
+    }
+    
+}
+#pragma mark - 保存图片或视频完成的回调
+- (void)saveImage:(UIImage *)image didFinishSavingWithError:(NSError *)error
+      contextInfo:(void *)contextInfo {
+    result([Tools resultInfo:error?@"success":@"fail"]);
+    
+}
+- (void)saveVideo:(NSString *)videoPath didFinishSavingWithError:(NSError *)error
+      contextInfo:(void *)contextInfo {
+    result([Tools resultInfo:error?@"success":@"fail"]);
+}
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]
                                message:error.localizedDescription

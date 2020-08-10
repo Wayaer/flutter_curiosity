@@ -20,11 +20,4 @@
 + (void)openSystemCamera:(UIViewController *)viewController
                         :(UIImagePickerController *)picker
                         :(FlutterResult) result;
-
-+ (void)saveImageToGallery:(FlutterMethodCall *)call
-                        :(FlutterResult) result;
-
-+ (void)saveFileToGallery:(FlutterMethodCall *)call
-                        :(FlutterResult) result;
-
 @end

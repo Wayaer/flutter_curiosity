@@ -171,7 +171,7 @@ NSString * const curiosityCaches =@"CuriosityCaches";
         [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo completionHandler:^(BOOL granted) {
             if (granted) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    [PicturePicker openSystemCamera:viewController :picker :result];
+                    [GalleryTools openSystemCamera:viewController :picker :result];
                 });
             }
         }];
@@ -182,7 +182,7 @@ NSString * const curiosityCaches =@"CuriosityCaches";
     } else if ([PHPhotoLibrary authorizationStatus] == 0) {
         // 未请求过相册权限
         [[TZImageManager manager] requestAuthorizationWithCompletion:^{
-            [PicturePicker openSystemCamera:viewController :picker :result];
+            [GalleryTools openSystemCamera:viewController :picker :result];
         }];
     } else {
         picker.allowsEditing = YES; //可编辑
@@ -192,8 +192,8 @@ NSString * const curiosityCaches =@"CuriosityCaches";
             picker.sourceType = UIImagePickerControllerSourceTypeCamera;
             [viewController presentViewController:picker animated:YES completion:nil];
         }else{
-           result([Tools resultInfo:@"Can't open camera"]);
-      
+            result([Tools resultInfo:@"Can't open camera"]);
+            
         }
     }
 }
@@ -208,22 +208,6 @@ NSString * const curiosityCaches =@"CuriosityCaches";
     }else{
         result(@"fail,Can't open album");
     }
-}
-
-
-+ (void)saveImageToGallery:(FlutterMethodCall *)call
-                          :(FlutterResult) result{
-       NSDictionary * arguments = call.arguments;
-//      int maxSelectNum = [[arguments objectForKey:@"imageBytes"] intValue];
-    int quality = [[arguments objectForKey:@"quality"] intValue];
-    int name = [[arguments objectForKey:@"name"] stringValue];
-    
-}
-
-+ (void)saveFileToGallery:(FlutterMethodCall *)call
-                        :(FlutterResult) result{
-    NSString * path = call.arguments;
-    
 }
 
 @end

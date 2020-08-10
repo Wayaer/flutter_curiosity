@@ -21,4 +21,12 @@
     [fileManager fileExistsAtPath:path isDirectory:&isDir];
     return isDir;
 }
+
++(BOOL) isImageFile:(NSString *)path{
+    return [path hasSuffix:@".jpg"]
+    ||[path hasSuffix:@".png"]
+    ||[path hasSuffix:@".JPEG"]
+    ||[path hasSuffix:@".JPG"]
+    ||[path hasSuffix:@".PNG"];
+}
 @end
