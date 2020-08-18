@@ -38,6 +38,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     companion object {
         var openSystemGalleryCode = 100
         var openSystemCameraCode = 101
+        var installApkCode = 102
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
@@ -91,7 +92,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     private fun tools() {
         when (call.method) {
-            "installApp" -> channelResult.success(NativeTools.installApp())
+            "installApp" -> NativeTools.installApp()
             "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
             "unZipFile" -> channelResult.success(NativeTools.unZipFile())
             "callPhone" -> channelResult.success(NativeTools.callPhone())
@@ -147,18 +148,23 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         if (resultCode == Activity.RESULT_OK) {
             if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
                 channelResult.success(GalleryTools.onResult(intent))
-            }
-            if (requestCode == openSystemGalleryCode) {
+            } else if (requestCode == openSystemGalleryCode) {
                 val uri: Uri? = intent?.data
                 channelResult.success(Tools.getRealPathFromURI(uri));
-            }
-            if (requestCode == openSystemCameraCode) {
+            } else if (requestCode == openSystemCameraCode) {
                 val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
                 } else {
                     intent?.data?.encodedPath.toString();
                 }
                 channelResult.success(photoPath);
+            } else if (requestCode == installApkCode) {
+                channelResult.success("install")
+            }
+
+        } else if (resultCode == Activity.RESULT_CANCELED) {
+            if (requestCode == installApkCode) {
+                channelResult.success("cancel")
             }
         }
         return true
