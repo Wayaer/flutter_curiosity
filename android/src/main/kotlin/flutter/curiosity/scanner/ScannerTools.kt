@@ -120,7 +120,7 @@ object ScannerTools {
     // 这里设置可扫描的类型
     private val hints: Map<DecodeHintType, Any>
         get() {
-            val decodeFormats: MutableCollection<BarcodeFormat> = ArrayList<BarcodeFormat>()
+            val decodeFormats: MutableCollection<BarcodeFormat> = ArrayList()
             //一维码
             decodeFormats.add(BarcodeFormat.UPC_A)
             decodeFormats.add(BarcodeFormat.UPC_E)
