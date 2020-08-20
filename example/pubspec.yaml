@@ -10,10 +10,8 @@ dependencies:
     sdk: flutter
   cupertino_icons: ^0.1.3
   permission_handler: ^5.0.0+hotfix.3
-#  r_scan:
-#    git:
-#      url: git://github.com/rhymelph/r_scan.git
-#      ref: master
+  flutter_curiosity:
+    path: ../
   flutter_waya:
     git:
       url: git://github.com/Wayaer/flutter_waya.git
@@ -22,8 +20,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_curiosity:
-    path: ../
+
 
 
 flutter:
