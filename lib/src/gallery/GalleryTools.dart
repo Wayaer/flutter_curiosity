@@ -13,7 +13,7 @@ class GalleryTools {
   ///  }
   static Future<List<AssetMedia>> openImagePicker(
       [PicturePickerOptions selectOptions]) async {
-    InternalTools.supportPlatform();
+       if (InternalTools.supportPlatform()) return null;
     if (selectOptions == null) selectOptions = PicturePickerOptions();
     if (selectOptions.maxSelectNum < 1) selectOptions.maxSelectNum = 1;
     final result = await curiosityChannel.invokeMethod(
@@ -29,7 +29,7 @@ class GalleryTools {
 
   /// [selectValueType] 0:全部类型，1:图片，2:视频
   static Future deleteCacheDirFile({int selectValueType = 0}) async {
-    InternalTools.supportPlatform();
+       if (InternalTools.supportPlatform()) return null;
     return curiosityChannel.invokeMethod(
         'deleteCacheDirFile', {'selectValueType': selectValueType});
   }
@@ -41,7 +41,7 @@ class GalleryTools {
   ///       <string>是否允许Curiosity访问你的相册？</string>
   ///ios path 包含 file:///
   static Future<String> openSystemGallery() async {
-    InternalTools.supportPlatform();
+       if (InternalTools.supportPlatform()) return null;
     return await curiosityChannel.invokeMethod('openSystemGallery');
   }
 
@@ -69,7 +69,7 @@ class GalleryTools {
   static Future<String> openSystemCamera({String savePath}) async {
     ///savePath => android 图片临时储存位置 (仅支持android)
     ///alertNativeTips => ios 是否弹出用户未允许访问相机权限提示 (仅支持ios)
-    InternalTools.supportPlatform();
+       if (InternalTools.supportPlatform()) return null;
     var path = await curiosityChannel
         .invokeMethod('openSystemCamera', {"path": savePath});
     if (savePath != null) path = savePath;

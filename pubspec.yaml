@@ -23,3 +23,8 @@ flutter:
         pluginClass: CuriosityPlugin
       ios:
         pluginClass: CuriosityPlugin
+      macos:
+        pluginClass: CuriosityPlugin
+      web:
+        pluginClass: CuriosityPlugin
+        fileName: flutter_curiosity_web.dart

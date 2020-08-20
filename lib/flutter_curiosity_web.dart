@@ -1,0 +1,3 @@
+class CuriosityPlugin extends PlatformInterface{
+
+}
