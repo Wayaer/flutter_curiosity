@@ -7,19 +7,19 @@
 //跳转到AppStore
 + (void)goToMarket:(NSString *)props{
     NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
-//    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
+    //    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
 }
 
 + (void)callPhone:(NSString *)phoneNumber {
-//    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
+    //    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
 }
 + (NSMutableDictionary *)getAppInfo
 {
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
     NSDictionary *app = [[NSBundle mainBundle] infoDictionary];
-//    CGRect statusBar = [[NSApplication sharedApplication] statusBarFrame];
-//    [info setObject:@(statusBar.size.height) forKey:@"statusBarHeight"];
-//    [info setObject:@(statusBar.size.width) forKey:@"statusBarWidth"];
+    //    CGRect statusBar = [[NSApplication sharedApplication] statusBarFrame];
+    //    [info setObject:@(statusBar.size.height) forKey:@"statusBarHeight"];
+    //    [info setObject:@(statusBar.size.width) forKey:@"statusBarWidth"];
     
     [info setObject:NSHomeDirectory() forKey:@"homeDirectory"];
     [info setObject:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] forKey:@"documentDirectory"];
@@ -34,12 +34,12 @@
     [info setObject:[app objectForKey:@"CFBundleIdentifier"] forKey:@"packageName"];
     [info setObject:[app objectForKey:@"CFBundleName"] forKey:@"appName"];
     [info setObject:[app objectForKey:@"DTSDKBuild"] forKey:@"sdkBuild"];
-//    [info setObject:[app objectForKey:@"DTPlatformName"] forKey:@"platformName"];
-//    [info setObject:[app objectForKey:@"MinimumOSVersion"] forKey:@"minimumOSVersion"];
+    //    [info setObject:[app objectForKey:@"DTPlatformName"] forKey:@"platformName"];
+    //    [info setObject:[app objectForKey:@"MinimumOSVersion"] forKey:@"minimumOSVersion"];
     [info setObject:[app objectForKey:@"DTPlatformVersion"] forKey:@"platformVersion"];
-//    GDevice *device = [device currentDevice];
-//    [info setObject:device->systemName forKey:@"systemName"];
-//    [info setObject:device->systemVersion forKey:@"systemVersion"];
+    //    GDevice *device = [device currentDevice];
+    //    [info setObject:device->systemName forKey:@"systemName"];
+    //    [info setObject:device->systemVersion forKey:@"systemVersion"];
     return info;
 }
 
@@ -86,8 +86,28 @@
     }
     return totalStr;
 }
-
-
++(void)openImagePicker:(FlutterMethodCall*)call result:(FlutterResult)result{
+    //    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+    //    [openPanel setPrompt: @"打开"];
+    //
+    //    openPanel.allowedFileTypes = [NSArray arrayWithObjects: @"txt", @"doc", nil];
+    //    openPanel.directoryURL = nil;
+    //
+    //    [openPanel beginSheetModalForWindow:[self gainMainViewController] completionHandler:^(NSModalResponse returnCode) {
+    //
+    //        if (returnCode == 1) {
+    //            NSURL *fileUrl = [[openPanel URLs] objectAtIndex:0];
+    //            // 获取文件内容
+    //            NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingFromURL:fileUrl error:nil];
+    //            NSString *fileContext = [[NSString alloc] initWithData:fileHandle.readDataToEndOfFile encoding:NSUTF8StringEncoding];
+    //
+    //            // 将 获取的数据传递给 ViewController 的 TextView
+    //            ViewController *mainViewController = (ViewController *)[self gainMainViewController].contentViewController;
+    //            mainViewController.showCodeTextView.string = fileContext;
+    //        }
+    //    }];
+    
+}
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL) getGPSStatus {
     return [CLLocationManager locationServicesEnabled];

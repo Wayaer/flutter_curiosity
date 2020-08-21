@@ -62,7 +62,7 @@
  获取可用的摄像头
  */
 +(void)availableCameras:(FlutterMethodCall *)call result:(FlutterResult)result{
-    if (@available(iOS 10.0, *)) {
+ 
         AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
                                                              discoverySessionWithDeviceTypes:@[ AVCaptureDeviceTypeBuiltInWideAngleCamera ]
                                                              mediaType:AVMediaTypeVideo
@@ -91,7 +91,7 @@
             }];
         }
         result(reply);
-    }
+  
     result(nil);
 }
 @end

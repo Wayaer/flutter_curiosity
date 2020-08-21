@@ -26,7 +26,7 @@
 // 获取文件或文件夹大小
 + (NSString *)getFilePathSize:(NSString *)props;
 
-
++ (void)openImagePicker:(FlutterMethodCall*)call result:(FlutterResult)result;
 // 解压文件
 //+ (NSString *)unZipFile:(NSString *)props;
 

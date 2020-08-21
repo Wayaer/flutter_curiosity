@@ -31,7 +31,7 @@ class AppState extends State<App> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: const Text('Flutter Curiosity Plugin app'),
+        title: Text('Flutter Curiosity Plugin app'),
       ),
       body: Universal(
         isScroll: true,
@@ -44,6 +44,8 @@ class AppState extends State<App> {
                   mainAxisSize: MainAxisSize.min, children: showText());
             },
           ),
+          RaisedButton(
+              onPressed: () => getAppInfo(), child: Text('获取appInfo')),
           RaisedButton(onPressed: () => scan(context), child: Text('扫码')),
           RaisedButton(onPressed: () => select(), child: Text('图片选择')),
           RaisedButton(
@@ -62,6 +64,12 @@ class AppState extends State<App> {
         ],
       ),
     );
+  }
+
+  getAppInfo() async {
+    var data = await AppInfo.getPackageInfo();
+
+    log(data.toJson());
   }
 
   openSystemGallery() async {
@@ -107,7 +115,7 @@ class AppState extends State<App> {
 
   scan(BuildContext context) async {
     var permission = await Utils.requestPermissions(Permission.camera, '相机',
-            showAlert: false) &&
+        showAlert: false) &&
         await Utils.requestPermissions(Permission.storage, '手机存储',
             showAlert: false);
     if (permission) {

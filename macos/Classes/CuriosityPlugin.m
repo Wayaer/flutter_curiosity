@@ -36,9 +36,9 @@ NSString * const curiosityEvent=@"Curiosity/event";
 }
 
 -(void)gallery{
-    //    if ([@"openImagePicker" isEqualToString:call.method]) {
-    //        [GalleryTools openImagePicker:call :viewController :result];
-    //    }
+        if ([@"openImagePicker" isEqualToString:call.method]) {
+//            [NativeTools openImagePicker:call :viewController :result];
+        }
     //    if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
     //        [GalleryTools deleteCacheDirFile:result];
     //    }

@@ -12,7 +12,7 @@ class ScanCodePage extends StatefulWidget {
 
 class ScanCodePageState extends State<ScanCodePage> {
   ScannerController controller =
-      ScannerController(resolutionPreset: ResolutionPreset.High);
+  ScannerController(resolutionPreset: ResolutionPreset.High);
   bool showScanner = false;
 
   @override
@@ -106,21 +106,21 @@ class ScanCodeShowPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         body: SimpleButton(
-      onTap: () {
-        Tools.copy(text);
-        showToast('复制成功');
-      },
-      text: text,
-      maxLines: 100,
-      textStyle: TextStyle(color: Colors.white, fontSize: 15),
-    ));
+          onTap: () {
+            Tools.copy(text);
+            showToast('复制成功');
+          },
+          text: text,
+          maxLines: 100,
+          textStyle: TextStyle(color: Colors.white, fontSize: 15),
+        ));
   }
 }
 
 class ScanUtils {
   static openScan(BuildContext context) async {
     var permission = await Utils.requestPermissions(Permission.camera, '相机',
-            showAlert: false) &&
+        showAlert: false) &&
         await Utils.requestPermissions(Permission.storage, '手机存储',
             showAlert: false);
     if (permission) {
@@ -132,7 +132,8 @@ class ScanUtils {
   static openScanCodeShow(BuildContext context, String text) async {
     await showCupertinoModalPopup(
         context: context,
-        builder: (BuildContext context) => ScanCodeShowPage(
+        builder: (BuildContext context) =>
+            ScanCodeShowPage(
               text: text,
             ));
   }
