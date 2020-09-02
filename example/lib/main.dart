@@ -1,4 +1,4 @@
-import 'package:curiosity/Utils.dart';
+import 'package:curiosity/utils.dart';
 import 'package:curiosity/scan_code.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -6,12 +6,8 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-void main() async {
-  runApp(GlobalMaterial(
-    debugShowCheckedModeBanner: false,
-    title: 'Curiosity',
-    home: App(),
-  ));
+void main() {
+  runApp(GlobalMaterial(debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
 }
 
 class App extends StatefulWidget {

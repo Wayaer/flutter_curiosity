@@ -1,4 +1,4 @@
-import 'package:curiosity/Utils.dart';
+import 'package:curiosity/utils.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
