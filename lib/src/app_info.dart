@@ -1,7 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/src/tools/InternalTools.dart';
+import 'package:flutter_curiosity/src/tools/internal.dart';
 
 class AppInfo {
   static Future<AppInfoModel> getPackageInfo() async {

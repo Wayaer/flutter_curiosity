@@ -1,5 +1,5 @@
-import 'package:curiosity/ScanCodePage.dart';
 import 'package:curiosity/Utils.dart';
+import 'package:curiosity/scan_code.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -7,7 +7,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
-  runApp(OverlayMaterial(
+  runApp(GlobalMaterial(
     debugShowCheckedModeBanner: false,
     title: 'Curiosity',
     home: App(),
@@ -16,12 +16,10 @@ void main() async {
 
 class App extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() {
-    return AppState();
-  }
+  _AppState createState() => _AppState();
 }
 
-class AppState extends State<App> {
+class _AppState extends State<App> {
   bool san = true;
   StateSetter textSetState;
   List<AssetMedia> list = List();
@@ -40,27 +38,20 @@ class AppState extends State<App> {
           StatefulBuilder(
             builder: (BuildContext context, StateSetter state) {
               textSetState = state;
-              return Column(
-                  mainAxisSize: MainAxisSize.min, children: showText());
+              return Column(mainAxisSize: MainAxisSize.min, children: showText());
             },
           ),
-          RaisedButton(
-              onPressed: () => getAppInfo(), child: Text('获取appInfo')),
+          RaisedButton(onPressed: () => getAppInfo(), child: Text('获取appInfo')),
           RaisedButton(onPressed: () => scan(context), child: Text('扫码')),
           RaisedButton(onPressed: () => select(), child: Text('图片选择')),
-          RaisedButton(
-              onPressed: () => deleteCacheDirFile(), child: Text('清除图片选择缓存')),
+          RaisedButton(onPressed: () => deleteCacheDirFile(), child: Text('清除图片选择缓存')),
           RaisedButton(onPressed: () => shareText(), child: Text('分享文字')),
           RaisedButton(onPressed: () => shareImage(), child: Text('分享图片')),
           RaisedButton(onPressed: () => shareImages(), child: Text('分享多张图片')),
-          RaisedButton(
-              onPressed: () => openSystemGallery(), child: Text('打开系统相册')),
-          RaisedButton(
-              onPressed: () => openSystemCamera(), child: Text('打开系统相机')),
+          RaisedButton(onPressed: () => openSystemGallery(), child: Text('打开系统相册')),
+          RaisedButton(onPressed: () => openSystemCamera(), child: Text('打开系统相机')),
           RaisedButton(onPressed: () => getGPS(), child: Text('获取gps状态')),
-          RaisedButton(
-              onPressed: () => NativeTools.jumpAppSetting(),
-              child: Text('跳转APP设置')),
+          RaisedButton(onPressed: () => NativeTools.jumpAppSetting(), child: Text('跳转APP设置')),
         ],
       ),
     );
@@ -68,7 +59,6 @@ class AppState extends State<App> {
 
   getAppInfo() async {
     var data = await AppInfo.getPackageInfo();
-
     log(data.toJson());
   }
 
@@ -83,8 +73,7 @@ class AppState extends State<App> {
   }
 
   shareText() {
-    NativeTools.systemShare(
-        title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
+    NativeTools.systemShare(title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
   }
 
   shareImage() {
@@ -92,8 +81,7 @@ class AppState extends State<App> {
       showToast('请先选择图片');
       return;
     }
-    NativeTools.systemShare(
-        title: '分享图片', content: list[0].path, shareType: ShareType.image);
+    NativeTools.systemShare(title: '分享图片', content: list[0].path, shareType: ShareType.image);
   }
 
   shareImages() {
@@ -104,8 +92,7 @@ class AppState extends State<App> {
     List<String> listPath = [];
     listPath.add(list[0].path);
     listPath.add(list[0].path);
-    NativeTools.systemShare(
-        title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
+    NativeTools.systemShare(title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
   }
 
   getGPS() async {
@@ -114,13 +101,10 @@ class AppState extends State<App> {
   }
 
   scan(BuildContext context) async {
-    var permission = await Utils.requestPermissions(Permission.camera, '相机',
-        showAlert: false) &&
-        await Utils.requestPermissions(Permission.storage, '手机存储',
-            showAlert: false);
+    var permission = await Utils.requestPermissions(Permission.camera, '相机', showAlert: false) &&
+        await Utils.requestPermissions(Permission.storage, '手机存储', showAlert: false);
     if (permission) {
-      showCupertinoModalPopup(
-          context: context, builder: (context) => ScanCodePage());
+      showCupertinoModalPopup(context: context, builder: (context) => ScanCodePage());
     } else {
       openAppSettings();
     }
