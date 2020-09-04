@@ -6,8 +6,7 @@ import 'package:flutter_curiosity/src/tools/internal.dart';
 class AppInfo {
   static Future<AppInfoModel> getPackageInfo() async {
     if (InternalTools.supportPlatform()) return null;
-    Map<String, dynamic> map =
-    await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo');
+    Map<String, dynamic> map = await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo');
     return AppInfoModel.fromJson(map);
   }
 
@@ -39,8 +38,6 @@ class AppInfo {
   ///获取根目录
   static Future<String> getRootDirectory() async {
     AppInfoModel appInfoModel = await getPackageInfo();
-    return Platform.isAndroid
-        ? appInfoModel.externalStorageDirectory
-        : appInfoModel.homeDirectory;
+    return Platform.isAndroid ? appInfoModel.externalStorageDirectory : appInfoModel.homeDirectory;
   }
 }
