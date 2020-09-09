@@ -1,15 +1,15 @@
 ## [1.2.0]
- * 重构全部类名和文件名
- * 优化部分code
- * 添加macOS平台支持
+ * Refactoring all class and file names
+ * Optimization part code
+ * Add MacOS platform support
 ## [1.1.4]
- * 修复scanner组件 dispose 后 controller 仍然持有
- * 修复scanner组件 切换后台 再切换前台报错
+ * After repairing the dispose component of scanner, the controller still holds the
+ * Fix the error of scanner component switching background and foreground
 ## [1.1.3]
- * 优化类
+ * Optimization class
 ## [1.1.0]
- * 扫码器 更换 Texture 组件 
- * 优化扫码速度和准确率
- * 更新图片选择器版本
+ * Scanner to replace texture components
+ * Optimize scan speed and accuracy
+ * Update picture selector version
 ## [0.0.1]
- * create lib
+ *  create lib
