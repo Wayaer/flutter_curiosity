@@ -282,7 +282,7 @@ class PicturePickerOptions {
   ///显示多少秒以内的视频or音频也可适用 int
   int videoMaxSecond;
 
-//  ///全部0、图片1、视频2
+  ///全部0、图片1、视频2
   int pickerSelectType;
 
   /// 是否裁剪 true or false

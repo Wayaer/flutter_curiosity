@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/tools/internal.dart';
 
 class AppInfo {
+  ///get all info
   static Future<AppInfoModel> getPackageInfo() async {
     if (InternalTools.supportPlatform()) return null;
     Map<String, dynamic> map = await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo');
@@ -16,14 +15,16 @@ class AppInfo {
     return appInfoModel.versionCode;
   }
 
+  ///app name
   static Future<String> getAppName() async {
-    if (Platform.isIOS || Platform.isAndroid) {
+    if (InternalTools.isIOS() || InternalTools.isAndroid()) {
       AppInfoModel appInfoModel = await getPackageInfo();
       return appInfoModel.appName;
     }
     return null;
   }
 
+  ///package name
   static Future<String> getPackageName() async {
     AppInfoModel appInfoModel = await getPackageInfo();
     return appInfoModel.packageName;
@@ -35,9 +36,11 @@ class AppInfo {
     return appInfoModel.versionName;
   }
 
-  ///获取根目录
+  ///root directory
   static Future<String> getRootDirectory() async {
     AppInfoModel appInfoModel = await getPackageInfo();
-    return Platform.isAndroid ? appInfoModel.externalStorageDirectory : appInfoModel.homeDirectory;
+    if (InternalTools.isAndroid()) return appInfoModel.externalStorageDirectory;
+    if (InternalTools.isIOS() || InternalTools.isMacOS()) return appInfoModel.homeDirectory;
+    return '';
   }
 }
