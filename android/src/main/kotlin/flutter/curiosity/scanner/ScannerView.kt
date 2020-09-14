@@ -55,13 +55,11 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
 
                     override fun onDisconnected(cameraDevice: CameraDevice) {
                         resultMap("onDisconnected")
-//                        Tools.logInfo("openCamera onDisconnected")
                         close()
                     }
 
                     override fun onError(cameraDevice: CameraDevice, errorCode: Int) {
                         resultMap("onError")
-//                        Tools.logInfo("openCamera errorCode==$errorCode")
                         close()
                     }
                 },
