@@ -24,6 +24,9 @@ class Scanner extends StatefulWidget {
   ///识别区域的宽高度比例
   final double heightRatio;
 
+  ///限制最佳宽高
+  final bool bestFit;
+
   ///屏幕宽度比例=leftRatio + widthRatio + leftRatio
   ///屏幕高度比例=topRatio + heightRatio + topRatio
 
@@ -35,6 +38,7 @@ class Scanner extends StatefulWidget {
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
     this.camera,
+    this.bestFit: true,
   })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
@@ -77,13 +81,17 @@ class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (controller?.textureId == null) return Container();
-    double h = 0;
-    double w = InternalTools.getSize().width;
-    double ratio = InternalTools.getDevicePixelRatio();
-    if (controller.previewWidth != null && controller.previewHeight != null) {
-      h = w * (controller.previewWidth / ratio) / (controller.previewHeight / ratio);
+    var texture = Texture(textureId: controller.textureId);
+    if (widget.bestFit) {
+      double h = 0;
+      double w = InternalTools.getSize().width;
+      double ratio = InternalTools.getDevicePixelRatio();
+      if (controller.previewWidth != null && controller.previewHeight != null) {
+        h = w * (controller.previewWidth / ratio) / (controller.previewHeight / ratio);
+      }
+      return Container(width: w, height: h, child: texture);
     }
-    return Container(width: w, height: h, child: Texture(textureId: controller.textureId));
+    return texture;
   }
 
   @override
