@@ -41,10 +41,10 @@ class Scanner extends StatefulWidget {
         assert(controller != null);
 
   @override
-  State<StatefulWidget> createState() => ScannerState();
+  _ScannerState createState() => _ScannerState();
 }
 
-class ScannerState extends State<Scanner> with WidgetsBindingObserver {
+class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
   ScannerController controller;
   Map<String, dynamic> params;
 
@@ -77,7 +77,13 @@ class ScannerState extends State<Scanner> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (controller?.textureId == null) return Container();
-    return Texture(textureId: controller.textureId);
+    double h = 0;
+    double w = InternalTools.getSize().width;
+    double ratio = InternalTools.getDevicePixelRatio();
+    if (controller.previewWidth != null && controller.previewHeight != null) {
+      h = w * (controller.previewWidth / ratio) / (controller.previewHeight / ratio);
+    }
+    return Container(width: w, height: h, child: Texture(textureId: controller.textureId));
   }
 
   @override
