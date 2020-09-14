@@ -29,6 +29,13 @@ class Scanner extends StatefulWidget {
 
   ///屏幕宽度比例=leftRatio + widthRatio + leftRatio
   ///屏幕高度比例=topRatio + heightRatio + topRatio
+  final double hornStrokeWidth;
+  final double scannerStrokeWidth;
+  final Color borderColor;
+  final Color scannerColor;
+
+  //是否显示扫描框
+  final bool scannerBox;
 
   Scanner({
     CameraLensFacing cameraLensFacing,
@@ -39,9 +46,15 @@ class Scanner extends StatefulWidget {
     this.heightRatio: 0.4,
     this.camera,
     this.bestFit: true,
+    this.hornStrokeWidth,
+    this.scannerStrokeWidth,
+    this.borderColor,
+    this.scannerColor,
+    this.scannerBox: true,
   })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
+        assert(scannerBox != null),
         assert(controller != null);
 
   @override
@@ -51,6 +64,9 @@ class Scanner extends StatefulWidget {
 class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
   ScannerController controller;
   Map<String, dynamic> params;
+  double previewHeight = 0;
+  double previewWidth = 0;
+  double ratio = InternalTools.getDevicePixelRatio();
 
   @override
   void initState() {
@@ -73,6 +89,8 @@ class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
     }
     if (camera == null) return;
     await controller.initialize(cameras: camera).then((value) {
+      previewHeight = controller.previewHeight / ratio;
+      previewWidth = controller.previewWidth / ratio;
       setState(() {});
     });
     print('cameraState ' + controller.cameraState);
@@ -81,17 +99,25 @@ class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (controller?.textureId == null) return Container();
-    var texture = Texture(textureId: controller.textureId);
+    Widget child = Texture(textureId: controller.textureId);
     if (widget.bestFit) {
       double h = 0;
       double w = InternalTools.getSize().width;
-      double ratio = InternalTools.getDevicePixelRatio();
       if (controller.previewWidth != null && controller.previewHeight != null) {
         h = w * (controller.previewWidth / ratio) / (controller.previewHeight / ratio);
       }
-      return Container(width: w, height: h, child: texture);
+      child = Container(width: w, height: h, child: child);
     }
-    return texture;
+    if (widget.scannerBox) {
+      return ScannerBox(
+          size: Size(previewHeight, previewWidth),
+          borderColor: widget.borderColor,
+          scannerColor: widget.scannerColor,
+          hornStrokeWidth: widget.hornStrokeWidth,
+          scannerStrokeWidth: widget.scannerStrokeWidth,
+          child: child);
+    }
+    return child;
   }
 
   @override
