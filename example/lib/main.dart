@@ -55,7 +55,7 @@ class _AppState extends State<App> {
 
   getAppInfo() async {
     var data = await AppInfo.getPackageInfo();
-    log(data.toJson());
+    // log(data.toJson());
   }
 
   openSystemGallery() async {
