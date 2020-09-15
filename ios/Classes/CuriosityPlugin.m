@@ -128,7 +128,8 @@ NSString * const curiosityEvent=@"Curiosity/event";
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
     }
     if ([@"jumpAppSetting" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
+        [NativeTools jumpAppSetting];
+        result([Tools resultSuccess]);
     }
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
@@ -141,7 +142,7 @@ NSString * const curiosityEvent=@"Curiosity/event";
         result([Tools resultSuccess]);
     }
     if ([@"goToMarket" isEqualToString:call.method]) {
-        [NativeTools goToMarket:call.arguments[@"packageName"]];
+        [NativeTools goToMarket:call.arguments[@"appId"]];
         result([Tools resultSuccess]);
     }
     if ([@"callPhone" isEqualToString:call.method]) {

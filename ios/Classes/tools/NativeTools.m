@@ -6,9 +6,9 @@
 @implementation NativeTools
 
 //跳转到AppStore
-+ (void)goToMarket:(NSString *)props{
++ (void)goToMarket:(NSString *)appId{
     NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
+    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:appId]]];
 }
 
 + (void)callPhone:(NSString *)phoneNumber {
