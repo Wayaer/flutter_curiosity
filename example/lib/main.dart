@@ -1,5 +1,4 @@
 import 'package:curiosity/utils.dart';
-import 'package:curiosity/scan_code.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -100,7 +99,7 @@ class _AppState extends State<App> {
     var permission = await Utils.requestPermissions(Permission.camera, '相机', showAlert: false) &&
         await Utils.requestPermissions(Permission.storage, '手机存储', showAlert: false);
     if (permission) {
-      showCupertinoModalPopup(context: context, builder: (context) => ScanCodePage());
+      showCupertinoModalPopup(context: context, builder: (context) => ScannerPage());
     } else {
       openAppSettings();
     }

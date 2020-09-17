@@ -4,12 +4,19 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/src/constant/styles.dart';
 import 'package:flutter_curiosity/src/tools/internal.dart';
 
-class Scanner extends StatefulWidget {
-  final ScannerController controller;
+///基于原始扫描预览 微定制
+///使用简单
+class ScannerPage extends StatefulWidget {
   final CameraLensFacing cameraLensFacing;
-  final Cameras camera;
+
+  ///预览顶层添加组件
+  final Widget child;
+
+  ///扫描结果回调
+  final ValueChanged<String> scanResult;
 
   ///识别区域 比例 0-1
   ///距离屏幕头部
@@ -33,64 +40,99 @@ class Scanner extends StatefulWidget {
   final double scannerStrokeWidth;
   final Color borderColor;
   final Color scannerColor;
+  final Color flashOnColor;
+  final Color flashOffColor;
+  final String flashText;
 
   //是否显示扫描框
   final bool scannerBox;
+  final ResolutionPreset resolutionPreset;
 
-  Scanner({
+  ScannerPage({
+    Key key,
     CameraLensFacing cameraLensFacing,
-    this.controller,
+    Color flashOnColor,
+    Color flashOffColor,
+    Color borderColor,
+    Color scannerColor,
     this.topRatio: 0.3,
     this.leftRatio: 0.1,
     this.widthRatio: 0.8,
     this.heightRatio: 0.4,
-    this.camera,
     this.bestFit: true,
     this.hornStrokeWidth,
     this.scannerStrokeWidth,
-    this.borderColor,
-    this.scannerColor,
     this.scannerBox: true,
+    this.scanResult,
+    this.child,
+    this.flashText,
+    this.resolutionPreset,
   })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
+        this.borderColor = borderColor ?? Colors.white,
+        this.scannerColor = scannerColor ?? Colors.white,
+        this.flashOnColor = flashOnColor ?? Colors.white,
+        this.flashOffColor = flashOffColor ?? Colors.black26,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
-        assert(scannerBox != null),
-        assert(controller != null);
+        assert(scannerBox != null);
 
   @override
-  _ScannerState createState() => _ScannerState();
+  _ScannerPageState createState() => _ScannerPageState();
 }
 
-class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
+class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
   ScannerController controller;
-  Map<String, dynamic> params;
   double previewHeight = 0;
   double previewWidth = 0;
-  double ratio = InternalTools.getDevicePixelRatio();
+  bool isFirst = true;
+  bool flash = false;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    controller = widget.controller ?? ScannerController(resolutionPreset: ResolutionPreset.Max);
+    controller = ScannerController(resolutionPreset: widget.resolutionPreset ?? ResolutionPreset.High);
+    initController();
+  }
+
+  Future<void> initController() async {
+    controller.addListener(() {
+      var code = controller.code;
+      if (code != null && isFirst && code.length > 0) {
+        if (widget.scanResult != null) {
+          isFirst = false;
+          widget.scanResult(code);
+        }
+      }
+    });
+    controller.setFlashMode(false);
     getCameras();
   }
 
   getCameras() async {
-    Cameras camera = widget.camera;
-    if (camera == null) {
-      var cameras = await controller.availableCameras();
-      for (Cameras cameraInfo in cameras) {
-        if (cameraInfo.lensFacing == widget.cameraLensFacing) {
-          camera = cameraInfo;
-          break;
-        }
+    Cameras camera;
+    var cameras = await controller.availableCameras();
+    for (Cameras cameraInfo in cameras) {
+      if (cameraInfo.lensFacing == widget.cameraLensFacing) {
+        camera = cameraInfo;
+        break;
       }
     }
     if (camera == null) return;
     await controller.initialize(cameras: camera).then((value) {
+      var ratio = InternalTools.getDevicePixelRatio();
       previewHeight = controller.previewHeight / ratio;
       previewWidth = controller.previewWidth / ratio;
+
+      var width = InternalTools.getSize().width;
+      if (previewWidth > previewHeight) {
+        previewHeight = previewWidth + previewHeight;
+        previewWidth = previewHeight - previewWidth;
+        previewHeight = previewHeight - previewWidth;
+      }
+      var p = width / previewWidth;
+      previewWidth = width;
+      previewHeight = previewHeight * p;
       setState(() {});
     });
     print('cameraState ' + controller.cameraState);
@@ -98,26 +140,43 @@ class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (controller?.textureId == null) return Container();
-    Widget child = Texture(textureId: controller.textureId);
-    if (widget.bestFit) {
-      double h = 0;
-      double w = InternalTools.getSize().width;
-      if (controller.previewWidth != null && controller.previewHeight != null) {
-        h = w * (controller.previewWidth / ratio) / (controller.previewHeight / ratio);
-      }
-      child = Container(width: w, height: h, child: child);
-    }
+    Widget child = Scanner(controller: controller);
+    List<Widget> children = [];
+    children.add(Align(alignment: Alignment.center, child: child));
     if (widget.scannerBox) {
-      return ScannerBox(
-          size: Size(previewHeight, previewWidth),
-          borderColor: widget.borderColor,
-          scannerColor: widget.scannerColor,
-          hornStrokeWidth: widget.hornStrokeWidth,
-          scannerStrokeWidth: widget.scannerStrokeWidth,
-          child: child);
+      children.add(ScannerBox(
+        size: Size(previewWidth, previewHeight),
+        borderColor: widget.borderColor,
+        scannerColor: widget.scannerColor,
+        hornStrokeWidth: widget.hornStrokeWidth,
+        scannerStrokeWidth: widget.scannerStrokeWidth,
+      ));
     }
+    children.add(Align(
+      alignment: Alignment.bottomCenter,
+      child: Container(
+        margin: EdgeInsets.only(bottom: 20),
+        child: GestureDetector(
+            onTap: openFlash,
+            child: Column(mainAxisSize: MainAxisSize.min, children: [
+              Icon(Icons.highlight, size: 30, color: flash ? widget.flashOnColor : widget.flashOffColor),
+              Text(widget.flashText ?? '轻触点亮',
+                  style: Styles.textStyle(color: flash ? widget.flashOnColor : widget.flashOffColor))
+            ])),
+      ),
+    ));
+    if (widget.child != null) children.add(widget.child);
+    child = Stack(children: children);
+    if (widget.bestFit) child = Container(width: previewWidth, height: previewHeight, child: child);
     return child;
+  }
+
+  ///打开闪光灯
+  openFlash() async {
+    if (controller == null) return;
+    controller.setFlashMode(!flash);
+    flash = !flash;
+    setState(() {});
   }
 
   @override
@@ -137,6 +196,20 @@ class _ScannerState extends State<Scanner> with WidgetsBindingObserver {
         controller.disposeCameras();
       }
     }
+  }
+}
+
+///原始扫描预览
+///可以再次基础上定制其他样式预览
+class Scanner extends StatelessWidget {
+  final ScannerController controller;
+
+  const Scanner({Key key, this.controller}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (controller?.textureId == null) return Container();
+    return Texture(textureId: controller.textureId);
   }
 }
 
