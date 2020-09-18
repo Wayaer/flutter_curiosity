@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/constant/styles.dart';
@@ -92,7 +93,9 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     controller = ScannerController(resolutionPreset: widget.resolutionPreset ?? ResolutionPreset.High);
-    initController();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Timer(Duration(milliseconds: 300), () => initController());
+    });
   }
 
   Future<void> initController() async {
@@ -119,11 +122,10 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
       }
     }
     if (camera == null) return;
-    await controller.initialize(cameras: camera).then((value) {
+    controller.initialize(cameras: camera).then((value) {
       var ratio = InternalTools.getDevicePixelRatio();
       previewHeight = controller.previewHeight / ratio;
       previewWidth = controller.previewWidth / ratio;
-
       var width = InternalTools.getSize().width;
       if (previewWidth > previewHeight) {
         previewHeight = previewWidth + previewHeight;
@@ -134,12 +136,13 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
       previewWidth = width;
       previewHeight = previewHeight * p;
       setState(() {});
+      print('cameraState ' + controller.cameraState);
     });
-    print('cameraState ' + controller.cameraState);
   }
 
   @override
   Widget build(BuildContext context) {
+    if (controller?.textureId == null) return Container();
     Widget child = Scanner(controller: controller);
     List<Widget> children = [];
     children.add(Align(alignment: Alignment.center, child: child));
