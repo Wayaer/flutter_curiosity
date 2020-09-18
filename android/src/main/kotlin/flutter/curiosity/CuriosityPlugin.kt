@@ -39,6 +39,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         var openSystemGalleryCode = 100
         var openSystemCameraCode = 101
         var installApkCode = 102
+        var installPermission = 103
         lateinit var context: Context
         lateinit var call: MethodCall
         lateinit var activity: Activity
@@ -159,13 +160,17 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
                 }
                 channelResult.success(photoPath);
             } else if (requestCode == installApkCode) {
-                channelResult.success("install")
+                channelResult.success("success")
+            } else if (requestCode == installPermission) {
+                //已经打开安装权限
+                NativeTools.installApp()
             }
 
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            if (requestCode == installApkCode) {
-                channelResult.success("cancel")
-            }
+            //未打开安装应用权限
+            if (requestCode == installPermission) channelResult.success("not permissions")
+            //取消安装
+            if (requestCode == installApkCode) channelResult.success("cancel")
         }
         return true
     }

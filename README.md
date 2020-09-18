@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <!--允许程序打开网络-->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!--允许程序打开网络套接字-->
+    <!--允许程序访问有关GSM网络信息-->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!--允许程序防止休眠-->
     <uses-permission android:name="android.permission.WAKE_LOCK" />
