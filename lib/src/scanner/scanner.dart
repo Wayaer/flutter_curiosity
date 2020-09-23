@@ -93,9 +93,8 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
     controller = ScannerController(resolutionPreset: widget.resolutionPreset ?? ResolutionPreset.High);
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Timer(Duration(milliseconds: 300), () => initController());
-    });
+    WidgetsBinding.instance
+        .addPostFrameCallback((timeStamp) => Timer(Duration(milliseconds: 300), () => initController()));
   }
 
   Future<void> initController() async {

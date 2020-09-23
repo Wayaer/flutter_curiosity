@@ -5,7 +5,7 @@
         name="AppTheme"
         parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Customize your theme here. -->
-        <!--加入下一行代码              设置透明背景-->
+        <!--加入下一行代码设置透明背景-->
         <item name="android:windowIsTranslucent">true</item>
     </style>
 

@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:4.0.1"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.10"
     }
 }
 
@@ -43,7 +43,7 @@ android {
     }
 }
 dependencies {
-    def camera_version = "1.0.0-beta08"
+    def camera_version = "1.0.0-beta09"
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation "androidx.camera:camera-camera2:$camera_version"
     implementation "com.github.LuckSiege.PictureSelector:picture_library:v2.5.8"

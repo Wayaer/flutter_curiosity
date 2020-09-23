@@ -173,9 +173,8 @@ class AppInfoModel {
   }
 }
 
-dynamic convertValueByType(value, Type type, {String stack: ""}) {
+dynamic _convertValueByType(value, Type type, {String stack: ""}) {
   if (value == null) {
-    ///    log("$stack : value is null");
     if (type == String) {
       return "";
     } else if (type == int) {
@@ -189,10 +188,8 @@ dynamic convertValueByType(value, Type type, {String stack: ""}) {
   }
 
   if (value.runtimeType == type) return value;
-
   var valueString = value.toString();
 
-  ///  log("$stack : ${value.runtimeType} is not $type type");
   if (type == String) {
     return valueString;
   } else if (type == int) {
@@ -202,9 +199,7 @@ dynamic convertValueByType(value, Type type, {String stack: ""}) {
   } else if (type == bool) {
     valueString = valueString.toLowerCase();
     var intValue = int.tryParse(valueString);
-    if (intValue != null) {
-      return intValue == 1;
-    }
+    if (intValue != null) return intValue == 1;
     return valueString == "true";
   }
 }
@@ -234,15 +229,15 @@ class AssetMedia {
   factory AssetMedia.fromJson(jsonRes) => jsonRes == null
       ? null
       : AssetMedia(
-          compressPath: convertValueByType(jsonRes['compressPath'], String, stack: "AssetMedia-compressPath"),
-          mediaType: convertValueByType(jsonRes['mediaType'], String, stack: "AssetMedia-mediaType"),
-          fileName: convertValueByType(jsonRes['fileName'], String, stack: "AssetMedia-fileName"),
-          cropPath: convertValueByType(jsonRes['cutPath'], String, stack: "AssetMedia-cutPath"),
-          duration: convertValueByType(jsonRes['duration'], int, stack: "AssetMedia-duration"),
-          height: convertValueByType(jsonRes['height'], int, stack: "AssetMedia-height"),
-          path: convertValueByType(jsonRes['path'], String, stack: "AssetMedia-path"),
-          size: convertValueByType(jsonRes['size'], int, stack: "AssetMedia-size"),
-          width: convertValueByType(jsonRes['width'], int, stack: "AssetMedia-width"),
+          compressPath: _convertValueByType(jsonRes['compressPath'], String, stack: "AssetMedia-compressPath"),
+          mediaType: _convertValueByType(jsonRes['mediaType'], String, stack: "AssetMedia-mediaType"),
+          fileName: _convertValueByType(jsonRes['fileName'], String, stack: "AssetMedia-fileName"),
+          cropPath: _convertValueByType(jsonRes['cutPath'], String, stack: "AssetMedia-cutPath"),
+          duration: _convertValueByType(jsonRes['duration'], int, stack: "AssetMedia-duration"),
+          height: _convertValueByType(jsonRes['height'], int, stack: "AssetMedia-height"),
+          path: _convertValueByType(jsonRes['path'], String, stack: "AssetMedia-path"),
+          size: _convertValueByType(jsonRes['size'], int, stack: "AssetMedia-size"),
+          width: _convertValueByType(jsonRes['width'], int, stack: "AssetMedia-width"),
         );
 
   Map<String, dynamic> toJson() => {
