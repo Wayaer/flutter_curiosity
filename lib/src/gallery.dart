@@ -13,20 +13,22 @@ class GalleryTools {
   ///  }
   static Future<List<AssetMedia>> openImagePicker([PicturePickerOptions selectOptions]) async {
     if (InternalTools.supportPlatform()) return null;
-    if (selectOptions == null) selectOptions = PicturePickerOptions();
+    selectOptions ??= PicturePickerOptions();
     if (selectOptions.maxSelectNum < 1) selectOptions.maxSelectNum = 1;
-    final result = await curiosityChannel.invokeMethod('openImagePicker', selectOptions.toJson());
+
+    final List<Map<String, dynamic>> result =
+        await curiosityChannel.invokeMethod('openImagePicker', selectOptions.toJson());
     if (result is List) {
-      return Future.value(result.map((data) => AssetMedia.fromJson(data)).toList());
+      return result.map((Map<String, dynamic> data) => AssetMedia.fromJson(data)).toList();
     } else {
-      return Future.value([]);
+      return null;
     }
   }
 
   /// [selectValueType] 0:全部类型，1:图片，2:视频
-  static Future deleteCacheDirFile({int selectValueType = 0}) async {
+  static Future<String> deleteCacheDirFile({int selectValueType = 0}) async {
     if (InternalTools.supportPlatform()) return null;
-    return curiosityChannel.invokeMethod('deleteCacheDirFile', {'selectValueType': selectValueType});
+    return curiosityChannel.invokeMethod('deleteCacheDirFile', <String, int>{'selectValueType': selectValueType});
   }
 
   ///打开系统相册
@@ -65,7 +67,7 @@ class GalleryTools {
     ///savePath => android 图片临时储存位置 (仅支持android)
     ///alertNativeTips => ios 是否弹出用户未允许访问相机权限提示 (仅支持ios)
     if (InternalTools.supportPlatform()) return null;
-    var path = await curiosityChannel.invokeMethod('openSystemCamera', {"path": savePath});
+    String path = await curiosityChannel.invokeMethod('openSystemCamera', <String, String>{'path': savePath});
     if (savePath != null) path = savePath;
     return path;
   }
@@ -74,7 +76,7 @@ class GalleryTools {
   /// imageBytes can't null
   static Future<String> saveImageToGallery(Uint8List imageBytes, {int quality = 100, String name}) async {
     assert(imageBytes != null);
-    final result = await curiosityChannel.invokeMethod(
+    final String result = await curiosityChannel.invokeMethod(
         'saveImageToGallery', <String, dynamic>{'imageBytes': imageBytes, 'quality': quality, 'name': name});
     return result;
   }
@@ -82,7 +84,7 @@ class GalleryTools {
   /// Save the PNG，JPG，JPEG image or video located at [file] to the local device media gallery.
   static Future<String> saveFileToGallery(String file) async {
     assert(file != null);
-    final result = await curiosityChannel.invokeMethod('saveFileToGallery', file);
+    final String result = await curiosityChannel.invokeMethod('saveFileToGallery', file);
     return result;
   }
 }

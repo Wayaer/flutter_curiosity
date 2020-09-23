@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 
-const curiosity = 'Curiosity';
+const String curiosity = 'Curiosity';
 const MethodChannel curiosityChannel = MethodChannel(curiosity);
 
 enum ShareType {

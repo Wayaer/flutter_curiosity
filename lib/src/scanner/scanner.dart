@@ -11,6 +11,35 @@ import 'package:flutter_curiosity/src/tools/internal.dart';
 ///基于原始扫描预览
 ///使用简单
 class ScannerPage extends StatefulWidget {
+  const ScannerPage({
+    Key key,
+    CameraLensFacing cameraLensFacing,
+    Color flashOnColor,
+    Color flashOffColor,
+    Color borderColor,
+    Color scannerColor,
+    this.topRatio = 0.3,
+    this.leftRatio = 0.1,
+    this.widthRatio = 0.8,
+    this.heightRatio = 0.4,
+    this.bestFit = true,
+    this.hornStrokeWidth,
+    this.scannerStrokeWidth,
+    this.scannerBox = true,
+    this.scanResult,
+    this.child,
+    this.flashText,
+    this.resolutionPreset,
+  })  : cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
+        borderColor = borderColor ?? Colors.white,
+        scannerColor = scannerColor ?? Colors.white,
+        flashOnColor = flashOnColor ?? Colors.white,
+        flashOffColor = flashOffColor ?? Colors.black26,
+        assert(leftRatio * 2 + widthRatio == 1),
+        assert(topRatio * 2 + heightRatio == 1),
+        assert(scannerBox != null),
+        super(key: key);
+
   final CameraLensFacing cameraLensFacing;
 
   ///预览顶层添加组件
@@ -49,34 +78,6 @@ class ScannerPage extends StatefulWidget {
   final bool scannerBox;
   final ResolutionPreset resolutionPreset;
 
-  ScannerPage({
-    Key key,
-    CameraLensFacing cameraLensFacing,
-    Color flashOnColor,
-    Color flashOffColor,
-    Color borderColor,
-    Color scannerColor,
-    this.topRatio: 0.3,
-    this.leftRatio: 0.1,
-    this.widthRatio: 0.8,
-    this.heightRatio: 0.4,
-    this.bestFit: true,
-    this.hornStrokeWidth,
-    this.scannerStrokeWidth,
-    this.scannerBox: true,
-    this.scanResult,
-    this.child,
-    this.flashText,
-    this.resolutionPreset,
-  })  : this.cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
-        this.borderColor = borderColor ?? Colors.white,
-        this.scannerColor = scannerColor ?? Colors.white,
-        this.flashOnColor = flashOnColor ?? Colors.white,
-        this.flashOffColor = flashOffColor ?? Colors.black26,
-        assert(leftRatio * 2 + widthRatio == 1),
-        assert(topRatio * 2 + heightRatio == 1),
-        assert(scannerBox != null);
-
   @override
   _ScannerPageState createState() => _ScannerPageState();
 }
@@ -94,13 +95,13 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     WidgetsBinding.instance.addObserver(this);
     controller = ScannerController(resolutionPreset: widget.resolutionPreset ?? ResolutionPreset.High);
     WidgetsBinding.instance
-        .addPostFrameCallback((timeStamp) => Timer(Duration(milliseconds: 300), () => initController()));
+        .addPostFrameCallback((Duration timeStamp) => Timer(const Duration(milliseconds: 300), () => initController()));
   }
 
   Future<void> initController() async {
     controller.addListener(() {
-      var code = controller.code;
-      if (code != null && isFirst && code.length > 0) {
+      final String code = controller.code;
+      if (code != null && isFirst && code.isNotEmpty) {
         if (widget.scanResult != null) {
           isFirst = false;
           widget.scanResult(code);
@@ -111,27 +112,29 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     getCameras();
   }
 
-  getCameras() async {
+  Future<void> getCameras() async {
     Cameras camera;
-    var cameras = await controller.availableCameras();
-    for (Cameras cameraInfo in cameras) {
+    final List<Cameras> cameras = await controller.availableCameras();
+    for (final Cameras cameraInfo in cameras) {
       if (cameraInfo.lensFacing == widget.cameraLensFacing) {
         camera = cameraInfo;
         break;
       }
     }
-    if (camera == null) return;
-    controller.initialize(cameras: camera).then((value) {
-      var ratio = InternalTools.getDevicePixelRatio();
+    if (camera == null) {
+      return;
+    }
+    controller.initialize(cameras: camera).then((dynamic value) {
+      final double ratio = InternalTools.getDevicePixelRatio();
       previewHeight = controller.previewHeight / ratio;
       previewWidth = controller.previewWidth / ratio;
-      var width = InternalTools.getSize().width;
+      final double width = InternalTools.getSize().width;
       if (previewWidth > previewHeight) {
         previewHeight = previewWidth + previewHeight;
         previewWidth = previewHeight - previewWidth;
         previewHeight = previewHeight - previewWidth;
       }
-      var p = width / previewWidth;
+      final double p = width / previewWidth;
       previewWidth = width;
       previewHeight = previewHeight * p;
       setState(() {});
@@ -141,9 +144,11 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (controller?.textureId == null) return Container();
+    if (controller?.textureId == null) {
+      return Container();
+    }
     Widget child = Scanner(controller: controller);
-    List<Widget> children = [];
+    final List<Widget> children = <Widget>[];
     children.add(Align(alignment: Alignment.center, child: child));
     if (widget.scannerBox) {
       children.add(ScannerBox(
@@ -157,28 +162,33 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     children.add(Align(
       alignment: Alignment.bottomCenter,
       child: Container(
-        margin: EdgeInsets.only(bottom: 20),
+        margin: const EdgeInsets.only(bottom: 20),
         child: GestureDetector(
             onTap: openFlash,
-            child: Column(mainAxisSize: MainAxisSize.min, children: [
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
               Icon(Icons.highlight, size: 30, color: flash ? widget.flashOnColor : widget.flashOffColor),
               Text(widget.flashText ?? '轻触点亮',
                   style: Styles.textStyle(color: flash ? widget.flashOnColor : widget.flashOffColor))
             ])),
       ),
     ));
-    if (widget.child != null) children.add(widget.child);
+    if (widget.child != null) {
+      children.add(widget.child);
+    }
     child = Stack(children: children);
-    if (widget.bestFit) child = Container(width: previewWidth, height: previewHeight, child: child);
+    if (widget.bestFit) {
+      child = Container(width: previewWidth, height: previewHeight, child: child);
+    }
     return child;
   }
 
   ///打开闪光灯
-  openFlash() async {
-    if (controller == null) return;
-    controller.setFlashMode(!flash);
-    flash = !flash;
-    setState(() {});
+  Future<void> openFlash() async {
+    if (controller == null) {
+      controller.setFlashMode(!flash);
+      flash = !flash;
+      setState(() {});
+    }
   }
 
   @override
@@ -190,7 +200,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
   }
 
   @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
+  void didChangeAppLifecycleState(AppLifecycleState state) {
     if (controller != null) {
       if (state == AppLifecycleState.resumed) {
         getCameras();
@@ -204,25 +214,31 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
 ///原始扫描预览
 ///可以再此基础上定制其他样式预览
 class Scanner extends StatelessWidget {
-  final ScannerController controller;
-
   const Scanner({Key key, this.controller}) : super(key: key);
+
+  final ScannerController controller;
 
   @override
   Widget build(BuildContext context) {
-    if (controller?.textureId == null) return Container();
+    if (controller?.textureId == null) {
+      return Container();
+    }
     return Texture(textureId: controller.textureId);
   }
 }
 
 class ScannerController extends ChangeNotifier {
-  StreamSubscription eventChannel;
-  String code;
-  String type;
-  int textureId;
-  double previewWidth;
-  double previewHeight;
-  String cameraState;
+  ScannerController({
+    ResolutionPreset resolutionPreset,
+    this.topRatio = 0.3,
+    this.camera,
+    this.leftRatio = 0.1,
+    this.widthRatio = 0.8,
+    this.heightRatio = 0.4,
+  })  : resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
+        assert(leftRatio * 2 + widthRatio == 1),
+        assert(topRatio * 2 + heightRatio == 1);
+
   final Cameras camera;
   final double topRatio;
   final double leftRatio;
@@ -230,62 +246,66 @@ class ScannerController extends ChangeNotifier {
   final double heightRatio;
   final ResolutionPreset resolutionPreset;
 
-  ScannerController({
-    ResolutionPreset resolutionPreset,
-    this.topRatio: 0.3,
-    this.camera,
-    this.leftRatio: 0.1,
-    this.widthRatio: 0.8,
-    this.heightRatio: 0.4,
-  })  : this.resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
-        assert(leftRatio * 2 + widthRatio == 1),
-        assert(topRatio * 2 + heightRatio == 1);
+  StreamSubscription<dynamic> eventChannel;
+  String code;
+  String type;
+  int textureId;
+  double previewWidth;
+  double previewHeight;
+  String cameraState;
 
   Future<void> initialize({Cameras cameras}) async {
-    if (cameras == null && camera == null) return;
+    if (cameras == null && camera == null) {
+      return;
+    }
     try {
-      final Map<String, dynamic> reply = await curiosityChannel.invokeMapMethod('initializeCameras', {
+      final Map<String, dynamic> arguments = <String, dynamic>{
         'cameraId': cameras.name ?? camera.name,
         'resolutionPreset': resolutionPreset.toString().split('.')[1],
-        "topRatio": topRatio,
-        "leftRatio": leftRatio,
-        "widthRatio": widthRatio,
-        "heightRatio": heightRatio,
-      });
-      textureId = reply['textureId'];
-      cameraState = reply['cameraState'] ?? '';
+        'topRatio': topRatio,
+        'leftRatio': leftRatio,
+        'widthRatio': widthRatio,
+        'heightRatio': heightRatio,
+      };
+
+      final Map<String, dynamic> reply =
+          await curiosityChannel.invokeMapMethod<String, dynamic>('initializeCameras', arguments);
+      textureId = reply['textureId'] as int;
+      cameraState = reply['cameraState'] as String ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
-      eventChannel = EventChannel('$curiosity/event').receiveBroadcastStream({}).listen((data) {
-        this.code = data['code'];
-        this.type = data['type'];
+      eventChannel = const EventChannel('$curiosity/event').receiveBroadcastStream().listen((dynamic data) {
+        code = data['code'] as String;
+        type = data['type'] as String;
         notifyListeners();
       });
     } on PlatformException catch (e) {
       //原生异常抛出
-      print("initializeCameras PlatformException");
+      print('initializeCameras PlatformException');
       print(e);
     }
   }
 
   Future<String> setFlashMode(bool status) async =>
-      await curiosityChannel.invokeMethod('setFlashMode', {'status': status});
+      await curiosityChannel.invokeMethod('setFlashMode', <String, bool>{'status': status});
 
   static Future<String> scanImagePath(String path) async =>
-      await curiosityChannel.invokeMethod('scanImagePath', {"path": path});
+      await curiosityChannel.invokeMethod('scanImagePath', <String, String>{'path': path});
 
   static Future<String> scanImageUrl(String url) async =>
-      await curiosityChannel.invokeMethod('scanImageUrl', {"url": url});
+      await curiosityChannel.invokeMethod('scanImageUrl', <String, String>{'url': url});
 
   static Future<String> scanImageMemory(Uint8List uint8list) async =>
-      await curiosityChannel.invokeMethod('scanImageMemory', {"uint8list": uint8list});
+      await curiosityChannel.invokeMethod('scanImageMemory', <String, Uint8List>{'uint8list': uint8list});
 
   Future<List<Cameras>> availableCameras() async {
     try {
       final List<Map<dynamic, dynamic>> cameras =
           await curiosityChannel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
-      return cameras.map((camera) {
-        return Cameras(name: camera['name'], lensFacing: InternalTools.getCameraLensFacing(camera['lensFacing']));
+      return cameras.map((Map<dynamic, dynamic> camera) {
+        return Cameras(
+            name: camera['name'] as String,
+            lensFacing: InternalTools.getCameraLensFacing(camera['lensFacing'] as String));
       }).toList();
     } on PlatformException catch (e) {
       print(e);
@@ -293,15 +313,16 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  Future disposeCameras() async {
+  Future<void> disposeCameras() async {
     eventChannel?.cancel();
-    await curiosityChannel.invokeMethod('disposeCameras', {'textureId': textureId});
+    final Map<String, int> arguments = <String, int>{'textureId': textureId};
+    return await curiosityChannel.invokeMethod('disposeCameras', arguments);
   }
 }
 
 class Cameras {
+  Cameras({this.name, this.lensFacing});
+
   final String name;
   final CameraLensFacing lensFacing;
-
-  Cameras({this.name, this.lensFacing});
 }
