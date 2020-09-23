@@ -1,3 +1,5 @@
+## [1.2.2]
+ * Fix bugs
 ## [1.2.1]
  * Refactoring all class and file names
  * Optimization part code
