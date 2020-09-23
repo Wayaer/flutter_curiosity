@@ -8,7 +8,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/constant/styles.dart';
 import 'package:flutter_curiosity/src/tools/internal.dart';
 
-///基于原始扫描预览 微定制
+///基于原始扫描预览
 ///使用简单
 class ScannerPage extends StatefulWidget {
   final CameraLensFacing cameraLensFacing;
@@ -202,7 +202,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
 }
 
 ///原始扫描预览
-///可以再次基础上定制其他样式预览
+///可以再此基础上定制其他样式预览
 class Scanner extends StatelessWidget {
   final ScannerController controller;
 
