@@ -17,7 +17,7 @@ class AppInfo {
 
   ///app name
   static Future<String> getAppName() async {
-    if (InternalTools.isIOS() || InternalTools.isAndroid()) {
+    if (isIOS() || isAndroid()) {
       final AppInfoModel appInfoModel = await getPackageInfo();
       return appInfoModel.appName;
     }
@@ -39,8 +39,8 @@ class AppInfo {
   ///root directory
   static Future<String> getRootDirectory() async {
     final AppInfoModel appInfoModel = await getPackageInfo();
-    if (InternalTools.isAndroid()) return appInfoModel.externalStorageDirectory;
-    if (InternalTools.isIOS() || InternalTools.isMacOS()) return appInfoModel.homeDirectory;
+    if (isAndroid()) return appInfoModel.externalStorageDirectory;
+    if (isIOS() || isMacOS()) return appInfoModel.homeDirectory;
     return '';
   }
 }
