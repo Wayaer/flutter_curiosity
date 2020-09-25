@@ -1,4 +1,5 @@
-## [1.2.3]
+## [1.2.4]
+ * fix scanner bug
  * add lint
 ## [1.2.2]
  * Fix bugs

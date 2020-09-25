@@ -274,7 +274,8 @@ class ScannerController extends ChangeNotifier {
       cameraState = reply['cameraState'] as String ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
-      eventChannel = const EventChannel('$curiosity/event').receiveBroadcastStream().listen((dynamic data) {
+      eventChannel =
+          const EventChannel('$curiosity/event').receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
         code = data['code'] as String;
         type = data['type'] as String;
         notifyListeners();

@@ -48,7 +48,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
         val curiosity = "Curiosity"
-
         curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
         curiosityChannel.setMethodCallHandler(this)
         context = plugin.applicationContext
