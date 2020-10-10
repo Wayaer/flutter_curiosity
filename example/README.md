@@ -1,1 +1,1 @@
-# flutter_plugin_example
+# flutter_curiosity_example
