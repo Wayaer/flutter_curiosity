@@ -150,14 +150,14 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
                 channelResult.success(GalleryTools.onResult(intent))
             } else if (requestCode == openSystemGalleryCode) {
                 val uri: Uri? = intent?.data
-                channelResult.success(Tools.getRealPathFromURI(uri));
+                channelResult.success(Tools.getRealPathFromURI(uri))
             } else if (requestCode == openSystemCameraCode) {
                 val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                     context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
                 } else {
-                    intent?.data?.encodedPath.toString();
+                    intent?.data?.encodedPath.toString()
                 }
-                channelResult.success(photoPath);
+                channelResult.success(photoPath)
             } else if (requestCode == installApkCode) {
                 channelResult.success("success")
             } else if (requestCode == installPermission) {

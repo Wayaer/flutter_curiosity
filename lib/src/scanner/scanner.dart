@@ -30,7 +30,8 @@ class ScannerPage extends StatefulWidget {
     this.child,
     this.flashText,
     this.resolutionPreset,
-  })  : cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
+  })
+      : cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         borderColor = borderColor ?? Colors.white,
         scannerColor = scannerColor ?? Colors.white,
         flashOnColor = flashOnColor ?? Colors.white,
@@ -128,7 +129,9 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
       final double ratio = InternalTools.getDevicePixelRatio();
       previewHeight = controller.previewHeight / ratio;
       previewWidth = controller.previewWidth / ratio;
-      final double width = InternalTools.getSize().width;
+      final double width = InternalTools
+          .getSize()
+          .width;
       if (previewWidth > previewHeight) {
         previewHeight = previewWidth + previewHeight;
         previewWidth = previewHeight - previewWidth;
@@ -144,20 +147,17 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    if (controller?.textureId == null) {
-      return Container();
-    }
+    if (controller?.textureId == null) return Container();
     Widget child = Scanner(controller: controller);
     final List<Widget> children = <Widget>[];
     children.add(Align(alignment: Alignment.center, child: child));
     if (widget.scannerBox) {
       children.add(ScannerBox(
-        size: Size(previewWidth, previewHeight),
-        borderColor: widget.borderColor,
-        scannerColor: widget.scannerColor,
-        hornStrokeWidth: widget.hornStrokeWidth,
-        scannerStrokeWidth: widget.scannerStrokeWidth,
-      ));
+          size: Size(previewWidth, previewHeight),
+          borderColor: widget.borderColor,
+          scannerColor: widget.scannerColor,
+          hornStrokeWidth: widget.hornStrokeWidth,
+          scannerStrokeWidth: widget.scannerStrokeWidth));
     }
     children.add(Align(
       alignment: Alignment.bottomCenter,
@@ -184,7 +184,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
 
   ///打开闪光灯
   Future<void> openFlash() async {
-    if (controller == null) {
+    if (controller != null) {
       controller.setFlashMode(!flash);
       flash = !flash;
       setState(() {});
@@ -235,7 +235,8 @@ class ScannerController extends ChangeNotifier {
     this.leftRatio = 0.1,
     this.widthRatio = 0.8,
     this.heightRatio = 0.4,
-  })  : resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
+  })
+      : resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1);
 
@@ -269,17 +270,17 @@ class ScannerController extends ChangeNotifier {
       };
 
       final Map<String, dynamic> reply =
-          await curiosityChannel.invokeMapMethod<String, dynamic>('initializeCameras', arguments);
+      await curiosityChannel.invokeMapMethod<String, dynamic>('initializeCameras', arguments);
       textureId = reply['textureId'] as int;
       cameraState = reply['cameraState'] as String ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
       eventChannel =
           const EventChannel('$curiosity/event').receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
-        code = data['code'] as String;
-        type = data['type'] as String;
-        notifyListeners();
-      });
+            code = data['code'] as String;
+            type = data['type'] as String;
+            notifyListeners();
+          });
     } on PlatformException catch (e) {
       //原生异常抛出
       print('initializeCameras PlatformException');
@@ -302,7 +303,7 @@ class ScannerController extends ChangeNotifier {
   Future<List<Cameras>> availableCameras() async {
     try {
       final List<Map<dynamic, dynamic>> cameras =
-          await curiosityChannel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+      await curiosityChannel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
       return cameras.map((Map<dynamic, dynamic> camera) {
         return Cameras(
             name: camera['name'] as String,

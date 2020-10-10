@@ -21,7 +21,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return OverlayScaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Flutter Curiosity Plugin app'),
@@ -99,7 +99,14 @@ class _AppState extends State<App> {
     final bool permission = await Utils.requestPermissions(Permission.camera, '相机', showAlert: false) &&
         await Utils.requestPermissions(Permission.storage, '手机存储', showAlert: false);
     if (permission) {
-      showCupertinoModalPopup<dynamic>(context: context, builder: (_) => const ScannerPage());
+      showCupertinoModalPopup<dynamic>(
+          context: context,
+          builder: (_) => ScannerPage(
+                scanResult: (String text) {
+                  log(text);
+                  showToast(text);
+                },
+              ));
     } else {
       openAppSettings();
     }

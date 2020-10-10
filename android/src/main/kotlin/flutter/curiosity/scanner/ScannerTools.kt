@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
 import android.os.Handler
+import android.os.Looper
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.call
@@ -36,7 +37,7 @@ object ScannerTools {
         if (file.isFile) {
             executor.execute {
                 val bitmap = BitmapFactory.decodeFile(path)
-                Handler().post { channelResult.success(decodeBitmap(bitmap)) }
+                Handler(Looper.getMainLooper()).post { channelResult.success(decodeBitmap(bitmap)) }
             }
         } else {
             channelResult.success(null)
@@ -67,7 +68,7 @@ object ScannerTools {
                 connection.connect()
                 bitmap = BitmapFactory.decodeStream(connection.inputStream)
             }
-            Handler().post { channelResult.success(decodeBitmap(bitmap)) }
+            Handler(Looper.getMainLooper()).post { channelResult.success(decodeBitmap(bitmap)) }
         }
     }
 
@@ -75,7 +76,7 @@ object ScannerTools {
         val unit8List = call.argument<ByteArray>("unit8List")
         executor.execute {
             val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
-            Handler().post { channelResult.success(decodeBitmap(bitmap)) }
+            Handler(Looper.getMainLooper()).post { channelResult.success(decodeBitmap(bitmap)) }
         }
     }
 

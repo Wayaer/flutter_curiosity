@@ -5,6 +5,7 @@ import android.graphics.ImageFormat
 import android.hardware.camera2.*
 import android.media.ImageReader
 import android.os.Handler
+import android.os.Looper
 import android.util.Size
 import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.activity
@@ -24,7 +25,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
     private var imageStreamReader: ImageReader? = null
     private var captureRequestBuilder: CaptureRequest.Builder? = null
     private var lastCurrentTime = 0L
-    private val handler = Handler()
+    private val handler = Handler(Looper.getMainLooper())
     private val singleThreadExecutor: Executor = Executors.newSingleThreadExecutor()
     private var cameraId: String = call.argument<String>("cameraId").toString()
     private val topRatio: Double = call.argument<Double>("topRatio")!!
@@ -63,7 +64,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
                         close()
                     }
                 },
-                Handler())
+                Handler(Looper.getMainLooper()))
     }
 
     private fun resultMap(cameraState: String) {
@@ -120,7 +121,7 @@ class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.Strea
             override fun onConfigured(session: CameraCaptureSession) {
                 cameraCaptureSession = session
                 try {
-                    cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, Handler())
+                    cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, Handler(Looper.getMainLooper()))
                 } catch (e: Exception) {
                     resultMap("CreateCaptureSession Exception")
                 }

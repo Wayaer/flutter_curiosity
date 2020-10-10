@@ -145,8 +145,8 @@ object GalleryTools {
             val resultMap: MutableMap<String, Any> = ArrayMap()
             resultMap["size"] = localMedia.size
             if (localMedia.path != null) resultMap["path"] = localMedia.path
-            if (localMedia.isCut) {
-                if (localMedia.cutPath != null) resultMap["cutPath"] = localMedia.cutPath
+            if (localMedia.isCut && localMedia.cutPath != null) {
+                resultMap["cutPath"] = localMedia.cutPath
             }
             if (localMedia.isCompressed) {
                 if (localMedia.compressPath != null) resultMap["compressPath"] = localMedia.compressPath
@@ -159,7 +159,7 @@ object GalleryTools {
             if (localMedia.fileName != null) resultMap["fileName"] = localMedia.fileName
             resultList.add(resultMap)
         }
-        return resultList;
+        return resultList
     }
 
     fun openSystemGallery() {
@@ -174,13 +174,11 @@ object GalleryTools {
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val uri: Uri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            //第二个参数为 包名.fileprovider
-            uri = FileProvider.getUriForFile(activity, context.packageName.toString() + ".fileprovider", File(cameraSavePath));
-            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        } else {
-            uri = Uri.fromFile(File(cameraSavePath))
-        }
-        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+            //第二个参数为 包名.fierier
+            uri = FileProvider.getUriForFile(activity, context.packageName.toString() + ".fileprovider", File(cameraSavePath))
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        } else uri = Uri.fromFile(File(cameraSavePath))
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
         activity.startActivityForResult(intent, CuriosityPlugin.openSystemCameraCode)
     }
 
@@ -226,7 +224,7 @@ object GalleryTools {
     }
 
     private fun generateFile(extension: String = "", name: String? = null): File {
-        val storePath = Environment.getExternalStorageDirectory().absolutePath + File.separator + getApplicationName()
+        val storePath = context.getExternalFilesDir(null)?.path.toString() + File.separator + getApplicationName()
         val appDir = File(storePath)
         if (!appDir.exists()) {
             appDir.mkdir()
