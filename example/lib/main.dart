@@ -39,36 +39,36 @@ class _AppState extends State<App> {
           RaisedButton(onPressed: () => getAppInfo(), child: const Text('获取appInfo')),
           RaisedButton(onPressed: () => scan(context), child: const Text('扫码')),
           RaisedButton(onPressed: () => select(), child: const Text('图片选择')),
-          RaisedButton(onPressed: () => deleteCacheDirFile(), child: const Text('清除图片选择缓存')),
+          RaisedButton(onPressed: () => deleteCacheDir(), child: const Text('清除图片选择缓存')),
           RaisedButton(onPressed: () => shareText(), child: const Text('分享文字')),
           RaisedButton(onPressed: () => shareImage(), child: const Text('分享图片')),
           RaisedButton(onPressed: () => shareImages(), child: const Text('分享多张图片')),
-          RaisedButton(onPressed: () => openSystemGallery(), child: const Text('打开系统相册')),
-          RaisedButton(onPressed: () => openSystemCamera(), child: const Text('打开系统相机')),
+          RaisedButton(onPressed: () => systemGallery(), child: const Text('打开系统相册')),
+          RaisedButton(onPressed: () => systemCamera(), child: const Text('打开系统相机')),
           RaisedButton(onPressed: () => getGPS(), child: const Text('获取gps状态')),
-          RaisedButton(onPressed: () => NativeTools.jumpAppSetting(), child: const Text('跳转APP设置')),
+          RaisedButton(onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')),
         ],
       ),
     );
   }
 
   Future<void> getAppInfo() async {
-    final AppInfoModel data = await AppInfo.getPackageInfo();
-    log(data.packageName);
+    final AppInfoModel data = await getPackageInfo;
+    log(data.toJson());
   }
 
-  Future<void> openSystemGallery() async {
-    final String data = await GalleryTools.openSystemGallery();
+  Future<void> systemGallery() async {
+    final String data = await openSystemGallery;
     showToast(data.toString());
   }
 
-  Future<void> openSystemCamera() async {
-    final String data = await GalleryTools.openSystemCamera();
+  Future<void> systemCamera() async {
+    final String data = await openSystemCamera();
     showToast(data.toString());
   }
 
   void shareText() {
-    NativeTools.systemShare(title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
+    systemShare(title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
   }
 
   void shareImage() {
@@ -76,7 +76,7 @@ class _AppState extends State<App> {
       showToast('请先选择图片');
       return;
     }
-    NativeTools.systemShare(title: '分享图片', content: list[0].path, shareType: ShareType.image);
+    systemShare(title: '分享图片', content: list[0].path, shareType: ShareType.image);
   }
 
   void shareImages() {
@@ -87,11 +87,11 @@ class _AppState extends State<App> {
     final List<String> listPath = <String>[];
     listPath.add(list[0].path);
     listPath.add(list[0].path);
-    NativeTools.systemShare(title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
+    systemShare(title: '分享图片', imagesPath: listPath, shareType: ShareType.images);
   }
 
   Future<void> getGPS() async {
-    final bool data = await NativeTools.getGPSStatus();
+    final bool data = await getGPSStatus;
     showToast(data.toString());
   }
 
@@ -114,22 +114,18 @@ class _AppState extends State<App> {
 
   Future<void> select() async {
     final PicturePickerOptions options = PicturePickerOptions();
-    options.pickerSelectType = 1;
-    options.enableCrop = true;
-    options.scaleEnabled = true;
+    options.pickerSelectType = 0;
     options.isGif = true;
     options.isCamera = true;
-    options.hideBottomControls = true;
-    options.showCropFrame = true;
     options.freeStyleCropEnabled = true;
     options.originalPhoto = true;
     options.maxSelectNum = 4;
-    list = await GalleryTools.openImagePicker(options);
+    list = await openImagePicker(options);
     setState(() {});
   }
 
-  Future<dynamic> deleteCacheDirFile() async {
-    final String data = await GalleryTools.deleteCacheDirFile();
+  Future<dynamic> deleteCacheDir() async {
+    final String data = await deleteCacheDirFile();
     showToast(data);
   }
 

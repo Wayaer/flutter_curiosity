@@ -128,8 +128,7 @@ NSString * const curiosityEvent=@"Curiosity/event";
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
     }
     if ([@"jumpAppSetting" isEqualToString:call.method]) {
-        [NativeTools jumpAppSetting];
-        result([Tools resultSuccess]);
+        result([NSNumber numberWithBool:[NativeTools jumpAppSetting]?YES:NO]);
     }
     if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);

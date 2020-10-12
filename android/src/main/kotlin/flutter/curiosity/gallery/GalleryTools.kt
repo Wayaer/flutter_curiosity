@@ -36,20 +36,11 @@ object GalleryTools {
         val previewImage = call.argument<Boolean>("previewImage")!!
         val isZoomAnim = call.argument<Boolean>("isZoomAnim")!!
         val isCamera = call.argument<Boolean>("isCamera")!!
-        val enableCrop = call.argument<Boolean>("enableCrop")!!
         val compress = call.argument<Boolean>("compress")!!
-        val hideBottomControls = call.argument<Boolean>("hideBottomControls")!!
         val freeStyleCropEnabled = call.argument<Boolean>("freeStyleCropEnabled")!!
-        val showCropCircle = call.argument<Boolean>("showCropCircle")!!
-        val showCropFrame = call.argument<Boolean>("showCropFrame")!!
-        val showCropGrid = call.argument<Boolean>("showCropGrid")!!
         val openClickSound = call.argument<Boolean>("openClickSound")!!
         val minimumCompressSize = call.argument<Int>("minimumCompressSize")!!
         val isGif = call.argument<Boolean>("isGif")!!
-        val rotateEnabled = call.argument<Boolean>("rotateEnabled")!!
-        val scaleEnabled = call.argument<Boolean>("scaleEnabled")!!
-        val cropW = call.argument<Int>("cropW")!!
-        val cropH = call.argument<Int>("cropH")!!
         val cropCompressQuality = call.argument<Int>("cropCompressQuality")!!
         val pickerSelectType = call.argument<Int>("pickerSelectType")!!
         val videoQuality = call.argument<Int>("videoQuality")!!
@@ -84,21 +75,21 @@ object GalleryTools {
                 .isCamera(isCamera) // 是否显示拍照按钮 true or false
                 .imageFormat(suffixType) // 拍照保存图片格式后缀,默认jpeg
                 .isZoomAnim(isZoomAnim) // 图片列表点击 缩放效果 默认true
-                .isEnableCrop(enableCrop) // 是否裁剪 true or false
+                .isEnableCrop(false) // 是否裁剪 true or false
                 .isCompress(compress) // 是否压缩 true or false
-                .withAspectRatio(cropW, cropH) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
-                .hideBottomControls(hideBottomControls) // 是否显示uCrop工具栏，默认不显示 true or false
+                .withAspectRatio(1, 1) // int 裁剪比例 如16:9 3:2 3:4 1:1 可自定义
+                .hideBottomControls(false) // 是否显示uCrop工具栏，默认不显示 true or false
                 .isGif(isGif) // 是否显示gif图片 true or false
                 .freeStyleCropEnabled(freeStyleCropEnabled) // 裁剪框是否可拖拽 true or false
-                .circleDimmedLayer(showCropCircle) // 是否圆形裁剪 true or false
-                .showCropFrame(showCropFrame) // 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
-                .showCropGrid(showCropGrid) // 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
+                .circleDimmedLayer(false) // 是否圆形裁剪 true or false
+                .showCropFrame(false) // 是否显示裁剪矩形边框 圆形裁剪时建议设为false   true or false
+                .showCropGrid(false) // 是否显示裁剪矩形网格 圆形裁剪时建议设为false    true or false
                 .isOpenClickSound(openClickSound) // 是否开启点击声音 true or false
                 .cutOutQuality(cropCompressQuality) // 裁剪压缩质量 默认90 int
                 .minimumCompressSize(minimumCompressSize) // 小于100kb的图片不压缩
                 .synOrAsy(true) //同步true或异步false 压缩 默认同步
-                .rotateEnabled(rotateEnabled) // 裁剪是否可旋转图片 true or false
-                .scaleEnabled(scaleEnabled) // 裁剪是否可放大缩小图片 true or false
+                .rotateEnabled(false) // 裁剪是否可旋转图片 true or false
+                .scaleEnabled(false) // 裁剪是否可放大缩小图片 true or false
                 .videoQuality(videoQuality) // 视频录制质量 0 or 1 int
                 .videoMaxSecond(videoMaxSecond) // 显示多少秒以内的视频or音频也可适用 int
                 .videoMinSecond(videoMinSecond) // 显示多少秒以内的视频or音频也可适用 int
@@ -145,9 +136,6 @@ object GalleryTools {
             val resultMap: MutableMap<String, Any> = ArrayMap()
             resultMap["size"] = localMedia.size
             if (localMedia.path != null) resultMap["path"] = localMedia.path
-            if (localMedia.isCut && localMedia.cutPath != null) {
-                resultMap["cutPath"] = localMedia.cutPath
-            }
             if (localMedia.isCompressed) {
                 if (localMedia.compressPath != null) resultMap["compressPath"] = localMedia.compressPath
             }

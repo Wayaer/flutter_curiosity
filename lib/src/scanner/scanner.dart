@@ -30,8 +30,7 @@ class ScannerPage extends StatefulWidget {
     this.child,
     this.flashText,
     this.resolutionPreset,
-  })
-      : cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
+  })  : cameraLensFacing = cameraLensFacing ?? CameraLensFacing.back,
         borderColor = borderColor ?? Colors.white,
         scannerColor = scannerColor ?? Colors.white,
         flashOnColor = flashOnColor ?? Colors.white,
@@ -126,12 +125,10 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
       return;
     }
     controller.initialize(cameras: camera).then((dynamic value) {
-      final double ratio = InternalTools.getDevicePixelRatio();
+      final double ratio = getDevicePixelRatio;
       previewHeight = controller.previewHeight / ratio;
       previewWidth = controller.previewWidth / ratio;
-      final double width = InternalTools
-          .getSize()
-          .width;
+      final double width = getWindowSize.width;
       if (previewWidth > previewHeight) {
         previewHeight = previewWidth + previewHeight;
         previewWidth = previewHeight - previewWidth;
@@ -235,8 +232,7 @@ class ScannerController extends ChangeNotifier {
     this.leftRatio = 0.1,
     this.widthRatio = 0.8,
     this.heightRatio = 0.4,
-  })
-      : resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
+  })  : resolutionPreset = resolutionPreset ?? ResolutionPreset.VeryHigh,
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1);
 
@@ -270,17 +266,17 @@ class ScannerController extends ChangeNotifier {
       };
 
       final Map<String, dynamic> reply =
-      await curiosityChannel.invokeMapMethod<String, dynamic>('initializeCameras', arguments);
+          await curiosityChannel.invokeMapMethod<String, dynamic>('initializeCameras', arguments);
       textureId = reply['textureId'] as int;
       cameraState = reply['cameraState'] as String ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
       eventChannel =
           const EventChannel('$curiosity/event').receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
-            code = data['code'] as String;
-            type = data['type'] as String;
-            notifyListeners();
-          });
+        code = data['code'] as String;
+        type = data['type'] as String;
+        notifyListeners();
+      });
     } on PlatformException catch (e) {
       //原生异常抛出
       print('initializeCameras PlatformException');
@@ -303,7 +299,7 @@ class ScannerController extends ChangeNotifier {
   Future<List<Cameras>> availableCameras() async {
     try {
       final List<Map<dynamic, dynamic>> cameras =
-      await curiosityChannel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+          await curiosityChannel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
       return cameras.map((Map<dynamic, dynamic> camera) {
         return Cameras(
             name: camera['name'] as String,

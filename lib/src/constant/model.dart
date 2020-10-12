@@ -175,41 +175,41 @@ class AppInfoModel {
 
 class AssetMedia {
   AssetMedia(
-      {this.compressPath,
-      this.cutPath,
-      this.duration,
-      this.height,
-      this.path,
-      this.size,
-      this.width,
-      this.fileName,
-      this.mediaType});
+      {this.compressPath, this.duration, this.height, this.path, this.size, this.width, this.fileName, this.mediaType});
 
-  AssetMedia.fromJson(Map<String, dynamic> json) {
+  AssetMedia.fromJson(Map<dynamic, dynamic> json) {
     compressPath = json['compressPath'] as String;
-    cutPath = json['cutPath'] as String;
     duration = json['duration'] as int;
     path = json['path'] as String;
-    size = json['size'] as int;
-    width = json['width'] as int;
+    size = intToDouble(json, 'size');
+    height = intToDouble(json, 'height');
+    width = intToDouble(json, 'width');
     fileName = json['fileName'] as String;
-    mediaType = json['mediaType'] as String;
+    mediaType = json['mediaType'] == null ? '' : json['mediaType'].toString();
+  }
+
+  double intToDouble(Map<dynamic, dynamic> json, String key) {
+    final dynamic data = json[key];
+    if (data is int) data.toDouble();
+    if (data is double) return data;
+    return null;
   }
 
   String compressPath;
-  String cutPath;
   int duration;
+
+  ///MediaTypeUnknown = 0, MediaTypeImage = 1,  MediaTypeVideo = 2, MediaTypeAudio = 3,
+  ///only ios
   String mediaType;
-  int height;
+  double height;
   String path;
-  int size;
-  int width;
+  double size;
+  double width;
   String fileName;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['compressPath'] = compressPath;
-    data['cutPath'] = cutPath;
     data['duration'] = duration;
     data['height'] = height;
     data['height'] = height;
@@ -231,8 +231,6 @@ class PicturePickerOptions {
       this.minSelectNum = 1,
       this.imageSpanCount = 4,
       this.minimumCompressSize = 100,
-      this.cropW = 4,
-      this.cropH = 3,
       this.cropCompressQuality = 90,
       this.videoQuality = 0,
       this.videoMaxSecond = 60,
@@ -242,20 +240,12 @@ class PicturePickerOptions {
       this.previewVideo = false,
       this.isZoomAnim = true,
       this.isCamera = false,
-      this.enableCrop = false,
       this.compress = false,
-      this.hideBottomControls = false,
       this.freeStyleCropEnabled = false,
-      this.showCropCircle = false,
-      this.showCropFrame = false,
-      this.showCropGrid = false,
       this.openClickSound = false,
       this.isGif = false,
-      this.scaleAspectFillCrop = false,
       this.setOutputCameraPath = '',
-      this.rotateEnabled = false,
       this.originalPhoto = false,
-      this.scaleEnabled = false,
       this.pickerSelectType = 0});
 
   ///支持ios && android
@@ -269,20 +259,11 @@ class PicturePickerOptions {
   /// 最小选择数量 int
   int minSelectNum;
 
-  ///裁剪比例 如16:9 3:2 3:4 1:1 可自定义  宽
-  int cropW;
-
-  ///裁剪比例 如16:9 3:2 3:4 1:1 可自定义  高
-  int cropH;
-
   ///显示多少秒以内的视频or音频也可适用 int
   int videoMaxSecond;
 
   ///全部0、图片1、视频2
   int pickerSelectType;
-
-  /// 是否裁剪 true or false
-  bool enableCrop;
 
   /// 是否可预览图片 true or false
   bool previewImage;
@@ -322,40 +303,14 @@ class PicturePickerOptions {
   /// 是否压缩 true or false
   bool compress;
 
-  /// 是否显示uCrop工具栏，默认不显示 true or false
-  bool hideBottomControls;
-
   /// 裁剪框是否可拖拽 true or false
   bool freeStyleCropEnabled;
-
-  /// 是否圆形裁剪 true or false
-  bool showCropCircle;
-
-  /// 是否显示矩形 圆形裁剪时建议设为false    true or false
-  bool showCropFrame;
-
-  /// 是否显示网格 圆形裁剪时建议设为false    true or false
-  bool showCropGrid;
 
   /// 是否开启点击声音 true or false
   bool openClickSound;
 
-  /// 裁剪是否可旋转图片 true or false
-  bool rotateEnabled;
-
-  /// 裁剪是否可放大缩小图片 true or false
-  bool scaleEnabled;
-
   /// 自定义拍照保存路径,可不填
   String setOutputCameraPath;
-
-  ///ios 以下为仅支持 ios
-  ///
-  ///圆形裁剪框半径大小  在单选模式下，照片列表页中，显示选择按钮,默认为false
-  int circleCropRadius;
-
-  ///是否图片等比缩放填充cropRect区域   在单选模式下，照片列表页中，显示选择按钮,默认为false
-  bool scaleAspectFillCrop;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -363,8 +318,6 @@ class PicturePickerOptions {
     data['minSelectNum'] = minSelectNum;
     data['imageSpanCount'] = imageSpanCount;
     data['minimumCompressSize'] = minimumCompressSize;
-    data['cropW'] = cropW;
-    data['cropH'] = cropH;
     data['cropCompressQuality'] = cropCompressQuality;
     data['videoQuality'] = videoQuality;
     data['videoMaxSecond'] = videoMaxSecond;
@@ -373,21 +326,13 @@ class PicturePickerOptions {
     data['previewImage'] = previewImage;
     data['previewVideo'] = previewVideo;
     data['isZoomAnim'] = isZoomAnim;
-    data['enableCrop'] = enableCrop;
     data['compress'] = compress;
     data['isCamera'] = isCamera;
-    data['hideBottomControls'] = hideBottomControls;
     data['freeStyleCropEnabled'] = freeStyleCropEnabled;
-    data['showCropCircle'] = showCropCircle;
-    data['showCropFrame'] = showCropFrame;
-    data['showCropGrid'] = showCropGrid;
     data['openClickSound'] = openClickSound;
     data['isGif'] = isGif;
-    data['rotateEnabled'] = rotateEnabled;
-    data['scaleEnabled'] = scaleEnabled;
     data['pickerSelectType'] = pickerSelectType;
     data['setOutputCameraPath'] = setOutputCameraPath;
-    data['scaleAspectFillCrop'] = scaleAspectFillCrop;
     data['originalPhoto'] = originalPhoto;
     return data;
   }
