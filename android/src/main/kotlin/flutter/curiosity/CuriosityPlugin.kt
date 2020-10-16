@@ -94,7 +94,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         when (call.method) {
             "installApp" -> NativeTools.installApp()
             "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
-            "unZipFile" -> channelResult.success(NativeTools.unZipFile())
             "callPhone" -> channelResult.success(NativeTools.callPhone())
             "goToMarket" -> channelResult.success(NativeTools.goToMarket())
             "isInstallApp" -> channelResult.success(NativeTools.isInstallApp())

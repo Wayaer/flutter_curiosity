@@ -136,10 +136,6 @@ NSString * const curiosityEvent=@"Curiosity/event";
     if ([@"getFilePathSize" isEqualToString:call.method]) {
         result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
     }
-    if ([@"unZipFile" isEqualToString:call.method]) {
-        [NativeTools unZipFile:call.arguments[@"filePath"]];
-        result([Tools resultSuccess]);
-    }
     if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeTools goToMarket:call.arguments[@"appId"]];
         result([Tools resultSuccess]);

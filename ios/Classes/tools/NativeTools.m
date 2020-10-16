@@ -1,6 +1,5 @@
 #import "NativeTools.h"
 #import <CoreLocation/CoreLocation.h>
-#import "SSZipArchive.h"
 #define fileManager [NSFileManager defaultManager]
 
 @implementation NativeTools
@@ -14,6 +13,7 @@
 + (void)callPhone:(NSString *)phoneNumber {
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
 }
+
 + (NSMutableDictionary *)getAppInfo
 {
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
@@ -89,16 +89,6 @@
 }
 
 
-
-//解压文件
-+ (NSString *)unZipFile:(NSString *)filePath {
-    if ([Tools isDirectoryExist:filePath]) {
-        [SSZipArchive unzipFileAtPath:filePath toDestination:[filePath substringToIndex:filePath.length-[[[filePath componentsSeparatedByString:@"/"] lastObject] length]]];
-        return [Tools resultSuccess];
-    }else{
-        return [Tools resultInfo:@"not file"];
-    }
-}
 /**
  *  分享
  *  多图分享，items里面直接放图片
