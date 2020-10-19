@@ -43,7 +43,6 @@ android {
         targetSdkVersion 30
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-
     }
     signingConfigs {
         release {
@@ -51,7 +50,6 @@ android {
             storePassword "curiosity123"
             keyAlias "curiosity"
             keyPassword "curiosity111"
-
         }
     }
     buildTypes {
