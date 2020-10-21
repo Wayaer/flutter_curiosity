@@ -175,7 +175,14 @@ class AppInfoModel {
 
 class AssetMedia {
   AssetMedia(
-      {this.compressPath, this.duration, this.height, this.path, this.size, this.width, this.fileName, this.mediaType});
+      {this.compressPath,
+      this.duration,
+      this.height,
+      this.path,
+      this.size,
+      this.width,
+      this.fileName,
+      this.mediaType});
 
   AssetMedia.fromJson(Map<dynamic, dynamic> json) {
     compressPath = json['compressPath'] as String;

@@ -2,7 +2,11 @@ import 'package:flutter/material.dart';
 
 class Styles {
   static TextStyle textStyle(
-          {Color color, double fontSize, double height, FontWeight fontWeight, TextDecoration decoration}) =>
+          {Color color,
+          double fontSize,
+          double height,
+          FontWeight fontWeight,
+          TextDecoration decoration}) =>
       TextStyle(
           decoration: TextDecoration.none,
           fontWeight: fontWeight ?? FontWeight.w500,

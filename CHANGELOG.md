@@ -1,5 +1,6 @@
-## [1.3.0]
+## [1.3.1]
  * remove unzip
+ * format code
 ## [1.2.4]
  * fix scanner bug
  * add lint
