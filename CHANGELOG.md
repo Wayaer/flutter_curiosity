@@ -1,4 +1,5 @@
 ## [1.3.0]
+ * remove unzip
 ## [1.2.4]
  * fix scanner bug
  * add lint
