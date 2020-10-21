@@ -93,9 +93,10 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    controller = ScannerController(resolutionPreset: widget.resolutionPreset ?? ResolutionPreset.High);
-    WidgetsBinding.instance
-        .addPostFrameCallback((Duration timeStamp) => Timer(const Duration(milliseconds: 300), () => initController()));
+    controller = ScannerController(
+        resolutionPreset: widget.resolutionPreset ?? ResolutionPreset.High);
+    WidgetsBinding.instance.addPostFrameCallback((Duration timeStamp) =>
+        Timer(const Duration(milliseconds: 300), () => initController()));
   }
 
   Future<void> initController() async {
@@ -163,9 +164,13 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
         child: GestureDetector(
             onTap: openFlash,
             child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Icon(Icons.highlight, size: 30, color: flash ? widget.flashOnColor : widget.flashOffColor),
+              Icon(Icons.highlight,
+                  size: 30,
+                  color: flash ? widget.flashOnColor : widget.flashOffColor),
               Text(widget.flashText ?? '轻触点亮',
-                  style: Styles.textStyle(color: flash ? widget.flashOnColor : widget.flashOffColor))
+                  style: Styles.textStyle(
+                      color:
+                          flash ? widget.flashOnColor : widget.flashOffColor))
             ])),
       ),
     ));
@@ -174,7 +179,8 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     }
     child = Stack(children: children);
     if (widget.bestFit) {
-      child = Container(width: previewWidth, height: previewHeight, child: child);
+      child =
+          Container(width: previewWidth, height: previewHeight, child: child);
     }
     return child;
   }
@@ -265,14 +271,14 @@ class ScannerController extends ChangeNotifier {
         'heightRatio': heightRatio,
       };
 
-      final Map<String, dynamic> reply =
-          await curiosityChannel.invokeMapMethod<String, dynamic>('initializeCameras', arguments);
+      final Map<String, dynamic> reply = await curiosityChannel
+          .invokeMapMethod<String, dynamic>('initializeCameras', arguments);
       textureId = reply['textureId'] as int;
       cameraState = reply['cameraState'] as String ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
-      eventChannel =
-          const EventChannel('$curiosity/event').receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
+      eventChannel = const EventChannel('$curiosity/event')
+          .receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
         code = data['code'] as String;
         type = data['type'] as String;
         notifyListeners();
@@ -284,26 +290,29 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  Future<String> setFlashMode(bool status) async =>
-      await curiosityChannel.invokeMethod('setFlashMode', <String, bool>{'status': status});
+  Future<String> setFlashMode(bool status) async => await curiosityChannel
+      .invokeMethod('setFlashMode', <String, bool>{'status': status});
 
   static Future<String> scanImagePath(String path) async =>
-      await curiosityChannel.invokeMethod('scanImagePath', <String, String>{'path': path});
+      await curiosityChannel
+          .invokeMethod('scanImagePath', <String, String>{'path': path});
 
-  static Future<String> scanImageUrl(String url) async =>
-      await curiosityChannel.invokeMethod('scanImageUrl', <String, String>{'url': url});
+  static Future<String> scanImageUrl(String url) async => await curiosityChannel
+      .invokeMethod('scanImageUrl', <String, String>{'url': url});
 
   static Future<String> scanImageMemory(Uint8List uint8list) async =>
-      await curiosityChannel.invokeMethod('scanImageMemory', <String, Uint8List>{'uint8list': uint8list});
+      await curiosityChannel.invokeMethod(
+          'scanImageMemory', <String, Uint8List>{'uint8list': uint8list});
 
   Future<List<Cameras>> availableCameras() async {
     try {
-      final List<Map<dynamic, dynamic>> cameras =
-          await curiosityChannel.invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
+      final List<Map<dynamic, dynamic>> cameras = await curiosityChannel
+          .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
       return cameras.map((Map<dynamic, dynamic> camera) {
         return Cameras(
             name: camera['name'] as String,
-            lensFacing: InternalTools.getCameraLensFacing(camera['lensFacing'] as String));
+            lensFacing: InternalTools.getCameraLensFacing(
+                camera['lensFacing'] as String));
       }).toList();
     } on PlatformException catch (e) {
       print(e);

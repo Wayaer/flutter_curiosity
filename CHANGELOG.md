@@ -1,4 +1,4 @@
-## [1.3.1]
+## [1.3.2]
  * remove unzip
  * format code
 ## [1.2.4]
