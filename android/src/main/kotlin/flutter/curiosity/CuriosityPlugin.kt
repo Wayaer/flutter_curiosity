@@ -103,6 +103,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "getGPSStatus" -> channelResult.success(NativeTools.getGPSStatus())
             "jumpGPSSetting" -> NativeTools.jumpGPSSetting()
             "jumpAppSetting" -> NativeTools.jumpAppSetting()
+            "jumpSystemSetting" -> NativeTools.jumpSystemSetting()
         }
     }
 

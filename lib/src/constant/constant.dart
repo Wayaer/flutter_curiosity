@@ -45,3 +45,42 @@ enum CameraLensFacing {
   ///其他的
   external
 }
+
+///Android 系统设置
+enum SettingType {
+  ///wifi
+  wifi,
+
+  ///定位
+  location,
+
+  ///安全中心
+  security,
+
+  ///蓝牙
+  bluetooth,
+
+  ///移动数据
+  cellularNetwork,
+
+  ///时间
+  date,
+
+  ///显示设置
+  display,
+
+  ///通知
+  notification,
+
+  ///声音设置
+  sound,
+
+  ///内部存储
+  internalStorage,
+
+  ///电量管理
+  battery,
+
+  ///nfc
+  nfc,
+}
