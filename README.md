@@ -55,3 +55,8 @@
 ![app_device](lib/res/app_device.png)
 ![camera_gallry](lib/res/camera_gallry.png)
 
+<style>
+img[alt="main",alt="share",alt="android_setting",alt="app_device",alt="camera_gallry",]{
+  width:100px;
+}
+</style>
