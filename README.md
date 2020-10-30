@@ -1,7 +1,7 @@
 # flutter_curiosity
 集成部分原生功能，支持ios android
 
-## android按需添加权限
+## android添加权限
  * android/app/src/main/AndroidManifest.xml 添加权限
 ```
     <!--允许程序使用相机-->
@@ -23,7 +23,7 @@
     <!--允许程序安装应用程序-->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 ```
-## ios按需添加权限
+## ios添加权限
  * ios/Runner/Info.plist 添加权限
  
 ```
@@ -41,14 +41,14 @@
     <true/>
 ```
 
-## 1.[原生方法](./lib/src/tools/native.dart)
+### 1.[原生方法](./lib/src/tools/native.dart)
 
-## 2.[二维码扫描](./lib/src/scanner)
+### 2.[二维码扫描](./lib/src/scanner)
 
 ##### 中文适配：  
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
-## 3.获取手机硬件信息 (app信息,设备信息)
-<img src="lib/res/main.png" width="300px"/> <img src="lib/res/share.png" width="300px"/>
-<img src="lib/res/android_setting.png" width="300px"/> <img src="lib/res/app_device.png" width="300px"/>
-<img src="lib/res/camera_gallry.png" width="300px"/>
+### 3.获取手机硬件信息 (app信息,设备信息)
+<img src="lib/res/main.png" width="330px"/> <img src="lib/res/share.png" width="330px"/>
+<img src="lib/res/android_setting.png" width="330px"/> <img src="lib/res/app_device.png" width="330px"/>
+<img src="lib/res/camera_gallry.png" width="330px"/>
