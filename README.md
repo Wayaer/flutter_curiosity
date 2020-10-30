@@ -49,6 +49,6 @@
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
 ### 3.获取手机硬件信息 (app信息,设备信息)
-<img src="lib/res/main.png" width="330px"/> <img src="lib/res/share.png" width="330px"/>
-<img src="lib/res/android_setting.png" width="330px"/> <img src="lib/res/app_device.png" width="330px"/>
-<img src="lib/res/camera_gallry.png" width="330px"/>
+<img src="lib/res/main.png" width="360px"/> <img src="lib/res/share.png" width="360px"/>
+<img src="lib/res/android_setting.png" width="360px"/> <img src="lib/res/app_device.png" width="360px"/>
+<img src="lib/res/camera_gallry.png" width="360px"/>
