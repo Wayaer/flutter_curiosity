@@ -1,5 +1,6 @@
 #import "Tools.h"
 #define fileManager [NSFileManager defaultManager]
+
 @implementation Tools
 
 //Log
@@ -35,4 +36,12 @@
     ||[path hasSuffix:@".JPG"]
     ||[path hasSuffix:@".PNG"];
 }
++(BOOL)isEmulator{
+    if (TARGET_IPHONE_SIMULATOR == 1 && TARGET_OS_IPHONE == 1) {
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
 @end

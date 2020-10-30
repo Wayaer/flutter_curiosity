@@ -37,49 +37,31 @@ NSString * const curiosityEvent=@"Curiosity/event";
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
     result = _result;
-    [self gallery];
-    [self scanner];
-    [self tools];
-}
-
--(void)gallery{
     if ([@"openImagePicker" isEqualToString:call.method]) {
         [GalleryTools openImagePicker:call :viewController :result];
-    }
-    if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
+    }else if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
         [GalleryTools deleteCacheDirFile:result];
-    }
-    if ([@"openSystemGallery" isEqualToString:call.method]) {
+    }else if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
         [GalleryTools openSystemGallery:viewController :picker :result];
-    }
-    if ([@"openSystemCamera" isEqualToString:call.method]) {
+    }else if ([@"openSystemCamera" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
         [GalleryTools openSystemCamera:viewController :picker :result];
-    }
-    if ([@"saveImageToGallery" isEqualToString:call.method]) {
+    }else if ([@"saveImageToGallery" isEqualToString:call.method]) {
         [self saveImageToGallery];
-    }
-    if ([@"saveFileToGallery" isEqualToString:call.method]) {
+    }else if ([@"saveFileToGallery" isEqualToString:call.method]) {
         [self saveFileToGallery];
-    }
-}
--(void)scanner{
-    if ([@"scanImagePath" isEqualToString:call.method]) {
+    }else if ([@"scanImagePath" isEqualToString:call.method]) {
         [ScannerTools scanImagePath:call result:result];
-    }
-    if ([@"scanImageUrl" isEqualToString:call.method]) {
+    }else if ([@"scanImageUrl" isEqualToString:call.method]) {
         [ScannerTools scanImageUrl:call result:result];
-    }
-    if ([@"scanImageMemory" isEqualToString:call.method]) {
+    }else if ([@"scanImageMemory" isEqualToString:call.method]) {
         [ScannerTools scanImageMemory:call result:result];
-    }
-    if ([@"availableCameras" isEqualToString:call.method]) {
+    }else if ([@"availableCameras" isEqualToString:call.method]) {
         [ScannerTools availableCameras:call result:result];
-    }
-    if([@"initializeCameras" isEqualToString:call.method]){
+    }else if([@"initializeCameras" isEqualToString:call.method]){
         NSString *cameraId = call.arguments[@"cameraId"];
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
         NSError * error;
@@ -107,48 +89,38 @@ NSString * const curiosityEvent=@"Curiosity/event";
         }else{
             result([Tools resultInfo:@"Not supported below ios10"]);
         }
-    }
-    if([@"disposeCameras" isEqualToString:call.method]){
+    }else if([@"disposeCameras" isEqualToString:call.method]){
         NSDictionary *arguments = call.arguments;
         NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
         if(scannerView)[scannerView close];
         if(textureId) [registry unregisterTexture:textureId];
         result([Tools resultInfo:@"dispose"]);
-    }
-    if ([call.method isEqualToString:@"setFlashMode"]){
+    }else if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
         if(scannerView)[scannerView setFlashMode:[status boolValue]];
         result([Tools resultInfo:@"setFlashMode"]);
-    }
-    
-}
-
--(void)tools{
-    if ([@"getGPSStatus" isEqualToString:call.method]) {
+    }else if ([@"getGPSStatus" isEqualToString:call.method]) {
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
-    }
-    if ([@"jumpAppSetting" isEqualToString:call.method]) {
+    }else if ([@"jumpAppSetting" isEqualToString:call.method]) {
         result([NSNumber numberWithBool:[NativeTools jumpAppSetting]?YES:NO]);
-    }
-    if ([@"getAppInfo" isEqualToString:call.method]) {
+    }else if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
-    }
-    if ([@"getFilePathSize" isEqualToString:call.method]) {
+    }else if ([@"getDeviceInfo" isEqualToString:call.method]) {
+        result([NativeTools getDeviceInfo]);
+    }else if ([@"getFilePathSize" isEqualToString:call.method]) {
         result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
-    }
-    if ([@"goToMarket" isEqualToString:call.method]) {
+    }else if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeTools goToMarket:call.arguments[@"appId"]];
         result([Tools resultSuccess]);
-    }
-    if ([@"callPhone" isEqualToString:call.method]) {
+    }else if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"]];
         result([Tools resultSuccess]);
-    }
-    if ([@"systemShare" isEqualToString:call.method]) {
+    }else if ([@"systemShare" isEqualToString:call.method]) {
         [NativeTools systemShare:call result:result];
-    }
-    if ([@"exitApp" isEqualToString:call.method]) {
+    }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
+    }else {
+        result(FlutterMethodNotImplemented);
     }
 }
 

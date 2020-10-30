@@ -1,6 +1,7 @@
 #import "NativeTools.h"
 #import <CoreLocation/CoreLocation.h>
 #define fileManager [NSFileManager defaultManager]
+#import <sys/utsname.h>
 
 @implementation NativeTools
 
@@ -14,34 +15,49 @@
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
 }
 
-+ (NSMutableDictionary *)getAppInfo
-{
-    NSMutableDictionary *info = [NSMutableDictionary dictionary];
++ (NSDictionary *)getDeviceInfo{
+    UIDevice* device = [UIDevice currentDevice];
+    struct utsname un;
+    uname(&un);
+    return(@{
+        @"name" : [device name],
+        @"systemName" : [device systemName],
+        @"systemVersion" : [device systemVersion],
+        @"model" : [device model],
+        @"uuid" : [device identifierForVendor].UUIDString,
+        @"localizedModel" : [device localizedModel],
+        @"isEmulator" : [NSNumber numberWithBool:[Tools isEmulator]?YES:NO],
+        @"uts" : @{
+                @"sysName" : @(un.sysname),
+                @"nodeName" : @(un.nodename),
+                @"release" : @(un.release),
+                @"version" : @(un.version),
+                @"machine" : @(un.machine)}
+           });
+    
+}
+
+
++ (NSDictionary *)getAppInfo{
     NSDictionary *app = [[NSBundle mainBundle] infoDictionary];
     CGRect statusBar = [[UIApplication sharedApplication] statusBarFrame];
-    [info setObject:@(statusBar.size.height) forKey:@"statusBarHeight"];
-    [info setObject:@(statusBar.size.width) forKey:@"statusBarWidth"];
-    
-    [info setObject:NSHomeDirectory() forKey:@"homeDirectory"];
-    [info setObject:[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject] forKey:@"documentDirectory"];
-    [info setObject:[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject] forKey:@"libraryDirectory"];
-    [info setObject:[NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject] forKey:@"cachesDirectory"];
-    [info setObject:NSTemporaryDirectory() forKey:@"temporaryDirectory"];
-    
-    [info setObject:[app objectForKey:@"CFBundleShortVersionString"] forKey:@"versionName"];
-    [info setObject:@"Apple" forKey:@"phoneBrand"];
-    [info setObject:[NSNumber numberWithInt:[[app objectForKey:@"CFBundleVersion"] intValue]] forKey:@"versionCode"];
-    
-    [info setObject:[app objectForKey:@"CFBundleIdentifier"] forKey:@"packageName"];
-    [info setObject:[app objectForKey:@"CFBundleName"] forKey:@"appName"];
-    [info setObject:[app objectForKey:@"DTSDKBuild"] forKey:@"sdkBuild"];
-    [info setObject:[app objectForKey:@"DTPlatformName"] forKey:@"platformName"];
-    [info setObject:[app objectForKey:@"MinimumOSVersion"] forKey:@"minimumOSVersion"];
-    [info setObject:[app objectForKey:@"DTPlatformVersion"] forKey:@"platformVersion"];
-    UIDevice *device = [UIDevice currentDevice];
-    [info setObject:device.systemName forKey:@"systemName"];
-    [info setObject:device.systemVersion forKey:@"systemVersion"];
-    return  info;
+    return(@{
+        @"statusBarHeight" : @(statusBar.size.height),
+        @"statusBarWidth" : @(statusBar.size.width),
+        @"homeDirectory" : NSHomeDirectory(),
+        @"documentDirectory" : [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject],
+        @"libraryDirectory" :[NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject],
+        @"cachesDirectory" : [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) firstObject],
+        @"temporaryDirectory" :NSTemporaryDirectory(),
+        @"versionName" : [app objectForKey:@"CFBundleShortVersionString"],
+        @"versionCode" : [NSNumber numberWithInt:[[app objectForKey:@"CFBundleVersion"] intValue]],
+        @"packageName" : [app objectForKey:@"CFBundleIdentifier"],
+        @"appName" : [app objectForKey:@"CFBundleName"],
+        @"sdkBuild" : [app objectForKey:@"DTSDKBuild"],
+        @"platformName" : [app objectForKey:@"DTPlatformName"] ,
+        @"minimumOSVersion" : [app objectForKey:@"MinimumOSVersion"],
+        @"platformVersion" : [app objectForKey:@"DTPlatformVersion"],
+           });
 }
 
 

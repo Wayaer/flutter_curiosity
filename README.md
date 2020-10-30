@@ -41,14 +41,17 @@
     <true/>
 ```
 
-## 1.原生方法 [点击查看](./lib/src/tools/native.dart)
+## 1.[原生方法](./lib/src/tools/native.dart)
 
-## 2.二维码扫描 [点击查看](./lib/src/scanner) 
-
-## 3.图片选择 [点击查看](./lib/src/gallery.dart)
+## 2.[二维码扫描](./lib/src/scanner)
 
 ##### 中文适配：  
 - 添加中文 Runner -> Info.plist -> Localizations 点击"+"按钮，选择Chinese(Simplified)
 
-## 4.获取手机硬件信息 (app信息,手机厂商信息) [点击查看](./lib/src/app_info.dart)
+## 3.获取手机硬件信息 (app信息,设备信息)
+![main](lib/res/main.png)
+![share.png](lib/res/share.png)
+![android_setting](lib/res/android_setting.png)
+![app_device](lib/res/app_device.png)
+![camera_gallry](lib/res/camera_gallry.png)
 

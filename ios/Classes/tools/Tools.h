@@ -19,4 +19,7 @@
 //是否是图片
 + (BOOL)isImageFile:(NSString *)path;
 
+//是否是模拟器
++ (BOOL*)isEmulator;
+
 @end

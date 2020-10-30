@@ -54,8 +54,8 @@ enum SettingType {
   ///定位
   location,
 
-  ///安全中心
-  security,
+  ///密码安全
+  passwordSecurity,
 
   ///蓝牙
   bluetooth,
@@ -63,17 +63,17 @@ enum SettingType {
   ///移动数据
   cellularNetwork,
 
-  ///时间
-  date,
+  ///语言和时间
+  languageTime,
 
-  ///显示设置
-  display,
+  ///显示和亮度
+  displayBrightness,
 
   ///通知
   notification,
 
-  ///声音设置
-  sound,
+  ///声音和振动
+  soundVibration,
 
   ///内部存储
   internalStorage,
@@ -83,4 +83,7 @@ enum SettingType {
 
   ///nfc
   nfc,
+
+  ///setting
+  setting
 }

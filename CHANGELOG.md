@@ -1,3 +1,7 @@
+## [1.3.3]
+ * Code for Android to add jump settings
+ * Add get device information
+ * Example added
 ## [1.3.2]
  * remove unzip
  * format code

@@ -85,42 +85,29 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
     override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
         channelResult = _result
         call = _call
-        scanner()
-        gallery()
-        tools()
-    }
-
-    private fun tools() {
         when (call.method) {
+            "exitApp" -> NativeTools.exitApp()
             "installApp" -> NativeTools.installApp()
             "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
             "callPhone" -> channelResult.success(NativeTools.callPhone())
             "goToMarket" -> channelResult.success(NativeTools.goToMarket())
             "isInstallApp" -> channelResult.success(NativeTools.isInstallApp())
-            "exitApp" -> NativeTools.exitApp()
             "getAppInfo" -> channelResult.success(NativeTools.getAppInfo())
-            "systemShare" -> channelResult.success(NativeTools.systemShare())
+            "getDeviceInfo" -> channelResult.success(NativeTools.getDeviceInfo())
+            "getInstalledApp" -> channelResult.success(NativeTools.getInstalledApp())
             "getGPSStatus" -> channelResult.success(NativeTools.getGPSStatus())
+            "systemShare" -> channelResult.success(NativeTools.systemShare())
             "jumpGPSSetting" -> NativeTools.jumpGPSSetting()
             "jumpAppSetting" -> NativeTools.jumpAppSetting()
             "jumpSystemSetting" -> NativeTools.jumpSystemSetting()
-        }
-    }
-
-    private fun gallery() {
-        when (call.method) {
+            ///相机拍照图库选择
             "openImagePicker" -> GalleryTools.openImagePicker()
             "deleteCacheDirFile" -> GalleryTools.deleteCacheDirFile()
             "openSystemGallery" -> GalleryTools.openSystemGallery()
             "openSystemCamera" -> GalleryTools.openSystemCamera()
             "saveFileToGallery" -> GalleryTools.saveFileToGallery()
             "saveImageToGallery" -> GalleryTools.saveImageToGallery()
-        }
-    }
-
-
-    private fun scanner() {
-        when (call.method) {
+            ///扫码相机相关
             "scanImagePath" -> ScannerTools.scanImagePath()
             "scanImageUrl" -> ScannerTools.scanImageUrl()
             "scanImageMemory" -> ScannerTools.scanImageMemory()
@@ -141,8 +128,10 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
                 eventChannel.setStreamHandler(null)
                 channelResult.success("dispose")
             }
+            else -> channelResult.notImplemented()
         }
     }
+
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         if (resultCode == Activity.RESULT_OK) {

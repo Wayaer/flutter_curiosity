@@ -11,7 +11,7 @@
 //+ (void)callPhone:(NSString *)phoneNumber;
 
 //获取app信息
-+ (NSMutableDictionary *)getAppInfo;
++ (NSDictionary *)getAppInfo;
 
 //调用系统分享
 //+ (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result;
