@@ -311,8 +311,7 @@ class ScannerController extends ChangeNotifier {
       return cameras.map((Map<dynamic, dynamic> camera) {
         return Cameras(
             name: camera['name'] as String,
-            lensFacing: InternalTools.getCameraLensFacing(
-                camera['lensFacing'] as String));
+            lensFacing: _getCameraLensFacing(camera['lensFacing'] as String));
       }).toList();
     } on PlatformException catch (e) {
       print(e);
@@ -324,6 +323,19 @@ class ScannerController extends ChangeNotifier {
     eventChannel?.cancel();
     final Map<String, int> arguments = <String, int>{'textureId': textureId};
     return await curiosityChannel.invokeMethod('disposeCameras', arguments);
+  }
+
+  CameraLensFacing _getCameraLensFacing(String lensFacing) {
+    switch (lensFacing) {
+      case 'back':
+        return CameraLensFacing.back;
+      case 'front':
+        return CameraLensFacing.front;
+      case 'external':
+        return CameraLensFacing.external;
+      default:
+        return null;
+    }
   }
 }
 
