@@ -143,8 +143,8 @@ Future<bool> jumpSystemSetting({SettingType settingType}) async {
 /// 打开系统相册
 /// 返回文件路径
 /// ios info.plist add
-///        <key>NSPhotoLibraryUsageDescription</key>
-///        <string>是否允许Curiosity访问你的相册？</string>
+///       <key>NSPhotoLibraryUsageDescription</key>
+///       <string>是否允许Curiosity访问你的相册？</string>
 /// ios path 包含 file:///
 Future<String> get openSystemGallery async {
   if (_supportPlatform()) return null;
@@ -155,22 +155,22 @@ Future<String> get openSystemGallery async {
 /// 返回文件路径
 /// Android AndroidManifest.xml 添加以下内容
 /// <application
-///           ...>
-///    <provider
-///             android:name="androidx.core.content.FileProvider"
-///             android:authorities="${applicationId}.fileprovider"
-///             android:exported="false"
-///             android:grantUriPermissions="true">
-///             <meta-data
-///                 android:name="android.support.FILE_PROVIDER_PATHS"
-///                 android:resource="@xml/file_paths" />
-///    </provider>
+///          ...>
+///   <provider
+///            android:name="androidx.core.content.FileProvider"
+///            android:authorities="${applicationId}.fileprovider"
+///            android:exported="false"
+///            android:grantUriPermissions="true">
+///            <meta-data
+///                android:name="android.support.FILE_PROVIDER_PATHS"
+///                android:resource="@xml/file_paths" />
+///   </provider>
 /// </application>
 /// ios info.plist add
-///      <key>NSCameraUsageDescription</key>
-///        <string>是否允许APP使用你的相机？</string>
-///       <key>NSPhotoLibraryUsageDescription</key>
-///        <string>是否允许APP访问你的相册？</string>
+///     <key>NSCameraUsageDescription</key>
+///       <string>是否允许APP使用你的相机？</string>
+///      <key>NSPhotoLibraryUsageDescription</key>
+///       <string>是否允许APP访问你的相册？</string>
 /// ios path 包含 file:///
 Future<String> openSystemCamera({String savePath}) async {
   /// savePath => android 图片临时储存位置 (仅支持android)
@@ -182,8 +182,8 @@ Future<String> openSystemCamera({String savePath}) async {
   return path;
 }
 
-///  save image to Gallery
-///  imageBytes can't null
+/// save image to Gallery
+/// imageBytes can't null
 @deprecated
 Future<String> saveImageToGallery(Uint8List imageBytes,
     {int quality = 100, String name}) async {
@@ -197,8 +197,8 @@ Future<String> saveImageToGallery(Uint8List imageBytes,
   return result;
 }
 
-///  Save the PNG，JPG，JPEG image or video located at [file]
-///  to the local device media gallery.
+/// Save the PNG，JPG，JPEG image or video located at [file]
+/// to the local device media gallery.
 @deprecated
 Future<String> saveFileToGallery(String file) async {
   assert(file != null);
