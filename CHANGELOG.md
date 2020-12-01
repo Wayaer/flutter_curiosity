@@ -1,3 +1,6 @@
+## [1.3.5]
+ * remove TZImagePickerController and picture_library
+ * remove openImagePicker
 ## [1.3.3]
  * Code for Android to add jump settings
  * Add get device information
