@@ -5,10 +5,15 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/tools/internal.dart';
 
 bool get isAndroid => Platform.isAndroid;
+
 bool get isIOS => Platform.isIOS;
+
 bool get isMacOS => Platform.isMacOS;
+
 bool get isWindows => Platform.isWindows;
+
 bool get isLinux => Platform.isLinux;
+
 bool get isFuchsia => Platform.isFuchsia;
 
 /// 安装apk  仅支持android
@@ -208,7 +213,6 @@ Future<String> saveFileToGallery(String file) async {
 }
 
 /// AppInfo
-
 Future<List<AppsModel>> get getInstalledApp async {
   if (!isAndroid) return null;
   final List<Map<dynamic, dynamic>> appList = await curiosityChannel

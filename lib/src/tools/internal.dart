@@ -1,11 +1,13 @@
 import 'dart:ui';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// size → Size 设备尺寸信息，如屏幕的大小，单位 pixels
 Size get getWindowSize => MediaQueryData.fromWindow(window).size;
 
-/// devicePixelRatio → double 单位逻辑像素的设备像素数量，即设备像素比。 这个数字可能不是2的幂，实际上它甚至也可能不是整数。例如，Nexus 6的设备像素比为3.5。
+/// devicePixelRatio → double 单位逻辑像素的设备像素数量，即设备像素比。
+/// 这个数字可能不是2的幂，实际上它甚至也可能不是整数。例如，Nexus 6的设备像素比为3.5。
 double get getDevicePixelRatio =>
     MediaQueryData.fromWindow(window).devicePixelRatio;
 const int _limitLength = 800;
