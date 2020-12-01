@@ -32,9 +32,11 @@
 +(BOOL) isImageFile:(NSString *)path{
     return [path hasSuffix:@".jpg"]
     ||[path hasSuffix:@".png"]
+    ||[path hasSuffix:@".PNG"]
     ||[path hasSuffix:@".JPEG"]
     ||[path hasSuffix:@".JPG"]
-    ||[path hasSuffix:@".PNG"];
+    ||[path hasSuffix:@".GiF"]
+    ||[path hasSuffix:@".gif"];
 }
 +(BOOL)isEmulator{
     if (TARGET_IPHONE_SIMULATOR == 1 && TARGET_OS_IPHONE == 1) {

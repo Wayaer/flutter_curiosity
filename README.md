@@ -23,6 +23,12 @@
     <!--允许程序安装应用程序-->
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
 ```
+```
+
+    <application android:requestLegacyExternalStorage="true" .....>
+
+```
+
 ## ios添加权限
  * ios/Runner/Info.plist 添加权限
  
