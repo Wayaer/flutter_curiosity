@@ -37,11 +37,7 @@ NSString * const curiosityEvent=@"Curiosity/event";
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
     result = _result;
-    if ([@"openImagePicker" isEqualToString:call.method]) {
-        [GalleryTools openImagePicker:call :viewController :result];
-    }else if ([@"deleteCacheDirFile" isEqualToString:call.method]) {
-        [GalleryTools deleteCacheDirFile:result];
-    }else if ([@"openSystemGallery" isEqualToString:call.method]) {
+   if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
         [GalleryTools openSystemGallery:viewController :picker :result];

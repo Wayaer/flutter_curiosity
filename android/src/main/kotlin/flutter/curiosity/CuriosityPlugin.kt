@@ -7,7 +7,6 @@ import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import androidx.annotation.NonNull
-import com.luck.picture.lib.config.PictureConfig
 import flutter.curiosity.gallery.GalleryTools
 import flutter.curiosity.scanner.CameraTools
 import flutter.curiosity.scanner.ScannerTools
@@ -101,8 +100,6 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
             "jumpAppSetting" -> NativeTools.jumpAppSetting()
             "jumpSystemSetting" -> NativeTools.jumpSystemSetting()
             ///相机拍照图库选择
-            "openImagePicker" -> GalleryTools.openImagePicker()
-            "deleteCacheDirFile" -> GalleryTools.deleteCacheDirFile()
             "openSystemGallery" -> GalleryTools.openSystemGallery()
             "openSystemCamera" -> GalleryTools.openSystemCamera()
             "saveFileToGallery" -> GalleryTools.saveFileToGallery()
@@ -135,25 +132,27 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         if (resultCode == Activity.RESULT_OK) {
-            if (requestCode == PictureConfig.REQUEST_CAMERA || requestCode == PictureConfig.CHOOSE_REQUEST) {
-                channelResult.success(GalleryTools.onResult(intent))
-            } else if (requestCode == openSystemGalleryCode) {
-                val uri: Uri? = intent?.data
-                channelResult.success(Tools.getRealPathFromURI(uri))
-            } else if (requestCode == openSystemCameraCode) {
-                val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
-                } else {
-                    intent?.data?.encodedPath.toString()
+            when (requestCode) {
+                openSystemGalleryCode -> {
+                    val uri: Uri? = intent?.data
+                    channelResult.success(Tools.getRealPathFromURI(uri))
                 }
-                channelResult.success(photoPath)
-            } else if (requestCode == installApkCode) {
-                channelResult.success("success")
-            } else if (requestCode == installPermission) {
-                //已经打开安装权限
-                NativeTools.installApp()
+                openSystemCameraCode -> {
+                    val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
+                    } else {
+                        intent?.data?.encodedPath.toString()
+                    }
+                    channelResult.success(photoPath)
+                }
+                installApkCode -> {
+                    channelResult.success("success")
+                }
+                installPermission -> {
+                    //已经打开安装权限
+                    NativeTools.installApp()
+                }
             }
-
         } else if (resultCode == Activity.RESULT_CANCELED) {
             //未打开安装应用权限
             if (requestCode == installPermission) channelResult.success("not permissions")

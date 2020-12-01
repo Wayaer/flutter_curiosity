@@ -1,15 +1,8 @@
 #import <Flutter/Flutter.h>
 #import <UIKit/UIKit.h>
-#import "TZImagePickerController.h"
 #import "Tools.h"
 
-@interface GalleryTools : NSObject <TZImagePickerControllerDelegate>
-
-+ (void)openImagePicker:(FlutterMethodCall*)call
-                       :(UIViewController*)viewController
-                       :(FlutterResult)result;
-
-+ (void)deleteCacheDirFile:(FlutterResult)result;
+@interface GalleryTools : NSObject
 
 //打开系统相册
 + (void)openSystemGallery:(UIViewController *)viewController

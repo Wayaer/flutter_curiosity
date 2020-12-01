@@ -12,7 +12,6 @@ class CameraGalleryPage extends StatefulWidget {
 
 class _CameraGalleryPageState extends State<CameraGalleryPage> {
   bool san = true;
-  List<AssetMedia> listAssetMedia = <AssetMedia>[];
   String text = '';
 
   @override
@@ -22,10 +21,6 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
         body: Universal(isScroll: true, children: <Widget>[
           RaisedButton(onPressed: () => scan(context), child: const Text('扫码')),
           RaisedButton(
-              onPressed: () => selectImage(), child: const Text('图片选择')),
-          RaisedButton(
-              onPressed: () => deleteCacheDir(), child: const Text('清除图片选择缓存')),
-          RaisedButton(
               onPressed: () => systemGallery(), child: const Text('打开系统相册')),
           RaisedButton(
               onPressed: () => systemCamera(), child: const Text('打开系统相机')),
@@ -33,30 +28,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           Visibility(
               visible: text != null && text.isNotEmpty,
               child: showText('path', text)),
-          Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: listAssetMedia
-                  .map((AssetMedia value) =>
-                      showText(value.path, value.fileName))
-                  .toList()),
         ]));
-  }
-
-  Future<void> selectImage() async {
-    final PicturePickerOptions options = PicturePickerOptions();
-    options.pickerSelectType = 0;
-    options.isGif = true;
-    options.isCamera = true;
-    options.freeStyleCropEnabled = true;
-    options.originalPhoto = true;
-    options.maxSelectNum = 4;
-    listAssetMedia = await openImagePicker(options);
-    setState(() {});
-  }
-
-  Future<dynamic> deleteCacheDir() async {
-    final String data = await deleteCacheDirFile();
-    showToast(data);
   }
 
   Future<void> scan(BuildContext context) async {

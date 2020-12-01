@@ -1,21 +1,6 @@
-import 'dart:io';
 import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-
-bool get isDebug => !kReleaseMode;
-
-bool get isAndroid => Platform.isAndroid;
-
-bool get isIOS => Platform.isIOS;
-
-bool get isMacOS => Platform.isMacOS;
-
-bool get isWindows => Platform.isWindows;
-
-bool get isLinux => Platform.isLinux;
-
-bool get isFuchsia => Platform.isFuchsia;
 
 ///size → Size 设备尺寸信息，如屏幕的大小，单位 pixels
 Size get getWindowSize => MediaQueryData.fromWindow(window).size;
@@ -24,6 +9,8 @@ Size get getWindowSize => MediaQueryData.fromWindow(window).size;
 double get getDevicePixelRatio =>
     MediaQueryData.fromWindow(window).devicePixelRatio;
 const int _limitLength = 800;
+
+bool get isDebug => !kReleaseMode;
 
 void log(dynamic msg) {
   final String message = msg.toString();
