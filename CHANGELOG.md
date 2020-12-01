@@ -1,4 +1,4 @@
-## [1.3.5]
+## [1.3.6]
  * remove TZImagePickerController and picture_library
  * remove openImagePicker
 ## [1.3.3]

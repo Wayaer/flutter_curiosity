@@ -76,7 +76,7 @@ class AppInfoModel {
   String appName;
   double statusBarHeight;
 
-  ///only android
+  /// only android
   String cacheDir;
   String directoryMusic;
   String directoryAlarms;
@@ -96,7 +96,7 @@ class AppInfoModel {
   int lastUpdateTime;
   double navigationBarHeight;
 
-  ///only ios
+  /// only ios
   String cachesDirectory;
   String homeDirectory;
   String minimumOSVersion;

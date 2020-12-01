@@ -14,7 +14,7 @@ class Styles {
           height: height,
           color: color);
 
-  //start 合并到 end
+  /// start 合并到 end
   static TextStyle mergeTextStyle(TextStyle startStyle, TextStyle endStyle) {
     if (startStyle != null && endStyle != null) endStyle.merge(startStyle);
     return endStyle;

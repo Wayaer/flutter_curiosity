@@ -8,8 +8,8 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/constant/styles.dart';
 import 'package:flutter_curiosity/src/tools/internal.dart';
 
-///基于原始扫描预览
-///使用简单
+/// 基于原始扫描预览
+/// 使用简单
 class ScannerPage extends StatefulWidget {
   const ScannerPage({
     Key key,
@@ -42,30 +42,30 @@ class ScannerPage extends StatefulWidget {
 
   final CameraLensFacing cameraLensFacing;
 
-  ///预览顶层添加组件
+  /// 预览顶层添加组件
   final Widget child;
 
-  ///扫描结果回调
+  /// 扫描结果回调
   final ValueChanged<String> scanResult;
 
-  ///识别区域 比例 0-1
-  ///距离屏幕头部
+  /// 识别区域 比例 0-1
+  /// 距离屏幕头部
   final double topRatio;
 
-  ///距离屏幕左边
+  /// 距离屏幕左边
   final double leftRatio;
 
-  ///识别区域的宽高度比例
+  /// 识别区域的宽高度比例
   final double widthRatio;
 
-  ///识别区域的宽高度比例
+  /// 识别区域的宽高度比例
   final double heightRatio;
 
-  ///限制最佳宽高
+  /// 限制最佳宽高
   final bool bestFit;
 
-  ///屏幕宽度比例=leftRatio + widthRatio + leftRatio
-  ///屏幕高度比例=topRatio + heightRatio + topRatio
+  /// 屏幕宽度比例=leftRatio + widthRatio + leftRatio
+  /// 屏幕高度比例=topRatio + heightRatio + topRatio
   final double hornStrokeWidth;
   final double scannerStrokeWidth;
   final Color borderColor;
@@ -185,7 +185,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
     return child;
   }
 
-  ///打开闪光灯
+  /// 打开闪光灯
   Future<void> openFlash() async {
     if (controller != null) {
       controller.setFlashMode(!flash);
@@ -214,8 +214,8 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
   }
 }
 
-///原始扫描预览
-///可以再此基础上定制其他样式预览
+/// 原始扫描预览
+/// 可以再此基础上定制其他样式预览
 class Scanner extends StatelessWidget {
   const Scanner({Key key, this.controller}) : super(key: key);
 

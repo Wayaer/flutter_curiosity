@@ -76,10 +76,10 @@ class ScannerPainter extends CustomPainter {
   final Size size;
   final Size boxSize;
 
-  ///四角的线宽度
+  /// 四角的线宽度
   final double hornStrokeWidth;
 
-  ///识别框中间的线
+  /// 识别框中间的线
   final double scannerStrokeWidth;
   Paint paintValue;
 
