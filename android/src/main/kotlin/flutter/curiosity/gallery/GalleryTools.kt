@@ -174,7 +174,21 @@ object GalleryTools {
         val image = call.argument<ByteArray>("imageBytes") ?: return
         val quality = call.argument<Int>("quality") ?: return
         val name = call.argument<String>("name")
-        channelResult.success(saveImage(BitmapFactory.decodeByteArray(image, 0, image.size), quality, name))
+        val file = generateFile("jpg", name = name)
+        val bmp = BitmapFactory.decodeByteArray(image, 0, image.size)
+        try {
+            val fos = FileOutputStream(file)
+            bmp.compress(Bitmap.CompressFormat.JPEG, quality, fos)
+            fos.flush()
+            fos.close()
+            val uri = Uri.fromFile(file)
+            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
+            bmp.recycle()
+            channelResult.success(uri.toString())
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        channelResult.success(Tools.resultFail())
     }
 
     fun saveFileToGallery() {
@@ -189,27 +203,9 @@ object GalleryTools {
         } catch (e: IOException) {
             e.printStackTrace()
             channelResult.success(Tools.resultFail())
-//            channelResult.error(e.printStackTrace().toString(), null, null)
         }
     }
 
-    private fun saveImage(bmp: Bitmap, quality: Int, name: String?): String {
-        val file = generateFile("jpg", name = name)
-        try {
-            val fos = FileOutputStream(file)
-            bmp.compress(Bitmap.CompressFormat.JPEG, quality, fos)
-            fos.flush()
-            fos.close()
-            val uri = Uri.fromFile(file)
-            context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-            bmp.recycle()
-//            return uri.toString()
-            return Tools.resultSuccess()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return Tools.resultFail()
-    }
 
     private fun generateFile(extension: String = "", name: String? = null): File {
         val storePath = context.getExternalFilesDir(null)?.path.toString() + File.separator + getApplicationName()
@@ -235,7 +231,7 @@ object GalleryTools {
             val charSequence = context.packageManager.getApplicationLabel(ai)
             StringBuilder(charSequence.length).append(charSequence).toString()
         } else {
-            "curiosity_temp_saver"
+            "curiosity_temp_save"
         }
         return appName
     }
