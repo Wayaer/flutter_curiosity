@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
-  runApp(GlobalMaterial(
+  runApp(GlobalWidgetsApp(
       debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
 }
 
