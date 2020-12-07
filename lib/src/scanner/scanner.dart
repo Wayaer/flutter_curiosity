@@ -168,7 +168,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
                   size: 30,
                   color: flash ? widget.flashOnColor : widget.flashOffColor),
               Text(widget.flashText ?? '轻触点亮',
-                  style: Styles.textStyle(
+                  style: BaseTextStyle(
                       color:
                           flash ? widget.flashOnColor : widget.flashOffColor))
             ])),

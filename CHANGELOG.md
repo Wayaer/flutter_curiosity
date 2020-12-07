@@ -1,6 +1,7 @@
 ## [1.3.6]
  * remove TZImagePickerController and picture_library
  * remove openImagePicker
+ * modify styles.dart
 ## [1.3.3]
  * Code for Android to add jump settings
  * Add get device information
