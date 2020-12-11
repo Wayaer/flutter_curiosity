@@ -8,7 +8,6 @@
         result(nil);
         return;
     }
-    //加载文件
     NSFileHandle * fh=[NSFileHandle fileHandleForReadingAtPath:path];
     NSData * data=[fh readDataToEndOfFile];
     result([self getCode:data]);
@@ -25,6 +24,7 @@
     FlutterStandardTypedData * uint8list=[call.arguments valueForKey:@"uint8list"];
     result([self getCode:uint8list.data]);
 }
+
 +(NSDictionary *) getCode:(NSData *)data{
     if (data) {
         CIImage * detectImage=[CIImage imageWithData:data];

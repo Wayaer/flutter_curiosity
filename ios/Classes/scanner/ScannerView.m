@@ -62,8 +62,8 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
     //扫码区域的大小
     AVCaptureVideoPreviewLayer *layer = [AVCaptureVideoPreviewLayer layerWithSession:_captureSession];
     layer.videoGravity = AVLayerVideoGravityResizeAspectFill;
-    //    layer.frame = CGRectMake(left, top, size, size);
-    //        [_captureOutput rectOfInterest];
+//    layer.frame = CGRectMake(left, top, size, size);
+//    [_captureOutput rectOfInterest];
     [_captureOutput setMetadataObjectsDelegate:self queue:dispatch_get_main_queue()];
     [_captureOutput setMetadataObjectTypes:@[AVMetadataObjectTypeAztecCode,
                                              AVMetadataObjectTypeCode39Code,
