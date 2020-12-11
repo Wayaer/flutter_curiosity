@@ -1,6 +1,5 @@
 package flutter.curiosity.scanner
 
-import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
@@ -10,34 +9,27 @@ import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
-import io.flutter.BuildConfig
+import flutter.curiosity.CuriosityPlugin.Companion.context
 import java.io.File
-import java.net.HttpURLConnection
 import java.net.URL
-import java.security.SecureRandom
-import java.security.cert.X509Certificate
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLContext
-import javax.net.ssl.TrustManager
-import javax.net.ssl.X509TrustManager
+import javax.net.ssl.*
 
 object ScannerTools {
     private val executor: Executor = Executors.newSingleThreadExecutor()
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
+    private val handler = Handler(Looper.getMainLooper())
 
     fun scanImagePath() {
         val path = call.argument<String>("path")
-        if (BuildConfig.DEBUG && path == null) {
-            error("Assertion failed")
-        }
-        val file = File(path.toString())
+                ?: error("scanImagePath path is not null")
+        val file = File(path)
         if (file.isFile) {
             executor.execute {
                 val bitmap = BitmapFactory.decodeFile(path)
-                Handler(Looper.getMainLooper()).post { channelResult.success(decodeBitmap(bitmap)) }
+                handler.post { channelResult.success(decodeBitmap(bitmap)) }
             }
         } else {
             channelResult.success(null)
@@ -46,50 +38,49 @@ object ScannerTools {
 
     fun scanImageUrl() {
         val url = call.argument<String>("url")
+                ?: error("scanImageUrl url is not null")
         executor.execute {
             val myUrl = URL(url)
             val bitmap: Bitmap
-            if (url!!.startsWith("https")) {
-                val connection = myUrl.openConnection() as HttpsURLConnection
-                connection.readTimeout = 6 * 60 * 1000
-                connection.connectTimeout = 6 * 60 * 1000
-                val tm = arrayOf<TrustManager>(X509Trust())
-                val sslContext = SSLContext.getInstance("TLS")
-                sslContext.init(null, tm, SecureRandom())
-                // 从上述SSLContext对象中得到SSLSocketFactory对象
-                val ssf = sslContext.socketFactory
-                connection.sslSocketFactory = ssf
-                connection.connect()
-                bitmap = BitmapFactory.decodeStream(connection.inputStream)
-            } else {
-                val connection = myUrl.openConnection() as HttpURLConnection
-                connection.readTimeout = 6 * 60 * 1000
-                connection.connectTimeout = 6 * 60 * 1000
-                connection.connect()
-                bitmap = BitmapFactory.decodeStream(connection.inputStream)
+            val connection = myUrl.openConnection() as HttpsURLConnection
+            connection.readTimeout = 6 * 60 * 1000
+            connection.connectTimeout = 6 * 60 * 1000
+            if (url.startsWith("https")) {
+                connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
             }
-            Handler(Looper.getMainLooper()).post { channelResult.success(decodeBitmap(bitmap)) }
+            connection.connect()
+            bitmap = BitmapFactory.decodeStream(connection.inputStream)
+            handler.post { channelResult.success(decodeBitmap(bitmap)) }
         }
     }
+
 
     fun scanImageMemory() {
         val unit8List = call.argument<ByteArray>("unit8List")
+                ?: error("scanImageMemory path is not null")
         executor.execute {
-            val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List!!.size)
-            Handler(Looper.getMainLooper()).post { channelResult.success(decodeBitmap(bitmap)) }
+            val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List.size)
+            handler.post { channelResult.success(decodeBitmap(bitmap)) }
         }
     }
 
-    private fun decodeBitmap(bitmap: Bitmap): Map<String, Any>? {
+    private fun decodeBitmap(bitmap: Bitmap): Map<String, Any> {
         multiFormatReader.setHints(hints)
         val height = bitmap.height
         val width = bitmap.width
-        val pixels = IntArray(width * height)
-        bitmap.getPixels(pixels, 0, width, 0, 0, width, height)
-        var result: Result? = null
-        val source = RGBLuminanceSource(
+        val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
+        hints[DecodeHintType.TRY_HARDER] = java.lang.Boolean.TRUE
+        val array: ByteArray = ImageHelper(context).getYUV420sp(width, height,
+                bitmap)
+        val source = PlanarYUVLuminanceSource(array,
                 width,
-                height, pixels)
+                height,
+                0,
+                0,
+                width,
+                height,
+                false)
+        var result: Result? = null
         try {
             result = multiFormatReader.decodeWithState(BinaryBitmap(GlobalHistogramBinarizer(source)))
         } catch (e: NotFoundException) {
@@ -101,22 +92,6 @@ object ScannerTools {
         return scanDataToMap(result)
     }
 
-    private class X509Trust : X509TrustManager {
-        // 检查客户端证书
-        @SuppressLint("TrustAllX509TrustManager")
-        override fun checkClientTrusted(chain: Array<X509Certificate>, authType: String) {
-        }
-
-        // 检查服务器端证书
-        @SuppressLint("TrustAllX509TrustManager")
-        override fun checkServerTrusted(chain: Array<X509Certificate>, authType: String) {
-        }
-
-        // 返回受信任的X509证书数组
-        override fun getAcceptedIssuers(): Array<X509Certificate>? {
-            return null
-        }
-    }
 
     // 这里设置可扫描的类型
     private val hints: Map<DecodeHintType, Any>
@@ -147,7 +122,7 @@ object ScannerTools {
             return hints
         }
 
-    fun scanDataToMap(result: Result?): Map<String, Any>? {
+    fun scanDataToMap(result: Result?): Map<String, Any> {
         val data: MutableMap<String, Any> = HashMap()
         if (result == null) {
             data["code"] = ""
@@ -212,4 +187,5 @@ object ScannerTools {
         }
         return rotatedData
     }
+
 }
