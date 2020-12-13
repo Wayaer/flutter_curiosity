@@ -161,13 +161,13 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 
 
 - (void)setCaptureSessionPreset:(NSString *)resolutionPreset {
-    if ([@"Max" isEqualToString:resolutionPreset]) {
+    if ([@"max" isEqualToString:resolutionPreset]) {
         if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
             _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
             _previewSize = CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
                                       _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
         }
-    }else if ([@"UltraHigh" isEqualToString:resolutionPreset]) {
+    }else if ([@"ultraHigh" isEqualToString:resolutionPreset]) {
         if (@available(iOS 9.0, *)) {
             if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
                 _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
@@ -176,24 +176,24 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
         } else {
             // Fallback on earlier versions
         }
-    }else if ([@"VeryHigh" isEqualToString:resolutionPreset]) {
+    }else if ([@"veryHigh" isEqualToString:resolutionPreset]) {
         if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
             _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
             _previewSize = CGSizeMake(1920, 1080);
             
         }
-    }else if ([@"High" isEqualToString:resolutionPreset]) {
+    }else if ([@"high" isEqualToString:resolutionPreset]) {
         if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
             _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
             _previewSize = CGSizeMake(1280, 720);
         }
-    }else if ([@"Medium" isEqualToString:resolutionPreset]) {
+    }else if ([@"medium" isEqualToString:resolutionPreset]) {
         if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
             _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
             _previewSize = CGSizeMake(640, 480);
             
         }
-    }else  if ([@"Low" isEqualToString:resolutionPreset]) {
+    }else  if ([@"low" isEqualToString:resolutionPreset]) {
         if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
             _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
             _previewSize = CGSizeMake(352, 288);

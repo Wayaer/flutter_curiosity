@@ -16,21 +16,21 @@ enum ShareType {
   /// ios
   url,
 }
-enum ResolutionPreset {
+enum CameraResolution {
   /// android QUALITY_QVGA   ios 288*352
-  Low,
+  low,
 
   /// android 480*640  ios 480*640
-  Medium,
+  medium,
 
   /// android 720*1280  ios 720*1280
-  High,
+  high,
 
   /// android 1080*1920  ios 1080*1920
-  VeryHigh,
+  veryHigh,
 
   /// android 2160*3840  ios 2160*3840
-  UltraHigh,
+  ultraHigh,
 
   /// android QUALITY_HIGH  ios 最大
   Max

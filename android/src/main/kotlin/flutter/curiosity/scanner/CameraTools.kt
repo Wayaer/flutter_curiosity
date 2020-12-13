@@ -30,7 +30,7 @@ object CameraTools {
     private fun getBestAvailableCamcorderProfileForResolutionPreset(
             cameraId: Int, preset: String): CamcorderProfile {
         return when (preset) {
-            "Max" -> {
+            "max" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_HIGH)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH)
                 }
@@ -56,7 +56,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            "UltraHigh" -> {
+            "ultraHigh" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_2160P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_2160P)
                 }
@@ -79,7 +79,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            "VeryHigh" -> {
+            "veryHigh" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_1080P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_1080P)
                 }
@@ -99,7 +99,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            "High" -> {
+            "high" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_720P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_720P)
                 }
@@ -116,7 +116,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            "Medium" -> {
+            "medium" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_480P)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_480P)
                 }
@@ -130,7 +130,7 @@ object CameraTools {
                             "No capture session available for current capture session.")
                 }
             }
-            "Low" -> {
+            "low" -> {
                 if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_QVGA)) {
                     return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_QVGA)
                 }

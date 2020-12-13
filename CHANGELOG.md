@@ -2,6 +2,7 @@
  * remove TZImagePickerController and picture_library
  * remove openImagePicker
  * modify styles.dart
+ * the modification conflicts with the method of the camera component
 ## [1.3.3]
  * Code for Android to add jump settings
  * Add get device information
