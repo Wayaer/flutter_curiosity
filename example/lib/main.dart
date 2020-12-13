@@ -1,4 +1,4 @@
-import 'package:curiosity/src/camera_gallery.dart';
+import 'package:curiosity/src/camera/camera_gallery.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/jump_setting.dart';
 import 'package:curiosity/src/share.dart';
@@ -41,7 +41,11 @@ class App extends StatelessWidget {
 }
 
 Widget showText(dynamic key, dynamic value) {
-  return Container(
-      margin: const EdgeInsets.all(10),
-      child: Text(key.toString() + ' = ' + value.toString()));
+  return Visibility(
+      visible: value != null &&
+          value.toString().isNotEmpty &&
+          value.toString() != 'null',
+      child: Container(
+          margin: const EdgeInsets.all(10),
+          child: Text(key.toString() + ' = ' + value.toString())));
 }

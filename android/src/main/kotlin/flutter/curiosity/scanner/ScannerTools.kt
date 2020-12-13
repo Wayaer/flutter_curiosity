@@ -7,15 +7,18 @@ import android.os.Handler
 import android.os.Looper
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
+import com.google.zxing.common.HybridBinarizer
+import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
-import flutter.curiosity.CuriosityPlugin.Companion.context
 import java.io.File
 import java.net.URL
 import java.util.*
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
-import javax.net.ssl.*
+import javax.net.ssl.HttpsURLConnection
+import javax.net.ssl.SSLSocketFactory
+
 
 object ScannerTools {
     private val executor: Executor = Executors.newSingleThreadExecutor()
@@ -24,53 +27,80 @@ object ScannerTools {
 
     fun scanImagePath() {
         val path = call.argument<String>("path")
-                ?: error("scanImagePath path is not null")
-        val file = File(path)
-        if (file.isFile) {
-            executor.execute {
-                val bitmap = BitmapFactory.decodeFile(path)
-                handler.post { channelResult.success(decodeBitmap(bitmap)) }
-            }
+        if (path == null) {
+            channelResult.error("error", "scanImagePath path is not null", null)
         } else {
-            channelResult.success(null)
+            val file = File(path)
+            if (file.isFile) {
+                executor.execute {
+                    try {
+                        val bitmap = BitmapFactory.decodeFile(path)
+                        if (bitmap != null) {
+                            handler.post { channelResult.success(decodeBitmap(bitmap)) }
+                        }
+                    } catch (e: NotFoundException) {
+                        handler.post { channelResult.success(null) }
+                    }
+                }
+            } else {
+                channelResult.success(null)
+            }
         }
     }
 
     fun scanImageUrl() {
         val url = call.argument<String>("url")
-                ?: error("scanImageUrl url is not null")
-        executor.execute {
-            val myUrl = URL(url)
-            val bitmap: Bitmap
-            val connection = myUrl.openConnection() as HttpsURLConnection
-            connection.readTimeout = 6 * 60 * 1000
-            connection.connectTimeout = 6 * 60 * 1000
-            if (url.startsWith("https")) {
-                connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
+        if (url == null) {
+            channelResult.error("error", "scanImageUrl url is not null", null)
+        } else {
+            executor.execute {
+                try {
+                    val myUrl = URL(url)
+                    val bitmap: Bitmap
+                    val connection = myUrl.openConnection() as HttpsURLConnection
+                    connection.readTimeout = 6 * 60 * 1000
+                    connection.connectTimeout = 6 * 60 * 1000
+                    if (url.startsWith("https")) {
+                        connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
+                    }
+                    connection.connect()
+                    bitmap = BitmapFactory.decodeStream(connection.inputStream)
+                    if (bitmap != null) {
+                        handler.post { channelResult.success(decodeBitmap(bitmap)) }
+                    }
+                } catch (e: NotFoundException) {
+                    handler.post { channelResult.success(null) }
+                }
             }
-            connection.connect()
-            bitmap = BitmapFactory.decodeStream(connection.inputStream)
-            handler.post { channelResult.success(decodeBitmap(bitmap)) }
         }
     }
 
 
     fun scanImageMemory() {
-        val unit8List = call.argument<ByteArray>("unit8List")
-                ?: error("scanImageMemory path is not null")
-        executor.execute {
-            val bitmap: Bitmap = BitmapFactory.decodeByteArray(unit8List, 0, unit8List.size)
-            handler.post { channelResult.success(decodeBitmap(bitmap)) }
+        val byteArray = call.argument<ByteArray>("uint8list")
+        if (byteArray == null) {
+            channelResult.error("error", "scanImageMemory uint8list is not null", null)
+        } else {
+            executor.execute {
+                try {
+                    val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                    handler.post { channelResult.success(decodeBitmap(bitmap)) }
+                } catch (e: NotFoundException) {
+                    handler.post { channelResult.success(null) }
+                }
+
+            }
         }
+
     }
 
-    private fun decodeBitmap(bitmap: Bitmap): Map<String, Any> {
+    private fun decodeBitmap(bitmap: Bitmap): Map<String, Any>? {
         multiFormatReader.setHints(hints)
         val height = bitmap.height
         val width = bitmap.width
         val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
         hints[DecodeHintType.TRY_HARDER] = java.lang.Boolean.TRUE
-        val array: ByteArray = ImageHelper(context).getYUV420sp(width, height,
+        val array: ByteArray = ImageHelper(activity).getYUV420(width, height,
                 bitmap)
         val source = PlanarYUVLuminanceSource(array,
                 width,
@@ -83,13 +113,18 @@ object ScannerTools {
         var result: Result? = null
         try {
             result = multiFormatReader.decodeWithState(BinaryBitmap(GlobalHistogramBinarizer(source)))
+            return scanDataToMap(result)
         } catch (e: NotFoundException) {
             try {
-                result = multiFormatReader.decodeWithState(BinaryBitmap(GlobalHistogramBinarizer(source.invert())))
+                result = multiFormatReader.decodeWithState(BinaryBitmap(HybridBinarizer(source)))
+                return scanDataToMap(result)
             } catch (e: NotFoundException) {
+
             }
+        } finally {
+            bitmap.recycle()
         }
-        return scanDataToMap(result)
+        return null
     }
 
 

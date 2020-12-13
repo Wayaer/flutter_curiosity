@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.FLASHLIGHT" />
     <!--允许程序打开网络套接字-->
     <uses-permission android:name="android.permission.INTERNET" />
@@ -14,6 +15,7 @@
     <application
         android:name="io.flutter.app.FlutterApplication"
         android:icon="@mipmap/ic_launcher"
+        android:requestLegacyExternalStorage="true"
         android:label="Curiosity">
         <activity
             android:name="com.curiosity.MainActivity"

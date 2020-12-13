@@ -1,4 +1,5 @@
 import 'package:curiosity/main.dart';
+import 'package:curiosity/src/camera/scan.dart';
 import 'package:curiosity/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
@@ -24,26 +25,42 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
               onPressed: () => systemGallery(), child: const Text('打开系统相册')),
           RaisedButton(
               onPressed: () => systemCamera(), child: const Text('打开系统相机')),
+          RaisedButton(
+              onPressed: () => scanImage(context),
+              child: const Text('相机识别二维码')),
+          RaisedButton(
+              onPressed: () => push(widget: UrlImageScanPage()),
+              child: const Text('识别Url二维码')),
+          RaisedButton(
+              onPressed: () => push(widget: FileImageScanPage()),
+              child: const Text('识别本地图片二维码')),
           const SizedBox(height: 20),
-          Visibility(
-              visible: text != null && text.isNotEmpty,
-              child: showText('path', text)),
+          showText('path', text),
         ]));
   }
 
-  Future<void> scan(BuildContext context) async {
-    final bool permission = await Utils.requestPermissions(
-            Permission.camera, '相机', showAlert: false) &&
-        await Utils.requestPermissions(Permission.storage, '手机存储',
-            showAlert: false);
+  Future<void> scanImage(BuildContext context) async {
+    final bool permission =
+        await Utils.requestPermissions(Permission.camera, '相机') &&
+            await Utils.requestPermissions(Permission.storage, '手机存储');
     if (permission) {
-      showBottomPagePopup<dynamic>(widget: ScannerPage(
-        scanResult: (String value) {
-          text = value;
-          pop();
-          setState(() {});
-        },
-      ));
+      showBottomPagePopup<dynamic>(widget: CameraScanPage());
+    } else {
+      openAppSettings();
+    }
+  }
+
+  Future<void> scan(BuildContext context) async {
+    final bool permission =
+        await Utils.requestPermissions(Permission.camera, '相机') &&
+            await Utils.requestPermissions(Permission.storage, '手机存储');
+    if (permission) {
+      showBottomPagePopup<dynamic>(
+          widget: ScannerPage(scanResult: (String value) {
+        text = value;
+        pop();
+        setState(() {});
+      }));
     } else {
       openAppSettings();
     }

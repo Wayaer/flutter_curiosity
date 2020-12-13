@@ -10,8 +10,8 @@ import 'package:flutter_curiosity/src/tools/internal.dart';
 
 /// 基于原始扫描预览
 /// 使用简单
-class ScannerPage extends StatefulWidget {
-  const ScannerPage({
+class ScannerView extends StatefulWidget {
+  const ScannerView({
     Key key,
     CameraLensFacing lensFacing,
     Color flashOnColor,
@@ -80,10 +80,10 @@ class ScannerPage extends StatefulWidget {
   final CameraResolution resolution;
 
   @override
-  _ScannerPageState createState() => _ScannerPageState();
+  _ScannerViewState createState() => _ScannerViewState();
 }
 
-class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
+class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   ScannerController controller;
   double previewHeight = 0;
   double previewWidth = 0;
@@ -102,7 +102,7 @@ class _ScannerPageState extends State<ScannerPage> with WidgetsBindingObserver {
 
   Future<void> initController() async {
     controller.addListener(() {
-      final String code = controller.code;
+      final String code = controller?.scanResult?.code;
       if (code != null && isFirst && code.isNotEmpty) {
         if (widget.scanResult != null) {
           isFirst = false;
@@ -249,8 +249,7 @@ class ScannerController extends ChangeNotifier {
   final CameraResolution resolution;
 
   StreamSubscription<dynamic> eventChannel;
-  String code;
-  String type;
+  ScanResult scanResult;
   int textureId;
   double previewWidth;
   double previewHeight;
@@ -275,8 +274,7 @@ class ScannerController extends ChangeNotifier {
       previewHeight = double.parse(reply['previewHeight'].toString());
       eventChannel = const EventChannel('$curiosity/event')
           .receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
-        code = data['code'] as String;
-        type = data['type'] as String;
+        scanResult = ScanResult.fromJson(data as Map<dynamic, dynamic>);
         notifyListeners();
       });
     } on PlatformException catch (e) {
@@ -324,6 +322,25 @@ class ScannerController extends ChangeNotifier {
   }
 }
 
+class ScanResult {
+  ScanResult(this.code, this.type);
+
+  ScanResult.fromJson(Map<dynamic, dynamic> json) {
+    code = json['code'] as String;
+    type = json['type'] as String;
+  }
+
+  String code;
+  String type;
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = <String, dynamic>{};
+    data['code'] = code;
+    data['type'] = type;
+    return data;
+  }
+}
+
 class Cameras {
   Cameras({this.name, this.lensFacing});
 
@@ -332,12 +349,35 @@ class Cameras {
 }
 
 ///  以下方法可以配合 camera 组件 做二维码或条形码识别
-Future<String> scanImagePath(String path) async => await curiosityChannel
-    .invokeMethod('scanImagePath', <String, String>{'path': path});
+Future<ScanResult> scanImagePath(String path) async {
+  try {
+    final Map<dynamic, dynamic> data = await curiosityChannel
+        .invokeMethod('scanImagePath', <String, String>{'path': path});
+    if (data != null) return ScanResult.fromJson(data);
+  } on PlatformException catch (e) {
+    log(e);
+  }
+  return null;
+}
 
-Future<String> scanImageUrl(String url) async => await curiosityChannel
-    .invokeMethod('scanImageUrl', <String, String>{'url': url});
+Future<ScanResult> scanImageUrl(String url) async {
+  try {
+    final Map<dynamic, dynamic> data = await curiosityChannel
+        .invokeMethod('scanImageUrl', <String, String>{'url': url});
+    if (data != null) return ScanResult.fromJson(data);
+  } on PlatformException catch (e) {
+    log(e);
+  }
+  return null;
+}
 
-Future<String> scanImageMemory(Uint8List uint8list) async =>
-    await curiosityChannel.invokeMethod(
+Future<ScanResult> scanImageMemory(Uint8List uint8list) async {
+  try {
+    final Map<dynamic, dynamic> data = await curiosityChannel.invokeMethod(
         'scanImageMemory', <String, Uint8List>{'uint8list': uint8list});
+    if (data != null) return ScanResult.fromJson(data);
+  } on PlatformException catch (e) {
+    log(e);
+  }
+  return null;
+}

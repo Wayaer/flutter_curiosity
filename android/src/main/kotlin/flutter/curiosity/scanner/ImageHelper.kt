@@ -7,11 +7,8 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class ImageHelper(base: Context?) : ContextWrapper(base) {
+class ImageHelper(base: Context) : ContextWrapper(base) {
 
-    companion object {
-        private lateinit var yuvs: ByteArray
-    }
 
     /**
      * 根据Bitmap的ARGB值生成YUV420SP数据。
@@ -21,7 +18,8 @@ class ImageHelper(base: Context?) : ContextWrapper(base) {
      * @param scaled      bmp
      * @return YUV420SP数组
      */
-    fun getYUV420sp(inputWidth: Int, inputHeight: Int, scaled: Bitmap): ByteArray {
+    fun getYUV420(inputWidth: Int, inputHeight: Int, scaled: Bitmap): ByteArray {
+        var yuvs = ByteArray(0)
         val argb = IntArray(inputWidth * inputHeight)
         scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight)
         /**
@@ -35,7 +33,7 @@ class ImageHelper(base: Context?) : ContextWrapper(base) {
         } else {
             Arrays.fill(yuvs, 0.toByte())
         }
-        encodeYUV420SP(yuvs, argb, inputWidth, inputHeight)
+        encodeYUV420(yuvs, argb, inputWidth, inputHeight)
         scaled.recycle()
         return yuvs
     }
@@ -48,7 +46,7 @@ class ImageHelper(base: Context?) : ContextWrapper(base) {
      * @param width    image width
      * @param height   image height
      */
-    private fun encodeYUV420SP(yuv420sp: ByteArray, argb: IntArray, width: Int, height: Int) {
+    private fun encodeYUV420(yuv420sp: ByteArray, argb: IntArray, width: Int, height: Int) {
         // 帧图片的像素大小
         val frameSize = width * height
         // ---YUV数据---
