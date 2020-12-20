@@ -8,12 +8,11 @@ class JumpSettingPage extends StatelessWidget {
     final List<Widget> children = <Widget>[];
     children.add(RaisedButton(
         onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')));
-    SettingType.values.map((SettingType value) {
-      children.add(RaisedButton(
-          onPressed: () => jumpSystemSetting(settingType: value),
-          child: Text(value.toString())));
-    }).toList();
-
+    children.addAll(SettingType.values
+        .map((SettingType value) => RaisedButton(
+            onPressed: () => jumpSystemSetting(settingType: value),
+            child: Text(value.toString())))
+        .toList());
     return OverlayScaffold(
         appBar: AppBar(title: const Text('Android Jump Setting')),
         body: Universal(isScroll: true, children: children));
