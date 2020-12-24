@@ -35,6 +35,12 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
               onPressed: () => push(widget: FileImageScanPage()),
               child: const Text('识别本地图片二维码')),
           const SizedBox(height: 20),
+          Container(
+              padding: const EdgeInsets.only(top: 100),
+              child: const ScannerBox(
+                  borderColor: Colors.blue,
+                  scannerColor: Colors.blue,
+                  boxSize: Size(200, 200))),
           showText('path', text),
         ]));
   }

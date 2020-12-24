@@ -173,14 +173,11 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
             ])),
       ),
     ));
-    if (widget.child != null) {
-      children.add(widget.child);
-    }
+    if (widget.child != null) children.add(widget.child);
     child = Stack(children: children);
-    if (widget.bestFit) {
+    if (widget.bestFit)
       child =
           Container(width: previewWidth, height: previewHeight, child: child);
-    }
     return child;
   }
 
@@ -222,9 +219,7 @@ class Scanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (controller?.textureId == null) {
-      return Container();
-    }
+    if (controller?.textureId == null) return Container();
     return Texture(textureId: controller.textureId);
   }
 }
@@ -298,8 +293,8 @@ class ScannerController extends ChangeNotifier {
       }).toList();
     } on PlatformException catch (e) {
       log(e);
-      return null;
     }
+    return null;
   }
 
   Future<void> disposeCameras() async {
