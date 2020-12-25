@@ -16,6 +16,11 @@ bool get isLinux => Platform.isLinux;
 
 bool get isFuchsia => Platform.isFuchsia;
 
+bool get isMobile => Platform.isIOS || Platform.isAndroid;
+
+bool get isDesktop =>
+    Platform.isMacOS || Platform.isWindows || Platform.isLinux;
+
 /// 安装apk  仅支持android
 /// Installing APK only supports Android
 /// success  安装成功
