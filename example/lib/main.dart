@@ -23,16 +23,14 @@ class App extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           RaisedButton(
-              onPressed: () => push(widget: SharePage()),
-              child: const Text('分享')),
+              onPressed: () => push(SharePage()), child: const Text('分享')),
           RaisedButton(
-              onPressed: () => push(widget: GetInfoPage()),
-              child: const Text('获取信息')),
+              onPressed: () => push(GetInfoPage()), child: const Text('获取信息')),
           RaisedButton(
-              onPressed: () => push(widget: JumpSettingPage()),
+              onPressed: () => push(JumpSettingPage()),
               child: const Text('跳转设置')),
           RaisedButton(
-              onPressed: () => push(widget: CameraGalleryPage()),
+              onPressed: () => push(CameraGalleryPage()),
               child: const Text('相机和图库')),
         ],
       ),

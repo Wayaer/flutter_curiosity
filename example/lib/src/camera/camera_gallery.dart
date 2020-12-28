@@ -29,10 +29,10 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
               onPressed: () => scanImage(context),
               child: const Text('相机识别二维码')),
           RaisedButton(
-              onPressed: () => push(widget: UrlImageScanPage()),
+              onPressed: () => push(UrlImageScanPage()),
               child: const Text('识别Url二维码')),
           RaisedButton(
-              onPressed: () => push(widget: FileImageScanPage()),
+              onPressed: () => push(FileImageScanPage()),
               child: const Text('识别本地图片二维码')),
           const SizedBox(height: 20),
           Container(
