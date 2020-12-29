@@ -75,7 +75,7 @@ class ScannerView extends StatefulWidget {
   final Color flashOffColor;
   final String flashText;
 
-  //是否显示扫描框
+  /// 是否显示扫描框
   final bool scannerBox;
   final CameraResolution resolution;
 
@@ -273,7 +273,7 @@ class ScannerController extends ChangeNotifier {
         notifyListeners();
       });
     } on PlatformException catch (e) {
-      //原生异常抛出
+      /// 原生异常抛出
       log('initializeCameras PlatformException');
       log(e);
     }
@@ -343,7 +343,7 @@ class Cameras {
   final CameraLensFacing lensFacing;
 }
 
-///  以下方法可以配合 camera 组件 做二维码或条形码识别
+/// 以下方法可以配合 camera 组件 做二维码或条形码识别
 Future<ScanResult> scanImagePath(String path) async {
   try {
     final Map<dynamic, dynamic> data = await curiosityChannel
