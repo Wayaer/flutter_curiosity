@@ -52,6 +52,6 @@
 ### 2.[二维码扫描](./lib/src/scanner)
 
 ### 3.获取手机硬件信息 (app信息,设备信息)
-<img src="lib/res/main.png" width="360px"/> <img src="lib/res/share.png" width="360px"/>
-<img src="lib/res/android_setting.png" width="360px"/> <img src="lib/res/app_device.png" width="360px"/>
-<img src="lib/res/camera_gallry.png" width="360px"/>
+<img src="example/screen/main.png" width="360px"/> <img src="example/screen/share.png" width="360px"/>
+<img src="example/screen/android_setting.png" width="360px"/> <img src="example/screen/app_device.png" width="360px"/>
+<img src="example/screen/camera_gallry.png" width="360px"/>

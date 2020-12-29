@@ -2,7 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/src/tools/internal.dart';
+import 'package:flutter_curiosity/tools/internal.dart';
 
 bool get isAndroid => Platform.isAndroid;
 
