@@ -34,7 +34,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   Future<void> getInstalled() async {
     final List<AppsModel> data = await getInstalledApp;
     list = <Widget>[];
-    data.map((AppsModel appsModel) {
+    data?.builder((AppsModel appsModel) {
       final Map<String, dynamic> appModel = appsModel.toJson();
       final List<Widget> app = <Widget>[];
       appModel.forEach((String key, dynamic value) {
@@ -49,7 +49,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
               border: Border(bottom: BorderSide(color: Colors.grey))),
           crossAxisAlignment: CrossAxisAlignment.start,
           children: app));
-    }).toList();
+    });
     setState(() {});
   }
 

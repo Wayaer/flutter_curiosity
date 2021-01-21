@@ -41,7 +41,9 @@ class App extends StatelessWidget {
 Widget showText(dynamic key, dynamic value) {
   return Visibility(
       visible: value != null &&
-          value.toString().isNotEmpty &&
+          value
+              .toString()
+              .isNotEmpty &&
           value.toString() != 'null',
       child: Container(
           margin: const EdgeInsets.all(10),

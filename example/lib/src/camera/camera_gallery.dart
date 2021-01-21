@@ -46,6 +46,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> scanImage(BuildContext context) async {
+    if (!isMobile) return;
     final bool permission =
         await Utils.requestPermissions(Permission.camera, '相机') &&
             await Utils.requestPermissions(Permission.storage, '手机存储');
@@ -57,6 +58,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> scan(BuildContext context) async {
+    if (!isMobile) return;
     final bool permission =
         await Utils.requestPermissions(Permission.camera, '相机') &&
             await Utils.requestPermissions(Permission.storage, '手机存储');
@@ -80,6 +82,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> systemCamera() async {
+    if (!isMobile) return;
     if (await Utils.requestPermissions(Permission.camera, '使用相机')) {
       final String data = await openSystemCamera();
       showToast(data.toString());
