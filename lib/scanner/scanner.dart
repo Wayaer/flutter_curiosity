@@ -4,8 +4,8 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/constant/styles.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
 /// 基于原始扫描预览

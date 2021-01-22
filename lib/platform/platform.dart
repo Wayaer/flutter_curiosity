@@ -1,24 +1,22 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_curiosity/platform/platform_html.dart'
-    if (dart.library.io) 'package:flutter_curiosity/platform/platform_io.dart';
 
 bool get isWeb => kIsWeb;
 
-bool get isMacOS => isInternalMacOS;
+bool get isMacOS => defaultTargetPlatform == TargetPlatform.macOS;
 
-bool get isWindows => isInternalWindows;
+bool get isWindows => defaultTargetPlatform == TargetPlatform.windows;
 
-bool get isLinux => isInternalLinux;
+bool get isLinux => defaultTargetPlatform == TargetPlatform.linux;
 
-bool get isAndroid => isInternalAndroid;
+bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
 
-bool get isIOS => isInternalIOS;
+bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
 
-bool get isFuchsia => isInternalFuchsia;
+bool get isFuchsia => defaultTargetPlatform == TargetPlatform.fuchsia;
 
-bool get isMobile => isInternalAndroid || isInternalIOS;
+bool get isMobile => isAndroid || isIOS;
 
-bool get isDesktop => isInternalMacOS || isInternalWindows || isInternalLinux;
+bool get isDesktop => isMacOS || isWindows || isLinux;
 
 bool get isRelease => kReleaseMode;
 
