@@ -14,9 +14,3 @@ class BaseTextStyle extends TextStyle {
             height: height,
             color: color);
 }
-
-/// start 合并到 end
-TextStyle mergeTextStyle(TextStyle startStyle, TextStyle endStyle) {
-  if (startStyle != null && endStyle != null) endStyle.merge(startStyle);
-  return endStyle;
-}

@@ -1,7 +1,6 @@
 import 'dart:ui';
-
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_curiosity/platform/platform.dart';
 
 /// size → Size 设备尺寸信息，如屏幕的大小，单位 pixels
 Size get getWindowSize => MediaQueryData.fromWindow(window).size;
@@ -11,8 +10,6 @@ Size get getWindowSize => MediaQueryData.fromWindow(window).size;
 double get getDevicePixelRatio =>
     MediaQueryData.fromWindow(window).devicePixelRatio;
 const int _limitLength = 800;
-
-bool get isDebug => !kReleaseMode;
 
 void log(dynamic msg) {
   final String message = msg.toString();

@@ -4,9 +4,22 @@ import 'package:curiosity/src/jump_setting.dart';
 import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
+  print('isWeb');
+  print(isWeb);
+  print('isMacOS');
+  print(isMacOS);
+  print('isAndroid');
+  print(isAndroid);
+  print('isIOS');
+  print(isIOS);
+  print('isMobile');
+  print(isMobile);
+  print('isDesktop');
+  print(isDesktop);
   runApp(GlobalWidgetsApp(
       debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
 }
@@ -41,9 +54,7 @@ class App extends StatelessWidget {
 Widget showText(dynamic key, dynamic value) {
   return Visibility(
       visible: value != null &&
-          value
-              .toString()
-              .isNotEmpty &&
+          value.toString().isNotEmpty &&
           value.toString() != 'null',
       child: Container(
           margin: const EdgeInsets.all(10),

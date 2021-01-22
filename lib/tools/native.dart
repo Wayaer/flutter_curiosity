@@ -4,29 +4,13 @@ import 'dart:typed_data';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
-bool get isAndroid => Platform.isAndroid;
-
-bool get isIOS => Platform.isIOS;
-
-bool get isMacOS => Platform.isMacOS;
-
-bool get isWindows => Platform.isWindows;
-
-bool get isLinux => Platform.isLinux;
-
-bool get isFuchsia => Platform.isFuchsia;
-
-bool get isMobile => Platform.isIOS || Platform.isAndroid;
-
-bool get isDesktop =>
-    Platform.isMacOS || Platform.isWindows || Platform.isLinux;
-
 /// 安装apk  仅支持android
 /// Installing APK only supports Android
 /// success  安装成功
 /// cancel  取消安装
 /// not permissions  没有打开安装权限
 Future<String> installApp(String apkPath) async {
+  if (!_supportPlatform) return null;
   if (!isAndroid) return null;
   return await curiosityChannel
       .invokeMethod('installApp', <String, String>{'apkPath': apkPath});
@@ -39,26 +23,26 @@ Future<String> installApp(String apkPath) async {
 /// The android platform "marketPackageName" cannot be null
 Future<void> goToMarket<T>(
     {String packageName, String marketPackageName, String appID}) async {
-  if (!_supportPlatform()) {
-    if (isIOS) {
-      assert(appID != null);
-      await curiosityChannel
-          .invokeMethod<T>('goToMarket', <String, String>{'appId': appID});
-    }
-    if (isAndroid) {
-      assert(packageName != null && marketPackageName != null);
-      if (marketPackageName == null)
-        await curiosityChannel.invokeMethod<T>('goToMarket', <String, String>{
-          'packageName': packageName,
-          'marketPackageName': marketPackageName
-        });
-    }
+  if (!_supportPlatform) return;
+  if (isIOS) {
+    assert(appID != null);
+    await curiosityChannel
+        .invokeMethod<T>('goToMarket', <String, String>{'appId': appID});
+  }
+  if (isAndroid) {
+    assert(packageName != null && marketPackageName != null);
+    if (marketPackageName == null)
+      await curiosityChannel.invokeMethod<T>('goToMarket', <String, String>{
+        'packageName': packageName,
+        'marketPackageName': marketPackageName
+      });
   }
 }
 
 /// 是否安装某个app  仅支持android
 /// is install an app that only supports Android
 Future<bool> isInstallApp(String packageName) async {
+  if (!_supportPlatform) return null;
   if (isAndroid) return false;
   return await curiosityChannel.invokeMethod(
       'isInstallApp', <String, String>{'packageName': packageName});
@@ -67,14 +51,14 @@ Future<bool> isInstallApp(String packageName) async {
 /// 退出app
 /// Exit app
 Future<void> get exitApp async {
-  if (!_supportPlatform())
-    await curiosityChannel.invokeMethod<dynamic>('exitApp');
+  if (!_supportPlatform) return;
+  await curiosityChannel.invokeMethod<dynamic>('exitApp');
 }
 
 /// 获取文件夹或文件大小
 /// Gets the folder or file size
 Future<String> getFilePathSize(String path) async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   return await curiosityChannel
       .invokeMethod('getFilePathSize', <String, String>{'filePath': path});
 }
@@ -84,7 +68,7 @@ Future<String> getFilePathSize(String path) async {
 /// directDial 为 true 需要 自行申请动态申请权限
 Future<void> systemCallPhone<T>(String phoneNumber,
     {bool directDial = false}) async {
-  if (_supportPlatform()) return;
+  if (!_supportPlatform) return;
   await curiosityChannel.invokeMethod<T>('callPhone',
       <String, dynamic>{'phoneNumber': phoneNumber, 'directDial': directDial});
 }
@@ -95,7 +79,7 @@ Future<String> systemShare(
     String content,
     List<String> imagesPath,
     ShareType shareType}) async {
-  if (_supportPlatform()) return 'not support ${Platform.operatingSystem}';
+  if (!_supportPlatform) return 'not support Platform';
   if (shareType == null) return 'The shareType cannot be empty';
 
   if (shareType == ShareType.images) {
@@ -117,14 +101,14 @@ Future<String> systemShare(
 /// 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 /// Judge whether GPS is on. If GPS or AGPs is turned on, it is considered to be on
 Future<bool> get getGPSStatus async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   return await curiosityChannel.invokeMethod('getGPSStatus');
 }
 
 /// 跳转到GPS定位权限设置页面
 /// Jump to the GPS location permission setting page
 Future<bool> get jumpGPSSetting async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   if (isIOS) return await jumpAppSetting;
   if (isAndroid) return await curiosityChannel.invokeMethod('jumpGPSSetting');
   return null;
@@ -133,14 +117,14 @@ Future<bool> get jumpGPSSetting async {
 /// 跳转到App权限设置页面
 /// Jump to app permission setting page
 Future<bool> get jumpAppSetting async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   return await curiosityChannel.invokeMethod('jumpAppSetting');
 }
 
 /// 跳转到android 系统设置
 /// Jump to Android system settings
 Future<bool> jumpSystemSetting({SettingType settingType}) async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   if (isIOS) return await jumpAppSetting;
   if (isAndroid) {
     final List<String> type = settingType.toString().split('.');
@@ -157,7 +141,7 @@ Future<bool> jumpSystemSetting({SettingType settingType}) async {
 ///       <string>是否允许Curiosity访问你的相册？</string>
 /// ios path 包含 file:///
 Future<String> get openSystemGallery async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   return await curiosityChannel.invokeMethod('openSystemGallery');
 }
 
@@ -185,7 +169,7 @@ Future<String> get openSystemGallery async {
 Future<String> openSystemCamera({String savePath}) async {
   /// savePath => android 图片临时储存位置 (仅支持android)
   /// alertNativeTips => ios 是否弹出用户未允许访问相机权限提示 (仅支持ios)
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   String path = await curiosityChannel
       .invokeMethod('openSystemCamera', <String, String>{'path': savePath});
   if (savePath != null) path = savePath;
@@ -197,6 +181,7 @@ Future<String> openSystemCamera({String savePath}) async {
 @deprecated
 Future<String> saveImageToGallery(Uint8List imageBytes,
     {int quality = 100, String name}) async {
+  if (!_supportPlatform) return null;
   assert(imageBytes != null);
   final String result = await curiosityChannel.invokeMethod(
       'saveImageToGallery', <String, dynamic>{
@@ -211,6 +196,7 @@ Future<String> saveImageToGallery(Uint8List imageBytes,
 /// to the local device media gallery.
 @deprecated
 Future<String> saveFileToGallery(String file) async {
+  if (!_supportPlatform) return null;
   assert(file != null);
   final String result =
       await curiosityChannel.invokeMethod('saveFileToGallery', file);
@@ -219,6 +205,7 @@ Future<String> saveFileToGallery(String file) async {
 
 /// AppInfo
 Future<List<AppsModel>> get getInstalledApp async {
+  if (!_supportPlatform) return null;
   if (!isAndroid) return null;
   final List<Map<dynamic, dynamic>> appList = await curiosityChannel
       .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp');
@@ -232,6 +219,7 @@ Future<List<AppsModel>> get getInstalledApp async {
 
 /// get Android Device Info
 Future<AndroidDeviceModel> get getAndroidDeviceInfo async {
+  if (!_supportPlatform) return null;
   if (!isAndroid) return null;
   final Map<String, dynamic> map =
       await curiosityChannel.invokeMapMethod<String, dynamic>('getDeviceInfo');
@@ -240,6 +228,7 @@ Future<AndroidDeviceModel> get getAndroidDeviceInfo async {
 
 /// get IOS Device Info
 Future<IOSDeviceModel> get getIOSDeviceInfo async {
+  if (!_supportPlatform) return null;
   if (!isIOS) return null;
   final Map<String, dynamic> map =
       await curiosityChannel.invokeMapMethod<String, dynamic>('getDeviceInfo');
@@ -248,7 +237,7 @@ Future<IOSDeviceModel> get getIOSDeviceInfo async {
 
 /// get all info
 Future<AppInfoModel> get getPackageInfo async {
-  if (_supportPlatform()) return null;
+  if (!_supportPlatform) return null;
   final Map<String, dynamic> map =
       await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo');
   return AppInfoModel.fromJson(map);
@@ -256,43 +245,44 @@ Future<AppInfoModel> get getPackageInfo async {
 
 /// android versionCode  ios version
 Future<int> get getVersionCode async {
+  if (!_supportPlatform) return null;
   final AppInfoModel appInfoModel = await getPackageInfo;
   return appInfoModel.versionCode;
 }
 
 /// app name
 Future<String> get getAppName async {
-  if (isIOS || isAndroid) {
-    final AppInfoModel appInfoModel = await getPackageInfo;
-    return appInfoModel.appName;
-  }
-  return null;
+  if (!_supportPlatform) return null;
+  if (!(isIOS || isAndroid)) return null;
+  final AppInfoModel appInfoModel = await getPackageInfo;
+  return appInfoModel.appName;
 }
 
 /// package name
 Future<String> get getPackageName async {
+  if (!_supportPlatform) return null;
   final AppInfoModel appInfoModel = await getPackageInfo;
   return appInfoModel.packageName;
 }
 
 /// android versionName  ios buildName
 Future<String> get getVersionName async {
+  if (!_supportPlatform) return null;
   final AppInfoModel appInfoModel = await getPackageInfo;
   return appInfoModel.versionName;
 }
 
 /// root directory
 Future<String> get getRootDirectory async {
+  if (!_supportPlatform) return null;
   final AppInfoModel appInfoModel = await getPackageInfo;
   if (isAndroid) return appInfoModel.externalStorageDirectory;
   if (isIOS || isMacOS) return appInfoModel.homeDirectory;
   return '';
 }
 
-bool _supportPlatform() {
-  if (!(isAndroid || isIOS || isMacOS)) {
-    log('Curiosity is not support ${Platform.operatingSystem}');
-    return true;
-  }
+bool get _supportPlatform {
+  if (!isWeb && (isAndroid || isIOS || isMacOS)) return true;
+  log('Curiosity is not support Platform');
   return false;
 }
