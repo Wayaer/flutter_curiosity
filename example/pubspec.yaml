@@ -15,7 +15,9 @@ dependencies:
   flutter_curiosity:
     path: ../
   flutter_waya:
-    path: ../../flutter_waya
+    git:
+      url: git://github.com/Wayaer/flutter_waya.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
