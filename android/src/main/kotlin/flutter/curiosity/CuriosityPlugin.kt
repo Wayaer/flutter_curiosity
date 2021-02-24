@@ -20,18 +20,17 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
-import io.flutter.view.TextureRegistry
 
 
 /**
  * CuriosityPlugin
  */
-class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, ActivityResultListener {
+class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
     private lateinit var curiosityChannel: MethodChannel
-    private var scannerView: ScannerView? = null
-    private lateinit var registry: TextureRegistry
+
+    private lateinit var context: Context
+    private lateinit var activity: Activity
     private lateinit var eventChannel: EventChannel
 
     companion object {
@@ -39,19 +38,66 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         var openSystemCameraCode = 101
         var installApkCode = 102
         var installPermission = 103
-        lateinit var context: Context
         lateinit var call: MethodCall
-        lateinit var activity: Activity
         lateinit var channelResult: MethodChannel.Result
     }
 
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
         val curiosity = "Curiosity"
         curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
-        curiosityChannel.setMethodCallHandler(this)
         context = plugin.applicationContext
-        registry = plugin.textureRegistry
-        eventChannel = EventChannel(plugin.binaryMessenger, "$curiosity/event")
+
+        var scannerView: ScannerView? = null
+
+        curiosityChannel.setMethodCallHandler { _call, _result ->
+            channelResult = _result
+            call = _call
+            when (call.method) {
+                "exitApp" -> NativeTools.exitApp()
+                "installApp" -> NativeTools.installApp(context, activity)
+                "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
+                "callPhone" -> channelResult.success(NativeTools.callPhone(context, activity))
+                "goToMarket" -> channelResult.success(NativeTools.goToMarket(activity))
+                "isInstallApp" -> channelResult.success(NativeTools.isInstallApp(activity))
+                "getAppInfo" -> channelResult.success(NativeTools.getAppInfo(context))
+                "getDeviceInfo" -> channelResult.success(NativeTools.getDeviceInfo(context))
+                "getInstalledApp" -> channelResult.success(NativeTools.getInstalledApp(context))
+                "getGPSStatus" -> channelResult.success(NativeTools.getGPSStatus(context))
+                "systemShare" -> channelResult.success(NativeTools.systemShare(activity))
+                "jumpGPSSetting" -> channelResult.success(NativeTools.jumpGPSSetting(context, activity))
+                "jumpAppSetting" -> channelResult.success(NativeTools.jumpAppSetting(context, activity))
+                "jumpSystemSetting" -> channelResult.success(NativeTools.jumpSystemSetting(activity))
+                ///相机拍照图库选择
+                "openSystemGallery" -> GalleryTools.openSystemGallery(activity)
+                "openSystemCamera" -> GalleryTools.openSystemCamera(context, activity)
+                "saveFileToGallery" -> GalleryTools.saveFileToGallery(context)
+                "saveImageToGallery" -> GalleryTools.saveImageToGallery(context)
+                ///扫码相机相关
+                "scanImagePath" -> ScannerTools.scanImagePath(activity)
+                "scanImageUrl" -> ScannerTools.scanImageUrl(activity)
+                "scanImageMemory" -> ScannerTools.scanImageMemory(activity)
+                "availableCameras" ->
+                    channelResult.success(CameraTools.getAvailableCameras(activity))
+                "initializeCameras" -> {
+                    eventChannel = EventChannel(plugin.binaryMessenger, "$curiosity/event")
+                    scannerView = ScannerView(plugin.textureRegistry.createSurfaceTexture(), activity)
+                    eventChannel.setStreamHandler(scannerView)
+                    scannerView!!.initCameraView()
+                }
+                "setFlashMode" -> {
+                    val status = call.argument<Boolean>("status")
+                    scannerView?.enableTorch(status === java.lang.Boolean.TRUE)
+                    channelResult.success("setFlashMode")
+                }
+                "disposeCameras" -> {
+                    scannerView?.dispose()
+                    eventChannel.setStreamHandler(null)
+                    channelResult.success("dispose")
+                }
+                else -> channelResult.notImplemented()
+            }
+
+        }
 
     }
 
@@ -80,62 +126,13 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
         eventChannel.setStreamHandler(null)
     }
 
-    ///主要用于接收Flutter端对原生方法调用的实现.
-    override fun onMethodCall(_call: MethodCall, _result: MethodChannel.Result) {
-        channelResult = _result
-        call = _call
-        when (call.method) {
-            "exitApp" -> NativeTools.exitApp()
-            "installApp" -> NativeTools.installApp()
-            "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
-            "callPhone" -> channelResult.success(NativeTools.callPhone())
-            "goToMarket" -> channelResult.success(NativeTools.goToMarket())
-            "isInstallApp" -> channelResult.success(NativeTools.isInstallApp())
-            "getAppInfo" -> channelResult.success(NativeTools.getAppInfo())
-            "getDeviceInfo" -> channelResult.success(NativeTools.getDeviceInfo())
-            "getInstalledApp" -> channelResult.success(NativeTools.getInstalledApp())
-            "getGPSStatus" -> channelResult.success(NativeTools.getGPSStatus())
-            "systemShare" -> channelResult.success(NativeTools.systemShare())
-            "jumpGPSSetting" -> NativeTools.jumpGPSSetting()
-            "jumpAppSetting" -> NativeTools.jumpAppSetting()
-            "jumpSystemSetting" -> NativeTools.jumpSystemSetting()
-            ///相机拍照图库选择
-            "openSystemGallery" -> GalleryTools.openSystemGallery()
-            "openSystemCamera" -> GalleryTools.openSystemCamera()
-            "saveFileToGallery" -> GalleryTools.saveFileToGallery()
-            "saveImageToGallery" -> GalleryTools.saveImageToGallery()
-            ///扫码相机相关
-            "scanImagePath" -> ScannerTools.scanImagePath()
-            "scanImageUrl" -> ScannerTools.scanImageUrl()
-            "scanImageMemory" -> ScannerTools.scanImageMemory()
-            "availableCameras" ->
-                channelResult.success(CameraTools.getAvailableCameras(activity))
-            "initializeCameras" -> {
-                scannerView = ScannerView(registry.createSurfaceTexture())
-                eventChannel.setStreamHandler(scannerView)
-                scannerView!!.initCameraView()
-            }
-            "setFlashMode" -> {
-                val status = call.argument<Boolean>("status")
-                scannerView?.enableTorch(status === java.lang.Boolean.TRUE)
-                channelResult.success("setFlashMode")
-            }
-            "disposeCameras" -> {
-                scannerView?.dispose()
-                eventChannel.setStreamHandler(null)
-                channelResult.success("dispose")
-            }
-            else -> channelResult.notImplemented()
-        }
-    }
-
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 openSystemGalleryCode -> {
                     val uri: Uri? = intent?.data
-                    channelResult.success(Tools.getRealPathFromURI(uri))
+                    channelResult.success(Tools.getRealPathFromURI(uri, context))
                 }
                 openSystemCameraCode -> {
                     val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -150,7 +147,7 @@ class CuriosityPlugin : MethodCallHandler, ActivityAware, FlutterPlugin, Activit
                 }
                 installPermission -> {
                     //已经打开安装权限
-                    NativeTools.installApp()
+                    NativeTools.installApp(context, activity)
                 }
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {

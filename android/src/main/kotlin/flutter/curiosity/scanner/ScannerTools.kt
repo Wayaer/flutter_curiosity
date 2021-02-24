@@ -1,5 +1,6 @@
 package flutter.curiosity.scanner
 
+import android.app.Activity
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.Image
@@ -8,7 +9,6 @@ import android.os.Looper
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
 import com.google.zxing.common.HybridBinarizer
-import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
 import java.io.File
@@ -25,7 +25,7 @@ object ScannerTools {
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
     private val handler = Handler(Looper.getMainLooper())
 
-    fun scanImagePath() {
+    fun scanImagePath(activity: Activity) {
         val path = call.argument<String>("path")
         if (path == null) {
             channelResult.error("error", "scanImagePath path is not null", null)
@@ -36,7 +36,10 @@ object ScannerTools {
                     try {
                         val bitmap = BitmapFactory.decodeFile(path)
                         if (bitmap != null) {
-                            handler.post { channelResult.success(decodeBitmap(bitmap)) }
+                            handler.post {
+                                channelResult.success(decodeBitmap
+                                (bitmap, activity))
+                            }
                         }
                     } catch (e: NotFoundException) {
                         handler.post { channelResult.success(null) }
@@ -48,7 +51,7 @@ object ScannerTools {
         }
     }
 
-    fun scanImageUrl() {
+    fun scanImageUrl(activity: Activity) {
         val url = call.argument<String>("url")
         if (url == null) {
             channelResult.error("error", "scanImageUrl url is not null", null)
@@ -66,7 +69,10 @@ object ScannerTools {
                     connection.connect()
                     bitmap = BitmapFactory.decodeStream(connection.inputStream)
                     if (bitmap != null) {
-                        handler.post { channelResult.success(decodeBitmap(bitmap)) }
+                        handler.post {
+                            channelResult.success(decodeBitmap
+                            (bitmap, activity))
+                        }
                     }
                 } catch (e: NotFoundException) {
                     handler.post { channelResult.success(null) }
@@ -76,7 +82,7 @@ object ScannerTools {
     }
 
 
-    fun scanImageMemory() {
+    fun scanImageMemory(activity: Activity) {
         val byteArray = call.argument<ByteArray>("uint8list")
         if (byteArray == null) {
             channelResult.error("error", "scanImageMemory uint8list is not null", null)
@@ -84,7 +90,10 @@ object ScannerTools {
             executor.execute {
                 try {
                     val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                    handler.post { channelResult.success(decodeBitmap(bitmap)) }
+                    handler.post {
+                        channelResult.success(decodeBitmap(bitmap, activity
+                        ))
+                    }
                 } catch (e: NotFoundException) {
                     handler.post { channelResult.success(null) }
                 }
@@ -94,7 +103,7 @@ object ScannerTools {
 
     }
 
-    private fun decodeBitmap(bitmap: Bitmap): Map<String, Any>? {
+    private fun decodeBitmap(bitmap: Bitmap, activity: Activity): Map<String, Any>? {
         multiFormatReader.setHints(hints)
         val height = bitmap.height
         val width = bitmap.width
@@ -110,7 +119,7 @@ object ScannerTools {
                 width,
                 height,
                 false)
-        var result: Result? = null
+        var result: Result?
         try {
             result = multiFormatReader.decodeWithState(BinaryBitmap(GlobalHistogramBinarizer(source)))
             return scanDataToMap(result)

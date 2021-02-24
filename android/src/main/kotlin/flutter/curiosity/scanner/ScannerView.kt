@@ -1,5 +1,6 @@
 package flutter.curiosity.scanner
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.ImageFormat
 import android.hardware.camera2.*
@@ -8,7 +9,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Size
 import android.view.Surface
-import flutter.curiosity.CuriosityPlugin.Companion.activity
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.channelResult
 import io.flutter.plugin.common.EventChannel
@@ -17,7 +17,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 
-class ScannerView(private val texture: SurfaceTextureEntry) : EventChannel.StreamHandler {
+class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) : EventChannel.StreamHandler {
     private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private lateinit var previewSize: Size
     private var cameraDevice: CameraDevice? = null

@@ -5,7 +5,6 @@
 #import "ScannerView.h"
 #import <Photos/Photos.h>
 
-API_AVAILABLE(ios(10.0))
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;

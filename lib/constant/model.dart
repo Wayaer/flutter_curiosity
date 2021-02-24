@@ -211,7 +211,7 @@ class AndroidDeviceModel {
     display = json['display'] as String;
     type = json['type'] as String;
     version = json['version'] != null
-        ? Version.fromJson(json['version'] as Map<String, dynamic>)
+        ? Version.fromJson(json['version'] as Map<dynamic, dynamic>)
         : null;
     manufacturer = json['manufacturer'] as String;
     tags = json['tags'] as String;
@@ -281,7 +281,7 @@ class Version {
       this.previewSdkInt,
       this.incremental});
 
-  Version.fromJson(Map<String, dynamic> json) {
+  Version.fromJson(Map<dynamic, dynamic> json) {
     baseOS = json['baseOS'] as String;
     securityPatch = json['securityPatch'] as String;
     sdkInt = json['sdkInt'] as int;
