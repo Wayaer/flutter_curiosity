@@ -8,7 +8,7 @@
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
-    NSObject<FlutterTextureRegistry> *registry;
+    NSObject<FlutterPluginRegistrar> *registrar;
     FlutterEventChannel *eventChannel;
     FlutterMethodCall *call;
     FlutterResult result;
@@ -29,14 +29,13 @@ NSString * const curiosityEvent=@"Curiosity/event";
                                  :(UIViewController *)_viewController{
     self = [super init];
     viewController = _viewController;
-    registry =[_registrar textures];
-    eventChannel = [FlutterEventChannel eventChannelWithName:curiosityEvent binaryMessenger:[_registrar messenger]];
+    registrar=_registrar;
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
     result = _result;
-   if ([@"openSystemGallery" isEqualToString:call.method]) {
+    if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
         [GalleryTools openSystemGallery:viewController :picker :result];
@@ -67,12 +66,13 @@ NSString * const curiosityEvent=@"Curiosity/event";
                 return;
             }else{
                 if(scannerView)[scannerView close];
-                int64_t scannerViewId = [registry registerTexture:view];
+                int64_t scannerViewId = [registrar.textures registerTexture:view];
                 scannerView = view;
+                eventChannel = [FlutterEventChannel eventChannelWithName:curiosityEvent binaryMessenger:[registrar messenger]];
                 [eventChannel setStreamHandler:view];
                 view.eventChannel = eventChannel;
                 view.onFrameAvailable = ^{
-                    [self->registry textureFrameAvailable:scannerViewId];
+                    [self->registrar.textures textureFrameAvailable:scannerViewId];
                 };
                 result(@{
                     @"textureId":@(scannerViewId),
@@ -88,7 +88,7 @@ NSString * const curiosityEvent=@"Curiosity/event";
         NSDictionary *arguments = call.arguments;
         NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
         if(scannerView)[scannerView close];
-        if(textureId) [registry unregisterTexture:textureId];
+        if(textureId) [registrar.textures unregisterTexture:textureId];
         result([Tools resultInfo:@"dispose"]);
     }else if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
