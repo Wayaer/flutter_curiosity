@@ -1,3 +1,5 @@
+## [1.6.0]
+ * Optimize native Android & IOS
 ## [1.5.0]
  * modify styles.dart
  * the modification conflicts with the method of the camera component
