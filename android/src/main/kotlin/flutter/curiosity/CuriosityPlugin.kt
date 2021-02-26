@@ -3,10 +3,13 @@ package flutter.curiosity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import androidx.annotation.NonNull
+import flutter.curiosity.connectivity.Connectivity
+import flutter.curiosity.connectivity.ConnectivityReceiver
 import flutter.curiosity.gallery.GalleryTools
 import flutter.curiosity.scanner.CameraTools
 import flutter.curiosity.scanner.ScannerTools
@@ -26,12 +29,12 @@ import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 /**
  * CuriosityPlugin
  */
-class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
-    private lateinit var curiosityChannel: MethodChannel
-
+class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, EventChannel.StreamHandler {
+    private var curiosityChannel: MethodChannel? = null
     private lateinit var context: Context
     private lateinit var activity: Activity
-    private lateinit var eventChannel: EventChannel
+    private var scannerEvent: EventChannel? = null
+    private var connectivityEvent: EventChannel? = null
 
     companion object {
         var openSystemGalleryCode = 100
@@ -43,13 +46,20 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
     }
 
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
-        val curiosity = "Curiosity"
-        curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
         context = plugin.applicationContext
+        val curiosity = "Curiosity"
+        val connectivityEventName = "$curiosity/event/connectivity"
+        val scannerEventName = "$curiosity/event/scanner"
+        curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
+        connectivityEvent = EventChannel(plugin.binaryMessenger, connectivityEventName)
+
+        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val connectivity = Connectivity(connectivityManager)
+        val connectivityReceiver = ConnectivityReceiver(context, connectivity)
+        connectivityEvent?.setStreamHandler(connectivityReceiver)
 
         var scannerView: ScannerView? = null
-
-        curiosityChannel.setMethodCallHandler { _call, _result ->
+        curiosityChannel?.setMethodCallHandler { _call, _result ->
             channelResult = _result
             call = _call
             when (call.method) {
@@ -79,9 +89,9 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
                 "availableCameras" ->
                     channelResult.success(CameraTools.getAvailableCameras(activity))
                 "initializeCameras" -> {
-                    eventChannel = EventChannel(plugin.binaryMessenger, "$curiosity/event")
+                    scannerEvent = EventChannel(plugin.binaryMessenger, scannerEventName)
                     scannerView = ScannerView(plugin.textureRegistry.createSurfaceTexture(), activity)
-                    eventChannel.setStreamHandler(scannerView)
+                    scannerEvent?.setStreamHandler(scannerView)
                     scannerView!!.initCameraView()
                 }
                 "setFlashMode" -> {
@@ -91,8 +101,13 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
                 }
                 "disposeCameras" -> {
                     scannerView?.dispose()
-                    eventChannel.setStreamHandler(null)
+                    scannerEvent?.setStreamHandler(null)
+                    scannerEvent = null
                     channelResult.success("dispose")
+                }
+
+                "checkNetwork" -> {
+                    channelResult.success(connectivity.networkType)
                 }
                 else -> channelResult.notImplemented()
             }
@@ -117,13 +132,20 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        curiosityChannel.setMethodCallHandler(null)
-        eventChannel.setStreamHandler(null)
+        dispose()
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        curiosityChannel.setMethodCallHandler(null)
-        eventChannel.setStreamHandler(null)
+        dispose()
+    }
+
+    private fun dispose() {
+        curiosityChannel?.setMethodCallHandler(null)
+        connectivityEvent?.setStreamHandler(null)
+        scannerEvent?.setStreamHandler(null)
+        connectivityEvent = null
+        scannerEvent = null
+        curiosityChannel = null
     }
 
 
@@ -157,6 +179,14 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener {
             if (requestCode == installApkCode) channelResult.success("cancel")
         }
         return true
+    }
+
+    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onCancel(arguments: Any?) {
+        TODO("Not yet implemented")
     }
 
 

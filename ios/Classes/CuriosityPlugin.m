@@ -1,21 +1,22 @@
 #import "CuriosityPlugin.h"
 #import "ScannerTools.h"
+#import "Connectivity.h"
 #import "NativeTools.h"
 #import "GalleryTools.h"
 #import "ScannerView.h"
 #import <Photos/Photos.h>
-
+#import "Reachability/Reachability.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
     NSObject<FlutterPluginRegistrar> *registrar;
-    FlutterEventChannel *eventChannel;
     FlutterMethodCall *call;
     FlutterResult result;
     ScannerView *scannerView;
 }
 NSString * const curiosity=@"Curiosity";
-NSString * const curiosityEvent=@"Curiosity/event";
+NSString * const scannerEvent=@"Curiosity/event/scanner";
+NSString * const connectivityEvent=@"Curiosity/event/connectivity";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -24,12 +25,17 @@ NSString * const curiosityEvent=@"Curiosity/event";
     UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
     CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar :viewController];
     [registrar addMethodCallDelegate:plugin channel:channel];
+    
 }
 - (instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar
                                  :(UIViewController *)_viewController{
     self = [super init];
     viewController = _viewController;
     registrar=_registrar;
+    
+    // 网络监听消息通道
+    FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:connectivityEvent binaryMessenger:[registrar messenger]];
+    [eventChannel setStreamHandler:[[Connectivity alloc] init]];
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
@@ -60,7 +66,10 @@ NSString * const curiosityEvent=@"Curiosity/event";
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
         NSError * error;
         if (@available(iOS 10.0, *)) {
-            ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :resolutionPreset :&error];
+            //相机消息通道
+            FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:scannerEvent binaryMessenger:[registrar messenger]];
+            
+            ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :eventChannel :resolutionPreset :&error];
             if(error){
                 result(getFlutterError(error));
                 return;
@@ -68,9 +77,8 @@ NSString * const curiosityEvent=@"Curiosity/event";
                 if(scannerView)[scannerView close];
                 int64_t scannerViewId = [registrar.textures registerTexture:view];
                 scannerView = view;
-                eventChannel = [FlutterEventChannel eventChannelWithName:curiosityEvent binaryMessenger:[registrar messenger]];
                 [eventChannel setStreamHandler:view];
-                view.eventChannel = eventChannel;
+                
                 view.onFrameAvailable = ^{
                     [self->registrar.textures textureFrameAvailable:scannerViewId];
                 };
@@ -114,7 +122,9 @@ NSString * const curiosityEvent=@"Curiosity/event";
         [NativeTools systemShare:call result:result];
     }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
-    }else {
+    }else if ([call.method isEqualToString:@"checkNetwork"]) {
+        result([Tools getNetworkStatus:[Reachability reachabilityForInternetConnection]]);
+    }else{
         result(FlutterMethodNotImplemented);
     }
 }

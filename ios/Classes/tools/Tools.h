@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import "Reachability/Reachability.h"
 
 @interface Tools : NSObject
 
@@ -21,5 +22,8 @@
 
 //是否是模拟器
 + (BOOL*)isEmulator;
+
+//获取网络状态
++ (NSString*)getNetworkStatus:(Reachability*)reachability;
 
 @end

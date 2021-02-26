@@ -243,12 +243,13 @@ class ScannerController extends ChangeNotifier {
   final double heightRatio;
   final CameraResolution resolution;
 
-  StreamSubscription<dynamic> eventChannel;
+  StreamSubscription<dynamic> _streamSubscription;
   ScanResult scanResult;
   int textureId;
   double previewWidth;
   double previewHeight;
   String cameraState;
+  EventChannel _eventChannel;
 
   Future<void> initialize({Cameras cameras}) async {
     if (cameras == null && camera == null) return;
@@ -267,7 +268,8 @@ class ScannerController extends ChangeNotifier {
       cameraState = reply['cameraState'] as String ?? '';
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
-      eventChannel = const EventChannel('$curiosity/event')
+      _eventChannel = const EventChannel(scannerEvent);
+      _streamSubscription = _eventChannel
           .receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
         scanResult = ScanResult.fromJson(data as Map<dynamic, dynamic>);
         notifyListeners();
@@ -297,10 +299,11 @@ class ScannerController extends ChangeNotifier {
     return null;
   }
 
-  Future<void> disposeCameras() async {
-    eventChannel?.cancel();
+  void disposeCameras() {
+    _streamSubscription?.cancel();
+    _eventChannel = null;
     final Map<String, int> arguments = <String, int>{'textureId': textureId};
-    return await curiosityChannel.invokeMethod('disposeCameras', arguments);
+    curiosityChannel.invokeMethod<dynamic>('disposeCameras', arguments);
   }
 
   CameraLensFacing _getCameraLensFacing(String lensFacing) {

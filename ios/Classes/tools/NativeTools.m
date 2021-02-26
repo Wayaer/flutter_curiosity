@@ -1,4 +1,5 @@
 #import "NativeTools.h"
+#import "Tools.h"
 #import <CoreLocation/CoreLocation.h>
 #define fileManager [NSFileManager defaultManager]
 #import <sys/utsname.h>

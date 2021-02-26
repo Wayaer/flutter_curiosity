@@ -1,6 +1,5 @@
 #import <Foundation/Foundation.h>
 #import <Flutter/Flutter.h>
-#import "Tools.h"
 
 @interface NativeTools : NSObject
 

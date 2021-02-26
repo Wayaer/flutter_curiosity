@@ -1,6 +1,10 @@
 import 'package:flutter/services.dart';
 
 const String curiosity = 'Curiosity';
+const String _event = '$curiosity/event';
+const String scannerEvent = '$_event/scanner';
+const String connectivityEvent = '$_event/connectivity';
+
 const MethodChannel curiosityChannel = MethodChannel(curiosity);
 
 enum ShareType {
@@ -86,4 +90,37 @@ enum SettingType {
 
   /// setting
   setting
+}
+
+/// The status of the location service authorization.
+enum LocationAuthorizeStatus {
+  /// The authorization of the location service is not determined.
+  notDetermined,
+
+  /// This app is not authorized to use location.
+  restricted,
+
+  /// User explicitly denied the location service.
+  denied,
+
+  /// User authorized the app to access the location at any time.
+  authorizedAlways,
+
+  /// User authorized the app to access the location when the app is visible to them.
+  authorizedWhenInUse,
+
+  /// Status unknown.
+  unknown
+}
+
+/// Connection status check result.
+enum NetworkResult {
+  /// WiFi: Device connected via Wi-Fi
+  wifi,
+
+  /// Mobile: Device connected to cellular network
+  mobile,
+
+  /// None: Device not connected to any network
+  none
 }

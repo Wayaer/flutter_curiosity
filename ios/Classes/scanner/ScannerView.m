@@ -19,11 +19,18 @@
     CVPixelBufferRef volatile _latestPixelBuffer;
     
     FlutterEventSink eventSink;
+    
+    FlutterEventChannel *eventChannel;
 }
 
 FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
-- (instancetype)initWitchCamera:(NSString*)cameraId :(NSString*)resolutionPreset :(NSError **)error{
+- (instancetype)initWitchCamera:(NSString*)cameraId
+                               :(FlutterEventChannel*)_eventChannel
+                               :(NSString*)resolutionPreset
+                               :(NSError **)error{
     self = [super init];
+    eventChannel=_eventChannel;
+    
     NSAssert(self, @"super init cannot be nil");
     _captureSession = [[AVCaptureSession alloc]init];
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraId];
@@ -143,6 +150,10 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 
 - (void)close {
+    eventSink = nil;
+    [eventChannel setStreamHandler:nil];
+    eventChannel=nil;
+    
     [_captureSession stopRunning];
     for (AVCaptureInput *input in [_captureSession inputs]) {
         [_captureSession removeInput:input];
@@ -217,7 +228,7 @@ FourCharCode const videoFormat = kCVPixelFormatType_32BGRA;
 }
 - (FlutterError * _Nullable)onCancelWithArguments:(id _Nullable)arguments {
     eventSink = nil;
-    [_eventChannel setStreamHandler:nil];
+    [eventChannel setStreamHandler:nil];
     return nil;
 }
 

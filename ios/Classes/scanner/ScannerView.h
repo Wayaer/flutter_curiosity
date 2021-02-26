@@ -8,12 +8,15 @@ API_AVAILABLE(ios(10.0))
 
 @property(readonly, nonatomic) CGSize previewSize;
 
-@property(nonatomic) FlutterEventChannel *eventChannel;
+//@property(nonatomic) FlutterEventChannel *eventChannel;
 
 //第一帧回掉
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
 
-- (instancetype)initWitchCamera:(NSString*)cameraId :(NSString*)resolutionPreset :(NSError **)error;
+- (instancetype)initWitchCamera:(NSString*)cameraId
+                               :(FlutterEventChannel*)eventChannel
+                               :(NSString*)resolutionPreset
+                               :(NSError **)error;
 
 - (BOOL)setFlashMode:(BOOL)status;
 
