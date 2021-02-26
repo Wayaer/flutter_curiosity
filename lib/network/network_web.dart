@@ -9,24 +9,16 @@ import 'package:flutter_curiosity/flutter_curiosity_web.dart';
 
 import 'package:flutter/foundation.dart';
 
-/// The web implementation of the NetworkPlatform of the Network plugin.
-class NetworkInformationApiNetworkPlugin extends CuriosityPlugin {
-  /// The constructor of the plugin.
-  NetworkInformationApiNetworkPlugin()
+class NetworkInformationPlugin extends NetworkPlatform {
+  NetworkInformationPlugin()
       : this.withConnection(html.window.navigator.connection);
 
-  /// Creates the plugin, with an override of the NetworkInformation object.
   @visibleForTesting
-  NetworkInformationApiNetworkPlugin.withConnection(
-      html.NetworkInformation connection)
+  NetworkInformationPlugin.withConnection(html.NetworkInformation connection)
       : _networkInformation = connection;
 
   final html.NetworkInformation _networkInformation;
 
-  /// A check to determine if this version of the plugin can be used.
-  static bool get isSupported => html.window.navigator.connection != null;
-
-  /// Checks the connection status of the device.
   @override
   Future<NetworkResult> checkNetwork() async =>
       networkInformationToNetworkResult(_networkInformation);
@@ -34,7 +26,6 @@ class NetworkInformationApiNetworkPlugin extends CuriosityPlugin {
   StreamController<NetworkResult> _networkResultStreamController;
   Stream<NetworkResult> _networkResultStream;
 
-  /// Returns a Stream of NetworkResults changes.
   @override
   Stream<NetworkResult> get onChanged {
     if (_networkResultStreamController == null) {
@@ -43,23 +34,14 @@ class NetworkInformationApiNetworkPlugin extends CuriosityPlugin {
         _networkResultStreamController
             .add(networkInformationToNetworkResult(_networkInformation));
       }));
-      // _networkInformation.onChange.listen((_) {
-      //   _networkResult
-      //       .add(networkInformationToNetworkResult(_networkInformation));
-      // });
-      // Once we can detect when to *cancel* a subscription to the _networkInformation
-      // onChange Stream upon hot restart.
-      // https://github.com/dart-lang/sdk/issues/42679
       _networkResultStream =
           _networkResultStreamController.stream.asBroadcastStream();
     }
     return _networkResultStream;
   }
 
-  /// Converts an incoming NetworkInformation object into the correct NetworkResult.
   NetworkResult networkInformationToNetworkResult(
-    html.NetworkInformation info,
-  ) {
+      html.NetworkInformation info) {
     if (info == null) {
       return NetworkResult.none;
     }
@@ -76,7 +58,6 @@ class NetworkInformationApiNetworkPlugin extends CuriosityPlugin {
   }
 
   NetworkResult effectiveTypeToNetworkResult(String effectiveType) {
-    // Possible values:
     /*'2g'|'3g'|'4g'|'slow-2g'*/
     switch (effectiveType) {
       case 'slow-2g':
@@ -89,7 +70,6 @@ class NetworkInformationApiNetworkPlugin extends CuriosityPlugin {
   }
 
   NetworkResult typeToNetworkResult(String type) {
-    // Possible values:
     /*'bluetooth'|'cellular'|'ethernet'|'mixed'|'none'|'other'|'unknown'|'wifi'|'wimax'*/
     switch (type) {
       case 'none':
@@ -107,7 +87,7 @@ class NetworkInformationApiNetworkPlugin extends CuriosityPlugin {
 }
 
 /// The web implementation of the NetworkPlatform of the Network plugin.
-class DartHtmlNetworkPlugin extends CuriosityPlugin {
+class DartHtmlNetworkPlugin extends NetworkPlatform {
   /// Checks the connection status of the device.
   @override
   Future<NetworkResult> checkNetwork() async {

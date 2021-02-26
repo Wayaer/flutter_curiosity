@@ -35,4 +35,12 @@
     ||[path hasSuffix:@".JPG"]
     ||[path hasSuffix:@".PNG"];
 }
+
++ (NSString*)getNetworkStatus:(Reachability*)reachability {
+    if reachability?.isReachableViaWiFi() ?? false {
+      return "wifi"
+    }
+    return "none"
+}
+
 @end

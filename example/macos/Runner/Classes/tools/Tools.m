@@ -1,7 +1,5 @@
 #import "Tools.h"
-#import "Reachability/Reachability.h"
 #define fileManager [NSFileManager defaultManager]
-
 @implementation Tools
 
 //Log
@@ -33,31 +31,16 @@
 +(BOOL) isImageFile:(NSString *)path{
     return [path hasSuffix:@".jpg"]
     ||[path hasSuffix:@".png"]
-    ||[path hasSuffix:@".PNG"]
     ||[path hasSuffix:@".JPEG"]
     ||[path hasSuffix:@".JPG"]
-    ||[path hasSuffix:@".GiF"]
-    ||[path hasSuffix:@".gif"];
-}
-+(BOOL)isEmulator{
-    if (TARGET_IPHONE_SIMULATOR == 1 && TARGET_OS_IPHONE == 1) {
-        return YES;
-    }else{
-        return NO;
-    }
+    ||[path hasSuffix:@".PNG"];
 }
 
-
-+ (NSString*)getNetworkStatus:(Reachability*)reachability {
-  NetworkStatus status = [reachability currentReachabilityStatus];
-  switch (status) {
-    case NotReachable:
-      return @"none";
-    case ReachableViaWiFi:
-      return @"wifi";
-    case ReachableViaWWAN:
-      return @"mobile";
-  }
-}
+//+ (NSString*)getNetworkStatus:(Reachability*)reachability {
+//    if reachability?.isReachableViaWiFi() ?? false {
+//      return "wifi"
+//    }
+//    return "none"
+//}
 
 @end

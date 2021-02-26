@@ -5,7 +5,6 @@ import 'package:flutter_curiosity/constant/constant.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 abstract class NetworkPlatform extends PlatformInterface {
-  /// Constructs a NetworkPlatform.
   NetworkPlatform() : super(token: _token);
 
   static final Object _token = Object();
