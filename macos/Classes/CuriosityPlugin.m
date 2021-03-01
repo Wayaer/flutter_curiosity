@@ -33,8 +33,7 @@ NSString * const connectivityEvent=@"Curiosity/event/connectivity";
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
     result = _result;
-//    CWWiFiClient.shared().interface()
-    CWWiFiClient* cwinterface= [CWWiFiClient sharedWiFiClient].interface;
+//    CWWiFiClient* cwinterface= [CWWiFiClient sharedWiFiClient].interface;
     
     if ([@"getGPSStatus" isEqualToString:call.method]) {
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
@@ -64,11 +63,11 @@ NSString * const connectivityEvent=@"Curiosity/event/connectivity";
     }else if ([call.method isEqualToString:@"checkNetwork"]) {
         result([Tools getNetworkStatus:[Reachability reachabilityForInternetConnection]]);
     }else if ([call.method isEqualToString:@"wifiName"]) {
-        result();
+  
     } else if ([call.method isEqualToString:@"wifiBSSID"]) {
-        result([Tools getNetworkStatus:[Reachability reachabilityForInternetConnection]]);
+     
     } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
-        result([Tools getNetworkStatus:[Reachability reachabilityForInternetConnection]]);
+   
     } else  {
         result(FlutterMethodNotImplemented);
     }

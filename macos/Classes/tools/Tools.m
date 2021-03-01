@@ -1,4 +1,6 @@
 #import "Tools.h"
+#import "Reachability/Reachability.h"
+
 #define fileManager [NSFileManager defaultManager]
 @implementation Tools
 
@@ -37,10 +39,11 @@
 }
 
 + (NSString*)getNetworkStatus:(Reachability*)reachability {
-    if reachability?.isReachableViaWiFi() ?? false {
-      return "wifi"
+    NetworkStatus status = [reachability currentReachabilityStatus];
+    if(status==ReachableViaWiFi){
+        return @"wifi";
     }
-    return "none"
+    return @"none";
 }
 
 @end
