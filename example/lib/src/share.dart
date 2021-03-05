@@ -47,7 +47,7 @@ class _SharePageState extends State<SharePage> {
 
   void shareImage() {
     if (list.isEmpty) {
-      // showToast('请先选择图片');
+      /// showToast('请先选择图片');
       return;
     }
     systemShare(title: '分享图片', content: list[0], shareType: ShareType.image);
@@ -55,7 +55,7 @@ class _SharePageState extends State<SharePage> {
 
   void shareImages() {
     if (list.isEmpty) {
-      // showToast('请先选择图片');
+      /// showToast('请先选择图片');
       return;
     }
     final List<String> listPath = <String>[];

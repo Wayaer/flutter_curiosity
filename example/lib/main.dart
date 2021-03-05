@@ -6,6 +6,7 @@ import 'package:curiosity/src/jump_setting.dart';
 import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
@@ -13,9 +14,9 @@ GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  ///关闭辅助触控
+  //// 关闭辅助触控
   window.onSemanticsEnabledChanged = () {};
-  RendererBinding.instance.setSemanticsEnabled(false);
+  RendererBinding.instance!.setSemanticsEnabled(false);
 
   print('isWeb');
   print(isWeb);

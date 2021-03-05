@@ -157,7 +157,7 @@ class AppsModel {
       this.packageName});
 
   AppsModel.fromJson(Map<dynamic, dynamic> json) {
-    isSystemApp = json['isSystemApp'] as bool;
+    isSystemApp = json['isSystemApp'] as bool?;
     appName = json['appName'] as String?;
     lastUpdateTime = json['lastUpdateTime'] as int?;
     versionCode = json['versionCode'] as int?;
@@ -207,7 +207,7 @@ class AndroidDeviceModel {
 
   AndroidDeviceModel.fromJson(Map<String, dynamic> json) {
     product = json['product'] as String?;
-    isEmulator = json['isEmulator'] as bool;
+    isEmulator = json['isEmulator'] as bool?;
     display = json['display'] as String?;
     type = json['type'] as String?;
     version = json['version'] != null
@@ -220,7 +220,7 @@ class AndroidDeviceModel {
     host = json['host'] as String?;
     model = json['model'] as String?;
     id = json['id'] as String?;
-    isDeviceRoot = json['isDeviceRoot'] as bool;
+    isDeviceRoot = json['isDeviceRoot'] as bool?;
     brand = json['brand'] as String?;
     device = json['device'] as String?;
     board = json['board'] as String?;
@@ -324,7 +324,7 @@ class IOSDeviceModel {
       this.name});
 
   IOSDeviceModel.fromJson(Map<String, dynamic> json) {
-    isEmulator = json['isEmulator'] as bool;
+    isEmulator = json['isEmulator'] as bool?;
     systemName = json['systemName'] as String?;
     uts = json['uts'] != null
         ? UTSModel.fromJson(json['uts'] as Map<dynamic, dynamic>)

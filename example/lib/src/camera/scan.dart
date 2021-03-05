@@ -6,7 +6,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 class ScannerPage extends StatelessWidget {
   const ScannerPage({Key? key, required this.scanResult}) : super(key: key);
 
-  /// 扫描结果回调
+  //// 扫描结果回调
   final ValueChanged<String> scanResult;
 
   @override
@@ -169,14 +169,15 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
       type = data.type ?? '';
       setState(() {});
     }
-    // if (await Utils.requestPermissions(Permission.storage, '读取文件')) {
-    //   final ScanResult? data = await scanImagePath(path);
-    //   if (data != null) {
-    //     code = data.code ?? '';
-    //     type = data.type ?? '';
-    //     setState(() {});
-    //   }
-    // }
+
+    /// if (await Utils.requestPermissions(Permission.storage, '读取文件')) {
+    ///   final ScanResult? data = await scanImagePath(path);
+    ///   if (data != null) {
+    ///     code = data.code ?? '';
+    ///     type = data.type ?? '';
+    ///     setState(() {});
+    ///   }
+    /// }
   }
 
   Future<void> openGallery() async {

@@ -2,7 +2,8 @@ import 'package:curiosity/main.dart';
 import 'package:curiosity/src/camera/scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-// import 'package:permission_handler/permission_handler.dart';
+
+/// import 'package:permission_handler/permission_handler.dart';
 
 class CameraGalleryPage extends StatefulWidget {
   @override
@@ -49,36 +50,38 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   Future<void> scanImage(BuildContext context) async {
     if (!isMobile) return;
     push(CameraScanPage());
-    // final bool permission =
-    //     await Utils.requestPermissions(Permission.camera, '相机') &&
-    //         await Utils.requestPermissions(Permission.storage, '手机存储');
-    // if (permission) {
-    //   push(CameraScanPage());
-    // } else {
-    //   openAppSettings();
-    // }
+
+    /// final bool permission =
+    ///     await Utils.requestPermissions(Permission.camera, '相机') &&
+    ///         await Utils.requestPermissions(Permission.storage, '手机存储');
+    /// if (permission) {
+    ///   push(CameraScanPage());
+    /// } else {
+    ///   openAppSettings();
+    /// }
   }
 
   Future<void> scan(BuildContext context) async {
     if (!isMobile) return;
     push(ScannerPage(scanResult: (String value) {
       text = value;
-      // pop();
+
+      /// pop();
       setState(() {});
     }));
 
-    // final bool permission =
-    //     await Utils.requestPermissions(Permission.camera, '相机') &&
-    //         await Utils.requestPermissions(Permission.storage, '手机存储');
-    // if (permission) {
-    //   push(ScannerPage(scanResult: (String value) {
-    //     text = value;
-    //     // pop();
-    //     setState(() {});
-    //   }));
-    // } else {
-    //   openAppSettings();
-    // }
+    /// final bool permission =
+    ///     await Utils.requestPermissions(Permission.camera, '相机') &&
+    ///         await Utils.requestPermissions(Permission.storage, '手机存储');
+    /// if (permission) {
+    ///   push(ScannerPage(scanResult: (String value) {
+    ///     text = value;
+    ///     /// pop();
+    ///     setState(() {});
+    ///   }));
+    /// } else {
+    ///   openAppSettings();
+    /// }
   }
 
   Future<void> systemGallery() async {
@@ -95,13 +98,13 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     text = data ?? '';
     setState(() {});
 
-    // if (await Utils.requestPermissions(Permission.camera, '使用相机')) {
-    //   final String? data = await openSystemCamera();
-    //   print(data.toString());
-    //   text = data ?? '';
-    //   setState(() {});
-    // } else {
-    //   print('未获取相机权限');
-    // }
+    /// if (await Utils.requestPermissions(Permission.camera, '使用相机')) {
+    ///   final String? data = await openSystemCamera();
+    ///   print(data.toString());
+    ///   text = data ?? '';
+    ///   setState(() {});
+    /// } else {
+    ///   print('未获取相机权限');
+    /// }
   }
 }

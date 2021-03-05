@@ -1,3 +1,5 @@
+## [2.0.0]
+ * Supported null-safety
 ## [1.6.0]
  * Optimize native Android & IOS
 ## [1.5.0]

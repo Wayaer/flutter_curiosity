@@ -13,3 +13,6 @@ dependencies:
   flutter_curiosity:
     path: ../
   # permission_handler: ^5.1.0+2
+
+flutter:
+  uses-material-design: true
