@@ -5,6 +5,7 @@ import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_waya/flutter_waya.dart';
 
 void main() {
   print('isWeb');
@@ -19,19 +20,22 @@ void main() {
   print(isMobile);
   print('isDesktop');
   print(isDesktop);
-  runApp(GlobalWidgetsApp(
-      debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    title: 'Curiosity',
+    home: App(),
+  ));
 }
 
 class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: const Text('Flutter Curiosity Plugin Example'),
       ),
-      body: Universal(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
           ElevatedButton(
