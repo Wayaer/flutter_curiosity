@@ -8,7 +8,7 @@ import 'package:flutter_curiosity/tools/internal.dart';
 /// success  安装成功
 /// cancel  取消安装
 /// not permissions  没有打开安装权限
-Future<String> installApp(String apkPath) async {
+Future<String?> installApp(String apkPath) async {
   if (!_supportPlatform) return null;
   if (!isAndroid) return null;
   return await curiosityChannel
