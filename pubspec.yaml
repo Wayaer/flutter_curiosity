@@ -12,7 +12,6 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  plugin_platform_interface: ^1.0.3
 
 dev_dependencies:
   flutter_test:
@@ -28,6 +27,3 @@ flutter:
         pluginClass: CuriosityPlugin
       macos:
         pluginClass: CuriosityPlugin
-      web:
-        pluginClass: CuriosityPlugin
-        fileName: flutter_curiosity_web.dart

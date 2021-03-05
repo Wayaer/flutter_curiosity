@@ -16,12 +16,12 @@ class _GetInfoPageState extends State<GetInfoPage> {
     return OverlayScaffold(
         appBar: AppBar(title: const Text('App and Device')),
         body: Universal(isScroll: true, children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => getAppInfo(), child: const Text('获取app信息')),
-          RaisedButton(onPressed: () => getGPS(), child: const Text('获取gps状态')),
-          RaisedButton(
+          ElevatedButton(onPressed: () => getGPS(), child: const Text('获取gps状态')),
+          ElevatedButton(
               onPressed: () => getDeviceInfo(), child: const Text('获取设备信息')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => getInstalled(),
               child: const Text('获取Android已安装应用')),
           Column(

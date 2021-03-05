@@ -20,18 +20,18 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     return OverlayScaffold(
         appBar: AppBar(title: const Text('Camera and Gallery')),
         body: Universal(isScroll: true, children: <Widget>[
-          RaisedButton(onPressed: () => scan(context), child: const Text('扫码')),
-          RaisedButton(
+          ElevatedButton(onPressed: () => scan(context), child: const Text('扫码')),
+          ElevatedButton(
               onPressed: () => systemGallery(), child: const Text('打开系统相册')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => systemCamera(), child: const Text('打开系统相机')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => scanImage(context),
               child: const Text('相机识别二维码')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => push(UrlImageScanPage()),
               child: const Text('识别Url二维码')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => push(FileImageScanPage()),
               child: const Text('识别本地图片二维码')),
           const SizedBox(height: 20),

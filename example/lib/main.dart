@@ -1,7 +1,6 @@
 import 'package:curiosity/src/camera/camera_gallery.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/jump_setting.dart';
-import 'package:curiosity/src/network.dart';
 import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -36,16 +35,14 @@ class App extends StatelessWidget {
       body: Universal(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => push(SharePage()), child: const Text('分享')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => push(GetInfoPage()), child: const Text('获取信息')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => push(JumpSettingPage()),
               child: const Text('跳转设置')),
-          RaisedButton(
-              onPressed: () => push(NetworkPage()), child: const Text('网络状态')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => push(CameraGalleryPage()),
               child: const Text('相机和图库')),
         ],

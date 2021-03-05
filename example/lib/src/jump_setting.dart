@@ -6,10 +6,10 @@ class JumpSettingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[];
-    children.add(RaisedButton(
+    children.add(ElevatedButton(
         onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')));
     children.addAll(SettingType.values
-        .map((SettingType value) => RaisedButton(
+        .map((SettingType value) => ElevatedButton(
             onPressed: () => jumpSystemSetting(settingType: value),
             child: Text(value.toString())))
         .toList());

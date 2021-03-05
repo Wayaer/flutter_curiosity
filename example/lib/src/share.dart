@@ -15,12 +15,12 @@ class _SharePageState extends State<SharePage> {
     return OverlayScaffold(
         appBar: AppBar(title: const Text('Share')),
         body: Universal(isScroll: true, children: <Widget>[
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => systemGallery(), child: const Text('打开系统相册')),
-          RaisedButton(onPressed: () => shareText(), child: const Text('分享文字')),
-          RaisedButton(
+          ElevatedButton(onPressed: () => shareText(), child: const Text('分享文字')),
+          ElevatedButton(
               onPressed: () => shareImage(), child: const Text('分享图片')),
-          RaisedButton(
+          ElevatedButton(
               onPressed: () => shareImages(), child: const Text('分享多张图片')),
           const SizedBox(height: 20),
           Column(
