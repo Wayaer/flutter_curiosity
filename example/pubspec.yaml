@@ -1,22 +1,21 @@
 name: curiosity
 description: Demonstrates how to use the curiosity plugin.
 publish_to: 'none'
-
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  permission_handler: ^5.1.0+2
   flutter_curiosity:
     path: ../
   flutter_waya:
     git:
       url: git://github.com/Wayaer/flutter_waya.git
       ref: master
+  permission_handler: ^5.1.0+2
   camera: ^0.8.0
 
 dev_dependencies:
