@@ -1,11 +1,9 @@
 #import "CuriosityPlugin.h"
 #import "ScannerTools.h"
-#import "Connectivity.h"
 #import "NativeTools.h"
 #import "GalleryTools.h"
 #import "ScannerView.h"
 #import <Photos/Photos.h>
-#import "Reachability/Reachability.h"
 
 @implementation CuriosityPlugin{
     UIViewController *viewController;
@@ -16,7 +14,6 @@
 }
 NSString * const curiosity=@"Curiosity";
 NSString * const scannerEvent=@"Curiosity/event/scanner";
-NSString * const connectivityEvent=@"Curiosity/event/connectivity";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -32,10 +29,6 @@ NSString * const connectivityEvent=@"Curiosity/event/connectivity";
     self = [super init];
     viewController = _viewController;
     registrar=_registrar;
-    
-    // 网络监听消息通道
-    FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:connectivityEvent binaryMessenger:[registrar messenger]];
-    [eventChannel setStreamHandler:[[Connectivity alloc] init]];
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
@@ -122,8 +115,6 @@ NSString * const connectivityEvent=@"Curiosity/event/connectivity";
         [NativeTools systemShare:call result:result];
     }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
-    }else if ([call.method isEqualToString:@"checkNetwork"]) {
-        result([Tools getNetworkStatus:[Reachability reachabilityForInternetConnection]]);
     }else{
         result(FlutterMethodNotImplemented);
     }

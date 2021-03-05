@@ -1,9 +1,6 @@
 #import "CuriosityPlugin.h"
 #import "ScannerTools.h"
 #import "NativeTools.h"
-#import "Connectivity.h"
-#import "Reachability/Reachability.h"
-#import <CoreWLAN/CoreWLAN.h>
 
 @implementation CuriosityPlugin{
     NSObject<FlutterTextureRegistry> *registry;
@@ -13,7 +10,6 @@
     
 }
 NSString * const curiosity=@"Curiosity";
-NSString * const connectivityEvent=@"Curiosity/event/connectivity";
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel* channel = [FlutterMethodChannel
@@ -26,15 +22,11 @@ NSString * const connectivityEvent=@"Curiosity/event/connectivity";
 - (instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar{
     self = [super init];
     registry =[_registrar textures];
-    eventChannel = [FlutterEventChannel eventChannelWithName:connectivityEvent binaryMessenger:[_registrar messenger]];
-    [eventChannel setStreamHandler:[[Connectivity alloc] init]];
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
     result = _result;
-//    CWWiFiClient* cwinterface= [CWWiFiClient sharedWiFiClient].interface;
-    
     if ([@"getGPSStatus" isEqualToString:call.method]) {
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
     }else if ([@"jumpAppSetting" isEqualToString:call.method]) {
@@ -60,14 +52,6 @@ NSString * const connectivityEvent=@"Curiosity/event/connectivity";
         //        [NativeTools systemShare:call result:result];
     }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
-    }else if ([call.method isEqualToString:@"checkNetwork"]) {
-        result([Tools getNetworkStatus:[Reachability reachabilityForInternetConnection]]);
-    }else if ([call.method isEqualToString:@"wifiName"]) {
-  
-    } else if ([call.method isEqualToString:@"wifiBSSID"]) {
-     
-    } else if ([call.method isEqualToString:@"wifiIPAddress"]) {
-   
     } else  {
         result(FlutterMethodNotImplemented);
     }

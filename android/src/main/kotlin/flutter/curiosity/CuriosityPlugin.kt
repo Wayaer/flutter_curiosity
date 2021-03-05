@@ -3,13 +3,10 @@ package flutter.curiosity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import androidx.annotation.NonNull
-import flutter.curiosity.connectivity.Connectivity
-import flutter.curiosity.connectivity.ConnectivityReceiver
 import flutter.curiosity.gallery.GalleryTools
 import flutter.curiosity.scanner.CameraTools
 import flutter.curiosity.scanner.ScannerTools
@@ -34,7 +31,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
     private lateinit var context: Context
     private lateinit var activity: Activity
     private var scannerEvent: EventChannel? = null
-    private var connectivityEvent: EventChannel? = null
 
     companion object {
         var openSystemGalleryCode = 100
@@ -48,15 +44,8 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
         context = plugin.applicationContext
         val curiosity = "Curiosity"
-        val connectivityEventName = "$curiosity/event/connectivity"
         val scannerEventName = "$curiosity/event/scanner"
         curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
-        connectivityEvent = EventChannel(plugin.binaryMessenger, connectivityEventName)
-
-        val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-        val connectivity = Connectivity(connectivityManager)
-        val connectivityReceiver = ConnectivityReceiver(context, connectivity)
-        connectivityEvent?.setStreamHandler(connectivityReceiver)
 
         var scannerView: ScannerView? = null
         curiosityChannel?.setMethodCallHandler { _call, _result ->
@@ -105,10 +94,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
                     scannerEvent = null
                     channelResult.success("dispose")
                 }
-
-                "checkNetwork" -> {
-                    channelResult.success(connectivity.networkType)
-                }
                 else -> channelResult.notImplemented()
             }
 
@@ -141,9 +126,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
 
     private fun dispose() {
         curiosityChannel?.setMethodCallHandler(null)
-        connectivityEvent?.setStreamHandler(null)
         scannerEvent?.setStreamHandler(null)
-        connectivityEvent = null
         scannerEvent = null
         curiosityChannel = null
     }

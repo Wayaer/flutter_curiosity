@@ -19,8 +19,4 @@
 //是否是图片
 + (BOOL)isImageFile:(NSString *)path;
 
-//获取网络状态
-+ (NSString*)getNetworkStatus:(Reachability*)reachability;
-
-
 @end

@@ -1,5 +1,4 @@
 #import "Tools.h"
-#import "Reachability/Reachability.h"
 #define fileManager [NSFileManager defaultManager]
 
 @implementation Tools
@@ -45,19 +44,6 @@
     }else{
         return NO;
     }
-}
-
-
-+ (NSString*)getNetworkStatus:(Reachability*)reachability {
-  NetworkStatus status = [reachability currentReachabilityStatus];
-  switch (status) {
-    case NotReachable:
-      return @"none";
-    case ReachableViaWiFi:
-      return @"wifi";
-    case ReachableViaWWAN:
-      return @"mobile";
-  }
 }
 
 @end

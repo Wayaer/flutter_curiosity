@@ -1,5 +1,4 @@
 #import "Tools.h"
-#import "Reachability/Reachability.h"
 
 #define fileManager [NSFileManager defaultManager]
 @implementation Tools
@@ -38,12 +37,5 @@
     ||[path hasSuffix:@".PNG"];
 }
 
-+ (NSString*)getNetworkStatus:(Reachability*)reachability {
-    NetworkStatus status = [reachability currentReachabilityStatus];
-    if(status==ReachableViaWiFi){
-        return @"wifi";
-    }
-    return @"none";
-}
 
 @end
