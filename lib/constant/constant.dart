@@ -55,6 +55,9 @@ enum SettingType {
   /// wifi
   wifi,
 
+  /// wifi ip
+  wifiIp,
+
   /// 定位
   location,
 
@@ -68,7 +71,7 @@ enum SettingType {
   cellularNetwork,
 
   /// 语言和时间
-  languageTime,
+  time,
 
   /// 显示和亮度
   displayBrightness,
@@ -85,11 +88,32 @@ enum SettingType {
   /// 电量管理
   battery,
 
+  /// 语言设置
+  localeLanguage,
+
   /// nfc
   nfc,
 
   /// setting
-  setting
+  setting,
+
+  /// 手机状态信息的界面
+  deviceInfo,
+
+  /// 开发者选项设置
+  applicationDevelopment,
+
+  /// 选取运营商的界面
+  networkOperator,
+
+  /// 添加账户界面
+  addAccount,
+
+  /// 双卡和移动网络设置界面
+  dataRoaming,
+
+  /// 更多连接方式设置界面
+  airplaneMode
 }
 
 /// The status of the location service authorization.

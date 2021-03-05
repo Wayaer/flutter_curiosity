@@ -12,7 +12,7 @@ double get getDevicePixelRatio =>
     MediaQueryData.fromWindow(window).devicePixelRatio;
 const int _limitLength = 800;
 
-void log(dynamic msg) {
+void log<T>(T msg) {
   final String message = msg.toString();
   if (isDebug) {
     if (message.length < _limitLength) {

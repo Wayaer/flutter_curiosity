@@ -17,7 +17,8 @@ class _SharePageState extends State<SharePage> {
         body: Universal(isScroll: true, children: <Widget>[
           ElevatedButton(
               onPressed: () => systemGallery(), child: const Text('打开系统相册')),
-          ElevatedButton(onPressed: () => shareText(), child: const Text('分享文字')),
+          ElevatedButton(
+              onPressed: () => shareText(), child: const Text('分享文字')),
           ElevatedButton(
               onPressed: () => shareImage(), child: const Text('分享图片')),
           ElevatedButton(
@@ -30,8 +31,8 @@ class _SharePageState extends State<SharePage> {
   }
 
   Future<void> systemGallery() async {
-    final String data = await openSystemGallery;
-    list.add(data);
+    final String? data = await openSystemGallery;
+    list.add(data.toString());
     setState(() {});
   }
 

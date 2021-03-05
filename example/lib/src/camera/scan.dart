@@ -7,7 +7,7 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ScannerPage extends StatelessWidget {
-  const ScannerPage({Key key, @required this.scanResult}) : super(key: key);
+  const ScannerPage({Key? key, required this.scanResult}) : super(key: key);
 
   /// 扫描结果回调
   final ValueChanged<String> scanResult;
@@ -26,7 +26,8 @@ class CameraScanPage extends StatefulWidget {
 }
 
 class _CameraScanPageState extends State<CameraScanPage> {
-  CameraController controller;
+  CameraController? controller;
+  late int time;
 
   @override
   void initState() {
@@ -34,31 +35,29 @@ class _CameraScanPageState extends State<CameraScanPage> {
     initCamera();
   }
 
-  int time;
-
   Future<void> initCamera() async {
     final List<CameraDescription> cameras = await availableCameras();
-    CameraDescription description;
+    CameraDescription? description;
     for (final CameraDescription element in cameras) {
       if (element.lensDirection == CameraLensDirection.back)
         description = element;
     }
     if (description == null) return;
     controller = CameraController(description, ResolutionPreset.high);
-    await controller.initialize();
+    await controller!.initialize();
     setState(() {});
     time = DateTime.now().millisecondsSinceEpoch;
-    controller.startImageStream((CameraImage image) async {
+    controller!.startImageStream((CameraImage image) async {
       final int now = DateTime.now().millisecondsSinceEpoch;
       if ((now - time) < 5000) return;
       if (image.planes.isEmpty) return;
       if (image.planes[0].bytes.isEmpty) return;
       if (image.format.group != ImageFormatGroup.yuv420) return;
-      final ScanResult data = await scanImageMemory(image.planes[0].bytes);
+      final ScanResult? data = await scanImageMemory(image.planes[0].bytes);
       if (data != null) {
         log('我的二维码');
         log(data.toJson());
-        controller?.stopImageStream();
+        controller!.stopImageStream();
       }
     });
   }
@@ -66,10 +65,10 @@ class _CameraScanPageState extends State<CameraScanPage> {
   @override
   Widget build(BuildContext context) {
     Widget child = Container();
-    if (controller != null && controller?.value?.aspectRatio != null) {
+    if (controller != null && controller?.value.aspectRatio != null) {
       child = AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: CameraPreview(controller));
+          aspectRatio: controller!.value.aspectRatio,
+          child: CameraPreview(controller!));
     }
     return OverlayScaffold(
         backgroundColor: Colors.black, body: Center(child: child));
@@ -111,7 +110,7 @@ class _UrlImageScanPageState extends State<UrlImageScanPage> {
                 contentPadding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 controller: controller)),
-        RaisedButton(onPressed: () => scan(), child: const Text('识别二维码')),
+        ElevatedButton(onPressed: () => scan(), child: const Text('识别二维码')),
         showText('code', code),
         showText('type', type),
       ]),
@@ -120,10 +119,10 @@ class _UrlImageScanPageState extends State<UrlImageScanPage> {
 
   Future<void> scan() async {
     if (controller.text.isEmpty) return showToast('请输入Url');
-    final ScanResult data = await scanImageUrl(controller.text);
+    final ScanResult? data = await scanImageUrl(controller.text);
     if (data != null) {
-      code = data.code;
-      type = data.type;
+      code = data.code ?? '';
+      type = data.type ?? '';
       setState(() {});
     }
   }
@@ -151,10 +150,11 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       appBar: AppBar(title: const Text('San file image')),
       body: Column(children: <Widget>[
-        RaisedButton(onPressed: () => openGallery(), child: const Text('选择图片')),
+        ElevatedButton(
+            onPressed: () => openGallery(), child: const Text('选择图片')),
         const SizedBox(height: 20),
         showText('path', path),
-        RaisedButton(onPressed: () => scan(), child: const Text('识别')),
+        ElevatedButton(onPressed: () => scan(), child: const Text('识别')),
         showText('code', code),
         showText('type', type),
       ]),
@@ -164,19 +164,19 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
   Future<void> scan() async {
     if (path.isEmpty) return showToast('请选择图片');
     if (await Utils.requestPermissions(Permission.storage, '读取文件')) {
-      final ScanResult data = await scanImagePath(path);
+      final ScanResult? data = await scanImagePath(path);
       if (data != null) {
-        code = data.code;
-        type = data.type;
+        code = data.code ?? '';
+        type = data.type ?? '';
         setState(() {});
       }
     }
   }
 
   Future<void> openGallery() async {
-    final String data = await openSystemGallery;
+    final String? data = await openSystemGallery;
     showToast(data.toString());
-    path = data;
+    path = data ?? '';
     setState(() {});
   }
 }

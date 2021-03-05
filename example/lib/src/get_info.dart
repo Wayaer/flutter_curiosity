@@ -18,7 +18,8 @@ class _GetInfoPageState extends State<GetInfoPage> {
         body: Universal(isScroll: true, children: <Widget>[
           ElevatedButton(
               onPressed: () => getAppInfo(), child: const Text('获取app信息')),
-          ElevatedButton(onPressed: () => getGPS(), child: const Text('获取gps状态')),
+          ElevatedButton(
+              onPressed: () => getGPS(), child: const Text('获取gps状态')),
           ElevatedButton(
               onPressed: () => getDeviceInfo(), child: const Text('获取设备信息')),
           ElevatedButton(
@@ -32,7 +33,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getInstalled() async {
-    final List<AppsModel> data = await getInstalledApp;
+    final List<AppsModel>? data = await getInstalledApp;
     list = <Widget>[];
     data?.builder((AppsModel appsModel) {
       final Map<String, dynamic> appModel = appsModel.toJson();
@@ -55,10 +56,10 @@ class _GetInfoPageState extends State<GetInfoPage> {
 
   Future<void> getDeviceInfo() async {
     list = <Widget>[];
-    Map<String, dynamic> map = <String, dynamic>{};
-    if (isAndroid) map = (await getAndroidDeviceInfo).toJson();
-    if (isIOS) map = (await getIOSDeviceInfo).toJson();
-    map.forEach((String key, dynamic value) {
+    Map<String, dynamic>? map = <String, dynamic>{};
+    if (isAndroid) map = (await getAndroidDeviceInfo)?.toJson();
+    if (isIOS) map = (await getIOSDeviceInfo)?.toJson();
+    map?.forEach((String key, dynamic value) {
       if (value is Map) {
         list.add(showText('=== uts', '==='));
         value.forEach((dynamic k, dynamic v) {
@@ -73,7 +74,8 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getAppInfo() async {
-    final AppInfoModel data = await getPackageInfo;
+    final AppInfoModel? data = await getPackageInfo;
+    if (data == null) return;
     final Map<String, dynamic> map = data.toJson();
     list = <Widget>[];
     map.forEach((String key, dynamic value) {
@@ -83,7 +85,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getGPS() async {
-    final bool data = await getGPSStatus;
+    final bool? data = await getGPSStatus;
     showToast(data.toString());
   }
 }

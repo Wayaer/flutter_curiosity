@@ -70,43 +70,43 @@ class AppInfoModel {
     platformName = json['platformName'] as String;
   }
 
-  String packageName;
-  String versionName;
-  int versionCode;
-  String appName;
-  double statusBarHeight;
+  String? packageName;
+  String? versionName;
+  int? versionCode;
+  String? appName;
+  double? statusBarHeight;
 
   /// only android
-  String cacheDir;
-  String directoryMusic;
-  String directoryAlarms;
-  String directoryDocuments;
-  int firstInstallTime;
-  String directoryMovies;
-  String directoryPictures;
-  String filesDir;
-  String directoryDCIM;
-  String directoryNotifications;
-  String directoryRINGTONES;
-  String directoryDownloads;
-  String externalCacheDir;
-  String externalFilesDir;
-  String directoryPODCASTS;
-  String externalStorageDirectory;
-  int lastUpdateTime;
-  double navigationBarHeight;
+  String? cacheDir;
+  String? directoryMusic;
+  String? directoryAlarms;
+  String? directoryDocuments;
+  int? firstInstallTime;
+  String? directoryMovies;
+  String? directoryPictures;
+  String? filesDir;
+  String? directoryDCIM;
+  String? directoryNotifications;
+  String? directoryRINGTONES;
+  String? directoryDownloads;
+  String? externalCacheDir;
+  String? externalFilesDir;
+  String? directoryPODCASTS;
+  String? externalStorageDirectory;
+  int? lastUpdateTime;
+  double? navigationBarHeight;
 
   /// only ios
-  String cachesDirectory;
-  String homeDirectory;
-  String minimumOSVersion;
-  String platformVersion;
-  String sdkBuild;
-  String documentDirectory;
-  String temporaryDirectory;
-  double statusBarWidth;
-  String libraryDirectory;
-  String platformName;
+  String? cachesDirectory;
+  String? homeDirectory;
+  String? minimumOSVersion;
+  String? platformVersion;
+  String? sdkBuild;
+  String? documentDirectory;
+  String? temporaryDirectory;
+  double? statusBarWidth;
+  String? libraryDirectory;
+  String? platformName;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -165,12 +165,12 @@ class AppsModel {
     packageName = json['packageName'] as String;
   }
 
-  bool isSystemApp;
-  String appName;
-  int lastUpdateTime;
-  int versionCode;
-  String versionName;
-  String packageName;
+  bool? isSystemApp;
+  String? appName;
+  int? lastUpdateTime;
+  int? versionCode;
+  String? versionName;
+  String? packageName;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -228,24 +228,24 @@ class AndroidDeviceModel {
     hardware = json['hardware'] as String;
   }
 
-  String product;
-  bool isEmulator;
-  String display;
-  String type;
-  Version version;
-  String manufacturer;
-  String tags;
-  String bootloader;
-  String fingerprint;
-  String host;
-  String model;
-  String id;
-  bool isDeviceRoot;
-  String brand;
-  String device;
-  String board;
-  String androidId;
-  String hardware;
+  String? product;
+  bool? isEmulator;
+  String? display;
+  String? type;
+  Version? version;
+  String? manufacturer;
+  String? tags;
+  String? bootloader;
+  String? fingerprint;
+  String? host;
+  String? model;
+  String? id;
+  bool? isDeviceRoot;
+  String? brand;
+  String? device;
+  String? board;
+  String? androidId;
+  String? hardware;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -253,7 +253,7 @@ class AndroidDeviceModel {
     data['isEmulator'] = isEmulator;
     data['display'] = display;
     data['type'] = type;
-    if (version != null) data['version'] = version.toJson();
+    if (version != null) data['version'] = version!.toJson();
     data['manufacturer'] = manufacturer;
     data['tags'] = tags;
     data['bootloader'] = bootloader;
@@ -291,13 +291,13 @@ class Version {
     incremental = json['incremental'] as String;
   }
 
-  String baseOS;
-  String securityPatch;
-  int sdkInt;
-  String release;
-  String codename;
-  int previewSdkInt;
-  String incremental;
+  String? baseOS;
+  String? securityPatch;
+  int? sdkInt;
+  String? release;
+  String? codename;
+  int? previewSdkInt;
+  String? incremental;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -336,21 +336,21 @@ class IOSDeviceModel {
     name = json['name'] as String;
   }
 
-  bool isEmulator;
-  String systemName;
-  String uuid;
-  UTSModel uts;
-  String model;
-  String localizedModel;
-  String systemVersion;
-  String name;
+  bool? isEmulator;
+  String? systemName;
+  String? uuid;
+  UTSModel? uts;
+  String? model;
+  String? localizedModel;
+  String? systemVersion;
+  String? name;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['isEmulator'] = isEmulator;
     data['systemName'] = systemName;
     data['uuid'] = uuid;
-    if (uts != null) data['uts'] = uts.toJson();
+    if (uts != null) data['uts'] = uts!.toJson();
     data['model'] = model;
     data['localizedModel'] = localizedModel;
     data['systemVersion'] = systemVersion;
@@ -371,11 +371,11 @@ class UTSModel {
     version = json['version'] as String;
   }
 
-  String release;
-  String sysName;
-  String nodeName;
-  String machine;
-  String version;
+  String? release;
+  String? sysName;
+  String? nodeName;
+  String? machine;
+  String? version;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};

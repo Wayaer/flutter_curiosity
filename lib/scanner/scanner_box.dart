@@ -2,31 +2,29 @@ import 'package:flutter/material.dart';
 
 class ScannerBox extends StatefulWidget {
   const ScannerBox(
-      {Key key,
+      {Key? key,
       this.child,
-      Color borderColor,
-      Color scannerColor,
+      this.borderColor,
+      this.scannerColor,
       this.size,
       this.boxSize,
       this.hornStrokeWidth,
       this.scannerStrokeWidth})
-      : borderColor = borderColor ?? Colors.white,
-        scannerColor = scannerColor ?? Colors.white,
-        super(key: key);
-  final Widget child;
-  final Size size;
-  final Size boxSize;
-  final double hornStrokeWidth;
-  final double scannerStrokeWidth;
-  final Color borderColor;
-  final Color scannerColor;
+      : super(key: key);
+  final Widget? child;
+  final Size? size;
+  final Size? boxSize;
+  final double? hornStrokeWidth;
+  final double? scannerStrokeWidth;
+  final Color? borderColor;
+  final Color? scannerColor;
 
   @override
   _ScannerBoxState createState() => _ScannerBoxState();
 }
 
 class _ScannerBoxState extends State<ScannerBox> with TickerProviderStateMixin {
-  AnimationController controller;
+  late AnimationController controller;
 
   @override
   void initState() {
@@ -45,7 +43,7 @@ class _ScannerBoxState extends State<ScannerBox> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
       animation: controller,
-      builder: (BuildContext context, Widget child) => CustomPaint(
+      builder: (BuildContext context, Widget? child) => CustomPaint(
           foregroundPainter: ScannerPainter(
               scannerStrokeWidth: widget.scannerStrokeWidth,
               hornStrokeWidth: widget.hornStrokeWidth,
@@ -60,35 +58,41 @@ class _ScannerBoxState extends State<ScannerBox> with TickerProviderStateMixin {
 
 class ScannerPainter extends CustomPainter {
   ScannerPainter({
-    double hornStrokeWidth,
-    double scannerStrokeWidth,
-    Color scannerColor,
-    this.value,
-    this.borderColor,
+    double? hornStrokeWidth,
+    double? scannerStrokeWidth,
+    Color? scannerColor,
+    Color? borderColor,
+    required this.value,
     this.size,
     this.boxSize,
-  })  : hornStrokeWidth = hornStrokeWidth ?? 3,
-        scannerColor = scannerColor ?? Colors.white,
+  })  : scannerColor = scannerColor ?? Colors.white,
+        borderColor = borderColor ?? Colors.white,
+        hornStrokeWidth = hornStrokeWidth ?? 3,
         scannerStrokeWidth = scannerStrokeWidth ?? 0.5;
   final double value;
   final Color borderColor;
   final Color scannerColor;
-  final Size size;
-  final Size boxSize;
+  final Size? size;
+  final Size? boxSize;
 
   /// 四角的线宽度
   final double hornStrokeWidth;
 
   /// 识别框中间的线
   final double scannerStrokeWidth;
-  Paint paintValue;
+  late Paint paintValue;
 
   @override
   void paint(Canvas canvas, Size size) {
     final Size initSize = this.size ?? size;
     final Size initBoxSize =
         boxSize ?? Size(initSize.width * 0.7, initSize.height * 0.3);
-    if (paintValue == null) initPaint();
+    paintValue = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 0.5
+      ..isAntiAlias = true
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.bevel;
     final double left = (initSize.width - initBoxSize.width) / 2;
     final double top = (initSize.height - initBoxSize.height) / 2;
     final double boxWidth = initBoxSize.width;
@@ -134,13 +138,4 @@ class ScannerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(CustomPainter oldDelegate) => true;
-
-  void initPaint() {
-    paintValue = Paint()
-      ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.5
-      ..isAntiAlias = true
-      ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.bevel;
-  }
 }

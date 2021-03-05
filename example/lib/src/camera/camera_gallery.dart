@@ -20,7 +20,8 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     return OverlayScaffold(
         appBar: AppBar(title: const Text('Camera and Gallery')),
         body: Universal(isScroll: true, children: <Widget>[
-          ElevatedButton(onPressed: () => scan(context), child: const Text('扫码')),
+          ElevatedButton(
+              onPressed: () => scan(context), child: const Text('扫码')),
           ElevatedButton(
               onPressed: () => systemGallery(), child: const Text('打开系统相册')),
           ElevatedButton(
@@ -75,18 +76,18 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> systemGallery() async {
-    final String data = await openSystemGallery;
+    final String? data = await openSystemGallery;
     showToast(data.toString());
-    text = data;
+    text = data ?? '';
     setState(() {});
   }
 
   Future<void> systemCamera() async {
     if (!isMobile) return;
     if (await Utils.requestPermissions(Permission.camera, '使用相机')) {
-      final String data = await openSystemCamera();
+      final String? data = await openSystemCamera();
       showToast(data.toString());
-      text = data;
+      text = data ?? '';
       setState(() {});
     } else {
       showToast('未获取相机权限');

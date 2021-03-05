@@ -14,6 +14,7 @@ class JumpSettingPage extends StatelessWidget {
             child: Text(value.toString())))
         .toList());
     return OverlayScaffold(
+        padding: const EdgeInsets.symmetric(vertical: 20),
         appBar: AppBar(title: const Text('Android Jump Setting')),
         body: Universal(isScroll: true, children: children));
   }

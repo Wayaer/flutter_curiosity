@@ -21,26 +21,23 @@ Future<String?> installApp(String apkPath) async {
 /// ios => app id
 /// The android platform "marketPackageName" cannot be null
 Future<void> goToMarket<T>(
-    {String packageName, String marketPackageName, String appID}) async {
+    {String? packageName, String? marketPackageName, String? appID}) async {
   if (!_supportPlatform) return;
-  if (isIOS) {
-    assert(appID != null);
+  if (isIOS && appID != null) {
     await curiosityChannel
         .invokeMethod<T>('goToMarket', <String, String>{'appId': appID});
   }
-  if (isAndroid) {
-    assert(packageName != null && marketPackageName != null);
-    if (marketPackageName == null)
-      await curiosityChannel.invokeMethod<T>('goToMarket', <String, String>{
-        'packageName': packageName,
-        'marketPackageName': marketPackageName
-      });
+  if (isAndroid && packageName != null && marketPackageName != null) {
+    await curiosityChannel.invokeMethod<T>('goToMarket', <String, String>{
+      'packageName': packageName,
+      'marketPackageName': marketPackageName
+    });
   }
 }
 
 /// 是否安装某个app  仅支持android
 /// is install an app that only supports Android
-Future<bool> isInstallApp(String packageName) async {
+Future<bool?> isInstallApp(String packageName) async {
   if (!_supportPlatform) return null;
   if (isAndroid) return false;
   return await curiosityChannel.invokeMethod(
@@ -56,7 +53,7 @@ Future<void> get exitApp async {
 
 /// 获取文件夹或文件大小
 /// Gets the folder or file size
-Future<String> getFilePathSize(String path) async {
+Future<String?> getFilePathSize(String path) async {
   if (!_supportPlatform) return null;
   return await curiosityChannel
       .invokeMethod('getFilePathSize', <String, String>{'filePath': path});
@@ -73,13 +70,12 @@ Future<void> systemCallPhone<T>(String phoneNumber,
 }
 
 /// 系统分享
-Future<String> systemShare(
+Future<String?> systemShare(
     {String title = 'Share',
-    String content,
-    List<String> imagesPath,
-    ShareType shareType}) async {
+    String? content,
+    List<String>? imagesPath,
+    required ShareType shareType}) async {
   if (!_supportPlatform) return 'not support Platform';
-  if (shareType == null) return 'The shareType cannot be empty';
 
   if (shareType == ShareType.images) {
     if (imagesPath == null || imagesPath.isEmpty)
@@ -99,14 +95,14 @@ Future<String> systemShare(
 
 /// 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 /// Judge whether GPS is on. If GPS or AGPs is turned on, it is considered to be on
-Future<bool> get getGPSStatus async {
+Future<bool?> get getGPSStatus async {
   if (!_supportPlatform) return null;
   return await curiosityChannel.invokeMethod('getGPSStatus');
 }
 
 /// 跳转到GPS定位权限设置页面
 /// Jump to the GPS location permission setting page
-Future<bool> get jumpGPSSetting async {
+Future<bool?> get jumpGPSSetting async {
   if (!_supportPlatform) return null;
   if (isIOS) return await jumpAppSetting;
   if (isAndroid) return await curiosityChannel.invokeMethod('jumpGPSSetting');
@@ -115,18 +111,19 @@ Future<bool> get jumpGPSSetting async {
 
 /// 跳转到App权限设置页面
 /// Jump to app permission setting page
-Future<bool> get jumpAppSetting async {
+Future<bool?> get jumpAppSetting async {
   if (!_supportPlatform) return null;
   return await curiosityChannel.invokeMethod('jumpAppSetting');
 }
 
 /// 跳转到android 系统设置
 /// Jump to Android system settings
-Future<bool> jumpSystemSetting({SettingType settingType}) async {
+Future<bool?> jumpSystemSetting({SettingType? settingType}) async {
   if (!_supportPlatform) return null;
   if (isIOS) return await jumpAppSetting;
   if (isAndroid) {
-    final List<String> type = settingType.toString().split('.');
+    final List<String> type =
+        (settingType ?? SettingType.setting).toString().split('.');
     return await curiosityChannel.invokeMethod(
         'jumpSystemSetting', <String, String>{'settingType': type[1]});
   }
@@ -139,7 +136,7 @@ Future<bool> jumpSystemSetting({SettingType settingType}) async {
 ///       <key>NSPhotoLibraryUsageDescription</key>
 ///       <string>是否允许Curiosity访问你的相册？</string>
 /// ios path 包含 file:///
-Future<String> get openSystemGallery async {
+Future<String?> get openSystemGallery async {
   if (!_supportPlatform) return null;
   return await curiosityChannel.invokeMethod('openSystemGallery');
 }
@@ -165,12 +162,14 @@ Future<String> get openSystemGallery async {
 ///      <key>NSPhotoLibraryUsageDescription</key>
 ///       <string>是否允许APP访问你的相册？</string>
 /// ios path 包含 file:///
-Future<String> openSystemCamera({String savePath}) async {
+Future<String?> openSystemCamera({String? savePath}) async {
   /// savePath => android 图片临时储存位置 (仅支持android)
-  /// alertNativeTips => ios 是否弹出用户未允许访问相机权限提示 (仅支持ios)
   if (!_supportPlatform) return null;
-  String path = await curiosityChannel
-      .invokeMethod('openSystemCamera', <String, String>{'path': savePath});
+
+  Map<String, String>? arguments;
+  if (savePath != null) arguments = <String, String>{'path': savePath};
+  String? path =
+      await curiosityChannel.invokeMethod('openSystemCamera', arguments);
   if (savePath != null) path = savePath;
   return path;
 }
@@ -178,36 +177,31 @@ Future<String> openSystemCamera({String savePath}) async {
 /// save image to Gallery
 /// imageBytes can't null
 @deprecated
-Future<String> saveImageToGallery(Uint8List imageBytes,
-    {int quality = 100, String name}) async {
+Future<String?> saveImageToGallery(Uint8List imageBytes,
+    {int quality = 100, String? name}) async {
   if (!_supportPlatform) return null;
-  assert(imageBytes != null);
-  final String result = await curiosityChannel.invokeMethod(
+  return await curiosityChannel.invokeMethod(
       'saveImageToGallery', <String, dynamic>{
     'imageBytes': imageBytes,
     'quality': quality,
     'name': name
   });
-  return result;
 }
 
 /// Save the PNG，JPG，JPEG image or video located at [file]
 /// to the local device media gallery.
 @deprecated
-Future<String> saveFileToGallery(String file) async {
+Future<String?> saveFileToGallery(String file) async {
   if (!_supportPlatform) return null;
-  assert(file != null);
-  final String result =
-      await curiosityChannel.invokeMethod('saveFileToGallery', file);
-  return result;
+  return await curiosityChannel.invokeMethod('saveFileToGallery', file);
 }
 
 /// AppInfo
-Future<List<AppsModel>> get getInstalledApp async {
+Future<List<AppsModel>?> get getInstalledApp async {
   if (!_supportPlatform) return null;
   if (!isAndroid) return null;
-  final List<Map<dynamic, dynamic>> appList = await curiosityChannel
-      .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp');
+  final List<Map<dynamic, dynamic>> appList = (await curiosityChannel
+      .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp'))!;
   if (appList is! List) return null;
   final List<AppsModel> list = <AppsModel>[];
   for (final dynamic data in appList) {
@@ -217,64 +211,64 @@ Future<List<AppsModel>> get getInstalledApp async {
 }
 
 /// get Android Device Info
-Future<AndroidDeviceModel> get getAndroidDeviceInfo async {
+Future<AndroidDeviceModel?> get getAndroidDeviceInfo async {
   if (!_supportPlatform) return null;
   if (!isAndroid) return null;
-  final Map<String, dynamic> map =
-      await curiosityChannel.invokeMapMethod<String, dynamic>('getDeviceInfo');
+  final Map<String, dynamic> map = (await curiosityChannel
+      .invokeMapMethod<String, dynamic>('getDeviceInfo'))!;
   return AndroidDeviceModel.fromJson(map);
 }
 
 /// get IOS Device Info
-Future<IOSDeviceModel> get getIOSDeviceInfo async {
+Future<IOSDeviceModel?> get getIOSDeviceInfo async {
   if (!_supportPlatform) return null;
   if (!isIOS) return null;
-  final Map<String, dynamic> map =
-      await curiosityChannel.invokeMapMethod<String, dynamic>('getDeviceInfo');
+  final Map<String, dynamic> map = (await curiosityChannel
+      .invokeMapMethod<String, dynamic>('getDeviceInfo'))!;
   return IOSDeviceModel.fromJson(map);
 }
 
 /// get all info
-Future<AppInfoModel> get getPackageInfo async {
+Future<AppInfoModel?> get getPackageInfo async {
   if (!_supportPlatform) return null;
   final Map<String, dynamic> map =
-      await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo');
+      (await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo'))!;
   return AppInfoModel.fromJson(map);
 }
 
 /// android versionCode  ios version
-Future<int> get getVersionCode async {
+Future<int?> get getVersionCode async {
   if (!_supportPlatform) return null;
-  final AppInfoModel appInfoModel = await getPackageInfo;
+  final AppInfoModel appInfoModel = (await getPackageInfo)!;
   return appInfoModel.versionCode;
 }
 
 /// app name
-Future<String> get getAppName async {
+Future<String?> get getAppName async {
   if (!_supportPlatform) return null;
   if (!(isIOS || isAndroid)) return null;
-  final AppInfoModel appInfoModel = await getPackageInfo;
+  final AppInfoModel appInfoModel = (await getPackageInfo)!;
   return appInfoModel.appName;
 }
 
 /// package name
-Future<String> get getPackageName async {
+Future<String?> get getPackageName async {
   if (!_supportPlatform) return null;
-  final AppInfoModel appInfoModel = await getPackageInfo;
+  final AppInfoModel appInfoModel = (await getPackageInfo)!;
   return appInfoModel.packageName;
 }
 
 /// android versionName  ios buildName
-Future<String> get getVersionName async {
+Future<String?> get getVersionName async {
   if (!_supportPlatform) return null;
-  final AppInfoModel appInfoModel = await getPackageInfo;
+  final AppInfoModel appInfoModel = (await getPackageInfo)!;
   return appInfoModel.versionName;
 }
 
 /// root directory
-Future<String> get getRootDirectory async {
+Future<String?> get getRootDirectory async {
   if (!_supportPlatform) return null;
-  final AppInfoModel appInfoModel = await getPackageInfo;
+  final AppInfoModel appInfoModel = (await getPackageInfo)!;
   if (isAndroid) return appInfoModel.externalStorageDirectory;
   if (isIOS || isMacOS) return appInfoModel.homeDirectory;
   return '';
