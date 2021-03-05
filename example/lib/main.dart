@@ -5,7 +5,8 @@ import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_waya/flutter_waya.dart';
+
+GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
 void main() {
   print('isWeb');
@@ -21,6 +22,7 @@ void main() {
   print('isDesktop');
   print(isDesktop);
   runApp(MaterialApp(
+    navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,
     title: 'Curiosity',
     home: App(),
@@ -35,23 +37,29 @@ class App extends StatelessWidget {
         centerTitle: true,
         title: const Text('Flutter Curiosity Plugin Example'),
       ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ElevatedButton(
-              onPressed: () => push(SharePage()), child: const Text('分享')),
-          ElevatedButton(
-              onPressed: () => push(GetInfoPage()), child: const Text('获取信息')),
-          ElevatedButton(
-              onPressed: () => push(JumpSettingPage()),
-              child: const Text('跳转设置')),
-          ElevatedButton(
-              onPressed: () => push(CameraGalleryPage()),
-              child: const Text('相机和图库')),
-        ],
-      ),
+      body: Center(
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+            ElevatedButton(
+                onPressed: () => push(SharePage()), child: const Text('分享')),
+            ElevatedButton(
+                onPressed: () => push(GetInfoPage()),
+                child: const Text('获取信息')),
+            ElevatedButton(
+                onPressed: () => push(JumpSettingPage()),
+                child: const Text('跳转设置')),
+            ElevatedButton(
+                onPressed: () => push(CameraGalleryPage()),
+                child: const Text('相机和图库')),
+          ])),
     );
   }
+}
+
+void push(Widget widget) {
+  showCupertinoModalPopup<dynamic>(
+      context: navigatorKey.currentContext!, builder: (_) => widget);
 }
 
 Widget showText(dynamic key, dynamic value) {

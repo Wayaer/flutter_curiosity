@@ -12,16 +12,4 @@ dependencies:
     sdk: flutter
   flutter_curiosity:
     path: ../
-  flutter_waya:
-    git:
-      url: git://github.com/Wayaer/flutter_waya.git
-      ref: master
-  permission_handler: ^5.1.0+2
-
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-
-flutter:
-  uses-material-design: true
+  # permission_handler: ^5.1.0+2

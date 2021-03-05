@@ -1,10 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:curiosity/main.dart';
-import 'package:curiosity/src/utils/utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_waya/flutter_waya.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 class ScannerPage extends StatelessWidget {
   const ScannerPage({Key? key, required this.scanResult}) : super(key: key);
@@ -14,7 +11,7 @@ class ScannerPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return Scaffold(
         backgroundColor: Colors.black,
         body: Center(child: ScannerView(scanResult: scanResult)));
   }
@@ -55,8 +52,8 @@ class _CameraScanPageState extends State<CameraScanPage> {
       if (image.format.group != ImageFormatGroup.yuv420) return;
       final ScanResult? data = await scanImageMemory(image.planes[0].bytes);
       if (data != null) {
-        log('我的二维码');
-        log(data.toJson());
+        print('我的二维码');
+        print(data.toJson());
         controller!.stopImageStream();
       }
     });
@@ -70,8 +67,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
           aspectRatio: controller!.value.aspectRatio,
           child: CameraPreview(controller!));
     }
-    return OverlayScaffold(
-        backgroundColor: Colors.black, body: Center(child: child));
+    return Scaffold(backgroundColor: Colors.black, body: Center(child: child));
   }
 
   @override
@@ -94,31 +90,34 @@ class _UrlImageScanPageState extends State<UrlImageScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Scaffold(
       appBar: AppBar(title: const Text('San url image')),
-      body: Column(children: <Widget>[
-        Container(
-            margin: const EdgeInsets.all(20),
-            child: InputField(
-                hintText: '请输入Url',
-                helperText: '务必输入正确的url地址',
-                focusedBorder: inputBorder(Colors.blueAccent),
-                enabledBorder: inputBorder(Colors.blueAccent),
-                disabledBorder: inputBorder(Colors.grey),
-                filled: true,
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-                controller: controller)),
-        ElevatedButton(onPressed: () => scan(), child: const Text('识别二维码')),
-        showText('code', code),
-        showText('type', type),
-      ]),
+      body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          children: <Widget>[
+            Container(
+                margin: const EdgeInsets.all(20),
+                child: TextField(
+                    decoration: InputDecoration(
+                      hintText: '请输入Url',
+                      helperText: '务必输入正确的url地址',
+                      focusedBorder: inputBorder(Colors.blueAccent),
+                      enabledBorder: inputBorder(Colors.blueAccent),
+                      disabledBorder: inputBorder(Colors.grey),
+                      filled: true,
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 10),
+                    ),
+                    controller: controller)),
+            ElevatedButton(onPressed: () => scan(), child: const Text('识别二维码')),
+            showText('code', code),
+            showText('type', type),
+          ]),
     );
   }
 
   Future<void> scan() async {
-    if (controller.text.isEmpty) return showToast('请输入Url');
+    if (controller.text.isEmpty) return print('请输入Url');
     final ScanResult? data = await scanImageUrl(controller.text);
     if (data != null) {
       code = data.code ?? '';
@@ -146,36 +145,43 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
+    return Scaffold(
       appBar: AppBar(title: const Text('San file image')),
-      body: Column(children: <Widget>[
-        ElevatedButton(
-            onPressed: () => openGallery(), child: const Text('选择图片')),
-        const SizedBox(height: 20),
-        showText('path', path),
-        ElevatedButton(onPressed: () => scan(), child: const Text('识别')),
-        showText('code', code),
-        showText('type', type),
-      ]),
+      body: ListView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          children: <Widget>[
+            ElevatedButton(
+                onPressed: () => openGallery(), child: const Text('选择图片')),
+            const SizedBox(height: 20),
+            showText('path', path),
+            ElevatedButton(onPressed: () => scan(), child: const Text('识别')),
+            showText('code', code),
+            showText('type', type),
+          ]),
     );
   }
 
   Future<void> scan() async {
-    if (path.isEmpty) return showToast('请选择图片');
-    if (await Utils.requestPermissions(Permission.storage, '读取文件')) {
-      final ScanResult? data = await scanImagePath(path);
-      if (data != null) {
-        code = data.code ?? '';
-        type = data.type ?? '';
-        setState(() {});
-      }
+    if (path.isEmpty) return print('请选择图片');
+    final ScanResult? data = await scanImagePath(path);
+    if (data != null) {
+      code = data.code ?? '';
+      type = data.type ?? '';
+      setState(() {});
     }
+    // if (await Utils.requestPermissions(Permission.storage, '读取文件')) {
+    //   final ScanResult? data = await scanImagePath(path);
+    //   if (data != null) {
+    //     code = data.code ?? '';
+    //     type = data.type ?? '';
+    //     setState(() {});
+    //   }
+    // }
   }
 
   Future<void> openGallery() async {
     final String? data = await openSystemGallery;
-    showToast(data.toString());
+    print(data.toString());
     path = data ?? '';
     setState(() {});
   }

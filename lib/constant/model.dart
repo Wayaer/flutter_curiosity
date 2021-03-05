@@ -35,39 +35,39 @@ class AppInfoModel {
       this.lastUpdateTime});
 
   AppInfoModel.fromJson(Map<String, dynamic> json) {
-    cacheDir = json['cacheDir'] as String;
+    cacheDir = json['cacheDir'] as String?;
     versionName = json['versionName'].toString();
-    directoryMusic = json['DIRECTORY_MUSIC'] as String;
-    navigationBarHeight = json['navigationBarHeight'] as double;
-    directoryAlarms = json['DIRECTORY_ALARMS'] as String;
-    directoryDocuments = json['DIRECTORY_DOCUMENTS'] as String;
-    firstInstallTime = json['firstInstallTime'] as int;
-    packageName = json['packageName'] as String;
-    directoryMovies = json['DIRECTORY_MOVIES'] as String;
-    directoryPictures = json['DIRECTORY_PICTURES'] as String;
-    filesDir = json['filesDir'] as String;
-    directoryDCIM = json['DIRECTORY_DCIM'] as String;
-    appName = json['appName'] as String;
-    directoryNotifications = json['DIRECTORY_NOTIFICATIONS'] as String;
-    directoryRINGTONES = json['DIRECTORY_RINGTONES'] as String;
-    directoryDownloads = json['DIRECTORY_DOWNLOADS'] as String;
-    versionCode = json['versionCode'] as int;
-    externalCacheDir = json['externalCacheDir'] as String;
-    externalFilesDir = json['externalFilesDir'] as String;
-    directoryPODCASTS = json['DIRECTORY_PODCASTS'] as String;
-    externalStorageDirectory = json['externalStorageDirectory'] as String;
-    lastUpdateTime = json['lastUpdateTime'] as int;
-    cachesDirectory = json['cachesDirectory'] as String;
-    homeDirectory = json['homeDirectory'] as String;
-    minimumOSVersion = json['minimumOSVersion'] as String;
-    platformVersion = json['platformVersion'] as String;
-    sdkBuild = json['sdkBuild'] as String;
-    documentDirectory = json['documentDirectory'] as String;
-    temporaryDirectory = json['temporaryDirectory'] as String;
-    statusBarWidth = json['statusBarWidth'] as double;
-    libraryDirectory = json['libraryDirectory'] as String;
-    statusBarHeight = json['statusBarHeight'] as double;
-    platformName = json['platformName'] as String;
+    directoryMusic = json['DIRECTORY_MUSIC'] as String?;
+    navigationBarHeight = json['navigationBarHeight'] as double?;
+    directoryAlarms = json['DIRECTORY_ALARMS'] as String?;
+    directoryDocuments = json['DIRECTORY_DOCUMENTS'] as String?;
+    firstInstallTime = json['firstInstallTime'] as int?;
+    packageName = json['packageName'] as String?;
+    directoryMovies = json['DIRECTORY_MOVIES'] as String?;
+    directoryPictures = json['DIRECTORY_PICTURES'] as String?;
+    filesDir = json['filesDir'] as String?;
+    directoryDCIM = json['DIRECTORY_DCIM'] as String?;
+    appName = json['appName'] as String?;
+    directoryNotifications = json['DIRECTORY_NOTIFICATIONS'] as String?;
+    directoryRINGTONES = json['DIRECTORY_RINGTONES'] as String?;
+    directoryDownloads = json['DIRECTORY_DOWNLOADS'] as String?;
+    versionCode = json['versionCode'] as int?;
+    externalCacheDir = json['externalCacheDir'] as String?;
+    externalFilesDir = json['externalFilesDir'] as String?;
+    directoryPODCASTS = json['DIRECTORY_PODCASTS'] as String?;
+    externalStorageDirectory = json['externalStorageDirectory'] as String?;
+    lastUpdateTime = json['lastUpdateTime'] as int?;
+    cachesDirectory = json['cachesDirectory'] as String?;
+    homeDirectory = json['homeDirectory'] as String?;
+    minimumOSVersion = json['minimumOSVersion'] as String?;
+    platformVersion = json['platformVersion'] as String?;
+    sdkBuild = json['sdkBuild'] as String?;
+    documentDirectory = json['documentDirectory'] as String?;
+    temporaryDirectory = json['temporaryDirectory'] as String?;
+    statusBarWidth = json['statusBarWidth'] as double?;
+    libraryDirectory = json['libraryDirectory'] as String?;
+    statusBarHeight = json['statusBarHeight'] as double?;
+    platformName = json['platformName'] as String?;
   }
 
   String? packageName;
@@ -158,11 +158,11 @@ class AppsModel {
 
   AppsModel.fromJson(Map<dynamic, dynamic> json) {
     isSystemApp = json['isSystemApp'] as bool;
-    appName = json['appName'] as String;
-    lastUpdateTime = json['lastUpdateTime'] as int;
-    versionCode = json['versionCode'] as int;
-    versionName = json['versionName'] as String;
-    packageName = json['packageName'] as String;
+    appName = json['appName'] as String?;
+    lastUpdateTime = json['lastUpdateTime'] as int?;
+    versionCode = json['versionCode'] as int?;
+    versionName = json['versionName'] as String?;
+    packageName = json['packageName'] as String?;
   }
 
   bool? isSystemApp;
@@ -206,26 +206,26 @@ class AndroidDeviceModel {
       this.hardware});
 
   AndroidDeviceModel.fromJson(Map<String, dynamic> json) {
-    product = json['product'] as String;
+    product = json['product'] as String?;
     isEmulator = json['isEmulator'] as bool;
-    display = json['display'] as String;
-    type = json['type'] as String;
+    display = json['display'] as String?;
+    type = json['type'] as String?;
     version = json['version'] != null
         ? Version.fromJson(json['version'] as Map<dynamic, dynamic>)
         : null;
-    manufacturer = json['manufacturer'] as String;
-    tags = json['tags'] as String;
-    bootloader = json['bootloader'] as String;
-    fingerprint = json['fingerprint'] as String;
-    host = json['host'] as String;
-    model = json['model'] as String;
-    id = json['id'] as String;
+    manufacturer = json['manufacturer'] as String?;
+    tags = json['tags'] as String?;
+    bootloader = json['bootloader'] as String?;
+    fingerprint = json['fingerprint'] as String?;
+    host = json['host'] as String?;
+    model = json['model'] as String?;
+    id = json['id'] as String?;
     isDeviceRoot = json['isDeviceRoot'] as bool;
-    brand = json['brand'] as String;
-    device = json['device'] as String;
-    board = json['board'] as String;
-    androidId = json['androidId'] as String;
-    hardware = json['hardware'] as String;
+    brand = json['brand'] as String?;
+    device = json['device'] as String?;
+    board = json['board'] as String?;
+    androidId = json['androidId'] as String?;
+    hardware = json['hardware'] as String?;
   }
 
   String? product;
@@ -282,13 +282,13 @@ class Version {
       this.incremental});
 
   Version.fromJson(Map<dynamic, dynamic> json) {
-    baseOS = json['baseOS'] as String;
-    securityPatch = json['securityPatch'] as String;
-    sdkInt = json['sdkInt'] as int;
-    release = json['release'] as String;
-    codename = json['codename'] as String;
-    previewSdkInt = json['previewSdkInt'] as int;
-    incremental = json['incremental'] as String;
+    baseOS = json['baseOS'] as String?;
+    securityPatch = json['securityPatch'] as String?;
+    sdkInt = json['sdkInt'] as int?;
+    release = json['release'] as String?;
+    codename = json['codename'] as String?;
+    previewSdkInt = json['previewSdkInt'] as int?;
+    incremental = json['incremental'] as String?;
   }
 
   String? baseOS;
@@ -325,15 +325,15 @@ class IOSDeviceModel {
 
   IOSDeviceModel.fromJson(Map<String, dynamic> json) {
     isEmulator = json['isEmulator'] as bool;
-    systemName = json['systemName'] as String;
+    systemName = json['systemName'] as String?;
     uts = json['uts'] != null
         ? UTSModel.fromJson(json['uts'] as Map<dynamic, dynamic>)
         : null;
-    model = json['model'] as String;
-    uuid = json['uuid'] as String;
-    localizedModel = json['localizedModel'] as String;
-    systemVersion = json['systemVersion'] as String;
-    name = json['name'] as String;
+    model = json['model'] as String?;
+    uuid = json['uuid'] as String?;
+    localizedModel = json['localizedModel'] as String?;
+    systemVersion = json['systemVersion'] as String?;
+    name = json['name'] as String?;
   }
 
   bool? isEmulator;
@@ -364,11 +364,11 @@ class UTSModel {
       {this.release, this.sysName, this.nodeName, this.machine, this.version});
 
   UTSModel.fromJson(Map<dynamic, dynamic> json) {
-    release = json['release'] as String;
-    sysName = json['sysName'] as String;
-    nodeName = json['nodeName'] as String;
-    machine = json['machine'] as String;
-    version = json['version'] as String;
+    release = json['release'] as String?;
+    sysName = json['sysName'] as String?;
+    nodeName = json['nodeName'] as String?;
+    machine = json['machine'] as String?;
+    version = json['version'] as String?;
   }
 
   String? release;

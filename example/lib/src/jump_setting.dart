@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 class JumpSettingPage extends StatelessWidget {
   @override
@@ -13,9 +12,10 @@ class JumpSettingPage extends StatelessWidget {
             onPressed: () => jumpSystemSetting(settingType: value),
             child: Text(value.toString())))
         .toList());
-    return OverlayScaffold(
-        padding: const EdgeInsets.symmetric(vertical: 20),
+    return Scaffold(
         appBar: AppBar(title: const Text('Android Jump Setting')),
-        body: Universal(isScroll: true, children: children));
+        body: Center(
+          child: SingleChildScrollView(child: Column(children: children)),
+        ));
   }
 }
