@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:curiosity/src/camera/camera_gallery.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/jump_setting.dart';
@@ -9,6 +11,12 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 GlobalKey<NavigatorState> navigatorKey = GlobalKey();
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  ///关闭辅助触控
+  window.onSemanticsEnabledChanged = () {};
+  RendererBinding.instance.setSemanticsEnabled(false);
+
   print('isWeb');
   print(isWeb);
   print('isMacOS');
@@ -21,6 +29,7 @@ void main() {
   print(isMobile);
   print('isDesktop');
   print(isDesktop);
+
   runApp(MaterialApp(
     navigatorKey: navigatorKey,
     debugShowCheckedModeBanner: false,

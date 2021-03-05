@@ -8,6 +8,8 @@
 + (void)goToMarket:(NSString *)props{
     NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
 //    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
+    //    NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
+    //    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
 }
 
 + (void)callPhone:(NSString *)phoneNumber {
@@ -107,7 +109,8 @@
 + (BOOL) getGPSStatus {
     if (@available(macOS 10.7, *)) {
         return [CLLocationManager locationServicesEnabled];
-    } 
+    }
+    return  NO;
 }
 
 @end
