@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_waya/flutter_waya.dart';
 
 class SharePage extends StatefulWidget {
   @override
@@ -11,32 +12,30 @@ class _SharePageState extends State<SharePage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return OverlayScaffold(
         appBar: AppBar(title: const Text('Share')),
-        body: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                ElevatedButton(
-                    onPressed: () => systemGallery(),
-                    child: const Text('打开系统相册')),
-                ElevatedButton(
-                    onPressed: () => shareText(), child: const Text('分享文字')),
-                ElevatedButton(
-                    onPressed: () => shareImage(), child: const Text('分享图片')),
-                ElevatedButton(
-                    onPressed: () => shareImages(),
-                    child: const Text('分享多张图片')),
-                const SizedBox(height: 20),
-                Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: list.map((String value) => Text(value)).toList()),
-              ]),
-        ));
+        body: Universal(
+            isScroll: true,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              ElevatedButton(
+                  onPressed: () => systemGallery(),
+                  child: const Text('打开系统相册')),
+              ElevatedButton(
+                  onPressed: () => shareText(), child: const Text('分享文字')),
+              ElevatedButton(
+                  onPressed: () => shareImage(), child: const Text('分享图片')),
+              ElevatedButton(
+                  onPressed: () => shareImages(), child: const Text('分享多张图片')),
+              const SizedBox(height: 20),
+              Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: list.map((String value) => Text(value)).toList()),
+            ]));
   }
 
   Future<void> systemGallery() async {
-    final String? data = await openSystemGallery;
+    final String data = await openSystemGallery;
     list.add(data.toString());
     setState(() {});
   }
@@ -47,7 +46,7 @@ class _SharePageState extends State<SharePage> {
 
   void shareImage() {
     if (list.isEmpty) {
-      /// showToast('请先选择图片');
+      showToast('请先选择图片');
       return;
     }
     systemShare(title: '分享图片', content: list[0], shareType: ShareType.image);
@@ -55,7 +54,7 @@ class _SharePageState extends State<SharePage> {
 
   void shareImages() {
     if (list.isEmpty) {
-      /// showToast('请先选择图片');
+      showToast('请先选择图片');
       return;
     }
     final List<String> listPath = <String>[];

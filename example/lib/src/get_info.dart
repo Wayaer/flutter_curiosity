@@ -1,6 +1,7 @@
 import 'package:curiosity/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_waya/flutter_waya.dart';
 
 class GetInfoPage extends StatefulWidget {
   @override
@@ -12,31 +13,29 @@ class _GetInfoPageState extends State<GetInfoPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return OverlayScaffold(
         appBar: AppBar(title: const Text('App and Device')),
-        body: Center(
-          child: Column(children: <Widget>[
-            ElevatedButton(
-                onPressed: () => getAppInfo(), child: const Text('获取app信息')),
-            ElevatedButton(
-                onPressed: () => getGPS(), child: const Text('获取gps状态')),
-            ElevatedButton(
-                onPressed: () => getDeviceInfo(), child: const Text('获取设备信息')),
-            ElevatedButton(
-                onPressed: () => getInstalled(),
-                child: const Text('获取Android已安装应用')),
-            Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: list),
-          ]),
-        ));
+        body: Universal(isScroll: true, children: <Widget>[
+          ElevatedButton(
+              onPressed: () => getAppInfo(), child: const Text('获取app信息')),
+          ElevatedButton(
+              onPressed: () => getGPS(), child: const Text('获取gps状态')),
+          ElevatedButton(
+              onPressed: () => getDeviceInfo(), child: const Text('获取设备信息')),
+          ElevatedButton(
+              onPressed: () => getInstalled(),
+              child: const Text('获取Android已安装应用')),
+          Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: list),
+        ]));
   }
 
   Future<void> getInstalled() async {
-    final List<AppsModel>? data = await getInstalledApp;
+    final List<AppsModel> data = await getInstalledApp;
     list = <Widget>[];
-    data?.map((AppsModel appsModel) {
+    data.map((AppsModel appsModel) {
       final Map<String, dynamic> appModel = appsModel.toJson();
       final List<Widget> app = <Widget>[];
       appModel.forEach((String key, dynamic value) {
@@ -58,7 +57,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
 
   Future<void> getDeviceInfo() async {
     list = <Widget>[];
-    Map<String, dynamic>? map = <String, dynamic>{};
+    Map<String, dynamic> map = <String, dynamic>{};
     if (isAndroid) map = (await getAndroidDeviceInfo)?.toJson();
     if (isIOS) map = (await getIOSDeviceInfo)?.toJson();
     map?.forEach((String key, dynamic value) {
@@ -76,7 +75,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getAppInfo() async {
-    final AppInfoModel? data = await getPackageInfo;
+    final AppInfoModel data = await getPackageInfo;
     if (data == null) return;
     final Map<String, dynamic> map = data.toJson();
     list = <Widget>[];
@@ -87,7 +86,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getGPS() async {
-    final bool? data = await getGPSStatus;
-    print(data);
+    final bool data = await getGPSStatus;
+    showToast(data.toString());
   }
 }

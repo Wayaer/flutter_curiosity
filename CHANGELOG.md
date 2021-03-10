@@ -1,3 +1,5 @@
+## [2.0.1]
+ * add example
 ## [2.0.0]
  * Supported null-safety
 ## [1.6.0]
