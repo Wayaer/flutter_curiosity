@@ -9,7 +9,6 @@ import 'package:flutter_curiosity/tools/internal.dart';
 /// cancel  取消安装
 /// not permissions  没有打开安装权限
 Future<String?> installApp(String apkPath) async {
-  if (!supportPlatform) return null;
   if (!isAndroid) return null;
   return await curiosityChannel
       .invokeMethod('installApp', <String, String>{'apkPath': apkPath});
@@ -38,8 +37,7 @@ Future<void> goToMarket<T>(
 /// 是否安装某个app  仅支持android
 /// is install an app that only supports Android
 Future<bool?> isInstallApp(String packageName) async {
-  if (!supportPlatform) return null;
-  if (isAndroid) return false;
+  if (!isAndroid) return false;
   return await curiosityChannel.invokeMethod(
       'isInstallApp', <String, String>{'packageName': packageName});
 }
@@ -75,8 +73,7 @@ Future<String?> systemShare(
     String? content,
     List<String>? imagesPath,
     required ShareType shareType}) async {
-  if (!supportPlatform) return 'not support Platform';
-
+  if (!supportPlatformMobile) return 'not support Platform';
   if (shareType == ShareType.images) {
     if (imagesPath == null || imagesPath.isEmpty)
       return 'The shareType cannot be empty';
@@ -100,7 +97,7 @@ Future<String?> systemShare(
 ///       <string>是否允许Curiosity访问你的相册？</string>
 /// ios path 包含 file:///
 Future<String?> get openSystemGallery async {
-  if (!supportPlatform) return null;
+  if (!supportPlatformMobile) return null;
   return await curiosityChannel.invokeMethod('openSystemGallery');
 }
 
@@ -127,8 +124,7 @@ Future<String?> get openSystemGallery async {
 /// ios path 包含 file:///
 Future<String?> openSystemCamera({String? savePath}) async {
   /// savePath => android 图片临时储存位置 (仅支持android)
-  if (!supportPlatform) return null;
-
+  if (!supportPlatformMobile) return null;
   Map<String, String>? arguments;
   if (savePath != null) arguments = <String, String>{'path': savePath};
   String? path =
@@ -142,7 +138,7 @@ Future<String?> openSystemCamera({String? savePath}) async {
 @deprecated
 Future<String?> saveImageToGallery(Uint8List imageBytes,
     {int quality = 100, String? name}) async {
-  if (!supportPlatform) return null;
+  if (!supportPlatformMobile) return null;
   return await curiosityChannel.invokeMethod(
       'saveImageToGallery', <String, dynamic>{
     'imageBytes': imageBytes,
@@ -155,6 +151,6 @@ Future<String?> saveImageToGallery(Uint8List imageBytes,
 /// to the local device media gallery.
 @deprecated
 Future<String?> saveFileToGallery(String file) async {
-  if (!supportPlatform) return null;
+  if (!supportPlatformMobile) return null;
   return await curiosityChannel.invokeMethod('saveFileToGallery', file);
 }

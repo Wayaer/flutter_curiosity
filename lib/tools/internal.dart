@@ -29,6 +29,12 @@ bool get supportPlatform {
   return false;
 }
 
+bool get supportPlatformMobile {
+  if (isMobile) return true;
+  log('Curiosity is not support Platform');
+  return false;
+}
+
 void _segmentationLog(String msg) {
   final StringBuffer outStr = StringBuffer();
   for (int index = 0; index < msg.length; index++) {
