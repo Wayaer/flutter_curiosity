@@ -54,3 +54,17 @@
 <img src="example/screen/main.png" width="360px"/> <img src="example/screen/share.png" width="360px"/>
 <img src="example/screen/android_setting.png" width="360px"/> <img src="example/screen/app_device.png" width="360px"/>
 <img src="example/screen/camera_gallry.png" width="360px"/>
+
+### 4.键盘状态监听
+```dart
+
+    @override
+    void initState() {
+      super.initState();
+      keyboardListener((bool visibility) {
+        log(visibility);
+        showToast(visibility ? '键盘已弹出' : '键盘已关闭');
+      });
+    }
+
+```

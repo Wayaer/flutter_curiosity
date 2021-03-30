@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:curiosity/src/camera/camera_gallery.dart';
 import 'package:curiosity/src/get_info.dart';
+import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -46,6 +47,9 @@ class App extends StatelessWidget {
           children: <Widget>[
             ElevatedButton(
                 onPressed: () => push(SharePage()), child: const Text('分享')),
+            ElevatedButton(
+                onPressed: () => push(KeyboardPage()),
+                child: const Text('键盘状态')),
             ElevatedButton(
                 onPressed: () => push(GetInfoPage()),
                 child: const Text('获取信息')),

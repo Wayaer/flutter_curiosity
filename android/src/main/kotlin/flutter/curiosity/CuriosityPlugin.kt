@@ -3,9 +3,12 @@ package flutter.curiosity
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.view.View
+import android.view.ViewTreeObserver
 import androidx.annotation.NonNull
 import flutter.curiosity.gallery.GalleryTools
 import flutter.curiosity.scanner.CameraTools
@@ -26,11 +29,13 @@ import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
 /**
  * CuriosityPlugin
  */
-class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, EventChannel.StreamHandler {
+class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, ViewTreeObserver.OnGlobalLayoutListener {
     private var curiosityChannel: MethodChannel? = null
     private lateinit var context: Context
     private lateinit var activity: Activity
     private var scannerEvent: EventChannel? = null
+    private var mainView: View? = null
+    private var keyboardStatus = false
 
     companion object {
         var openSystemGalleryCode = 100
@@ -104,8 +109,11 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
     ///主要是用于获取当前flutter页面所处的Activity.
     override fun onAttachedToActivity(plugin: ActivityPluginBinding) {
         activity = plugin.activity
+        mainView = activity.window.decorView
+        mainView!!.viewTreeObserver.addOnGlobalLayoutListener(this)
         plugin.addActivityResultListener(this)
     }
+
 
     ///主要是用于获取当前flutter页面所处的Activity.
     override fun onDetachedFromActivity() {
@@ -127,10 +135,22 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
     private fun dispose() {
         curiosityChannel?.setMethodCallHandler(null)
         scannerEvent?.setStreamHandler(null)
+        activity.window.decorView.viewTreeObserver
+                .removeOnGlobalLayoutListener(this)
         scannerEvent = null
         curiosityChannel = null
     }
 
+    override fun onGlobalLayout() {
+        val r = Rect()
+        if (mainView != null) {
+            mainView!!.getWindowVisibleDisplayFrame(r)
+            val newStatus = r.height().toDouble() / mainView!!.rootView.height.toDouble() < 0.85
+            if (keyboardStatus == newStatus) return
+            keyboardStatus = newStatus
+            curiosityChannel?.invokeMethod("keyboardStatus", newStatus)
+        }
+    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         if (resultCode == Activity.RESULT_OK) {
@@ -162,14 +182,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Ev
             if (requestCode == installApkCode) channelResult.success("cancel")
         }
         return true
-    }
-
-    override fun onListen(arguments: Any?, events: EventChannel.EventSink?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onCancel(arguments: Any?) {
-        TODO("Not yet implemented")
     }
 
 

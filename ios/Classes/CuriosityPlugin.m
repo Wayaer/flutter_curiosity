@@ -9,8 +9,10 @@
     UIViewController *viewController;
     NSObject<FlutterPluginRegistrar> *registrar;
     FlutterMethodCall *call;
-    FlutterResult result;
+    FlutterMethodChannel *curiosityChannel;
+    FlutterResult channelResult;
     ScannerView *scannerView;
+    BOOL keyboardStatus;
 }
 NSString * const curiosity=@"Curiosity";
 NSString * const scannerEvent=@"Curiosity/event/scanner";
@@ -20,40 +22,48 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                                      methodChannelWithName:curiosity
                                      binaryMessenger:[registrar messenger]];
     UIViewController *viewController = [UIApplication sharedApplication].delegate.window.rootViewController;
-    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar :viewController];
+    CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar :viewController :channel];
     [registrar addMethodCallDelegate:plugin channel:channel];
     
 }
 - (instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar
-                                 :(UIViewController *)_viewController{
+                                 :(UIViewController *)_viewController
+                                 :(FlutterMethodChannel*)_channel{
     self = [super init];
     viewController = _viewController;
-    registrar=_registrar;
+    registrar = _registrar;
+    curiosityChannel = _channel;
+    keyboardStatus = NO;
+    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+    [center addObserver:self selector:@selector(didShow) name:UIKeyboardDidShowNotification object:nil];
+    [center addObserver:self selector:@selector(didShow) name:UIKeyboardWillShowNotification object:nil];
+    [center addObserver:self selector:@selector(didHide) name:UIKeyboardWillHideNotification object:nil];
+    
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
-    result = _result;
+    channelResult = _result;
     if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [GalleryTools openSystemGallery:viewController :picker :result];
+        [GalleryTools openSystemGallery:viewController :picker :channelResult];
     }else if ([@"openSystemCamera" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [GalleryTools openSystemCamera:viewController :picker :result];
+        [GalleryTools openSystemCamera:viewController :picker :channelResult];
     }else if ([@"saveImageToGallery" isEqualToString:call.method]) {
         [self saveImageToGallery];
     }else if ([@"saveFileToGallery" isEqualToString:call.method]) {
         [self saveFileToGallery];
     }else if ([@"scanImagePath" isEqualToString:call.method]) {
-        [ScannerTools scanImagePath:call result:result];
+        [ScannerTools scanImagePath:call result:channelResult];
     }else if ([@"scanImageUrl" isEqualToString:call.method]) {
-        [ScannerTools scanImageUrl:call result:result];
+        [ScannerTools scanImageUrl:call result:channelResult];
     }else if ([@"scanImageMemory" isEqualToString:call.method]) {
-        [ScannerTools scanImageMemory:call result:result];
+        [ScannerTools scanImageMemory:call result:channelResult];
     }else if ([@"availableCameras" isEqualToString:call.method]) {
-        [ScannerTools availableCameras:call result:result];
+        [ScannerTools availableCameras:call result:channelResult];
     }else if([@"initializeCameras" isEqualToString:call.method]){
         NSString *cameraId = call.arguments[@"cameraId"];
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
@@ -64,7 +74,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
             
             ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :eventChannel :resolutionPreset :&error];
             if(error){
-                result(getFlutterError(error));
+                channelResult(getFlutterError(error));
                 return;
             }else{
                 if(scannerView)[scannerView close];
@@ -75,50 +85,74 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                 view.onFrameAvailable = ^{
                     [self->registrar.textures textureFrameAvailable:scannerViewId];
                 };
-                result(@{
+                channelResult(@{
                     @"textureId":@(scannerViewId),
                     @"previewWidth":@(view.previewSize.width),
                     @"previewHeight":@(view.previewSize.height)
-                       });
+                              });
                 [view start];
             }
         }else{
-            result([Tools resultInfo:@"Not supported below ios10"]);
+            channelResult([Tools resultInfo:@"Not supported below ios10"]);
         }
     }else if([@"disposeCameras" isEqualToString:call.method]){
         NSDictionary *arguments = call.arguments;
         NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
         if(scannerView)[scannerView close];
         if(textureId) [registrar.textures unregisterTexture:textureId];
-        result([Tools resultInfo:@"dispose"]);
+        channelResult([Tools resultInfo:@"dispose"]);
     }else if ([call.method isEqualToString:@"setFlashMode"]){
         NSNumber * status = [call.arguments valueForKey:@"status"];
         if(scannerView)[scannerView setFlashMode:[status boolValue]];
-        result([Tools resultInfo:@"setFlashMode"]);
+        channelResult([Tools resultInfo:@"setFlashMode"]);
     }else if ([@"getGPSStatus" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
+        channelResult([NSNumber numberWithBool:[NativeTools getGPSStatus]]);
     }else if ([@"jumpAppSetting" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools jumpAppSetting]?YES:NO]);
+        channelResult([NSNumber numberWithBool:[NativeTools jumpAppSetting]]);
     }else if ([@"getAppInfo" isEqualToString:call.method]) {
-        result([NativeTools getAppInfo]);
+        channelResult([NativeTools getAppInfo]);
     }else if ([@"getDeviceInfo" isEqualToString:call.method]) {
-        result([NativeTools getDeviceInfo]);
+        channelResult([NativeTools getDeviceInfo]);
     }else if ([@"getFilePathSize" isEqualToString:call.method]) {
-        result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
+        channelResult([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
     }else if ([@"goToMarket" isEqualToString:call.method]) {
         [NativeTools goToMarket:call.arguments[@"appId"]];
-        result([Tools resultSuccess]);
+        channelResult([Tools resultSuccess]);
     }else if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"]];
-        result([Tools resultSuccess]);
+        channelResult([Tools resultSuccess]);
     }else if ([@"systemShare" isEqualToString:call.method]) {
-        [NativeTools systemShare:call result:result];
+        [NativeTools systemShare:call result:channelResult];
     }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }else{
-        result(FlutterMethodNotImplemented);
+        channelResult(FlutterMethodNotImplemented);
     }
 }
+
+- (void)didShow{
+    if (!keyboardStatus) {
+        keyboardStatus = YES;
+        [curiosityChannel invokeMethod:@"keyboardStatus" arguments:[NSNumber numberWithBool:keyboardStatus]];
+    }
+}
+
+- (void)willShow{
+    if (!keyboardStatus) {
+        keyboardStatus = YES;
+        [curiosityChannel invokeMethod:@"keyboardStatus" arguments:[NSNumber numberWithBool:keyboardStatus]];
+    }
+}
+
+- (void)didHide{
+    if (keyboardStatus) {
+        keyboardStatus = NO;
+        [curiosityChannel invokeMethod:@"keyboardStatus" arguments:[NSNumber numberWithBool:keyboardStatus]];
+    }
+}
+
+
+
 
 #pragma mark - UIImagePickerControllerDelegate
 
@@ -128,7 +162,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
         //图库选择图片
         if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary){
             NSString * imageUrl = [NSString stringWithFormat:@"%@",info[@"UIImagePickerControllerImageURL"]];
-            self->result(imageUrl);
+            self->channelResult(imageUrl);
         }
         //拍照回调
         if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
@@ -141,7 +175,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                 PHFetchResult* assetResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localId] options:nil];
                 PHAsset * asset = [assetResult firstObject];
                 [asset requestContentEditingInputWithOptions:nil completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
-                    self->result(contentEditingInput.fullSizeImageURL.absoluteString);
+                    self->channelResult(contentEditingInput.fullSizeImageURL.absoluteString);
                 }];
             }];
         }
@@ -152,7 +186,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
 //进入拍摄页面点击取消按钮
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
     [picker dismissViewControllerAnimated:YES completion:^{
-        self->result(@"cancel");
+        self->channelResult(@"cancel");
     }];
 }
 
@@ -172,18 +206,18 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
     }else if(UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path)){
         UISaveVideoAtPathToSavedPhotosAlbum(path,self,@selector(saveVideo:didFinishSavingWithError:contextInfo:),nil);
     }else{
-        result([Tools resultInfo:@"File types that cannot be saved"]);
+        channelResult([Tools resultInfo:@"File types that cannot be saved"]);
     }
     
 }
 #pragma mark - 保存图片或视频完成的回调
 - (void)saveImage:(UIImage *)image didFinishSavingWithError:(NSError *)error
       contextInfo:(void *)contextInfo {
-    result(error?[Tools resultFail]:[Tools resultSuccess]);
+    channelResult(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 - (void)saveVideo:(NSString *)videoPath didFinishSavingWithError:(NSError *)error
       contextInfo:(void *)contextInfo {
-    result(error?[Tools resultFail]:[Tools resultSuccess]);
+    channelResult(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]

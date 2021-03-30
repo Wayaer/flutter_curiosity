@@ -23,6 +23,12 @@ void log<T>(T msg) {
   }
 }
 
+bool get supportPlatform {
+  if (!isWeb && (isAndroid || isIOS || isMacOS)) return true;
+  log('Curiosity is not support Platform');
+  return false;
+}
+
 void _segmentationLog(String msg) {
   final StringBuffer outStr = StringBuffer();
   for (int index = 0; index < msg.length; index++) {
