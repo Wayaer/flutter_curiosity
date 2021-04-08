@@ -19,8 +19,9 @@ class _KeyboardState extends State<KeyboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    log('=====build=====');
     return OverlayScaffold(
-        appBar: AppBar(title: const Text('Share')),
+        appBar: AppBar(title: const Text('Keyboard')),
         body: const Universal(
             mainAxisAlignment: MainAxisAlignment.center,
             padding: EdgeInsets.all(20),
