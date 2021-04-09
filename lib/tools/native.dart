@@ -5,13 +5,33 @@ import 'package:flutter_curiosity/tools/internal.dart';
 
 /// 安装apk  仅支持android
 /// Installing APK only supports Android
-/// success  安装成功
-/// cancel  取消安装
-/// not permissions  没有打开安装权限
-Future<String?> installApp(String apkPath) async {
+enum InstallResult {
+  /// 安装成功
+  success,
+
+  /// 取消安装
+  cancel,
+
+  /// 没有打开安装权限
+  notPermissions,
+
+  /// 出现错误
+  error
+}
+
+Future<InstallResult?> installApp(String apkPath) async {
   if (!isAndroid) return null;
-  return await curiosityChannel
+  final String? result = await curiosityChannel
       .invokeMethod('installApp', <String, String>{'apkPath': apkPath});
+  switch (result) {
+    case 'success':
+      return InstallResult.success;
+    case 'not permissions':
+      return InstallResult.notPermissions;
+    case 'cancel':
+      return InstallResult.cancel;
+  }
+  return InstallResult.error;
 }
 
 /// 去应用市场 android 安装多个应用商店时会弹窗选择，ios app store
@@ -104,18 +124,6 @@ Future<String?> get openSystemGallery async {
 /// 打开系统相机
 /// 返回文件路径
 /// Android AndroidManifest.xml 添加以下内容
-/// <application
-///          ...>
-///   <provider
-///            android:name="androidx.core.content.FileProvider"
-///            android:authorities="${applicationId}.fileprovider"
-///            android:exported="false"
-///            android:grantUriPermissions="true">
-///            <meta-data
-///                android:name="android.support.FILE_PROVIDER_PATHS"
-///                android:resource="@xml/file_paths" />
-///   </provider>
-/// </application>
 /// ios info.plist add
 ///     <key>NSCameraUsageDescription</key>
 ///       <string>是否允许APP使用你的相机？</string>
@@ -135,7 +143,6 @@ Future<String?> openSystemCamera({String? savePath}) async {
 
 /// save image to Gallery
 /// imageBytes can't null
-@deprecated
 Future<String?> saveImageToGallery(Uint8List imageBytes,
     {int quality = 100, String? name}) async {
   if (!supportPlatformMobile) return null;
@@ -149,7 +156,6 @@ Future<String?> saveImageToGallery(Uint8List imageBytes,
 
 /// Save the PNG，JPG，JPEG image or video located at [file]
 /// to the local device media gallery.
-@deprecated
 Future<String?> saveFileToGallery(String file) async {
   if (!supportPlatformMobile) return null;
   return await curiosityChannel.invokeMethod('saveFileToGallery', file);

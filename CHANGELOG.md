@@ -1,3 +1,6 @@
+## [2.0.5]
+ * fix bugs for Android [installApp]
+ * add [InstallResult] enum
 ## [2.0.3]
  * add void [keyboardListener]
 ## [2.0.2]

@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:4.1.2"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.32"
     }
 }
 
@@ -38,6 +38,10 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
+    }
+    packagingOptions {
+        merge 'AndroidManifest.xml'
+        merge 'proguard.txt'
     }
 }
 dependencies {

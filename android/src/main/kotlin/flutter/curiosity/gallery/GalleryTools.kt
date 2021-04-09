@@ -36,7 +36,7 @@ object GalleryTools {
         val uri: Uri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //第二个参数为 包名.fierier
-            uri = FileProvider.getUriForFile(activity, context.packageName.toString() + ".fileprovider", File(cameraSavePath))
+            uri = FileProvider.getUriForFile(activity, context.packageName.toString() + ".provider", File(cameraSavePath))
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } else uri = Uri.fromFile(File(cameraSavePath))
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
