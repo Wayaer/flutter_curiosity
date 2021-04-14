@@ -8,7 +8,6 @@
     FlutterEventChannel *eventChannel;
     FlutterMethodCall *call;
     FlutterResult result;
-    NSWindow *mainWindow;
 }
 NSString * const curiosity=@"Curiosity";
 
@@ -20,10 +19,10 @@ NSString * const curiosity=@"Curiosity";
     CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar];
     [registrar addMethodCallDelegate:plugin channel:channel];
 }
-- (instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar{
+-(instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar{
     self = [super init];
     registry =[_registrar textures];
-    mainWindow= [[NSApplication sharedApplication] mainWindow];
+  
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
@@ -53,45 +52,46 @@ NSString * const curiosity=@"Curiosity";
     }else if ([@"systemShare" isEqualToString:call.method]) {
         //  [NativeTools systemShare:call result:result];
     }else if ([@"getWindowSize" isEqualToString:call.method]) {
+        NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
         CGFloat width = mainWindow.frame.size.width;
         CGFloat height = mainWindow.frame.size.height;
         result(@[[NSNumber numberWithDouble:width],[NSNumber numberWithDouble:height]]);
     } else if ([@"setWindowSize" isEqualToString:call.method]) {
         NSNumber *width = ((NSNumber *)call.arguments[@"width"]);
         NSNumber *height = ((NSNumber *)call.arguments[@"height"]);
-        
+        NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
         NSRect rect= mainWindow.frame;
         rect.origin.y += (rect.size.height - [height doubleValue]);
         rect.size.width = [width doubleValue];
         rect.size.height = [height doubleValue];
-        [mainWindow setFrame:rect display:true animate:true];
+        [[[NSApplication sharedApplication] mainWindow] setFrame:rect display:true animate:true];
         
     } else if ([@"setMinWindowSize" isEqualToString:call.method]) {
         NSNumber *width = ((NSNumber *)call.arguments[@"width"]);
         NSNumber *height = ((NSNumber *)call.arguments[@"height"]);
-        mainWindow.minSize = CGSizeMake([width doubleValue], [height doubleValue]);
+        [[NSApplication sharedApplication] mainWindow].minSize = CGSizeMake([width doubleValue], [height doubleValue]);
     } else if ([@"setMaxWindowSize" isEqualToString:call.method]) {
         NSNumber *width = ((NSNumber *)call.arguments[@"width"]);
         NSNumber *height = ((NSNumber *)call.arguments[@"height"]);
         if (width == 0 || height == 0) {
-            mainWindow.minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+            [[NSApplication sharedApplication] mainWindow].minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
         } else {
-            mainWindow.maxSize = CGSizeMake([width doubleValue],[height doubleValue]);
+            [[NSApplication sharedApplication] mainWindow].maxSize = CGSizeMake([width doubleValue],[height doubleValue]);
         }
     } else if ([@"resetMaxWindowSize" isEqualToString:call.method]) {
-        mainWindow.minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+        [[NSApplication sharedApplication] mainWindow].minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
         result([NSNumber numberWithBool:YES]);
     } else if ([@"toggleFullScreen" isEqualToString:call.method]) {
-        [mainWindow toggleFullScreen:nil];
+        [[[NSApplication sharedApplication] mainWindow] toggleFullScreen:nil];
         result([NSNumber numberWithBool:YES]);
     } else if ([@"setFullScreen" isEqualToString:call.method]) {
         BOOL fullscreen = [call.arguments[@"fullscreen"] boolValue];
-        if((mainWindow.styleMask == NSFullScreenWindowMask)!=fullscreen){
-            [mainWindow toggleFullScreen:nil];
+        if(([[NSApplication sharedApplication] mainWindow].styleMask == NSFullScreenWindowMask)!=fullscreen){
+            [[[NSApplication sharedApplication] mainWindow] toggleFullScreen:nil];
         }
     } else if ([@"getFullScreen" isEqualToString:call.method]) {
         
-        result([NSNumber numberWithBool:mainWindow.styleMask == NSFullScreenWindowMask]);
+        result([NSNumber numberWithBool:[[NSApplication sharedApplication] mainWindow].styleMask == NSFullScreenWindowMask]);
         
     } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);

@@ -17,10 +17,20 @@
 + (void)scanImageUrl:(FlutterMethodCall*)call result:(FlutterResult)result{
     NSString * url = [call.arguments valueForKey:@"url"];
     NSURL* nsUrl=[NSURL URLWithString:url];
-    NSData * data=[NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:nsUrl] returningResponse:nil error:nil];
-//    [NSURLConnection date]
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:nsUrl];
+    NSURLSessionDataTask * dataTask = [
+                                       [NSURLSession sharedSession]
+                                       dataTaskWithRequest:request
+                                       completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        if(data == nil) {
+            result(nil);
+            return;
+        }
+        result([self getCode:data]);
+    }];
+    [dataTask resume];
     
-    result([self getCode:data]);
+    
 }
 
 + (void)scanImageMemory:(FlutterMethodCall*)call result:(FlutterResult)result{
@@ -41,7 +51,9 @@
                 if(resultStr!=nil){
                     NSMutableDictionary *dict =[NSMutableDictionary dictionary];
                     [dict setValue:resultStr forKey:@"code"];
-                    [dict setValue:AVMetadataObjectTypeQRCode forKey:@"type"];
+                    if (@available(macOS 10.15, *)) {
+                        [dict setValue:AVMetadataObjectTypeQRCode forKey:@"type"];
+                    }
                     return dict;
                 }
                 

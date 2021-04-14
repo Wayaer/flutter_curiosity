@@ -6,10 +6,10 @@ import 'package:flutter_curiosity/tools/internal.dart';
 
 Future<Size?> getDesktopWindowSize() async {
   if (!supportPlatformDesktop) return null;
-  final List<double>? arr =
-  await curiosityChannel.invokeMethod<List<double>>('getWindowSize');
+  final List<dynamic>? arr =
+  await curiosityChannel.invokeMethod<List<dynamic>?>('getWindowSize');
   if (arr != null && arr is List && arr.length == 2)
-    return Size(arr[0], arr[1]);
+    return Size(arr[0] as double, arr[1] as double);
   return null;
 }
 
@@ -41,10 +41,10 @@ Future<void> toggleDesktopFullScreen() async {
   return await curiosityChannel.invokeMethod('toggleFullScreen');
 }
 
-Future<void> setDesktopFullScreen(bool fullscreen) async {
-  return await curiosityChannel
-      .invokeMethod('setFullScreen', <String, bool>{'fullscreen': fullscreen});
-}
+Future<void> setDesktopFullScreen(bool fullscreen) =>
+    curiosityChannel
+        .invokeMethod(
+        'setFullScreen', <String, bool>{'fullscreen': fullscreen});
 
 Future<bool?> getDesktopFullScreen() async {
   if (!supportPlatformDesktop) return null;

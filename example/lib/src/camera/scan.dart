@@ -164,7 +164,7 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
   }
 
   Future<void> scan() async {
-    if (path.isEmpty) return showToast('请选择图片');
+    if (path?.isEmpty) return showToast('请选择图片');
     final ScanResult data = await scanImagePath(path);
     if (data != null) {
       code = data.code;

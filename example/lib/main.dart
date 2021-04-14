@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:curiosity/src/camera/camera_gallery.dart';
+import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/share.dart';
@@ -59,9 +60,10 @@ class App extends StatelessWidget {
             ElevatedButton(
                 onPressed: () => push(CameraGalleryPage()),
                 child: const Text('相机和图库')),
-            ElevatedButton(
-                onPressed: () => push(CameraGalleryPage()),
-                child: const Text('桌面窗口控制')),
+            if (isDesktop)
+              ElevatedButton(
+                  onPressed: () => push(DesktopPage()),
+                  child: const Text('Desktop窗口控制')),
           ]),
     );
   }
@@ -74,7 +76,8 @@ class JumpSettingPage extends StatelessWidget {
     children.add(ElevatedButton(
         onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')));
     children.addAll(SettingType.values
-        .map((SettingType value) => ElevatedButton(
+        .map((SettingType value) =>
+        ElevatedButton(
             onPressed: () => jumpSystemSetting(settingType: value),
             child: Text(value.toString())))
         .toList());
@@ -87,7 +90,9 @@ class JumpSettingPage extends StatelessWidget {
 Widget showText(dynamic key, dynamic value) {
   return Visibility(
       visible: value != null &&
-          value.toString().isNotEmpty &&
+          value
+              .toString()
+              .isNotEmpty &&
           value.toString() != 'null',
       child: Container(
           margin: const EdgeInsets.all(10),
@@ -98,7 +103,7 @@ Future<bool> requestPermissions(Permission permission, String text) async {
   final PermissionStatus status = await permission.status;
   if (status != PermissionStatus.granted) {
     final Map<Permission, PermissionStatus> statuses =
-        await <Permission>[permission].request();
+    await <Permission>[permission].request();
     if (!(statuses[permission] == PermissionStatus.granted)) {
       openAppSettings();
     }

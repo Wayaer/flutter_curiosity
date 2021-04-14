@@ -1,4 +1,4 @@
-## [2.0.5]
+## [2.0.6]
  * fix bugs for Android [installApp]
  * add [InstallResult] enum
 ## [2.0.3]
