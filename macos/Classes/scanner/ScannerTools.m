@@ -18,6 +18,8 @@
     NSString * url = [call.arguments valueForKey:@"url"];
     NSURL* nsUrl=[NSURL URLWithString:url];
     NSData * data=[NSURLConnection sendSynchronousRequest:[NSURLRequest requestWithURL:nsUrl] returningResponse:nil error:nil];
+//    [NSURLConnection date]
+    
     result([self getCode:data]);
 }
 

@@ -13,9 +13,6 @@
 //获取app信息
 + (NSDictionary *)getAppInfo;
 
-//调用系统分享
-//+ (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result;
-
 
 //跳转到APP权限设置页面
 //+ (BOOL)jumpAppSetting;
@@ -26,7 +23,6 @@
 // 获取文件或文件夹大小
 + (NSString *)getFilePathSize:(NSString *)props;
 
-+ (void)openImagePicker:(FlutterMethodCall*)call result:(FlutterResult)result;
 // 解压文件
 //+ (NSString *)unZipFile:(NSString *)props;
 

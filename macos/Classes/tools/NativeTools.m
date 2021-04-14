@@ -7,14 +7,9 @@
 //跳转到AppStore
 + (void)goToMarket:(NSString *)props{
     NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
-//    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
-    //    NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
-    //    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
+    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
 }
 
-+ (void)callPhone:(NSString *)phoneNumber {
-    //    [[NSApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
-}
 + (NSDictionary *)getAppInfo{
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
     NSDictionary *app = [[NSBundle mainBundle] infoDictionary];
@@ -83,28 +78,7 @@
     }
     return totalStr;
 }
-+(void)openImagePicker:(FlutterMethodCall*)call result:(FlutterResult)result{
-    //    NSOpenPanel *openPanel = [NSOpenPanel openPanel];
-    //    [openPanel setPrompt: @"打开"];
-    //
-    //    openPanel.allowedFileTypes = [NSArray arrayWithObjects: @"txt", @"doc", nil];
-    //    openPanel.directoryURL = nil;
-    //
-    //    [openPanel beginSheetModalForWindow:[self gainMainViewController] completionHandler:^(NSModalResponse returnCode) {
-    //
-    //        if (returnCode == 1) {
-    //            NSURL *fileUrl = [[openPanel URLs] objectAtIndex:0];
-    //            // 获取文件内容
-    //            NSFileHandle *fileHandle = [NSFileHandle fileHandleForReadingFromURL:fileUrl error:nil];
-    //            NSString *fileContext = [[NSString alloc] initWithData:fileHandle.readDataToEndOfFile encoding:NSUTF8StringEncoding];
-    //
-    //            // 将 获取的数据传递给 ViewController 的 TextView
-    //            ViewController *mainViewController = (ViewController *)[self gainMainViewController].contentViewController;
-    //            mainViewController.showCodeTextView.string = fileContext;
-    //        }
-    //    }];
-    
-}
+
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL) getGPSStatus {
     if (@available(macOS 10.7, *)) {

@@ -21,3 +21,8 @@ flutter:
         pluginClass: CuriosityPlugin
       macos:
         pluginClass: CuriosityPlugin
+      linux:
+        pluginClass: CuriosityPlugin
+      windows:
+        pluginClass: CuriosityPlugin
+

@@ -59,6 +59,9 @@ class App extends StatelessWidget {
             ElevatedButton(
                 onPressed: () => push(CameraGalleryPage()),
                 child: const Text('相机和图库')),
+            ElevatedButton(
+                onPressed: () => push(CameraGalleryPage()),
+                child: const Text('桌面窗口控制')),
           ]),
     );
   }
