@@ -35,7 +35,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   Future<void> getInstalled() async {
     final List<AppsModel> data = await getInstalledApp;
     list = <Widget>[];
-    data.map((AppsModel appsModel) {
+    data?.map((AppsModel appsModel) {
       final Map<String, dynamic> appModel = appsModel.toJson();
       final List<Widget> app = <Widget>[];
       appModel.forEach((String key, dynamic value) {

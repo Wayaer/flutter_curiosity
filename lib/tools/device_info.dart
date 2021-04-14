@@ -67,7 +67,6 @@ Future<String?> get getRootDirectory async {
 
 /// AppInfo
 Future<List<AppsModel>?> get getInstalledApp async {
-  if (!supportPlatform) return null;
   if (!isAndroid) return null;
   final List<Map<dynamic, dynamic>> appList = (await curiosityChannel
       .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp'))!;
