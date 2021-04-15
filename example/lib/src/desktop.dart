@@ -21,7 +21,7 @@ class _DesktopPageState extends State<DesktopPage> {
             children: <Widget>[
               Container(
                   height: 40,
-                  margin:EdgeInsets.only(bottom:10),
+                  margin: const EdgeInsets.only(bottom: 10),
                   alignment: Alignment.center,
                   color: Colors.grey.withOpacity(0.3),
                   child: BasisText(text, color: Colors.black)),
@@ -62,6 +62,19 @@ class _DesktopPageState extends State<DesktopPage> {
                     setState(() {});
                   },
                   child: const Text('getDesktopFullScreen')),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                  onPressed: () => setDesktopSizeTo4P7(),
+                  child: const Text('setDesktopSizeTo4P7')),
+              ElevatedButton(
+                  onPressed: () => setDesktopSizeTo5P5(),
+                  child: const Text('setDesktopSizeTo5P5')),
+              ElevatedButton(
+                  onPressed: () => setDesktopSizeTo5P8(),
+                  child: const Text('setDesktopSizeTo5P8')),
+              ElevatedButton(
+                  onPressed: () => setDesktopSizeTo6P1(),
+                  child: const Text('setDesktopSizeTo6P1')),
             ]));
   }
 }
