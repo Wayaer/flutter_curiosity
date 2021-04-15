@@ -2,7 +2,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
 /// get Android Device Info
-Future<AndroidDeviceModel?> get getAndroidDeviceInfo async {
+Future<AndroidDeviceModel?> getAndroidDeviceInfo() async {
   if (!supportPlatform) return null;
   if (!isAndroid) return null;
   final Map<String, dynamic> map = (await curiosityChannel
@@ -11,7 +11,7 @@ Future<AndroidDeviceModel?> get getAndroidDeviceInfo async {
 }
 
 /// get IOS Device Info
-Future<IOSDeviceModel?> get getIOSDeviceInfo async {
+Future<IOSDeviceModel?> getIOSDeviceInfo() async {
   if (!supportPlatform) return null;
   if (!isIOS) return null;
   final Map<String, dynamic> map = (await curiosityChannel
@@ -20,7 +20,7 @@ Future<IOSDeviceModel?> get getIOSDeviceInfo async {
 }
 
 /// get all info
-Future<AppInfoModel?> get getPackageInfo async {
+Future<AppInfoModel?> getPackageInfo() async {
   if (!supportPlatform) return null;
   final Map<String, dynamic> map =
       (await curiosityChannel.invokeMapMethod<String, dynamic>('getAppInfo'))!;
@@ -28,45 +28,45 @@ Future<AppInfoModel?> get getPackageInfo async {
 }
 
 /// android versionCode  ios version
-Future<int?> get getVersionCode async {
+Future<int?> getVersionCode() async {
   if (!supportPlatform) return null;
-  final AppInfoModel appInfoModel = (await getPackageInfo)!;
-  return appInfoModel.versionCode;
+  final AppInfoModel? appInfoModel = await getPackageInfo();
+  return appInfoModel?.versionCode;
 }
 
 /// app name
-Future<String?> get getAppName async {
+Future<String?> getAppName() async {
   if (!supportPlatform) return null;
   if (!(isIOS || isAndroid)) return null;
-  final AppInfoModel appInfoModel = (await getPackageInfo)!;
-  return appInfoModel.appName;
+  final AppInfoModel? appInfoModel = await getPackageInfo();
+  return appInfoModel?.appName;
 }
 
 /// package name
-Future<String?> get getPackageName async {
+Future<String?> getPackageName() async {
   if (!supportPlatform) return null;
-  final AppInfoModel appInfoModel = (await getPackageInfo)!;
-  return appInfoModel.packageName;
+  final AppInfoModel? appInfoModel = await getPackageInfo();
+  return appInfoModel?.packageName;
 }
 
 /// android versionName  ios buildName
-Future<String?> get getVersionName async {
+Future<String?> getVersionName() async {
   if (!supportPlatform) return null;
-  final AppInfoModel appInfoModel = (await getPackageInfo)!;
-  return appInfoModel.versionName;
+  final AppInfoModel? appInfoModel = await getPackageInfo();
+  return appInfoModel?.versionName;
 }
 
 /// root directory
-Future<String?> get getRootDirectory async {
+Future<String?> getRootDirectory() async {
   if (!supportPlatform) return null;
-  final AppInfoModel appInfoModel = (await getPackageInfo)!;
-  if (isAndroid) return appInfoModel.externalStorageDirectory;
-  if (isIOS || isMacOS) return appInfoModel.homeDirectory;
+  final AppInfoModel? appInfoModel = await getPackageInfo();
+  if (isAndroid) return appInfoModel?.externalStorageDirectory;
+  if (isIOS || isMacOS) return appInfoModel?.homeDirectory;
   return '';
 }
 
 /// AppInfo
-Future<List<AppsModel>?> get getInstalledApp async {
+Future<List<AppsModel>?> getInstalledApp() async {
   if (!isAndroid) return null;
   final List<Map<dynamic, dynamic>> appList = (await curiosityChannel
       .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp'))!;

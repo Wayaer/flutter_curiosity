@@ -33,7 +33,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getInstalled() async {
-    final List<AppsModel> data = await getInstalledApp;
+    final List<AppsModel> data = await getInstalledApp();
     list = <Widget>[];
     data?.builder((AppsModel appsModel) {
       final Map<String, dynamic> appModel = appsModel.toJson();
@@ -49,7 +49,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
         decoration: const BoxDecoration(
             border: Border(bottom: BorderSide(color: Colors.grey))),
         child:
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: app),
+            Column(crossAxisAlignment: CrossAxisAlignment.start, children: app),
       ));
     });
     setState(() {});
@@ -58,8 +58,8 @@ class _GetInfoPageState extends State<GetInfoPage> {
   Future<void> getDeviceInfo() async {
     list = <Widget>[];
     Map<String, dynamic> map = <String, dynamic>{};
-    if (isAndroid) map = (await getAndroidDeviceInfo)?.toJson();
-    if (isIOS) map = (await getIOSDeviceInfo)?.toJson();
+    if (isAndroid) map = (await getAndroidDeviceInfo())?.toJson();
+    if (isIOS) map = (await getIOSDeviceInfo())?.toJson();
     map?.forEach((String key, dynamic value) {
       if (value is Map) {
         list.add(showText('=== uts', '==='));
@@ -75,7 +75,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getAppInfo() async {
-    final AppInfoModel data = await getPackageInfo;
+    final AppInfoModel data = await getPackageInfo();
     if (data == null) return;
     final Map<String, dynamic> map = data.toJson();
     list = <Widget>[];

@@ -21,7 +21,8 @@ class _DesktopPageState extends State<DesktopPage> {
             children: <Widget>[
               Container(
                   height: 40,
-                  alignment:Alignment.center
+                  margin:EdgeInsets.only(bottom:10),
+                  alignment: Alignment.center,
                   color: Colors.grey.withOpacity(0.3),
                   child: BasisText(text, color: Colors.black)),
               ElevatedButton(

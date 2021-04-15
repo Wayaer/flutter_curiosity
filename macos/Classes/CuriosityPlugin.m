@@ -15,14 +15,12 @@ NSString * const curiosity=@"Curiosity";
     FlutterMethodChannel* channel = [FlutterMethodChannel
                                      methodChannelWithName:curiosity
                                      binaryMessenger:[registrar messenger]];
-    //    NSViewController *viewController = [NSViewController sharedApplication].delegate.window.rootViewController;
     CuriosityPlugin* plugin = [[CuriosityPlugin alloc] initWithCuriosity:registrar];
     [registrar addMethodCallDelegate:plugin channel:channel];
 }
 -(instancetype)initWithCuriosity:(NSObject<FlutterPluginRegistrar>*)_registrar{
     self = [super init];
     registry =[_registrar textures];
-  
     return self;
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
@@ -73,10 +71,11 @@ NSString * const curiosity=@"Curiosity";
     } else if ([@"setMaxWindowSize" isEqualToString:call.method]) {
         NSNumber *width = ((NSNumber *)call.arguments[@"width"]);
         NSNumber *height = ((NSNumber *)call.arguments[@"height"]);
+        NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
         if (width == 0 || height == 0) {
-            [[NSApplication sharedApplication] mainWindow].minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
+            mainWindow.minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
         } else {
-            [[NSApplication sharedApplication] mainWindow].maxSize = CGSizeMake([width doubleValue],[height doubleValue]);
+            mainWindow.maxSize = CGSizeMake([width doubleValue],[height doubleValue]);
         }
     } else if ([@"resetMaxWindowSize" isEqualToString:call.method]) {
         [[NSApplication sharedApplication] mainWindow].minSize = CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX);
@@ -86,13 +85,15 @@ NSString * const curiosity=@"Curiosity";
         result([NSNumber numberWithBool:YES]);
     } else if ([@"setFullScreen" isEqualToString:call.method]) {
         BOOL fullscreen = [call.arguments[@"fullscreen"] boolValue];
-        if(([[NSApplication sharedApplication] mainWindow].styleMask == NSFullScreenWindowMask)!=fullscreen){
-            [[[NSApplication sharedApplication] mainWindow] toggleFullScreen:nil];
+        NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
+        if(fullscreen){
+            if((mainWindow.styleMask & NSFullScreenWindowMask) != NSFullScreenWindowMask)   [mainWindow toggleFullScreen:nil];
+        } else {
+            if((mainWindow.styleMask & NSFullScreenWindowMask) == NSFullScreenWindowMask) [mainWindow toggleFullScreen:nil];
         }
     } else if ([@"getFullScreen" isEqualToString:call.method]) {
-        
-        result([NSNumber numberWithBool:[[NSApplication sharedApplication] mainWindow].styleMask == NSFullScreenWindowMask]);
-        
+        NSWindow *mainWindow =  [[NSApplication sharedApplication] mainWindow];
+        result([NSNumber numberWithBool:(mainWindow.styleMask & NSFullScreenWindowMask)==NSFullScreenWindowMask]);
     } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     } else {
