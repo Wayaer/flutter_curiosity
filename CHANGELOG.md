@@ -1,3 +1,5 @@
+## [2.0.9]
+ * fix bugs for desktop
 ## [2.0.6]
  * fix bugs for Android [installApp]
  * add [InstallResult] enum
