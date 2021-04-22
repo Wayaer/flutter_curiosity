@@ -34,32 +34,32 @@ Future<InstallResult?> installApp(String apkPath) async {
   return InstallResult.error;
 }
 
-/// 去应用市场 android 安装多个应用商店时会弹窗选择，ios app store
-/// When you go to the app market and install multiple app stores, you will pop up to select IOS app store
+/// 去应用市场 android 安装多个应用商店时会弹窗选择
+/// When you go to the app market and install multiple app stores
 /// android => packageName
-/// ios => app id
 /// The android platform "marketPackageName" cannot be null
-Future<void> goToMarket<T>(
-    {String? packageName, String? marketPackageName, String? appID}) async {
-  if (!supportPlatform) return;
-  if (isIOS && appID != null) {
-    await curiosityChannel
-        .invokeMethod<T>('goToMarket', <String, String>{'appId': appID});
+Future<bool> openAndroidMarket(
+    {required String packageName, String? marketPackageName}) async {
+  if (!isAndroid) return false;
+  if (marketPackageName != null) {
+    final bool isInstall = await isInstallApp(marketPackageName);
+    if (!isInstall) return false;
   }
-  if (isAndroid && packageName != null && marketPackageName != null) {
-    await curiosityChannel.invokeMethod<T>('goToMarket', <String, String>{
-      'packageName': packageName,
-      'marketPackageName': marketPackageName
-    });
-  }
+  final bool? data = await curiosityChannel.invokeMethod<bool>(
+      'openAppMarket', <String, String>{
+    'packageName': packageName,
+    'marketPackageName': marketPackageName ?? ''
+  });
+  return data ?? false;
 }
 
 /// 是否安装某个app  仅支持android
 /// is install an app that only supports Android
-Future<bool?> isInstallApp(String packageName) async {
+Future<bool> isInstallApp(String packageName) async {
   if (!isAndroid) return false;
-  return await curiosityChannel.invokeMethod(
-      'isInstallApp', <String, String>{'packageName': packageName});
+  final bool? data =
+      await curiosityChannel.invokeMethod<bool?>('isInstallApp', packageName);
+  return data ?? false;
 }
 
 /// 退出app

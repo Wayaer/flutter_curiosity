@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 
 import 'internal.dart';

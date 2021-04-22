@@ -115,9 +115,6 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
         channelResult([NativeTools getDeviceInfo]);
     }else if ([@"getFilePathSize" isEqualToString:call.method]) {
         channelResult([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
-    }else if ([@"goToMarket" isEqualToString:call.method]) {
-        [NativeTools goToMarket:call.arguments[@"appId"]];
-        channelResult([Tools resultSuccess]);
     }else if ([@"callPhone" isEqualToString:call.method]) {
         [NativeTools callPhone:call.arguments[@"phoneNumber"]];
         channelResult([Tools resultSuccess]);

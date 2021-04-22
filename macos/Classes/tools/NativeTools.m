@@ -4,12 +4,6 @@
 
 @implementation NativeTools
 
-//跳转到AppStore
-+ (void)goToMarket:(NSString *)props{
-    NSString* url=@"itms-apps://itunes.apple.com/us/app/id";
-    [NSWorkspace.sharedWorkspace openURL:[NSURL URLWithString:[url stringByAppendingString:props]]];
-}
-
 + (NSDictionary *)getAppInfo{
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
     NSDictionary *app = [[NSBundle mainBundle] infoDictionary];

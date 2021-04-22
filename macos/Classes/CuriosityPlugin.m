@@ -44,9 +44,6 @@ NSString * const curiosity=@"Curiosity";
         if (@available(macOS 10.8, *)) {
             result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
         }
-    }else if ([@"goToMarket" isEqualToString:call.method]) {
-        [NativeTools goToMarket:call.arguments[@"packageName"]];
-        result([Tools resultSuccess]);
     }else if ([@"systemShare" isEqualToString:call.method]) {
         //  [NativeTools systemShare:call result:result];
     }else if ([@"getWindowSize" isEqualToString:call.method]) {

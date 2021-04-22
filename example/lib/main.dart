@@ -73,6 +73,21 @@ class JumpSettingPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[];
+    if (isAndroid)
+      children.addAll(<Widget>[
+        ElevatedButton(
+            onPressed: () =>
+                openAndroidMarket(packageName: 'com.tencent.mobileqq'),
+            child: const Text('跳转Android应用市场')),
+        ElevatedButton(
+            onPressed: () async {
+              final bool data = await openAndroidMarket(
+                  packageName: 'com.tencent.mobileqq',
+                  marketPackageName: 'com.coolapk.market');
+              showToast(data.toString());
+            },
+            child: const Text('跳转Android应用市场-酷安')),
+      ]);
     children.add(ElevatedButton(
         onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')));
     children.addAll(SettingType.values

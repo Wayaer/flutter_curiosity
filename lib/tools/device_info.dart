@@ -66,11 +66,11 @@ Future<String?> getRootDirectory() async {
 }
 
 /// AppInfo
-Future<List<AppsModel>?> getInstalledApp() async {
-  if (!isAndroid) return null;
+Future<List<AppsModel>> getInstalledApp() async {
+  if (!isAndroid) return <AppsModel>[];
   final List<Map<dynamic, dynamic>> appList = (await curiosityChannel
       .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp'))!;
-  if (appList is! List) return null;
+  if (appList is! List) return <AppsModel>[];
   final List<AppsModel> list = <AppsModel>[];
   for (final dynamic data in appList) {
     list.add(AppsModel.fromJson(data as Map<dynamic, dynamic>));

@@ -3,9 +3,6 @@
 
 @interface NativeTools : NSObject
 
-//跳转应用商店
-+ (void)goToMarket:(NSString *)appId;
-
 //跳转拨号
 + (void)callPhone:(NSString *)phoneNumber;
 

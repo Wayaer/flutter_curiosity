@@ -16,6 +16,7 @@ import flutter.curiosity.scanner.ScannerTools
 import flutter.curiosity.scanner.ScannerView
 import flutter.curiosity.tools.NativeTools
 import flutter.curiosity.tools.Tools
+import io.flutter.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -51,7 +52,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Vi
         val curiosity = "Curiosity"
         val scannerEventName = "$curiosity/event/scanner"
         curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
-
         var scannerView: ScannerView? = null
         curiosityChannel?.setMethodCallHandler { _call, _result ->
             channelResult = _result
@@ -61,7 +61,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Vi
                 "installApp" -> NativeTools.installApp(context, activity)
                 "getFilePathSize" -> channelResult.success(NativeTools.getFilePathSize())
                 "callPhone" -> channelResult.success(NativeTools.callPhone(context, activity))
-                "goToMarket" -> channelResult.success(NativeTools.goToMarket(activity))
+                "openAppMarket" -> channelResult.success(NativeTools.openAppMarket(activity))
                 "isInstallApp" -> channelResult.success(NativeTools.isInstallApp(activity))
                 "getAppInfo" -> channelResult.success(NativeTools.getAppInfo(context))
                 "getDeviceInfo" -> channelResult.success(NativeTools.getDeviceInfo(context))
@@ -153,6 +153,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Vi
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
+        Log.d("onActivityResult====", resultCode.toString());
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
                 openSystemGalleryCode -> {
@@ -167,19 +168,20 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener, Vi
                     }
                     channelResult.success(photoPath)
                 }
-                installApkCode -> {
-                    channelResult.success("success")
-                }
-                installPermission -> {
-                    //已经打开安装权限
-                    NativeTools.installApp(context, activity)
-                }
+                installApkCode -> channelResult.success("success")
+
+                installPermission -> NativeTools.installApp(context, activity)
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
-            //未打开安装应用权限
-            if (requestCode == installPermission) channelResult.success("not permissions")
-            //取消安装
-            if (requestCode == installApkCode) channelResult.success("cancel")
+            when (requestCode) {
+                //未打开安装应用权限
+                installPermission -> channelResult.success("not permissions")
+                //取消安装
+                installApkCode -> channelResult.success("cancel")
+
+            }
+
+
         }
         return true
     }
