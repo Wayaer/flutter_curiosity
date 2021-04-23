@@ -1,4 +1,4 @@
-## [2.0.10]
+## [2.1.0]
  * remove goToMarker, add openAndroidMarket for Android
  * fix bugs for isInstallApp
 ## [2.0.9]
