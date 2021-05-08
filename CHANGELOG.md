@@ -1,4 +1,5 @@
-## [2.1.0]
+## [2.1.1]
+ * add systemCallPhone 
  * remove goToMarker, add openAndroidMarket for Android
  * fix bugs for isInstallApp
 ## [2.0.9]

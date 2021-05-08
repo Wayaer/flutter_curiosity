@@ -4,7 +4,7 @@
 @interface NativeTools : NSObject
 
 //跳转拨号
-+ (void)callPhone:(NSString *)phoneNumber;
++ (BOOL)callPhone:(NSString *)phoneNumber;
 
 //获取app信息
 + (NSDictionary *)getAppInfo;

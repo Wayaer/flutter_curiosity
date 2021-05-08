@@ -4,6 +4,17 @@
 
 @implementation NativeTools
 
++ (BOOL)callPhone:(NSString *)phoneNumber {
+    NSURL *url=[NSURL URLWithString:[@"tel:"stringByAppendingString:phoneNumber]];
+    if([[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:url]){
+        [[NSWorkspace sharedWorkspace] openURL:url];
+        return YES;
+    }else{
+        return NO;
+    }
+}
+
+
 + (NSDictionary *)getAppInfo{
     NSMutableDictionary *info = [NSMutableDictionary dictionary];
     NSDictionary *app = [[NSBundle mainBundle] infoDictionary];

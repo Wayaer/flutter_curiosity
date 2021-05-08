@@ -7,8 +7,14 @@
 @implementation NativeTools
 
 
-+ (void)callPhone:(NSString *)phoneNumber {
-    [[UIApplication sharedApplication] openURL:[NSURL URLWithString:[@"tel:://" stringByAppendingString:phoneNumber]]];
++ (BOOL)callPhone:(NSString *)phoneNumber {
+    NSURL *url= [NSURL URLWithString:[@"tel:" stringByAppendingString:phoneNumber]];
+    if([[UIApplication sharedApplication] canOpenURL:url]){
+        [[UIApplication sharedApplication] openURL:url];
+        return  YES;
+    }
+    return  NO;
+    
 }
 
 + (NSDictionary *)getDeviceInfo{

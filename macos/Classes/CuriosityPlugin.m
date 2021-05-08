@@ -44,6 +44,8 @@ NSString * const curiosity=@"Curiosity";
         if (@available(macOS 10.8, *)) {
             result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
         }
+    }else  if ([@"callPhone" isEqualToString:call.method]) {
+        result([NSNumber numberWithBool:[NativeTools callPhone:call.arguments[@"phoneNumber"]]]);
     }else if ([@"systemShare" isEqualToString:call.method]) {
         //  [NativeTools systemShare:call result:result];
     }else if ([@"getWindowSize" isEqualToString:call.method]) {
