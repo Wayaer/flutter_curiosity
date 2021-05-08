@@ -74,15 +74,27 @@ class JumpSettingPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[
       ElevatedButton(
-          onPressed: () => systemCallPhone('19980284961'),
+          onPressed: () async {
+            if (!await requestPermissions(Permission.phone, '电话')) {
+              showToast('未获取到权限');
+              return;
+            }
+            final data = await systemCallPhone('19980284961');
+            showToast(data.toString());
+          },
           child: const Text('拨打电话19980284961')),
     ];
     if (isAndroid)
       children.addAll(<Widget>[
         ElevatedButton(
             onPressed: () async {
-              if (!await requestPermissions(Permission.camera, '相机')) return;
-              systemCallPhone('19980284961', directDial: true);
+              if (!await requestPermissions(Permission.phone, '电话')) {
+                showToast('未获取到权限');
+                return;
+              }
+              final data = await systemCallPhone(
+                  '19980284961', directDial: true);
+              showToast(data.toString());
             },
             child: const Text('直接拨打电话19980284961')),
         ElevatedButton(
@@ -101,7 +113,8 @@ class JumpSettingPage extends StatelessWidget {
     children.add(ElevatedButton(
         onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')));
     children.addAll(SettingType.values
-        .map((SettingType value) => ElevatedButton(
+        .map((SettingType value) =>
+        ElevatedButton(
             onPressed: () => jumpSystemSetting(settingType: value),
             child: Text(value.toString())))
         .toList());
@@ -114,7 +127,9 @@ class JumpSettingPage extends StatelessWidget {
 Widget showText(dynamic key, dynamic value) {
   return Visibility(
       visible: value != null &&
-          value.toString().isNotEmpty &&
+          value
+              .toString()
+              .isNotEmpty &&
           value.toString() != 'null',
       child: Container(
           margin: const EdgeInsets.all(10),
@@ -125,7 +140,7 @@ Future<bool> requestPermissions(Permission permission, String text) async {
   final PermissionStatus status = await permission.status;
   if (status != PermissionStatus.granted) {
     final Map<Permission, PermissionStatus> statuses =
-        await <Permission>[permission].request();
+    await <Permission>[permission].request();
     if (!(statuses[permission] == PermissionStatus.granted)) {
       openAppSettings();
     }
