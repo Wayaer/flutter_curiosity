@@ -82,6 +82,10 @@ class JumpSettingPage extends StatelessWidget {
       children.addAll(<Widget>[
         ElevatedButton(
             onPressed: () =>
+                systemCallPhone('19980284961',directDial=true),
+            child: const Text('直接拨打电话19980284961')),
+        ElevatedButton(
+            onPressed: () =>
                 openAndroidMarket(packageName: 'com.tencent.mobileqq'),
             child: const Text('跳转Android应用市场')),
         ElevatedButton(

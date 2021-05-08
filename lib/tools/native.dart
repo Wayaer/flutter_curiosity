@@ -80,9 +80,9 @@ Future<String?> getFilePathSize(String path) async {
 /// 拨打电话
 /// directDial true 直接拨打电话 false 跳转到拨号页面并输入手机号
 /// directDial 为 true 需要 自行申请动态申请权限
-Future<bool> systemCallPhone<T>(String phoneNumber,
+Future<bool?> systemCallPhone(String phoneNumber,
     {bool directDial = false}) async {
-  if (!supportPlatform) return;
+  if (!supportPlatform) return false;
   await curiosityChannel.invokeMethod<bool>('callPhone',
       <String, dynamic>{'phoneNumber': phoneNumber, 'directDial': directDial});
 }
