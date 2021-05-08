@@ -58,7 +58,7 @@ Future<bool> openAndroidMarket(
 Future<bool> isInstallApp(String packageName) async {
   if (!isAndroid) return false;
   final bool? data =
-      await curiosityChannel.invokeMethod<bool?>('isInstallApp', packageName);
+  await curiosityChannel.invokeMethod<bool?>('isInstallApp', packageName);
   return data ?? false;
 }
 
@@ -88,11 +88,10 @@ Future<bool?> systemCallPhone(String phoneNumber,
 }
 
 /// 系统分享
-Future<String?> systemShare(
-    {String title = 'Share',
-    String? content,
-    List<String>? imagesPath,
-    required ShareType shareType}) async {
+Future<String?> systemShare({String title = 'Share',
+  String? content,
+  List<String>? imagesPath,
+  required ShareType shareType}) async {
   if (!supportPlatformMobile) return 'not support Platform';
   if (shareType == ShareType.images) {
     if (imagesPath == null || imagesPath.isEmpty)
@@ -136,7 +135,7 @@ Future<String?> openSystemCamera({String? savePath}) async {
   Map<String, String>? arguments;
   if (savePath != null) arguments = <String, String>{'path': savePath};
   String? path =
-      await curiosityChannel.invokeMethod('openSystemCamera', arguments);
+  await curiosityChannel.invokeMethod('openSystemCamera', arguments);
   if (savePath != null) path = savePath;
   return path;
 }
