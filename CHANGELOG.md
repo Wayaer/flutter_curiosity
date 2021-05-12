@@ -1,3 +1,5 @@
+## [2.1.2]
+ * fix bug for [systemCallPhone] in IOS
 ## [2.1.1]
  * add systemCallPhone 
  * remove goToMarker, add openAndroidMarket for Android

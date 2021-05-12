@@ -75,7 +75,8 @@ class JumpSettingPage extends StatelessWidget {
     final List<Widget> children = <Widget>[
       ElevatedButton(
           onPressed: () async {
-            if (!await requestPermissions(Permission.phone, '电话')) {
+            if (isAndroid &&
+                !await requestPermissions(Permission.phone, '电话')) {
               showToast('未获取到权限');
               return;
             }
