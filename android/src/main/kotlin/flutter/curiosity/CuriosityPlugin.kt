@@ -139,8 +139,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
                 onRequestPermissionsResultState = true
                 result.success(true)
             }
-            "canOpenUrl" -> result.success(NativeTools.canOpenUrl(context))
-            "openUrl" -> NativeTools.openUrl(activity)
             else -> result.notImplemented()
         }
 

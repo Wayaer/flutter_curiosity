@@ -10,9 +10,4 @@
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL)getGPSStatus;
 
-//能否打开url
-+ (BOOL) canOpenUrl:(NSString *)url;
-//打开url
-+ (void) openUrl:(NSDictionary *)arguments;
-
 @end

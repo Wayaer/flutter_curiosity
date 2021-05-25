@@ -83,11 +83,6 @@ NSString * const curiosity=@"Curiosity";
     } else if ([@"getFullScreen" isEqualToString:call.method]) {
         NSWindow *mainWindow =  [[NSApplication sharedApplication] mainWindow];
         result([NSNumber numberWithBool:(mainWindow.styleMask & NSFullScreenWindowMask)==NSFullScreenWindowMask]);
-    } else if ([@"canOpenUrl" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools canOpenUrl:call.arguments]]);
-    } else if ([@"openUrl" isEqualToString:call.method]) {
-        [NativeTools openUrl:call.arguments];
-        result(0);
     } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     } else {

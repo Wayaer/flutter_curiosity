@@ -45,7 +45,7 @@ class _AppState extends State<App> {
         log('AndroidResult requestCode = ${result.requestCode}  '
             'resultCode = ${result.resultCode}  data = ${result.data}');
       }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
-        log('AndroidResult: requestCode = ${result.requestCode}  \n'
+        log('AndroidRequestPermissionsResult: requestCode = ${result.requestCode}  \n'
             ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
       });
     }
@@ -66,10 +66,9 @@ class _AppState extends State<App> {
             if (isMobile)
               ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
             ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
-            if (isMobile)
+            if (isAndroid)
               ElevatedText(
-                  onPressed: () => push(OpenSettingPage()), text: '跳转设置'),
-            ElevatedText(onPressed: () => push(OpenAppPage()), text: '跳转其他App'),
+                  onPressed: () => push(OpenSettingPage()), text: '跳转APP'),
             if (isMobile)
               ElevatedText(
                   onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),

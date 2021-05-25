@@ -32,18 +32,5 @@
     return  NO;
 }
 
-//能否打开url
-+ (BOOL) canOpenUrl:(NSString *)url {
-    NSURL *nsUrl = [[NSURL alloc] initWithString:url];
-    return [[NSWorkspace sharedWorkspace] URLForApplicationToOpenURL:nsUrl] != nil;
-}
-//打开url
-+ (void) openUrl:(NSDictionary *)arguments {
-    NSURL *nsUrl = [[NSURL alloc] initWithString:arguments[@"url"]];
-    [[NSWorkspace sharedWorkspace] openURL:nsUrl];
-}
-
-
-
 
 @end

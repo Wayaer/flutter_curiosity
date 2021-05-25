@@ -68,33 +68,31 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
         NSString *cameraId = call.arguments[@"cameraId"];
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
         NSError * error;
-        if (@available(iOS 10.0, *)) {
-            //相机消息通道
-            FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:scannerEvent binaryMessenger:[registrar messenger]];
-            
-            ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :eventChannel :resolutionPreset :&error];
-            if(error){
-                result(getFlutterError(error));
-                return;
-            }else{
-                if(scannerView)[scannerView close];
-                int64_t scannerViewId = [registrar.textures registerTexture:view];
-                scannerView = view;
-                [eventChannel setStreamHandler:view];
-                
-                view.onFrameAvailable = ^{
-                    [self->registrar.textures textureFrameAvailable:scannerViewId];
-                };
-                result(@{
-                    @"textureId":@(scannerViewId),
-                    @"previewWidth":@(view.previewSize.width),
-                    @"previewHeight":@(view.previewSize.height)
-                              });
-                [view start];
-            }
+        
+        //相机消息通道
+        FlutterEventChannel *eventChannel = [FlutterEventChannel eventChannelWithName:scannerEvent binaryMessenger:[registrar messenger]];
+        
+        ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :eventChannel :resolutionPreset :&error];
+        if(error){
+            result(getFlutterError(error));
+            return;
         }else{
-            result([Tools resultInfo:@"Not supported below ios10"]);
+            if(scannerView)[scannerView close];
+            int64_t scannerViewId = [registrar.textures registerTexture:view];
+            scannerView = view;
+            [eventChannel setStreamHandler:view];
+            view.onFrameAvailable = ^{
+                [self->registrar.textures textureFrameAvailable:scannerViewId];
+            };
+            result(@{
+                @"cameraState":@"onOpened",
+                @"textureId":@(scannerViewId),
+                @"previewWidth":@(view.previewSize.width),
+                @"previewHeight":@(view.previewSize.height)
+                   });
+            [view start];
         }
+        
     }else if([@"disposeCameras" isEqualToString:call.method]){
         NSUInteger textureId = [call.arguments numberValue].unsignedIntegerValue;
         if(scannerView)[scannerView close];
@@ -105,18 +103,14 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
         result([Tools resultInfo:@"setFlashMode"]);
     }else if ([@"getGPSStatus" isEqualToString:call.method]) {
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]]);
-    }else if ([@"openAppSetting" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools openAppSetting]]);
+    }else if ([@"openSystemSetting" isEqualToString:call.method]) {
+        result([NSNumber numberWithBool:[NativeTools openSystemSetting]]);
     }else if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
     }else if ([@"getDeviceInfo" isEqualToString:call.method]) {
         result([NativeTools getDeviceInfo]);
     }else if ([@"openSystemShare" isEqualToString:call.method]) {
         [NativeTools openSystemShare:call result:result];
-    }else if ([@"canOpenUrl" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools canOpenURL:call.arguments]]);
-    }else if ([@"openUrl" isEqualToString:call.method]) {
-        [NativeTools openURL:call.arguments :result];
     }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }else{

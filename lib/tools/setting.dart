@@ -32,40 +32,25 @@ Future<InstallResult?> installApp(String apkPath) async {
   return InstallResult.error;
 }
 
-/// ios str 对应app id
-/// macOS str 对应app id
-/// android str 对应 packageName，安装多个应用商店时会弹窗选择, marketPackageName 指定打开应用市场的包名
-Future<bool> openAppStore(String str, {String? marketPackageName}) async {
-  if (isIOS || isMacOS) {
-    final String url = 'itms-apps://itunes.apple.com/us/app/$str';
-    if (await canOpenUrl(url)) {
-      return await openUrl(url);
-    } else {
-      return false;
-    }
-  } else if (isAndroid) {
-    final bool? data = await curiosityChannel.invokeMethod<bool>(
-        'openAppMarket', <String, String>{
-      'packageName': str,
-      'marketPackageName': marketPackageName ?? ''
-    });
-    return data ?? false;
-  }
-  return false;
+/// android  packageName，安装多个应用商店时会弹窗选择, marketPackageName 指定打开应用市场的包名
+Future<bool> openAndroidAppMarket(String packageName,
+    {String? marketPackageName}) async {
+  if (!isAndroid) return false;
+  final bool? data = await curiosityChannel.invokeMethod<bool>(
+      'openAppMarket', <String, String>{
+    'packageName': packageName,
+    'marketPackageName': marketPackageName ?? ''
+  });
+  return data ?? false;
 }
 
 /// 是否安装某个app
 /// Android str 对应包名
-/// ios str 对应 url schemes
-Future<bool> isInstallApp(String str) async {
-  if (isIOS || isMacOS) {
-    return await canOpenUrl(str);
-  } else if (isAndroid) {
-    final bool? data =
-        await curiosityChannel.invokeMethod<bool?>('isInstallApp', str);
-    return data ?? false;
-  }
-  return false;
+Future<bool> isInstallAppWithAndroid(String str) async {
+  if (!isAndroid) return false;
+  final bool? data =
+      await curiosityChannel.invokeMethod<bool?>('isInstallApp', str);
+  return data ?? false;
 }
 
 /// 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
@@ -79,11 +64,7 @@ Future<bool> getGPSStatus() async {
 /// settingType 仅对android 有效
 Future<bool> openSystemSetting([SettingType? settingType]) async {
   if (!supportPlatformMobile) return false;
-  if (isIOS) {
-    final bool? state = await curiosityChannel.invokeMethod('openAppSetting');
-    return state ?? false;
-  }
-  if (isAndroid) {
+  if (isMobile) {
     final List<String> type =
         (settingType ?? SettingType.setting).toString().split('.');
     final bool? state =

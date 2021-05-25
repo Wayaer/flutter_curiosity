@@ -271,7 +271,7 @@ class ScannerController extends ChangeNotifier {
           .invokeMapMethod<String, dynamic>('initializeCameras', arguments);
       if (reply == null) return;
       textureId = reply['textureId'] as int;
-      cameraState = reply['cameraState'] as String;
+      cameraState = reply['cameraState'] as String?;
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
       _eventChannel = const EventChannel(scannerEvent);

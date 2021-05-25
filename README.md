@@ -67,3 +67,22 @@
     }
 
 ```
+### 5.原生回调
+```dart
+  @override
+  void initState() {
+    super.initState();
+    if (isMobile) {
+      log('添加 原生回调监听');
+      onResultListener(activityResult: (AndroidActivityResult result) {
+        log('AndroidResult requestCode = ${result.requestCode}  '
+            'resultCode = ${result.resultCode}  data = ${result.data}');
+      }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
+        log('AndroidRequestPermissionsResult: requestCode = ${result.requestCode}  \n'
+            ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
+      });
+    }
+  }
+
+
+```

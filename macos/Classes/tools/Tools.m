@@ -14,16 +14,6 @@
 + (NSString *)resultSuccess{
     return @"success";
 }
-// 沙盒是否有指定路径文件夹或文件
-+(BOOL)isDirectoryExist:(NSString *)path {
-    return [fileManager fileExistsAtPath:path];
-}
-// 是否是文件夹
-+ (BOOL) isDirectory:(NSString *)path{
-    BOOL isDir = NO;
-    [fileManager fileExistsAtPath:path isDirectory:&isDir];
-    return isDir;
-}
 
 +(BOOL) isImageFile:(NSString *)path{
     return [path hasSuffix:@".jpg"]

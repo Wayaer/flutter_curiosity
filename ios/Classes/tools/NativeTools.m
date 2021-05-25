@@ -116,7 +116,7 @@
 }
 
 //跳转到设置页面让用户自己手动开启
-+ (BOOL) openAppSetting {
++ (BOOL) openSystemSetting {
     NSURL *url = [[NSURL alloc] initWithString:UIApplicationOpenSettingsURLString];
     if( [[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
@@ -127,34 +127,6 @@
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL) getGPSStatus {
     return [CLLocationManager locationServicesEnabled];
-}
-
-
-//能否打开url
-+ (BOOL) canOpenURL:(NSString *)url {
-    NSURL *nsUrl = [[NSURL alloc] initWithString:url];
-    return [[UIApplication sharedApplication] canOpenURL:nsUrl];
-}
-//打开url
-+ (void) openURL:(NSDictionary *)arguments :(FlutterResult) result {
-    NSNumber *universalLinksOnly =arguments[@"universalLinksOnly"];
-    NSURL *nsUrl = [[NSURL alloc] initWithString:arguments[@"url"]];
-    UIApplication *application = [UIApplication sharedApplication];
-    
-    if (@available(iOS 10.0, *)) {
-        NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : universalLinksOnly?@(0):@(1)};
-        [application openURL:nsUrl
-                     options:options
-           completionHandler:^(BOOL success) {
-            result(@(success));
-        }];
-    } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        BOOL success = [application openURL:nsUrl];
-#pragma clang diagnostic pop
-        result(@(success));
-    }
 }
 
 @end
