@@ -5,6 +5,7 @@ import 'internal.dart';
 
 typedef KeyboardStatus = void Function(bool visibility);
 
+/// android ios  键盘状态监听
 void keyboardListener(KeyboardStatus keyboardStatus) {
   if (!supportPlatformMobile) return;
   curiosityChannel.setMethodCallHandler((MethodCall call) async {

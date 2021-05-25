@@ -15,8 +15,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-
-  //// 关闭辅助触控
   window.onSemanticsEnabledChanged = () {};
   RendererBinding.instance!.setSemanticsEnabled(false);
 
