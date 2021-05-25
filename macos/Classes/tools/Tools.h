@@ -6,7 +6,6 @@
 + (void)log:(id)props;
 
 //返回标识信息
-+ (NSString *)resultInfo:(NSString *)info;
 + (NSString *)resultFail;
 + (NSString *)resultSuccess;
 

@@ -10,7 +10,7 @@ import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.call
-import flutter.curiosity.CuriosityPlugin.Companion.channelResult
+import flutter.curiosity.CuriosityPlugin.Companion.result
 import java.io.File
 import java.net.URL
 import java.util.*
@@ -18,6 +18,7 @@ import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 import javax.net.ssl.HttpsURLConnection
 import javax.net.ssl.SSLSocketFactory
+import kotlin.collections.ArrayList
 
 
 object ScannerTools {
@@ -26,79 +27,74 @@ object ScannerTools {
     private val handler = Handler(Looper.getMainLooper())
 
     fun scanImagePath(activity: Activity) {
-        val path = call.argument<String>("path")
-        if (path == null) {
-            channelResult.error("error", "scanImagePath path is not null", null)
-        } else {
-            val file = File(path)
-            if (file.isFile) {
-                executor.execute {
-                    try {
-                        val bitmap = BitmapFactory.decodeFile(path)
-                        if (bitmap != null) {
-                            handler.post {
-                                channelResult.success(decodeBitmap
-                                (bitmap, activity))
-                            }
+        val path = call.arguments as String
+        val file = File(path)
+        if (file.isFile) {
+            executor.execute {
+                try {
+                    val bitmap = BitmapFactory.decodeFile(path)
+                    if (bitmap != null) {
+                        handler.post {
+                            result.success(
+                                decodeBitmap
+                                    (bitmap, activity)
+                            )
                         }
-                    } catch (e: NotFoundException) {
-                        handler.post { channelResult.success(null) }
                     }
+                } catch (e: NotFoundException) {
+                    handler.post { result.success(null) }
                 }
-            } else {
-                channelResult.success(null)
             }
+        } else {
+            result.success(null)
         }
     }
 
     fun scanImageUrl(activity: Activity) {
-        val url = call.argument<String>("url")
-        if (url == null) {
-            channelResult.error("error", "scanImageUrl url is not null", null)
-        } else {
-            executor.execute {
-                try {
-                    val myUrl = URL(url)
-                    val bitmap: Bitmap
-                    val connection = myUrl.openConnection() as HttpsURLConnection
-                    connection.readTimeout = 6 * 60 * 1000
-                    connection.connectTimeout = 6 * 60 * 1000
-                    if (url.startsWith("https")) {
-                        connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
-                    }
-                    connection.connect()
-                    bitmap = BitmapFactory.decodeStream(connection.inputStream)
-                    if (bitmap != null) {
-                        handler.post {
-                            channelResult.success(decodeBitmap
-                            (bitmap, activity))
-                        }
-                    }
-                } catch (e: NotFoundException) {
-                    handler.post { channelResult.success(null) }
+        val url = call.arguments as String
+        executor.execute {
+            try {
+                val myUrl = URL(url)
+                val bitmap: Bitmap
+                val connection = myUrl.openConnection() as HttpsURLConnection
+                connection.readTimeout = 6 * 60 * 1000
+                connection.connectTimeout = 6 * 60 * 1000
+                if (url.startsWith("https")) {
+                    connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
                 }
+                connection.connect()
+                bitmap = BitmapFactory.decodeStream(connection.inputStream)
+                if (bitmap != null) {
+                    handler.post {
+                        result.success(
+                            decodeBitmap
+                                (bitmap, activity)
+                        )
+                    }
+                }
+            } catch (e: NotFoundException) {
+                handler.post { result.success(null) }
             }
         }
     }
 
 
     fun scanImageMemory(activity: Activity) {
-        val byteArray = call.argument<ByteArray>("uint8list")
-        if (byteArray == null) {
-            channelResult.error("error", "scanImageMemory uint8list is not null", null)
-        } else {
-            executor.execute {
-                try {
-                    val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                    handler.post {
-                        channelResult.success(decodeBitmap(bitmap, activity
-                        ))
-                    }
-                } catch (e: NotFoundException) {
-                    handler.post { channelResult.success(null) }
+        val byteArray = call.arguments as ByteArray
+        executor.execute {
+            try {
+                val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                handler.post {
+                    result.success(
+                        decodeBitmap(
+                            bitmap, activity
+                        )
+                    )
                 }
-
+            } catch (e: NotFoundException) {
+                handler.post { result.success(null) }
             }
+
         }
 
     }
@@ -109,16 +105,20 @@ object ScannerTools {
         val width = bitmap.width
         val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
         hints[DecodeHintType.TRY_HARDER] = java.lang.Boolean.TRUE
-        val array: ByteArray = ImageHelper(activity).getYUV420(width, height,
-                bitmap)
-        val source = PlanarYUVLuminanceSource(array,
-                width,
-                height,
-                0,
-                0,
-                width,
-                height,
-                false)
+        val array: ByteArray = ImageHelper(activity).getYUV420(
+            width, height,
+            bitmap
+        )
+        val source = PlanarYUVLuminanceSource(
+            array,
+            width,
+            height,
+            0,
+            0,
+            width,
+            height,
+            false
+        )
         var result: Result?
         try {
             result = multiFormatReader.decodeWithState(BinaryBitmap(GlobalHistogramBinarizer(source)))
@@ -179,7 +179,15 @@ object ScannerTools {
     }
 
 
-    fun decodeImage(byteArray: ByteArray, image: Image, verticalScreen: Boolean, topRatio: Double, leftRatio: Double, widthRatio: Double, heightRatio: Double): Result? {
+    fun decodeImage(
+        byteArray: ByteArray,
+        image: Image,
+        verticalScreen: Boolean,
+        topRatio: Double,
+        leftRatio: Double,
+        widthRatio: Double,
+        heightRatio: Double
+    ): Result? {
         val width: Int
         val height: Int
         val left: Int
@@ -206,15 +214,17 @@ object ScannerTools {
         }
 
         val source = PlanarYUVLuminanceSource(
-                array, width, height, left,
-                top,
-                identifyWidth, identifyHeight, false)
+            array, width, height, left,
+            top,
+            identifyWidth, identifyHeight, false
+        )
         val binaryBitmap = BinaryBitmap(GlobalHistogramBinarizer(source))
         var result: Result? = null
         try {
             result = multiFormatReader.decode(binaryBitmap, hints)
         } catch (e: NotFoundException) {
-            if (verticalScreen) result = decodeImage(byteArray, image, false, topRatio, leftRatio, widthRatio, heightRatio)
+            if (verticalScreen) result =
+                decodeImage(byteArray, image, false, topRatio, leftRatio, widthRatio, heightRatio)
         }
         return result
     }
@@ -226,7 +236,7 @@ object ScannerTools {
         for (y in 0 until height) { // we scan the array by rows
             for (x in 0 until width) {
                 rotatedData[x * height + height - y - 1] =
-                        byteArray[x + y * width] //
+                    byteArray[x + y * width] //
             }
         }
         return rotatedData

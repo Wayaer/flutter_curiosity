@@ -10,16 +10,21 @@ import android.os.Looper
 import android.util.Size
 import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.call
-import flutter.curiosity.CuriosityPlugin.Companion.channelResult
+import flutter.curiosity.CuriosityPlugin.Companion.result
+import flutter.curiosity.tools.NativeTools
+import flutter.curiosity.tools.Tools
 import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 
-class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) : EventChannel.StreamHandler {
+class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, context: Context) :
+    EventChannel.StreamHandler {
+
     private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private lateinit var previewSize: Size
+    private var _context = context
     private var cameraDevice: CameraDevice? = null
     private var cameraCaptureSession: CameraCaptureSession? = null
     private var imageStreamReader: ImageReader? = null
@@ -41,7 +46,8 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) 
     }
 
     fun initCameraView() {
-        cameraManager.openCamera(
+        if (NativeTools.checkPermission(android.Manifest.permission.CAMERA, _context)) {
+            cameraManager.openCamera(
                 cameraId,
                 object : CameraDevice.StateCallback() {
                     override fun onOpened(device: CameraDevice) {
@@ -64,7 +70,9 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) 
                         close()
                     }
                 },
-                Handler(Looper.getMainLooper()))
+                Handler(Looper.getMainLooper())
+            )
+        }
     }
 
     private fun resultMap(cameraState: String) {
@@ -73,7 +81,7 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) 
         mutableMap["textureId"] = texture.id()
         mutableMap["previewWidth"] = previewSize.width
         mutableMap["previewHeight"] = previewSize.height
-        channelResult.success(mutableMap)
+        result.success(mutableMap)
     }
 
     /**
@@ -81,14 +89,18 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) 
      */
     private fun createCaptureSession() {
         imageStreamReader = ImageReader.newInstance(
-                previewSize.width, previewSize.height, ImageFormat.YUV_420_888, 2)
+            previewSize.width, previewSize.height, ImageFormat.YUV_420_888, 2
+        )
         captureRequestBuilder = cameraDevice?.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW)
         val surfaceTexture = texture.surfaceTexture()
         surfaceTexture.setDefaultBufferSize(previewSize.width, previewSize.height)
         val surface = Surface(surfaceTexture)
         captureRequestBuilder?.addTarget(surface)  // 将CaptureRequest的构建器与Surface对象绑定在一起
         captureRequestBuilder?.addTarget(imageStreamReader!!.surface)
-        captureRequestBuilder?.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE) // 自动对焦
+        captureRequestBuilder?.set(
+            CaptureRequest.CONTROL_AF_MODE,
+            CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE
+        ) // 自动对焦
         imageStreamReader?.setOnImageAvailableListener({ imageReader ->
             singleThreadExecutor.execute {
                 val image = imageReader.acquireLatestImage()
@@ -99,7 +111,15 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) 
                         val byteArray = ByteArray(buffer.remaining())
                         buffer[byteArray, 0, byteArray.size]
                         try {
-                            val result = ScannerTools.decodeImage(byteArray, image, true, topRatio, leftRatio, widthRatio, heightRatio)
+                            val result = ScannerTools.decodeImage(
+                                byteArray,
+                                image,
+                                true,
+                                topRatio,
+                                leftRatio,
+                                widthRatio,
+                                heightRatio
+                            )
                             if (result != null) handler.post {
                                 eventSink.success(ScannerTools.scanDataToMap(result))
                             }
@@ -114,31 +134,43 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity) 
         }, handler)
         // 为相机预览，创建一个CameraCaptureSession对象
         closeCaptureSession()
-        cameraDevice?.createCaptureSession(arrayListOf(surface, imageStreamReader!!.surface), object : CameraCaptureSession.StateCallback() {
-            override fun onConfigureFailed(session: CameraCaptureSession) {
-            }
-
-            override fun onConfigured(session: CameraCaptureSession) {
-                cameraCaptureSession = session
-                try {
-                    cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, Handler(Looper.getMainLooper()))
-                } catch (e: Exception) {
-                    resultMap("CreateCaptureSession Exception")
+        cameraDevice?.createCaptureSession(
+            arrayListOf(surface, imageStreamReader!!.surface),
+            object : CameraCaptureSession.StateCallback() {
+                override fun onConfigureFailed(session: CameraCaptureSession) {
                 }
-            }
-        }, handler)
+
+                override fun onConfigured(session: CameraCaptureSession) {
+                    cameraCaptureSession = session
+                    try {
+                        cameraCaptureSession?.setRepeatingRequest(
+                            captureRequestBuilder!!.build(),
+                            null,
+                            Handler(Looper.getMainLooper())
+                        )
+                    } catch (e: Exception) {
+                        resultMap("CreateCaptureSession Exception")
+                    }
+                }
+            },
+            handler
+        )
     }
 
 
     fun enableTorch(status: Boolean) {
-        if (captureRequestBuilder == null || cameraCaptureSession == null) return
+//        if (captureRequestBuilder == null || cameraCaptureSession == null) return
+        Tools.logInfo("setFlashModesetFlashModesetFlashModesetFlashMode11111")
         if (status) {
             captureRequestBuilder?.set(
-                    CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH)
+                CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH
+            )
             cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, null)
         } else {
+            Tools.logInfo("setFlashModesetFlashModesetFlashModesetFlashMode1122111")
             captureRequestBuilder?.set(
-                    CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF)
+                CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF
+            )
             cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, null)
         }
     }

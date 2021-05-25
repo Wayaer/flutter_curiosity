@@ -10,7 +10,7 @@
     NSObject<FlutterPluginRegistrar> *registrar;
     FlutterMethodCall *call;
     FlutterMethodChannel *curiosityChannel;
-    FlutterResult channelResult;
+    FlutterResult result;
     ScannerView *scannerView;
     BOOL keyboardStatus;
 }
@@ -43,27 +43,27 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
 }
 - (void)handleMethodCall:(FlutterMethodCall*)_call result:(FlutterResult)_result {
     call = _call;
-    channelResult = _result;
+    result = _result;
     if ([@"openSystemGallery" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [GalleryTools openSystemGallery:viewController :picker :channelResult];
+        [GalleryTools openSystemGallery:viewController :picker :result];
     }else if ([@"openSystemCamera" isEqualToString:call.method]) {
         UIImagePickerController *picker = [[UIImagePickerController alloc]init];
         picker.delegate = self;
-        [GalleryTools openSystemCamera:viewController :picker :channelResult];
+        [GalleryTools openSystemCamera:viewController :picker :result];
     }else if ([@"saveImageToGallery" isEqualToString:call.method]) {
         [self saveImageToGallery];
     }else if ([@"saveFileToGallery" isEqualToString:call.method]) {
         [self saveFileToGallery];
     }else if ([@"scanImagePath" isEqualToString:call.method]) {
-        [ScannerTools scanImagePath:call result:channelResult];
+        [ScannerTools scanImagePath:call result:result];
     }else if ([@"scanImageUrl" isEqualToString:call.method]) {
-        [ScannerTools scanImageUrl:call result:channelResult];
+        [ScannerTools scanImageUrl:call result:result];
     }else if ([@"scanImageMemory" isEqualToString:call.method]) {
-        [ScannerTools scanImageMemory:call result:channelResult];
+        [ScannerTools scanImageMemory:call result:result];
     }else if ([@"availableCameras" isEqualToString:call.method]) {
-        [ScannerTools availableCameras:call result:channelResult];
+        [ScannerTools availableCameras:call result:result];
     }else if([@"initializeCameras" isEqualToString:call.method]){
         NSString *cameraId = call.arguments[@"cameraId"];
         NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
@@ -74,7 +74,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
             
             ScannerView *view = [[ScannerView alloc] initWitchCamera:cameraId :eventChannel :resolutionPreset :&error];
             if(error){
-                channelResult(getFlutterError(error));
+                result(getFlutterError(error));
                 return;
             }else{
                 if(scannerView)[scannerView close];
@@ -85,7 +85,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                 view.onFrameAvailable = ^{
                     [self->registrar.textures textureFrameAvailable:scannerViewId];
                 };
-                channelResult(@{
+                result(@{
                     @"textureId":@(scannerViewId),
                     @"previewWidth":@(view.previewSize.width),
                     @"previewHeight":@(view.previewSize.height)
@@ -93,36 +93,34 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                 [view start];
             }
         }else{
-            channelResult([Tools resultInfo:@"Not supported below ios10"]);
+            result([Tools resultInfo:@"Not supported below ios10"]);
         }
     }else if([@"disposeCameras" isEqualToString:call.method]){
-        NSDictionary *arguments = call.arguments;
-        NSUInteger textureId = ((NSNumber *)arguments[@"textureId"]).unsignedIntegerValue;
+        NSUInteger textureId = [call.arguments numberValue].unsignedIntegerValue;
         if(scannerView)[scannerView close];
         if(textureId) [registrar.textures unregisterTexture:textureId];
-        channelResult([Tools resultInfo:@"dispose"]);
+        result([Tools resultInfo:@"dispose"]);
     }else if ([call.method isEqualToString:@"setFlashMode"]){
-        NSNumber * status = [call.arguments valueForKey:@"status"];
-        if(scannerView)[scannerView setFlashMode:[status boolValue]];
-        channelResult([Tools resultInfo:@"setFlashMode"]);
+        if(scannerView)[scannerView setFlashMode:[call.arguments boolValue]];
+        result([Tools resultInfo:@"setFlashMode"]);
     }else if ([@"getGPSStatus" isEqualToString:call.method]) {
-        channelResult([NSNumber numberWithBool:[NativeTools getGPSStatus]]);
-    }else if ([@"jumpAppSetting" isEqualToString:call.method]) {
-        channelResult([NSNumber numberWithBool:[NativeTools jumpAppSetting]]);
+        result([NSNumber numberWithBool:[NativeTools getGPSStatus]]);
+    }else if ([@"openAppSetting" isEqualToString:call.method]) {
+        result([NSNumber numberWithBool:[NativeTools openAppSetting]]);
     }else if ([@"getAppInfo" isEqualToString:call.method]) {
-        channelResult([NativeTools getAppInfo]);
+        result([NativeTools getAppInfo]);
     }else if ([@"getDeviceInfo" isEqualToString:call.method]) {
-        channelResult([NativeTools getDeviceInfo]);
-    }else if ([@"getFilePathSize" isEqualToString:call.method]) {
-        channelResult([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
-    }else if ([@"callPhone" isEqualToString:call.method]) {
-        channelResult([NSNumber numberWithBool:[NativeTools callPhone:call.arguments[@"phoneNumber"]]]);
-    }else if ([@"systemShare" isEqualToString:call.method]) {
-        [NativeTools systemShare:call result:channelResult];
+        result([NativeTools getDeviceInfo]);
+    }else if ([@"openSystemShare" isEqualToString:call.method]) {
+        [NativeTools openSystemShare:call result:result];
+    }else if ([@"canOpenUrl" isEqualToString:call.method]) {
+        result([NSNumber numberWithBool:[NativeTools canOpenURL:call.arguments]]);
+    }else if ([@"openUrl" isEqualToString:call.method]) {
+        [NativeTools openURL:call.arguments :result];
     }else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     }else{
-        channelResult(FlutterMethodNotImplemented);
+        result(FlutterMethodNotImplemented);
     }
 }
 
@@ -158,7 +156,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
         //图库选择图片
         if(picker.sourceType == UIImagePickerControllerSourceTypePhotoLibrary){
             NSString * imageUrl = [NSString stringWithFormat:@"%@",info[@"UIImagePickerControllerImageURL"]];
-            self->channelResult(imageUrl);
+            self->result(imageUrl);
         }
         //拍照回调
         if(picker.sourceType == UIImagePickerControllerSourceTypeCamera){
@@ -171,7 +169,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                 PHFetchResult* assetResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[localId] options:nil];
                 PHAsset * asset = [assetResult firstObject];
                 [asset requestContentEditingInputWithOptions:nil completionHandler:^(PHContentEditingInput * _Nullable contentEditingInput, NSDictionary * _Nonnull info) {
-                    self->channelResult(contentEditingInput.fullSizeImageURL.absoluteString);
+                    self->result(contentEditingInput.fullSizeImageURL.absoluteString);
                 }];
             }];
         }
@@ -182,7 +180,7 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
 //进入拍摄页面点击取消按钮
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker{
     [picker dismissViewControllerAnimated:YES completion:^{
-        self->channelResult(@"cancel");
+        self->result(@"cancel");
     }];
 }
 
@@ -202,18 +200,18 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
     }else if(UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path)){
         UISaveVideoAtPathToSavedPhotosAlbum(path,self,@selector(saveVideo:didFinishSavingWithError:contextInfo:),nil);
     }else{
-        channelResult([Tools resultInfo:@"File types that cannot be saved"]);
+        result([Tools resultInfo:@"File types that cannot be saved"]);
     }
     
 }
 #pragma mark - 保存图片或视频完成的回调
 - (void)saveImage:(UIImage *)image didFinishSavingWithError:(NSError *)error
       contextInfo:(void *)contextInfo {
-    channelResult(error?[Tools resultFail]:[Tools resultSuccess]);
+    result(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 - (void)saveVideo:(NSString *)videoPath didFinishSavingWithError:(NSError *)error
       contextInfo:(void *)contextInfo {
-    channelResult(error?[Tools resultFail]:[Tools resultSuccess]);
+    result(error?[Tools resultFail]:[Tools resultSuccess]);
 }
 static FlutterError *getFlutterError(NSError *error) {
     return [FlutterError errorWithCode:[NSString stringWithFormat:@"%d", (int)error.code]

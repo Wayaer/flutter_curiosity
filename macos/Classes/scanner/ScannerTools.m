@@ -3,7 +3,7 @@
 @implementation ScannerTools
 
 + (void)scanImagePath:(FlutterMethodCall*)call result:(FlutterResult)result{
-    NSString * path=[call.arguments valueForKey:@"path"];
+    NSString * path=[call.arguments stringValue];
     if([path isKindOfClass:[NSNull class]]){
         result(nil);
         return;
@@ -15,7 +15,7 @@
 }
 
 + (void)scanImageUrl:(FlutterMethodCall*)call result:(FlutterResult)result{
-    NSString * url = [call.arguments valueForKey:@"url"];
+    NSString * url = [call.arguments stringValue];
     NSURL* nsUrl=[NSURL URLWithString:url];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:nsUrl];
     NSURLSessionDataTask * dataTask = [
@@ -34,7 +34,7 @@
 }
 
 + (void)scanImageMemory:(FlutterMethodCall*)call result:(FlutterResult)result{
-    FlutterStandardTypedData * uint8list=[call.arguments valueForKey:@"uint8list"];
+    FlutterStandardTypedData * uint8list = call.arguments;
     result([self getCode:uint8list.data]);
 }
 +(NSDictionary *) getCode:(NSData *)data{

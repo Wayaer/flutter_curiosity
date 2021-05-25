@@ -15,28 +15,31 @@ import androidx.core.content.FileProvider
 
 import flutter.curiosity.CuriosityPlugin
 import flutter.curiosity.CuriosityPlugin.Companion.call
-import flutter.curiosity.CuriosityPlugin.Companion.channelResult
-import flutter.curiosity.tools.Tools
+import flutter.curiosity.CuriosityPlugin.Companion.result
+import flutter.curiosity.CuriosityPlugin.Companion.resultFail
+import flutter.curiosity.CuriosityPlugin.Companion.resultSuccess
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 object GalleryTools {
-    
+
     fun openSystemGallery(activity: Activity) {
-        val intent = Intent(Intent.ACTION_PICK) //跳转到 ACTION_IMAGE_CAPTURE
+        val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
         activity.startActivityForResult(intent, CuriosityPlugin.openSystemGalleryCode)
     }
 
     fun openSystemCamera(context: Context, activity: Activity) {
-        var cameraSavePath = call.argument<String>("path")
-        if (cameraSavePath == null) cameraSavePath = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
+        var cameraSavePath = call.arguments as String?
+        if (cameraSavePath == null) cameraSavePath =
+            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val uri: Uri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //第二个参数为 包名.fierier
-            uri = FileProvider.getUriForFile(activity, context.packageName.toString() + ".provider", File(cameraSavePath))
+            uri =
+                FileProvider.getUriForFile(activity, context.packageName.toString() + ".provider", File(cameraSavePath))
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } else uri = Uri.fromFile(File(cameraSavePath))
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
@@ -57,10 +60,10 @@ object GalleryTools {
             val uri = Uri.fromFile(file)
             context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
             bmp.recycle()
-            channelResult.success(uri.toString())
+            result.success(uri.toString())
         } catch (e: IOException) {
             e.printStackTrace()
-            channelResult.success(Tools.resultFail())
+            result.success(resultFail)
         }
 
     }
@@ -73,16 +76,18 @@ object GalleryTools {
             originalFile.copyTo(file)
             val uri = Uri.fromFile(file)
             context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-            channelResult.success(Tools.resultSuccess())
+            result.success(resultSuccess)
         } catch (e: IOException) {
             e.printStackTrace()
-            channelResult.success(Tools.resultFail())
+            result.success(resultFail)
         }
     }
 
 
-    private fun generateFile(context: Context, extension: String = "", name:
-    String? = null):
+    private fun generateFile(
+        context: Context, extension: String = "", name:
+        String? = null
+    ):
             File {
         val storePath = context.getExternalFilesDir(null)?.path.toString() +
                 File.separator + getApplicationName(context)

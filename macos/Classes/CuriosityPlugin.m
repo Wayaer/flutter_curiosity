@@ -28,8 +28,6 @@ NSString * const curiosity=@"Curiosity";
     result = _result;
     if ([@"getGPSStatus" isEqualToString:call.method]) {
         result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
-    }else if ([@"jumpAppSetting" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools getGPSStatus]?YES:NO]);
     }else if ([@"getAppInfo" isEqualToString:call.method]) {
         result([NativeTools getAppInfo]);
     }else if ([@"scanImagePath" isEqualToString:call.method]) {
@@ -40,14 +38,6 @@ NSString * const curiosity=@"Curiosity";
         [ScannerTools scanImageMemory:call result:result];
     }else if ([@"availableCameras" isEqualToString:call.method]) {
         [ScannerTools availableCameras:call result:result];
-    }else if ([@"getFilePathSize" isEqualToString:call.method]) {
-        if (@available(macOS 10.8, *)) {
-            result([NativeTools getFilePathSize:call.arguments[@"filePath"]]);
-        }
-    }else  if ([@"callPhone" isEqualToString:call.method]) {
-        result([NSNumber numberWithBool:[NativeTools callPhone:call.arguments[@"phoneNumber"]]]);
-    }else if ([@"systemShare" isEqualToString:call.method]) {
-        //  [NativeTools systemShare:call result:result];
     }else if ([@"getWindowSize" isEqualToString:call.method]) {
         NSWindow *mainWindow = [[NSApplication sharedApplication] mainWindow];
         CGFloat width = mainWindow.frame.size.width;
@@ -93,6 +83,11 @@ NSString * const curiosity=@"Curiosity";
     } else if ([@"getFullScreen" isEqualToString:call.method]) {
         NSWindow *mainWindow =  [[NSApplication sharedApplication] mainWindow];
         result([NSNumber numberWithBool:(mainWindow.styleMask & NSFullScreenWindowMask)==NSFullScreenWindowMask]);
+    } else if ([@"canOpenUrl" isEqualToString:call.method]) {
+        result([NSNumber numberWithBool:[NativeTools canOpenUrl:call.arguments]]);
+    } else if ([@"openUrl" isEqualToString:call.method]) {
+        [NativeTools openUrl:call.arguments];
+        result(0);
     } else if ([@"exitApp" isEqualToString:call.method]) {
         exit(0);
     } else {

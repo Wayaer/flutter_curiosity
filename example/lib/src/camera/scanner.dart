@@ -6,7 +6,7 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class ScannerPage extends StatelessWidget {
-  const ScannerPage({Key key, @required this.scanResult}) : super(key: key);
+  const ScannerPage({Key? key, required this.scanResult}) : super(key: key);
 
   //// 扫描结果回调
   final ValueChanged<String> scanResult;
@@ -25,38 +25,42 @@ class CameraScanPage extends StatefulWidget {
 }
 
 class _CameraScanPageState extends State<CameraScanPage> {
-  CameraController controller;
-  int time;
+  CameraController? controller;
+  int time = 0;
 
   @override
   void initState() {
     super.initState();
-    initCamera();
+    addPostFrameCallback((Duration duration) {
+      initCamera();
+    });
   }
 
   Future<void> initCamera() async {
     final List<CameraDescription> cameras = await availableCameras();
-    CameraDescription description;
+    CameraDescription? description;
     for (final CameraDescription element in cameras) {
       if (element.lensDirection == CameraLensDirection.back)
         description = element;
     }
     if (description == null) return;
     controller = CameraController(description, ResolutionPreset.high);
-    await controller.initialize();
+    await controller!.initialize();
     setState(() {});
     time = DateTime.now().millisecondsSinceEpoch;
-    controller.startImageStream((CameraImage image) async {
+    controller!.startImageStream((CameraImage image) async {
       final int now = DateTime.now().millisecondsSinceEpoch;
-      if ((now - time) < 5000) return;
+      if ((now - time) < 2000) return;
       if (image.planes.isEmpty) return;
       if (image.planes[0].bytes.isEmpty) return;
       if (image.format.group != ImageFormatGroup.yuv420) return;
-      final ScanResult data = await scanImageMemory(image.planes[0].bytes);
+
+      log(image.planes[0].bytes);
+      final ScanResult? data = await scanImageMemory(image.planes[0].bytes);
       if (data != null) {
-        showToast('我的二维码');
+        showToast(data.code);
         print(data.toJson());
-        controller.stopImageStream();
+        controller!.stopImageStream();
       }
     });
   }
@@ -64,19 +68,22 @@ class _CameraScanPageState extends State<CameraScanPage> {
   @override
   Widget build(BuildContext context) {
     Widget child = Container();
-    if (controller != null && controller?.value?.aspectRatio != null) {
+    if (controller != null && controller?.value.previewSize != null) {
+      log(controller!.value.aspectRatio);
+      final Size size = controller!.value.previewSize!;
       child = AspectRatio(
-          aspectRatio: controller.value.aspectRatio,
-          child: CameraPreview(controller));
+          aspectRatio: size.height / size.width,
+          child: CameraPreview(controller!));
     }
-    return Scaffold(backgroundColor: Colors.black, body: Center(child: child));
+    return OverlayScaffold(
+        backgroundColor: Colors.black, body: Center(child: child));
   }
 
   @override
-  Future<void> dispose() async {
-    await controller?.stopImageStream();
-    await controller?.dispose();
+  void dispose() {
     super.dispose();
+    controller?.stopImageStream();
+    controller?.dispose();
   }
 }
 
@@ -92,35 +99,33 @@ class _UrlImageScanPageState extends State<UrlImageScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('San url image')),
-      body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          children: <Widget>[
-            Container(
-                margin: const EdgeInsets.all(20),
-                child: TextField(
-                    decoration: InputDecoration(
-                      hintText: '请输入Url',
-                      helperText: '务必输入正确的url地址',
-                      focusedBorder: inputBorder(Colors.blueAccent),
-                      enabledBorder: inputBorder(Colors.blueAccent),
-                      disabledBorder: inputBorder(Colors.grey),
-                      filled: true,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 10),
-                    ),
-                    controller: controller)),
-            ElevatedButton(onPressed: () => scan(), child: const Text('识别二维码')),
-            showText('code', code),
-            showText('type', type),
-          ]),
-    );
+    return OverlayScaffold(
+        appBar: const AppBarText('San url image'),
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        children: <Widget>[
+          Container(
+              margin: const EdgeInsets.all(20),
+              child: TextField(
+                  decoration: InputDecoration(
+                    hintText: '请输入Url',
+                    helperText: '务必输入正确的url地址',
+                    focusedBorder: inputBorder(Colors.blueAccent),
+                    enabledBorder: inputBorder(Colors.blueAccent),
+                    disabledBorder: inputBorder(Colors.grey),
+                    filled: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20, vertical: 10),
+                  ),
+                  controller: controller)),
+          ElevatedText(onPressed: () => scan(), text: '识别二维码'),
+          showText('code', code),
+          showText('type', type),
+        ]);
   }
 
   Future<void> scan() async {
     if (controller.text.isEmpty) return showToast('请输入Url');
-    final ScanResult data = await scanImageUrl(controller.text);
+    final ScanResult? data = await scanImageUrl(controller.text);
     if (data != null) {
       code = data.code;
       type = data.type;
@@ -128,11 +133,9 @@ class _UrlImageScanPageState extends State<UrlImageScanPage> {
     }
   }
 
-  InputBorder inputBorder(Color color) {
-    return OutlineInputBorder(
-        borderRadius: BorderRadius.circular(30),
-        borderSide: BorderSide(width: 1, color: color));
-  }
+  InputBorder inputBorder(Color color) => OutlineInputBorder(
+      borderRadius: BorderRadius.circular(30),
+      borderSide: BorderSide(width: 1, color: color));
 }
 
 class FileImageScanPage extends StatefulWidget {
@@ -147,25 +150,21 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('San file image')),
-      body: ListView(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          children: <Widget>[
-            ElevatedButton(
-                onPressed: () => openGallery(), child: const Text('选择图片')),
-            const SizedBox(height: 20),
-            showText('path', path),
-            ElevatedButton(onPressed: () => scan(), child: const Text('识别')),
-            showText('code', code),
-            showText('type', type),
-          ]),
-    );
+    return OverlayScaffold(
+        appBar: const AppBarText('San file image'),
+        padding: const EdgeInsets.all(20),
+        children: <Widget>[
+          ElevatedText(onPressed: () => openGallery(), text: '选择图片'),
+          showText('path', path),
+          ElevatedText(onPressed: () => scan(), text: '识别'),
+          showText('code', code),
+          showText('type', type),
+        ]);
   }
 
   Future<void> scan() async {
-    if (path == null || path.isEmpty) return showToast('请选择图片');
-    final ScanResult data = await scanImagePath(path);
+    if (path.isEmpty) return showToast('请选择图片');
+    final ScanResult? data = await scanImagePath(path);
     if (data != null) {
       code = data.code;
       type = data.type;
@@ -173,7 +172,7 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
     }
 
     if (await requestPermissions(Permission.storage, '读取文件')) {
-      final ScanResult data = await scanImagePath(path);
+      final ScanResult? data = await scanImagePath(path);
       if (data != null) {
         code = data.code;
         type = data.type;
@@ -183,9 +182,9 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
   }
 
   Future<void> openGallery() async {
-    final String data = await openSystemGallery;
+    final String? data = await openSystemGallery();
     showToast(data.toString());
-    path = data;
+    path = data.toString();
     setState(() {});
   }
 }

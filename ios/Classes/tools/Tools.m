@@ -9,14 +9,14 @@
 }
 
 + (NSString *)resultInfo:(NSString *)info{
-    return [NSString stringWithFormat:@"Curiosity:%@",info];
+    return [NSString stringWithFormat:@"%@",info];
 }
 
 + (NSString *)resultFail{
-    return @"Curiosity:fail";
+    return @"fail";
 }
 + (NSString *)resultSuccess{
-    return @"Curiosity:success";
+    return @"success";
 }
 // 沙盒是否有指定路径文件夹或文件
 +(BOOL)isDirectoryExist:(NSString *)path {
@@ -41,7 +41,7 @@
 +(BOOL)isEmulator{
     if (TARGET_IPHONE_SIMULATOR == 1 && TARGET_OS_IPHONE == 1) {
         return YES;
-    }else{
+    } else {
         return NO;
     }
 }

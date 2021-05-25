@@ -1,3 +1,4 @@
+import 'package:curiosity/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
@@ -14,7 +15,7 @@ class _DesktopPageState extends State<DesktopPage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        appBar: AppBar(title: const Text('App and Device')),
+        appBar: const AppBarText('Desktop'),
         body: Universal(
             padding: const EdgeInsets.all(10),
             isScroll: true,
@@ -25,56 +26,56 @@ class _DesktopPageState extends State<DesktopPage> {
                   alignment: Alignment.center,
                   color: Colors.grey.withOpacity(0.3),
                   child: BasisText(text, color: Colors.black)),
-              ElevatedButton(
+              ElevatedText(
                   onPressed: () async {
-                    final Size size = await getDesktopWindowSize();
+                    final Size? size = await getDesktopWindowSize();
                     text = size.toString();
                     setState(() {});
                   },
-                  child: const Text('getDesktopWindowSize')),
-              ElevatedButton(
+                  text: 'getDesktopWindowSize'),
+              ElevatedText(
                   onPressed: () => setDesktopWindowSize(const Size(600, 600)),
-                  child: const Text('setDesktopWindowSize(600,600)')),
-              ElevatedButton(
+                  text: 'setDesktopWindowSize(600,600)'),
+              ElevatedText(
                   onPressed: () =>
                       setDesktopMinWindowSize(const Size(300, 300)),
-                  child: const Text('setDesktopMinWindowSize(300,300)')),
-              ElevatedButton(
+                  text: 'setDesktopMinWindowSize(300,300)'),
+              ElevatedText(
                   onPressed: () =>
                       setDesktopMaxWindowSize(const Size(900, 900)),
-                  child: const Text('setDesktopMaxWindowSize(900,900)')),
-              ElevatedButton(
+                  text: 'setDesktopMaxWindowSize(900,900)'),
+              ElevatedText(
                   onPressed: () => resetDesktopMaxWindowSize(),
-                  child: const Text('resetDesktopMaxWindowSize')),
-              ElevatedButton(
+                  text: 'resetDesktopMaxWindowSize'),
+              ElevatedText(
                   onPressed: () => toggleDesktopFullScreen(),
-                  child: const Text('toggleDesktopFullScreen')),
-              ElevatedButton(
+                  text: 'toggleDesktopFullScreen'),
+              ElevatedText(
                   onPressed: () => setDesktopFullScreen(true),
-                  child: const Text('setDesktopFullScreen true')),
-              ElevatedButton(
+                  text: 'setDesktopFullScreen true'),
+              ElevatedText(
                   onPressed: () => setDesktopFullScreen(false),
-                  child: const Text('setDesktopFullScreen false')),
-              ElevatedButton(
+                  text: 'setDesktopFullScreen false'),
+              ElevatedText(
                   onPressed: () async {
-                    final bool full = await getDesktopFullScreen();
+                    final bool? full = await getDesktopFullScreen();
                     text = full.toString();
                     setState(() {});
                   },
-                  child: const Text('getDesktopFullScreen')),
+                  text: 'getDesktopFullScreen'),
               const SizedBox(height: 10),
-              ElevatedButton(
+              ElevatedText(
                   onPressed: () => setDesktopSizeTo4P7(),
-                  child: const Text('setDesktopSizeTo4P7')),
-              ElevatedButton(
+                  text: 'setDesktopSizeTo4P7'),
+              ElevatedText(
                   onPressed: () => setDesktopSizeTo5P5(),
-                  child: const Text('setDesktopSizeTo5P5')),
-              ElevatedButton(
+                  text: 'setDesktopSizeTo5P5'),
+              ElevatedText(
                   onPressed: () => setDesktopSizeTo5P8(),
-                  child: const Text('setDesktopSizeTo5P8')),
-              ElevatedButton(
+                  text: 'setDesktopSizeTo5P8'),
+              ElevatedText(
                   onPressed: () => setDesktopSizeTo6P1(),
-                  child: const Text('setDesktopSizeTo6P1')),
+                  text: 'setDesktopSizeTo6P1'),
             ]));
   }
 }

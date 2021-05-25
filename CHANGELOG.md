@@ -1,3 +1,6 @@
+## [2.2.0]
+ * add openUrl
+ * add onResultListener to support onActivityResult and onRequestPermissionsResult on Android
 ## [2.1.2]
  * fix bug for [systemCallPhone] in IOS
 ## [2.1.1]

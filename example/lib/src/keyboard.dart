@@ -1,3 +1,4 @@
+import 'package:curiosity/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
@@ -19,10 +20,9 @@ class _KeyboardState extends State<KeyboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    log('=====build=====');
-    return OverlayScaffold(
-        appBar: AppBar(title: const Text('Keyboard')),
-        body: const Universal(
+    return const OverlayScaffold(
+        appBar: AppBarText('Keyboard'),
+        body: Universal(
             mainAxisAlignment: MainAxisAlignment.center,
             padding: EdgeInsets.all(20),
             children: <Widget>[

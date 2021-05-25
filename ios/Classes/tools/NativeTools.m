@@ -6,17 +6,6 @@
 
 @implementation NativeTools
 
-
-+ (BOOL)callPhone:(NSString *)phoneNumber {
-    NSURL *url= [NSURL URLWithString:[@"tel:" stringByAppendingString:phoneNumber]];
-    if([[UIApplication sharedApplication] canOpenURL:url]){
-        [[UIApplication sharedApplication] openURL:url];
-        return  YES;
-    }
-    return  NO;
-    
-}
-
 + (NSDictionary *)getDeviceInfo{
     UIDevice* device = [UIDevice currentDevice];
     struct utsname un;
@@ -63,49 +52,6 @@
 }
 
 
-//获取目录文件或文件夹大小
-+ (NSString *)getFilePathSize:(NSString *)path{
-    // 获取“path”文件夹下的所有文件
-    NSArray *subPathArr = [[NSFileManager defaultManager] subpathsAtPath:path];
-    NSString *filePath  = nil;
-    NSInteger totalSize = 0;
-    for (NSString *subPath in subPathArr){
-        // 1. 拼接每一个文件的全路径
-        filePath =[path stringByAppendingPathComponent:subPath];
-        // 2. 是否是文件夹，默认不是
-        BOOL isDirectory = [Tools isDirectory:path];
-        // 3. 判断文件是否存在
-        BOOL isExist = [Tools isDirectoryExist:path];
-        // 4. 以上判断目的是忽略不需要计算的文件
-        if (!isExist || isDirectory || [filePath containsString:@".DS"]){
-            // 过滤: 1. 文件夹不存在  2. 过滤文件夹  3. 隐藏文件
-            continue;
-        }
-        // 5. 指定路径，获取这个路径的属性
-        NSDictionary *dict = [[NSFileManager defaultManager] attributesOfItemAtPath:filePath error:nil];
-        /**
-         attributesOfItemAtPath: 文件夹路径
-         该方法只能获取文件的属性, 无法获取文件夹属性, 所以也是需要遍历文件夹的每一个文件的原因
-         */
-        // 6. 获取每一个文件的大小
-        NSInteger size = [dict[@"NSFileSize"] integerValue];
-        // 7. 计算总大小
-        totalSize += size;
-    }
-    //8. 将文件夹大小转换为 M/KB/B
-    NSString *totalStr = nil;
-    if (totalSize > 1000 * 1000){
-        totalStr = [NSString stringWithFormat:@"%.2fMB",totalSize / 1000.00f /1000.00f];
-        
-    }else if (totalSize > 1000){
-        totalStr = [NSString stringWithFormat:@"%.2fKB",totalSize / 1000.00f ];
-        
-    }else{
-        totalStr = [NSString stringWithFormat:@"%.2fB",totalSize / 1.00f];
-    }
-    return totalStr;
-}
-
 
 /**
  *  分享
@@ -116,7 +62,7 @@
  *  NSURL *url = [NSURL URLWithString:@"https:www.baidu.com"];
  *  NSArray *items = @[urlToShare,textToShare,imageToShare];
  */
-+ (void)systemShare:(FlutterMethodCall*)call result:(FlutterResult)result{
++ (void)openSystemShare:(FlutterMethodCall*)call result:(FlutterResult)result{
     //    NSString * title=[call.arguments valueForKey:@"title"];
     NSString * content=[call.arguments valueForKey:@"content"];
     NSString * type=[call.arguments valueForKey:@"type"];
@@ -129,7 +75,7 @@
                 [items addObject:image];
             }
         }else{
-            result([Tools resultInfo:@"imagesPath is null"]);
+            result(@"imagesPath is null");
         }
     }else{
         if(content!=nil){
@@ -137,13 +83,13 @@
             if([type isEqual: @"url"])[items addObject:[NSURL URLWithString:content]];
             if([type isEqual: @"image"])[items addObject:[UIImage imageNamed:content]];
         }else{
-            result([Tools resultInfo:@"content is null"]);
+            result(@"content is null");
             return;
         }
     }
     
     if (0 == items.count) {
-        result([Tools resultInfo:[@"not find " stringByAppendingString:type]]);
+        result([@"not find " stringByAppendingString:type]);
         return;
     }
     UIActivityViewController *activityVC = [[UIActivityViewController alloc] initWithActivityItems:items applicationActivities:nil];
@@ -169,9 +115,8 @@
     }
 }
 
-
 //跳转到设置页面让用户自己手动开启
-+ (BOOL) jumpAppSetting {
++ (BOOL) openAppSetting {
     NSURL *url = [[NSURL alloc] initWithString:UIApplicationOpenSettingsURLString];
     if( [[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
@@ -182,6 +127,34 @@
 //判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
 + (BOOL) getGPSStatus {
     return [CLLocationManager locationServicesEnabled];
+}
+
+
+//能否打开url
++ (BOOL) canOpenURL:(NSString *)url {
+    NSURL *nsUrl = [[NSURL alloc] initWithString:url];
+    return [[UIApplication sharedApplication] canOpenURL:nsUrl];
+}
+//打开url
++ (void) openURL:(NSDictionary *)arguments :(FlutterResult) result {
+    NSNumber *universalLinksOnly =arguments[@"universalLinksOnly"];
+    NSURL *nsUrl = [[NSURL alloc] initWithString:arguments[@"url"]];
+    UIApplication *application = [UIApplication sharedApplication];
+    
+    if (@available(iOS 10.0, *)) {
+        NSDictionary *options = @{UIApplicationOpenURLOptionUniversalLinksOnly : universalLinksOnly?@(0):@(1)};
+        [application openURL:nsUrl
+                     options:options
+           completionHandler:^(BOOL success) {
+            result(@(success));
+        }];
+    } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        BOOL success = [application openURL:nsUrl];
+#pragma clang diagnostic pop
+        result(@(success));
+    }
 }
 
 @end

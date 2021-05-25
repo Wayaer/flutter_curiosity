@@ -93,11 +93,11 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance!.addObserver(this);
+    WidgetsBinding.instance?.addObserver(this);
     controller = ScannerController(
         resolution: widget.resolution ?? CameraResolution.high);
     WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) =>
-        Timer(const Duration(milliseconds: 300), () => initController()));
+        Timer(const Duration(milliseconds: 300), initController));
   }
 
   Future<void> initController() async {
@@ -196,10 +196,11 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
 
   @override
   void dispose() {
+    super.dispose();
+    WidgetsBinding.instance?.removeObserver(this);
     controller!.disposeCameras();
     controller!.dispose();
     controller = null;
-    super.dispose();
   }
 
   @override
@@ -286,31 +287,30 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  Future<String?> setFlashMode(bool status) async => await curiosityChannel
-      .invokeMethod('setFlashMode', <String, bool>{'status': status});
+  Future<String?> setFlashMode(bool status) async =>
+      await curiosityChannel.invokeMethod('setFlashMode', status);
 
-  Future<List<Cameras>?> availableCameras() async {
+  Future<List<Cameras>> availableCameras() async {
     try {
       final List<Map<dynamic, dynamic>>? cameras = await curiosityChannel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
-      if (cameras == null) return null;
-      return cameras.map((Map<dynamic, dynamic> camera) {
-        return Cameras(
-            name: camera['name'] as String,
-            lensFacing: _getCameraLensFacing(camera['lensFacing'] as String));
-      }).toList();
+      if (cameras == null) return <Cameras>[];
+      return cameras
+          .map((Map<dynamic, dynamic> camera) => Cameras(
+              name: camera['name'] as String,
+              lensFacing: _getCameraLensFacing(camera['lensFacing'] as String)))
+          .toList();
     } on PlatformException catch (e) {
       log(e);
     }
-    return null;
+    return <Cameras>[];
   }
 
   void disposeCameras() {
     _streamSubscription?.cancel();
     _eventChannel = null;
     if (textureId == null) return;
-    curiosityChannel.invokeMethod<dynamic>(
-        'disposeCameras', <String, int>{'textureId': textureId!});
+    curiosityChannel.invokeMethod<dynamic>('disposeCameras', textureId);
   }
 
   CameraLensFacing _getCameraLensFacing(String lensFacing) {
@@ -331,12 +331,12 @@ class ScanResult {
   ScanResult(this.code, this.type);
 
   ScanResult.fromJson(Map<dynamic, dynamic> json) {
-    code = json['code'] as String;
-    type = json['type'] as String;
+    code = (json['code'] as String?) ?? '';
+    type = (json['type'] as String?) ?? '';
   }
 
-  String? code;
-  String? type;
+  late String code;
+  late String type;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
@@ -349,15 +349,15 @@ class ScanResult {
 class Cameras {
   Cameras({required this.name, required this.lensFacing});
 
-  final String name;
-  final CameraLensFacing lensFacing;
+  String name;
+  CameraLensFacing lensFacing;
 }
 
 /// 以下方法可以配合 camera 组件 做二维码或条形码识别
 Future<ScanResult?> scanImagePath(String path) async {
   try {
-    final Map<dynamic, dynamic>? data = await curiosityChannel
-        .invokeMethod('scanImagePath', <String, String>{'path': path});
+    final Map<dynamic, dynamic>? data =
+        await curiosityChannel.invokeMethod('scanImagePath', path);
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);
@@ -367,8 +367,8 @@ Future<ScanResult?> scanImagePath(String path) async {
 
 Future<ScanResult?> scanImageUrl(String url) async {
   try {
-    final Map<dynamic, dynamic>? data = await curiosityChannel
-        .invokeMethod('scanImageUrl', <String, String>{'url': url});
+    final Map<dynamic, dynamic>? data =
+        await curiosityChannel.invokeMethod('scanImageUrl', url);
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);
@@ -378,8 +378,8 @@ Future<ScanResult?> scanImageUrl(String url) async {
 
 Future<ScanResult?> scanImageMemory(Uint8List uint8list) async {
   try {
-    final Map<dynamic, dynamic>? data = await curiosityChannel.invokeMethod(
-        'scanImageMemory', <String, Uint8List>{'uint8list': uint8list});
+    final Map<dynamic, dynamic>? data =
+        await curiosityChannel.invokeMethod('scanImageMemory', uint8list);
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);

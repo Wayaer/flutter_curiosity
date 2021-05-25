@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:curiosity/src/camera/camera_gallery.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
+import 'package:curiosity/src/open_app.dart';
 import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,110 +18,66 @@ void main() {
 
   //// 关闭辅助触控
   window.onSemanticsEnabledChanged = () {};
-  RendererBinding.instance.setSemanticsEnabled(false);
+  RendererBinding.instance!.setSemanticsEnabled(false);
 
-  print('isWeb');
-  print(isWeb);
-  print('isMacOS');
-  print(isMacOS);
-  print('isAndroid');
-  print(isAndroid);
-  print('isIOS');
-  print(isIOS);
-  print('isMobile');
-  print(isMobile);
-  print('isDesktop');
-  print(isDesktop);
-
+  print('isWeb = $isWeb');
+  print('isMacOS = $isMacOS');
+  print('isAndroid = $isAndroid');
+  print('isIOS = $isIOS');
+  print('isMobile = $isMobile');
+  print('isDesktop = $isDesktop');
   runApp(GlobalWidgetsApp(
       debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
 }
 
-class App extends StatelessWidget {
+class App extends StatefulWidget {
+  @override
+  _AppState createState() => _AppState();
+}
+
+class _AppState extends State<App> {
+  @override
+  void initState() {
+    super.initState();
+    if (isMobile) {
+      log('添加 原生回调监听');
+      onResultListener(activityResult: (AndroidActivityResult result) {
+        log('AndroidResult requestCode = ${result.requestCode}  '
+            'resultCode = ${result.resultCode}  data = ${result.data}');
+      }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
+        log('AndroidResult: requestCode = ${result.requestCode}  \n'
+            ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-      appBar: AppBar(
-          centerTitle: true,
-          title: const Text('Flutter Curiosity Plugin Example')),
+      backgroundColor: Colors.white,
+      appBar: const AppBarText(
+        'Flutter Curiosity Plugin Example',
+      ),
       body: Universal(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedButton(
-                onPressed: () => push(SharePage()), child: const Text('分享')),
-            ElevatedButton(
-                onPressed: () => push(KeyboardPage()),
-                child: const Text('键盘状态')),
-            ElevatedButton(
-                onPressed: () => push(GetInfoPage()),
-                child: const Text('获取信息')),
-            ElevatedButton(
-                onPressed: () => push(JumpSettingPage()),
-                child: const Text('跳转设置')),
-            ElevatedButton(
-                onPressed: () => push(CameraGalleryPage()),
-                child: const Text('相机和图库')),
+            if (isMobile)
+              ElevatedText(onPressed: () => push(SharePage()), text: '分享'),
+            if (isMobile)
+              ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
+            ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
+            if (isMobile)
+              ElevatedText(
+                  onPressed: () => push(OpenSettingPage()), text: '跳转设置'),
+            ElevatedText(onPressed: () => push(OpenAppPage()), text: '跳转其他App'),
+            if (isMobile)
+              ElevatedText(
+                  onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),
             if (isDesktop)
-              ElevatedButton(
-                  onPressed: () => push(DesktopPage()),
-                  child: const Text('Desktop窗口控制')),
+              ElevatedText(
+                  onPressed: () => push(DesktopPage()), text: 'Desktop窗口控制'),
           ]),
     );
-  }
-}
-
-class JumpSettingPage extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    final List<Widget> children = <Widget>[
-      ElevatedButton(
-          onPressed: () async {
-            if (isAndroid &&
-                !await requestPermissions(Permission.phone, '电话')) {
-              showToast('未获取到权限');
-              return;
-            }
-            final bool data = await systemCallPhone('19980284961');
-            showToast(data.toString());
-          },
-          child: const Text('拨打电话19980284961')),
-    ];
-    if (isAndroid)
-      children.addAll(<Widget>[
-        ElevatedButton(
-            onPressed: () async {
-              if (!await requestPermissions(Permission.phone, '电话')) {
-                showToast('未获取到权限');
-                return;
-              }
-              final bool data =
-                  await systemCallPhone('19980284961', directDial: true);
-              showToast(data.toString());
-            },
-            child: const Text('直接拨打电话19980284961')),
-        ElevatedButton(
-            onPressed: () =>
-                openAndroidMarket(packageName: 'com.tencent.mobileqq'),
-            child: const Text('跳转Android应用市场')),
-        ElevatedButton(
-            onPressed: () async {
-              final bool data = await openAndroidMarket(
-                  packageName: 'com.tencent.mobileqq',
-                  marketPackageName: 'com.coolapk.market');
-              showToast(data.toString());
-            },
-            child: const Text('跳转Android应用市场-酷安')),
-      ]);
-    children.add(ElevatedButton(
-        onPressed: () => jumpAppSetting, child: const Text('跳转APP设置')));
-    children.addAll(SettingType.values
-        .map((SettingType value) => ElevatedButton(
-            onPressed: () => jumpSystemSetting(settingType: value),
-            child: Text(value.toString())))
-        .toList());
-    return OverlayScaffold(
-        appBar: AppBar(title: const Text('Android Jump Setting')),
-        body: Universal(isScroll: true, children: children));
   }
 }
 
@@ -146,3 +103,43 @@ Future<bool> requestPermissions(Permission permission, String text) async {
   }
   return true;
 }
+
+class ElevatedText extends StatelessWidget {
+  const ElevatedText({Key? key, required this.text, required this.onPressed})
+      : super(key: key);
+
+  final String text;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Universal(
+        onTap: onPressed,
+        margin: const EdgeInsets.symmetric(vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        decoration: BoxDecoration(boxShadow: const <BoxShadow>[
+          BoxShadow(
+              color: color,
+              offset: Offset(0, 0),
+              blurRadius: 1.0,
+              spreadRadius: 1.0)
+        ], color: color, borderRadius: BorderRadius.circular(4)),
+        child: BasisText(text, color: Colors.black),
+      );
+}
+
+class AppBarText extends StatelessWidget {
+  const AppBarText(this.text, {Key? key}) : super(key: key);
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => AppBar(
+        elevation: 0,
+        iconTheme: const IconThemeData.fallback(),
+        title: BasisText(text,
+            color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+        centerTitle: true,
+        backgroundColor: color,
+      );
+}
+
+const Color color = Colors.amber;

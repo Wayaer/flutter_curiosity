@@ -13,8 +13,13 @@
 #include <map>
 #include <memory>
 #include <sstream>
+#include <string>
 
 namespace {
+
+using flutter::EncodableMap;
+using flutter::EncodableValue;
+
 
 LRESULT CALLBACK MyWndProc(HWND hWnd,UINT iMessage,WPARAM wParam,LPARAM lParam);
 WNDPROC oldProc;
@@ -59,7 +64,7 @@ void CuriosityPlugin::RegisterWithRegistrar(
   HWND handle = GetActiveWindow();
   oldProc = reinterpret_cast<WNDPROC>(GetWindowLongPtr(handle, GWLP_WNDPROC));
   SetWindowLongPtr(handle, GWLP_WNDPROC, (LONG_PTR)MyWndProc);
-  
+
 }
 
 CuriosityPlugin::CuriosityPlugin() {}
@@ -230,8 +235,47 @@ void CuriosityPlugin::HandleMethodCall(
 
     maxWidth = int(width+0.5);
     maxHeight = int(height+0.5);
-
     result->Success(flutter::EncodableValue(true));
+  } else if(method_call.method_name().compare("openUrl") == 0){
+    std::string url = method_call.argument;
+      if (url.empty()) {
+        result->Error("argument_error", "No URL provided");
+        return;
+      }
+      std::wstring url_wide = Utf16FromUtf8(url);
+
+      int status = static_cast<int>(reinterpret_cast<INT_PTR>(
+          ::ShellExecute(nullptr, TEXT("open"), url_wide.c_str(), nullptr,
+                         nullptr, SW_SHOWNORMAL)));
+
+      if (status <= 32) {
+        std::ostringstream error_message;
+        error_message << "Failed to open " << url << ": ShellExecute error code "
+                      << status;
+        result->Error("open_error", error_message.str());
+        return;
+      }
+      result->Success(EncodableValue(true));
+        } else if (method_call.method_name().compare("canOpenUrl") == 0) {
+          std::string url = method_call.argument;
+          if (url.empty()) {
+            result->Error("argument_error", "No URL provided");
+            return;
+          }
+
+          bool can_launch = false;
+          size_t separator_location = url.find(":");
+          if (separator_location != std::string::npos) {
+            std::wstring scheme = Utf16FromUtf8(url.substr(0, separator_location));
+            HKEY key = nullptr;
+            if (::RegOpenKeyEx(HKEY_CLASSES_ROOT, scheme.c_str(), 0, KEY_QUERY_VALUE,
+                               &key) == ERROR_SUCCESS) {
+              can_launch = ::RegQueryValueEx(key, L"URL Protocol", nullptr, nullptr,
+                                             nullptr, nullptr) == ERROR_SUCCESS;
+              ::RegCloseKey(key);
+            }
+          }
+          result->Success(EncodableValue(can_launch));
 
   } else {
     result->NotImplemented();
@@ -263,6 +307,29 @@ LRESULT CALLBACK MyWndProc(HWND hWnd,UINT iMessage,WPARAM wParam,LPARAM lParam) 
 }
 
 }  // namespace
+
+// Converts the given UTF-8 string to UTF-16.
+std::wstring Utf16FromUtf8(const std::string& utf8_string) {
+  if (utf8_string.empty()) {
+    return std::wstring();
+  }
+  int target_length =
+      ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string.data(),
+                            static_cast<int>(utf8_string.length()), nullptr, 0);
+  if (target_length == 0) {
+    return std::wstring();
+  }
+  std::wstring utf16_string;
+  utf16_string.resize(target_length);
+  int converted_length =
+      ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string.data(),
+                            static_cast<int>(utf8_string.length()),
+                            utf16_string.data(), target_length);
+  if (converted_length == 0) {
+    return std::wstring();
+  }
+  return utf16_string;
+}
 
 
 void CuriosityPluginRegisterWithRegistrar(

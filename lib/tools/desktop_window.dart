@@ -48,7 +48,6 @@ Future<bool?> getDesktopFullScreen() async {
   if (!supportPlatformDesktop) return null;
   final bool? fullscreen =
       await curiosityChannel.invokeMethod<bool?>('getFullScreen');
-  print(fullscreen);
   if (fullscreen is bool) return fullscreen;
   return null;
 }

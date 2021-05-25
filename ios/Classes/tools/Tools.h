@@ -20,6 +20,6 @@
 + (BOOL)isImageFile:(NSString *)path;
 
 //是否是模拟器
-+ (BOOL*)isEmulator;
++ (BOOL)isEmulator;
 
 @end
