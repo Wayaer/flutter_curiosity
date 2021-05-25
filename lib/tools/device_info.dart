@@ -81,4 +81,3 @@ Future<List<AppsModel>> getInstalledApp() async {
   }
   return list;
 }
-

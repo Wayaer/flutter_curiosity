@@ -1,3 +1,4 @@
+## [2.2.1]
 ## [2.2.0]
  * add onResultListener to support onActivityResult and onRequestPermissionsResult on Android
 ## [2.1.2]
