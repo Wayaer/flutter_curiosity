@@ -92,7 +92,6 @@ NSString * const scannerEvent=@"Curiosity/event/scanner";
                    });
             [view start];
         }
-        
     }else if([@"disposeCameras" isEqualToString:call.method]){
         NSUInteger textureId = [call.arguments numberValue].unsignedIntegerValue;
         if(scannerView)[scannerView close];
