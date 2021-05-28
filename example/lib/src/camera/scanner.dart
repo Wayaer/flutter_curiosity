@@ -100,7 +100,7 @@ class _UrlImageScanPageState extends State<UrlImageScanPage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        appBar: const AppBarText('San url image'),
+        appBar: AppBarText('San url image'),
         padding: const EdgeInsets.symmetric(horizontal: 20),
         children: <Widget>[
           Container(
@@ -151,7 +151,7 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        appBar: const AppBarText('San file image'),
+        appBar: AppBarText('San file image'),
         padding: const EdgeInsets.all(20),
         children: <Widget>[
           ElevatedText(onPressed: () => openGallery(), text: '选择图片'),

@@ -14,7 +14,7 @@ class _SharePageState extends State<SharePage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        appBar: const AppBarText('Share'),
+        appBar: AppBarText('Share'),
         body: Universal(
             isScroll: true,
             mainAxisAlignment: MainAxisAlignment.center,
@@ -37,7 +37,8 @@ class _SharePageState extends State<SharePage> {
   }
 
   void shareText() {
-    openSystemShare(title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
+    openSystemShare(
+        title: '分享图片', content: '分享几个文字', shareType: ShareType.text);
   }
 
   void shareImage() {
@@ -45,7 +46,8 @@ class _SharePageState extends State<SharePage> {
       showToast('请先选择图片');
       return;
     }
-    openSystemShare(title: '分享图片', content: list[0], shareType: ShareType.image);
+    openSystemShare(
+        title: '分享图片', content: list[0], shareType: ShareType.image);
   }
 
   void shareImages() {

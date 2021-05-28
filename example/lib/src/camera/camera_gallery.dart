@@ -17,7 +17,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        appBar: const AppBarText('Camera and Gallery'),
+        appBar: AppBarText('Camera and Gallery'),
         body: Universal(isScroll: true, children: <Widget>[
           ElevatedText(onPressed: scan, text: '扫码'),
           ElevatedText(onPressed: systemGallery, text: '打开系统相册'),

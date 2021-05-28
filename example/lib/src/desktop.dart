@@ -15,7 +15,7 @@ class _DesktopPageState extends State<DesktopPage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        appBar: const AppBarText('Desktop'),
+        appBar: AppBarText('Desktop'),
         body: Universal(
             padding: const EdgeInsets.all(10),
             isScroll: true,

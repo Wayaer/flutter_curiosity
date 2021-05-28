@@ -14,7 +14,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-      appBar: const AppBarText('App and Device'),
+      appBar: AppBarText('App and Device'),
       body: ScrollList.builder(
           header: SliverToBoxAdapter(
               child: Column(children: <Widget>[

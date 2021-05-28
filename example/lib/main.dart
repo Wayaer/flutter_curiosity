@@ -53,9 +53,7 @@ class _AppState extends State<App> {
   Widget build(BuildContext context) {
     return OverlayScaffold(
       backgroundColor: Colors.white,
-      appBar: const AppBarText(
-        'Flutter Curiosity Plugin Example',
-      ),
+      appBar: AppBarText('Flutter Curiosity Plugin Example'),
       body: Universal(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
@@ -124,19 +122,17 @@ class ElevatedText extends StatelessWidget {
       );
 }
 
-class AppBarText extends StatelessWidget {
-  const AppBarText(this.text, {Key? key}) : super(key: key);
-  final String text;
-
-  @override
-  Widget build(BuildContext context) => AppBar(
-        elevation: 0,
-        iconTheme: const IconThemeData.fallback(),
-        title: BasisText(text,
-            color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-        centerTitle: true,
-        backgroundColor: color,
-      );
+class AppBarText extends AppBar {
+  AppBarText(String text, {Key? key})
+      : super(
+          key: key,
+          elevation: 0,
+          iconTheme: const IconThemeData.fallback(),
+          title: BasisText(text,
+              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+          centerTitle: true,
+          backgroundColor: color,
+        );
 }
 
 const Color color = Colors.amber;
