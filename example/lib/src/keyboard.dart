@@ -1,7 +1,7 @@
 import 'package:curiosity/main.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_waya/flutter_waya.dart';
 
 class KeyboardPage extends StatefulWidget {
   @override

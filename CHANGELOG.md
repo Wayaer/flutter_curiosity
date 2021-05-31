@@ -1,4 +1,6 @@
 ## [2.2.1]
+ * add example
+ * remove permissions in android/AndroidManifest.xml , you need to add them manually
 ## [2.2.0]
  * add onResultListener to support onActivityResult and onRequestPermissionsResult on Android
 ## [2.1.2]
