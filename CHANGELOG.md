@@ -1,3 +1,5 @@
+## [2.2.2]
+ * fix Windows/Linux unable to add dependency
 ## [2.2.1]
  * add example
  * remove permissions in android/AndroidManifest.xml , you need to add them manually

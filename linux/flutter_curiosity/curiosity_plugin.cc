@@ -4,7 +4,7 @@
 #include <gtk/gtk.h>
 #include <sys/utsname.h>
 
-#define DESKTOP_WINDOW_PLUGIN(obj)                                     \
+#define CURIOSITY_PLUGIN(obj)                                     \
   (G_TYPE_CHECK_INSTANCE_CAST((obj), curiosity_plugin_get_type(), \
                               CuriosityPlugin))
 
@@ -16,7 +16,6 @@ struct _CuriosityPlugin
 
 G_DEFINE_TYPE(CuriosityPlugin, curiosity_plugin, g_object_get_type())
 
-// Called when a method call is received from Flutter.
 static void curiosity_plugin_handle_method_call(
     CuriosityPlugin *self,
     FlMethodCall *method_call)
