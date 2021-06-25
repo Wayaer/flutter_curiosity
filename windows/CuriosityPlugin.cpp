@@ -1,4 +1,4 @@
-#include "curiosity_plugin.h"
+#include "CuriosityPlugin.h"
 
 // This must be included before many other Windows headers.
 #include <windows.h>

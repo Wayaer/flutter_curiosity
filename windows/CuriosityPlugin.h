@@ -17,7 +17,7 @@ FLUTTER_PLUGIN_EXPORT void CuriosityPluginRegisterWithRegistrar(
     FlutterDesktopPluginRegistrarRef registrar);
 
 #if defined(__cplusplus)
-}  // extern "C"
+}
 #endif
 
-#endif  // FLUTTER_PLUGIN_DESKTOP_WINDOW_PLUGIN_H_
+#endif
