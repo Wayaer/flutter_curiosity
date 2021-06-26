@@ -1,3 +1,5 @@
+## [2.2.3]
+ * add [setDesktopSizeToIPad11()]、[setDesktopSizeToIPad10P5()]、[setDesktopSizeToIPad9P7()]
 ## [2.2.2]
  * fix Windows/Linux unable to add dependency
 ## [2.2.1]

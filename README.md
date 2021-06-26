@@ -86,3 +86,41 @@
 
 
 ```
+
+## 桌面端窗口尺寸设置（支持 macOS windows linux）
+```dart
+void fun(){ 
+  
+     getDesktopWindowSize();
+
+     setDesktopWindowSize();
+
+     setDesktopMinWindowSize();
+
+     setDesktopMaxWindowSize();
+
+     resetDesktopMaxWindowSize();
+
+     toggleDesktopFullScreen();
+
+     setDesktopFullScreen();
+
+     getDesktopFullScreen();
+
+     /// 设置桌面版 为 手机 或 ipad 尺寸
+     setDesktopSizeTo4P7();
+
+     setDesktopSizeTo5P5();
+
+     setDesktopSizeTo5P8();
+
+     setDesktopSizeTo6P1();
+
+     setDesktopSizeToIPad11();
+
+     setDesktopSizeToIPad10P5();
+
+     setDesktopSizeToIPad9P7();
+
+}
+```

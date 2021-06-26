@@ -47,6 +47,12 @@ class _AppState extends State<App> {
             ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
       });
     }
+    if (!isWeb && isDesktop) {
+      /// 设置桌面版为 指定 尺寸
+      addPostFrameCallback((Duration duration) {
+        setDesktopSizeToIPad9P7(p: 1);
+      });
+    }
   }
 
   @override

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/constant/constant.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
 Future<Size?> getDesktopWindowSize() async {
@@ -53,29 +54,66 @@ Future<bool?> getDesktopFullScreen() async {
 }
 
 /// set desktop size to iphone 4.7
-void setDesktopSizeTo4P7() {
-  setDesktopWindowSize(const Size(375, 667));
-  setDesktopMinWindowSize(const Size(375, 667));
-  setDesktopMaxWindowSize(const Size(375, 667));
+void setDesktopSizeTo4P7({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  final Size size = Size(375 / p, 667 / p);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
 }
 
 /// set desktop size to iphone 5.5
-void setDesktopSizeTo5P5() {
-  setDesktopWindowSize(const Size(414, 736));
-  setDesktopMinWindowSize(const Size(414, 736));
-  setDesktopMaxWindowSize(const Size(414, 736));
+void setDesktopSizeTo5P5({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  final Size size = Size(414 / p, 736 / p);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
 }
 
 /// set desktop size to iphone 5.8
-void setDesktopSizeTo5P8() {
-  setDesktopWindowSize(const Size(375, 812));
-  setDesktopMinWindowSize(const Size(375, 812));
-  setDesktopMaxWindowSize(const Size(375, 812));
+void setDesktopSizeTo5P8({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  final Size size = Size(375 / p, 812 / p);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
 }
 
 /// set desktop size to iphone 6.1
-Future<void> setDesktopSizeTo6P1() async {
-  setDesktopWindowSize(const Size(414, 896));
-  await setDesktopMinWindowSize(const Size(414, 896));
-  await setDesktopMaxWindowSize(const Size(414, 896));
+void setDesktopSizeTo6P1({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  final Size size = Size(414 / p, 896 / p);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
+}
+
+/// set desktop size to ipad 11
+void setDesktopSizeToIPad11({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  final Size size = Size(834 / p, 1194 / p);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
+}
+
+/// set desktop size to ipad 10.5
+void setDesktopSizeToIPad10P5({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  final Size size = Size(834 / p, 1112 / p);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
+}
+
+/// set desktop size to ipad 9.7 or 7.9
+void setDesktopSizeToIPad9P7({double p = 1}) {
+  if (!supportPlatformDesktop) return;
+  assert(p <= 2);
+  final Size size = Size(768 / p, 1024 / p);
+  log(size);
+  setDesktopWindowSize(size);
+  setDesktopMinWindowSize(size);
+  setDesktopMaxWindowSize(size);
 }
