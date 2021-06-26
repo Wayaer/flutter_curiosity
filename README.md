@@ -49,12 +49,11 @@
 
 ### 2.[二维码扫描](./lib/scanner)
 
-### 3.获取手机硬件信息 (app信息,设备信息)
-<img src="example/screen/main.png" width="360px"/> <img src="example/screen/share.png" width="360px"/>
-<img src="example/screen/android_setting.png" width="360px"/> <img src="example/screen/app_device.png" width="360px"/>
-<img src="example/screen/camera_gallry.png" width="360px"/>
+### 3.[获取手机硬件信息 (app信息,设备信息)](./lib/tools/device_info.dart)
 
-### 4.键盘状态监听
+### 4.[Android ios 跳转设置](./lib/tools/setting.dart)
+
+### 5.键盘状态监听
 ```dart
 
     @override
@@ -67,7 +66,7 @@
     }
 
 ```
-### 5.原生回调
+### 6.原生回调
 ```dart
   @override
   void initState() {
@@ -86,6 +85,7 @@
 
 
 ```
+### 7.[设备平台](./lib/platform/platform.dart)
 
 ## 桌面端窗口尺寸设置（支持 macOS windows linux）
 ```dart
