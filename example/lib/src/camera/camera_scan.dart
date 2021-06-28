@@ -27,6 +27,7 @@ class CameraScanPage extends StatefulWidget {
 class _CameraScanPageState extends State<CameraScanPage> {
   CameraController? controller;
   int time = 0;
+  bool hasImageStream = false;
 
   @override
   void initState() {
@@ -44,24 +45,42 @@ class _CameraScanPageState extends State<CameraScanPage> {
         description = element;
     }
     if (description == null) return;
-    controller = CameraController(description, ResolutionPreset.high);
+    controller =
+        CameraController(description, ResolutionPreset.max, enableAudio: false);
     await controller!.initialize();
     setState(() {});
     time = DateTime.now().millisecondsSinceEpoch;
-    controller!.startImageStream((CameraImage image) async {
-      final int now = DateTime.now().millisecondsSinceEpoch;
-      if ((now - time) < 2000) return;
-      if (image.planes.isEmpty) return;
-      if (image.planes[0].bytes.isEmpty) return;
-      if (image.format.group != ImageFormatGroup.yuv420) return;
+    startImageStream();
+  }
 
-      log(image.planes[0].bytes);
-      final ScanResult? data = await scanImageMemory(image.planes[0].bytes);
-      if (data != null) {
-        showToast(data.code);
-        print(data.toJson());
-        controller!.stopImageStream();
+  void startImageStream() {
+    hasImageStream = true;
+    controller!.startImageStream((CameraImage image) {
+      log('返回相机图片流');
+      if (hasImageStream) controller!.stopImageStream();
+      hasImageStream = false;
+      log('controller!.stopImageStream();');
+      if (image.planes.isEmpty) {
+        log('startImageStream == image.planes==null');
+        return;
       }
+      if (image.planes[0].bytes.isEmpty) {
+        log('startImageStream == image.planes[0].bytes.isEmpty');
+        return;
+      }
+      if (image.format.group != ImageFormatGroup.yuv420) {
+        log('startImageStream == image.format.group != ImageFormatGroup.yuv420');
+        return;
+      }
+      log('开始解析图片流');
+      scanImageMemory(image.planes[0].bytes, onEventListen: (ScanResult? data) {
+        if (data != null) {
+          log('解析的二维码数据: ' + data.code);
+        } else {
+          log('重新解析图片流');
+          5.seconds.delayed(startImageStream);
+        }
+      });
     });
   }
 
@@ -69,11 +88,8 @@ class _CameraScanPageState extends State<CameraScanPage> {
   Widget build(BuildContext context) {
     Widget child = Container();
     if (controller != null && controller?.value.previewSize != null) {
-      log(controller!.value.aspectRatio);
-      final Size size = controller!.value.previewSize!;
-      child = AspectRatio(
-          aspectRatio: size.height / size.width,
-          child: CameraPreview(controller!));
+      log('相机  aspectRatio ' + controller!.value.aspectRatio.toString());
+      child = CameraPreview(controller!);
     }
     return OverlayScaffold(
         backgroundColor: Colors.black, body: Center(child: child));
@@ -82,7 +98,6 @@ class _CameraScanPageState extends State<CameraScanPage> {
   @override
   void dispose() {
     super.dispose();
-    controller?.stopImageStream();
     controller?.dispose();
   }
 }

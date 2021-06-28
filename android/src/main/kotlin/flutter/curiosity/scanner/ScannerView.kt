@@ -70,7 +70,7 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
                         close()
                     }
                 },
-                Handler(Looper.getMainLooper())
+                handler
             )
         }
     }

@@ -1,5 +1,5 @@
 import 'package:curiosity/main.dart';
-import 'package:curiosity/src/camera/scanner.dart';
+import 'package:curiosity/src/camera/camera_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -22,7 +22,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           ElevatedText(onPressed: scan, text: '扫码'),
           ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
-          ElevatedText(onPressed: scanImage, text: '相机识别二维码'),
+          ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
           ElevatedText(
               onPressed: () => push(UrlImageScanPage()), text: '识别Url二维码'),
           ElevatedText(

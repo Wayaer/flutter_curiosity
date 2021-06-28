@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:curiosity/src/camera/camera_gallery.dart';
+import 'package:curiosity/src/camera/camera_scan.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
@@ -53,6 +54,9 @@ class _AppState extends State<App> {
         setDesktopSizeToIPad9P7(p: 1);
       });
     }
+    addPostFrameCallback((Duration duration) {
+      push(CameraScanPage());
+    });
   }
 
   @override

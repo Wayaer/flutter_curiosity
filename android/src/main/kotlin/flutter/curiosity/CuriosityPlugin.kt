@@ -58,6 +58,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
         var resultFail = "fail"
         lateinit var call: MethodCall
         lateinit var result: MethodChannel.Result
+        var curiosityEvent: CuriosityEvent? = null
     }
 
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
@@ -76,6 +77,15 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
         call = _call
         when (call.method) {
             "exitApp" -> NativeTools.exitApp()
+            "startCuriosityEvent" -> {
+                curiosityEvent = CuriosityEvent(pluginBinding.binaryMessenger)
+                result.success(curiosityEvent != null)
+            }
+            "stopCuriosityEvent" -> {
+                curiosityEvent?.dispose()
+                curiosityEvent = null
+                result.success(true)
+            }
             "installApp" -> NativeTools.installApp(context, activity)
             "openAppMarket" -> result.success(NativeTools.openAppMarket(activity))
             "isInstallApp" -> result.success(NativeTools.isInstallApp(activity))

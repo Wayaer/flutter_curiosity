@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 
 const String curiosity = 'Curiosity';
-const String _event = '$curiosity/event';
-const String scannerEvent = '$_event/scanner';
+const String curiosityEvent = 'curiosity/event';
+const String scannerEvent = '$curiosity/event/scanner';
 
 const MethodChannel curiosityChannel = MethodChannel(curiosity);
 

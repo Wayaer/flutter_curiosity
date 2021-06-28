@@ -6,10 +6,12 @@ import android.graphics.BitmapFactory
 import android.media.Image
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
 import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.call
+import flutter.curiosity.CuriosityPlugin.Companion.curiosityEvent
 import flutter.curiosity.CuriosityPlugin.Companion.result
 import java.io.File
 import java.net.URL
@@ -32,15 +34,7 @@ object ScannerTools {
         if (file.isFile) {
             executor.execute {
                 try {
-                    val bitmap = BitmapFactory.decodeFile(path)
-                    if (bitmap != null) {
-                        handler.post {
-                            result.success(
-                                decodeBitmap
-                                    (bitmap, activity)
-                            )
-                        }
-                    }
+                    resultSuccess(BitmapFactory.decodeFile(path), activity)
                 } catch (e: NotFoundException) {
                     handler.post { result.success(null) }
                 }
@@ -55,7 +49,6 @@ object ScannerTools {
         executor.execute {
             try {
                 val myUrl = URL(url)
-                val bitmap: Bitmap
                 val connection = myUrl.openConnection() as HttpsURLConnection
                 connection.readTimeout = 6 * 60 * 1000
                 connection.connectTimeout = 6 * 60 * 1000
@@ -63,38 +56,43 @@ object ScannerTools {
                     connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
                 }
                 connection.connect()
-                bitmap = BitmapFactory.decodeStream(connection.inputStream)
-                if (bitmap != null) {
-                    handler.post {
-                        result.success(
-                            decodeBitmap
-                                (bitmap, activity)
-                        )
-                    }
-                }
+                resultSuccess(BitmapFactory.decodeStream(connection.inputStream), activity)
             } catch (e: NotFoundException) {
                 handler.post { result.success(null) }
             }
         }
     }
 
+    private fun resultSuccess(bitmap: Bitmap?, activity: Activity) {
+        handler.post {
+            if (bitmap != null) {
+                val map = decodeBitmap(bitmap, activity)
+                result.success(map)
+            } else {
+                result.success(null)
+            }
+        }
+    }
 
     fun scanImageMemory(activity: Activity) {
-        val byteArray = call.arguments as ByteArray
+        curiosityEvent?.sendMessage("调用了");
+        val byteArray = call.arguments as ByteArray?
+        Log.d("scanImageMemory==", (byteArray == null).toString())
         executor.execute {
             try {
-                val bitmap: Bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                handler.post {
-                    result.success(
-                        decodeBitmap(
-                            bitmap, activity
-                        )
-                    )
+                if (byteArray != null) {
+                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                    if (bitmap != null) {
+                        val map = decodeBitmap(bitmap, activity)
+                        curiosityEvent?.sendMessage(map)
+                    }
+//                    resultSuccess(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size), activity)
                 }
+                curiosityEvent?.sendMessage(null)
             } catch (e: NotFoundException) {
-                handler.post { result.success(null) }
+                curiosityEvent?.sendMessage(null)
+//                handler.post { result.success(null) }
             }
-
         }
 
     }
@@ -126,9 +124,10 @@ object ScannerTools {
         } catch (e: NotFoundException) {
             try {
                 result = multiFormatReader.decodeWithState(BinaryBitmap(HybridBinarizer(source)))
+                bitmap.recycle()
                 return scanDataToMap(result)
             } catch (e: NotFoundException) {
-
+                bitmap.recycle()
             }
         } finally {
             bitmap.recycle()

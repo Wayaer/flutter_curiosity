@@ -6,6 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/styles.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/platform/curiosity_event.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
 /// 基于原始扫描预览
@@ -376,11 +377,23 @@ Future<ScanResult?> scanImageUrl(String url) async {
   return null;
 }
 
-Future<ScanResult?> scanImageMemory(Uint8List uint8list) async {
+Future<ScanResult?> scanImageMemory(Uint8List uint8list,
+    {ValueChanged<ScanResult?>? onEventListen}) async {
   try {
-    final Map<dynamic, dynamic>? data =
-        await curiosityChannel.invokeMethod('scanImageMemory', uint8list);
-    if (data != null) return ScanResult.fromJson(data);
+    final CuriosityEvent event = CuriosityEvent();
+    log('初始化CuriosityEvent');
+    // final Map<dynamic, dynamic>? data =
+    //     await curiosityChannel.invokeMethod('scanImageMemory', uint8list);
+    curiosityChannel.invokeMethod<dynamic>('scanImageMemory', uint8list);
+    log('调用原生图片解析');
+    event.startEventListen((dynamic value) {
+      log('是否有消息回来');
+      if (onEventListen != null)
+        onEventListen(value == null
+            ? null
+            : ScanResult.fromJson(value as Map<dynamic, dynamic>));
+    });
+    // if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);
   }
