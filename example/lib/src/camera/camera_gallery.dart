@@ -24,9 +24,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
           ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
           ElevatedText(
-              onPressed: () => push(UrlImageScanPage()), text: '识别Url二维码'),
-          ElevatedText(
-              onPressed: () => push(FileImageScanPage()), text: '识别本地图片二维码'),
+              onPressed: () => push(FileImageScanPage()), text: '识别图片二维码'),
           const SizedBox(height: 20),
           Container(
               padding: const EdgeInsets.only(top: 100),

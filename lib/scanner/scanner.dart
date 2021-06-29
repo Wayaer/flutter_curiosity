@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
@@ -6,7 +7,6 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/constant/styles.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/platform/curiosity_event.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
 /// 基于原始扫描预览
@@ -249,13 +249,11 @@ class ScannerController extends ChangeNotifier {
   final double heightRatio;
   final CameraResolution resolution;
 
-  StreamSubscription<dynamic>? _streamSubscription;
   ScanResult? scanResult;
   int? textureId;
   double? previewWidth;
   double? previewHeight;
   String? cameraState;
-  EventChannel? _eventChannel;
 
   Future<void> initialize({Cameras? cameras}) async {
     if (cameras == null && camera == null) return;
@@ -275,12 +273,14 @@ class ScannerController extends ChangeNotifier {
       cameraState = reply['cameraState'] as String?;
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
-      _eventChannel = const EventChannel(scannerEvent);
-      _streamSubscription = _eventChannel!
-          .receiveBroadcastStream(<dynamic, dynamic>{}).listen((dynamic data) {
-        scanResult = ScanResult.fromJson(data as Map<dynamic, dynamic>);
-        notifyListeners();
-      });
+      final CuriosityEvent event = CuriosityEvent.instance;
+      final bool eventState = await event.initialize();
+      if (eventState) {
+        event.addListener((dynamic data) {
+          scanResult = ScanResult.fromJson(data as Map<dynamic, dynamic>);
+          notifyListeners();
+        });
+      }
     } on PlatformException catch (e) {
       /// 原生异常抛出
       log('initializeCameras PlatformException');
@@ -308,8 +308,6 @@ class ScannerController extends ChangeNotifier {
   }
 
   void disposeCameras() {
-    _streamSubscription?.cancel();
-    _eventChannel = null;
     if (textureId == null) return;
     curiosityChannel.invokeMethod<dynamic>('disposeCameras', textureId);
   }
@@ -328,6 +326,14 @@ class ScannerController extends ChangeNotifier {
   }
 }
 
+class Cameras {
+  Cameras({required this.name, required this.lensFacing});
+
+  String name;
+  CameraLensFacing lensFacing;
+}
+
+/// 扫码识别数据模型
 class ScanResult {
   ScanResult(this.code, this.type);
 
@@ -347,18 +353,23 @@ class ScanResult {
   }
 }
 
-class Cameras {
-  Cameras({required this.name, required this.lensFacing});
-
-  String name;
-  CameraLensFacing lensFacing;
-}
-
 /// 以下方法可以配合 camera 组件 做二维码或条形码识别
 Future<ScanResult?> scanImagePath(String path) async {
   try {
+    final File file = File(path);
+    if (file.existsSync()) {
+      return await scanImageByte(file.readAsBytesSync());
+    }
+  } on PlatformException catch (e) {
+    log(e);
+  }
+  return null;
+}
+
+Future<ScanResult?> scanImageByte(Uint8List uint8list) async {
+  try {
     final Map<dynamic, dynamic>? data =
-        await curiosityChannel.invokeMethod('scanImagePath', path);
+        await curiosityChannel.invokeMethod('scanImageByte', uint8list);
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);
@@ -366,36 +377,36 @@ Future<ScanResult?> scanImagePath(String path) async {
   return null;
 }
 
-Future<ScanResult?> scanImageUrl(String url) async {
-  try {
-    final Map<dynamic, dynamic>? data =
-        await curiosityChannel.invokeMethod('scanImageUrl', url);
-    if (data != null) return ScanResult.fromJson(data);
-  } on PlatformException catch (e) {
-    log(e);
-  }
-  return null;
-}
+void scanImageYUV({
+  required Uint8List uint8list,
+  required int width,
+  required int height,
 
-Future<ScanResult?> scanImageMemory(Uint8List uint8list,
-    {ValueChanged<ScanResult?>? onEventListen}) async {
+  /// 识别区域设置
+  /// [topRatio]  topRatio*height 为识别区域的top到图片最垂直向 0 的位置
+  double topRatio = 0.3,
+
+  /// [leftRatio]  leftRatio*width 为识别区域的left到图片最纵向 0 的位置
+  double leftRatio = 0.1,
+
+  /// [widthRatio]  widthRatio*width 为识别区域的宽
+  double widthRatio = 0.8,
+
+  /// [heightRatio]  heightRatio*height 为识别区域的高
+  double heightRatio = 0.4,
+}) {
   try {
-    final CuriosityEvent event = CuriosityEvent();
-    log('初始化CuriosityEvent');
-    // final Map<dynamic, dynamic>? data =
-    //     await curiosityChannel.invokeMethod('scanImageMemory', uint8list);
-    curiosityChannel.invokeMethod<dynamic>('scanImageMemory', uint8list);
-    log('调用原生图片解析');
-    event.startEventListen((dynamic value) {
-      log('是否有消息回来');
-      if (onEventListen != null)
-        onEventListen(value == null
-            ? null
-            : ScanResult.fromJson(value as Map<dynamic, dynamic>));
-    });
-    // if (data != null) return ScanResult.fromJson(data);
+    final Map<String, dynamic> map = <String, dynamic>{
+      'byte': uint8list,
+      'width': width,
+      'height': height,
+      'topRatio': topRatio,
+      'leftRatio': leftRatio,
+      'widthRatio': widthRatio,
+      'heightRatio': heightRatio,
+    };
+    curiosityChannel.invokeMethod<dynamic>('scanImageYUV', map);
   } on PlatformException catch (e) {
     log(e);
   }
-  return null;
 }

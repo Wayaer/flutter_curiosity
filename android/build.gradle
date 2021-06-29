@@ -10,7 +10,7 @@ buildscript {
 
     dependencies {
         classpath "com.android.tools.build:gradle:4.2.0"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.5.20"
     }
 }
 
@@ -45,7 +45,7 @@ android {
     }
 }
 dependencies {
-    implementation "androidx.camera:camera-camera2:1.1.0-alpha04"
+    implementation "androidx.camera:camera-camera2:1.1.0-alpha05"
     implementation "com.google.zxing:core:3.4.0"
 }
 repositories {

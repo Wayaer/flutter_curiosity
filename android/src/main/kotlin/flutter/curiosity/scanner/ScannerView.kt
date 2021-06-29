@@ -10,17 +10,15 @@ import android.os.Looper
 import android.util.Size
 import android.view.Surface
 import flutter.curiosity.CuriosityPlugin.Companion.call
+import flutter.curiosity.CuriosityPlugin.Companion.curiosityEvent
 import flutter.curiosity.CuriosityPlugin.Companion.result
 import flutter.curiosity.tools.NativeTools
-import flutter.curiosity.tools.Tools
-import io.flutter.plugin.common.EventChannel
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.concurrent.Executor
 import java.util.concurrent.Executors
 
 
-class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, context: Context) :
-    EventChannel.StreamHandler {
+class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, context: Context) {
 
     private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private lateinit var previewSize: Size
@@ -37,10 +35,8 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
     private val leftRatio: Double = call.argument<Double>("leftRatio")!!
     private val widthRatio: Double = call.argument<Double>("widthRatio")!!
     private val heightRatio: Double = call.argument<Double>("heightRatio")!!
-    private lateinit var eventSink: EventChannel.EventSink
 
     init {
-        //获取预览大小
         val preset = call.argument<String>("resolutionPreset")
         if (preset != null) previewSize = CameraTools.computeBestPreviewSize(cameraId, preset)
     }
@@ -100,7 +96,7 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
         captureRequestBuilder?.set(
             CaptureRequest.CONTROL_AF_MODE,
             CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE
-        ) // 自动对焦
+        )
         imageStreamReader?.setOnImageAvailableListener({ imageReader ->
             singleThreadExecutor.execute {
                 val image = imageReader.acquireLatestImage()
@@ -110,21 +106,17 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
                         val buffer = image.planes[0].buffer
                         val byteArray = ByteArray(buffer.remaining())
                         buffer[byteArray, 0, byteArray.size]
-                        try {
-                            val result = ScannerTools.decodeImage(
-                                byteArray,
-                                image,
-                                true,
-                                topRatio,
-                                leftRatio,
-                                widthRatio,
-                                heightRatio
-                            )
-                            if (result != null) handler.post {
-                                eventSink.success(ScannerTools.scanDataToMap(result))
-                            }
-                        } catch (e: Exception) {
-                        }
+                        val result = ScannerTools.decodeImage(
+                            byteArray,
+                            image.height,
+                            image.width,
+                            true,
+                            topRatio,
+                            leftRatio,
+                            widthRatio,
+                            heightRatio
+                        )
+                        if (result != null) curiosityEvent?.sendEvent(ScannerTools.scanDataToMap(result))
                         buffer.clear()
                         lastCurrentTime = currentTime
                     }
@@ -159,15 +151,12 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
 
 
     fun enableTorch(status: Boolean) {
-//        if (captureRequestBuilder == null || cameraCaptureSession == null) return
-        Tools.logInfo("setFlashModesetFlashModesetFlashModesetFlashMode11111")
         if (status) {
             captureRequestBuilder?.set(
                 CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH
             )
             cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, null)
         } else {
-            Tools.logInfo("setFlashModesetFlashModesetFlashModesetFlashMode1122111")
             captureRequestBuilder?.set(
                 CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_OFF
             )
@@ -191,25 +180,7 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
     fun dispose() {
         close()
         texture.release()
-        eventSink.endOfStream()
-    }
-
-    override fun onListen(arguments: Any, events: EventChannel.EventSink) {
-        eventSink = events
-    }
-
-    override fun onCancel(arguments: Any?) {
-        eventSink.endOfStream()
     }
 
 
 }
-
-
-
-
-
-
-
-
-

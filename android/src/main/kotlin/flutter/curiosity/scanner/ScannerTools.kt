@@ -1,140 +1,152 @@
 package flutter.curiosity.scanner
 
 import android.app.Activity
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.Image
-import android.os.Handler
-import android.os.Looper
-import android.util.Log
 import com.google.zxing.*
 import com.google.zxing.common.GlobalHistogramBinarizer
-import com.google.zxing.common.HybridBinarizer
 import flutter.curiosity.CuriosityPlugin.Companion.call
 import flutter.curiosity.CuriosityPlugin.Companion.curiosityEvent
 import flutter.curiosity.CuriosityPlugin.Companion.result
-import java.io.File
-import java.net.URL
 import java.util.*
-import java.util.concurrent.Executor
-import java.util.concurrent.Executors
-import javax.net.ssl.HttpsURLConnection
-import javax.net.ssl.SSLSocketFactory
 import kotlin.collections.ArrayList
 
 
 object ScannerTools {
-    private val executor: Executor = Executors.newSingleThreadExecutor()
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
-    private val handler = Handler(Looper.getMainLooper())
 
-    fun scanImagePath(activity: Activity) {
-        val path = call.arguments as String
-        val file = File(path)
-        if (file.isFile) {
-            executor.execute {
-                try {
-                    resultSuccess(BitmapFactory.decodeFile(path), activity)
-                } catch (e: NotFoundException) {
-                    handler.post { result.success(null) }
-                }
+    fun scanImageByte(activity: Activity) {
+        val byteArray = call.arguments as ByteArray
+        try {
+            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            if (bitmap == null) {
+                result.success(null)
+                return
             }
-        } else {
+            val height = bitmap.height
+            val width = bitmap.width
+            val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
+            hints[DecodeHintType.TRY_HARDER] = java.lang.Boolean.TRUE
+            val array = ImageHelper(activity).getYUV420(
+                width, height,
+                bitmap
+            )
+            val resultData = decodeImage(array, height, width, true, 0.0, 0.0, 1.0, 1.0)
+            if (resultData != null) {
+                bitmap.recycle()
+                result.success(scanDataToMap(resultData))
+            } else {
+                bitmap.recycle()
+                result.success(null)
+            }
+        } catch (e: NotFoundException) {
             result.success(null)
         }
     }
 
-    fun scanImageUrl(activity: Activity) {
-        val url = call.arguments as String
-        executor.execute {
-            try {
-                val myUrl = URL(url)
-                val connection = myUrl.openConnection() as HttpsURLConnection
-                connection.readTimeout = 6 * 60 * 1000
-                connection.connectTimeout = 6 * 60 * 1000
-                if (url.startsWith("https")) {
-                    connection.sslSocketFactory = SSLSocketFactory.getDefault() as SSLSocketFactory
-                }
-                connection.connect()
-                resultSuccess(BitmapFactory.decodeStream(connection.inputStream), activity)
-            } catch (e: NotFoundException) {
-                handler.post { result.success(null) }
-            }
+
+    fun scanImageYUV() {
+        val byteArray = call.argument<ByteArray>("byte")!!
+        val width = call.argument<Int>("width")!!
+        val height = call.argument<Int>("height")!!
+        val topRatio = call.argument<Double>("topRatio")!!
+        val leftRatio = call.argument<Double>("leftRatio")!!
+        val widthRatio = call.argument<Double>("widthRatio")!!
+        val heightRatio = call.argument<Double>("heightRatio")!!
+        val resultData = decodeImage(
+            byteArray,
+            height,
+            width,
+            true,
+            topRatio,
+            leftRatio,
+            widthRatio,
+            heightRatio
+        )
+        if (resultData != null) {
+            curiosityEvent?.sendEvent(scanDataToMap(resultData))
+            return
         }
+        curiosityEvent?.sendEvent(null)
     }
 
-    private fun resultSuccess(bitmap: Bitmap?, activity: Activity) {
-        handler.post {
-            if (bitmap != null) {
-                val map = decodeBitmap(bitmap, activity)
-                result.success(map)
-            } else {
-                result.success(null)
-            }
+
+    fun scanDataToMap(result: Result?): Map<String, Any> {
+        val data: MutableMap<String, Any> = HashMap()
+        if (result == null) {
+            data["code"] = ""
+            data["type"] = ""
+        } else {
+            data["code"] = result.text
+            data["type"] = result.barcodeFormat.name
         }
+        return data
     }
 
-    fun scanImageMemory(activity: Activity) {
-        curiosityEvent?.sendMessage("调用了");
-        val byteArray = call.arguments as ByteArray?
-        Log.d("scanImageMemory==", (byteArray == null).toString())
-        executor.execute {
-            try {
-                if (byteArray != null) {
-                    val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-                    if (bitmap != null) {
-                        val map = decodeBitmap(bitmap, activity)
-                        curiosityEvent?.sendMessage(map)
-                    }
-//                    resultSuccess(BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size), activity)
-                }
-                curiosityEvent?.sendMessage(null)
-            } catch (e: NotFoundException) {
-                curiosityEvent?.sendMessage(null)
-//                handler.post { result.success(null) }
-            }
-        }
-
-    }
-
-    private fun decodeBitmap(bitmap: Bitmap, activity: Activity): Map<String, Any>? {
+    // 识别 Image 中的二维码
+    fun decodeImage(
+        byteArray: ByteArray,
+        imageHeight: Int,
+        imageWidth: Int,
+        verticalScreen: Boolean,
+        topRatio: Double,
+        leftRatio: Double,
+        widthRatio: Double,
+        heightRatio: Double
+    ): Result? {
+        val width: Int
+        val height: Int
+        val left: Int
+        val top: Int
+        val identifyWidth: Int
+        val identifyHeight: Int
+        val array: ByteArray
         multiFormatReader.setHints(hints)
-        val height = bitmap.height
-        val width = bitmap.width
-        val hints: MutableMap<DecodeHintType, Any> = EnumMap(DecodeHintType::class.java)
-        hints[DecodeHintType.TRY_HARDER] = java.lang.Boolean.TRUE
-        val array: ByteArray = ImageHelper(activity).getYUV420(
-            width, height,
-            bitmap
-        )
-        val source = PlanarYUVLuminanceSource(
-            array,
-            width,
-            height,
-            0,
-            0,
-            width,
-            height,
-            false
-        )
-        var result: Result?
-        try {
-            result = multiFormatReader.decodeWithState(BinaryBitmap(GlobalHistogramBinarizer(source)))
-            return scanDataToMap(result)
-        } catch (e: NotFoundException) {
-            try {
-                result = multiFormatReader.decodeWithState(BinaryBitmap(HybridBinarizer(source)))
-                bitmap.recycle()
-                return scanDataToMap(result)
-            } catch (e: NotFoundException) {
-                bitmap.recycle()
-            }
-        } finally {
-            bitmap.recycle()
+        if (verticalScreen) {
+            array = rotateByteArray(byteArray, imageWidth, imageHeight)
+            width = imageHeight
+            height = imageWidth
+            top = (height * topRatio).toInt()
+            left = (width * leftRatio).toInt()
+            identifyWidth = (width * widthRatio).toInt()
+            identifyHeight = (height * heightRatio).toInt()
+
+        } else {
+            width = imageWidth
+            height = imageHeight
+            top = (width * leftRatio).toInt()
+            left = (height * topRatio).toInt()
+            identifyWidth = (width * heightRatio).toInt()
+            identifyHeight = (height * widthRatio).toInt()
+            array = byteArray
         }
-        return null
+
+        val source = PlanarYUVLuminanceSource(
+            array, width, height, left,
+            top,
+            identifyWidth, identifyHeight, false
+        )
+        val binaryBitmap = BinaryBitmap(GlobalHistogramBinarizer(source))
+        var result: Result? = null
+        try {
+            result = multiFormatReader.decodeWithState(binaryBitmap)
+        } catch (e: NotFoundException) {
+            if (verticalScreen) result =
+                decodeImage(byteArray, imageHeight, imageWidth, false, topRatio, leftRatio, widthRatio, heightRatio)
+        }
+        return result
     }
 
+    // 旋转图片
+    private fun rotateByteArray(byteArray: ByteArray, width: Int, height: Int): ByteArray {
+        val rotatedData = ByteArray(byteArray.size)
+        for (y in 0 until height) {
+            for (x in 0 until width) {
+                rotatedData[x * height + height - y - 1] =
+                    byteArray[x + y * width]
+            }
+        }
+        return rotatedData
+    }
 
     // 这里设置可扫描的类型
     private val hints: Map<DecodeHintType, Any>
@@ -164,81 +176,4 @@ object ScannerTools {
             hints[DecodeHintType.TRY_HARDER] = true
             return hints
         }
-
-    fun scanDataToMap(result: Result?): Map<String, Any> {
-        val data: MutableMap<String, Any> = HashMap()
-        if (result == null) {
-            data["code"] = ""
-            data["type"] = ""
-        } else {
-            data["code"] = result.text
-            data["type"] = result.barcodeFormat.name
-        }
-        return data
-    }
-
-
-    fun decodeImage(
-        byteArray: ByteArray,
-        image: Image,
-        verticalScreen: Boolean,
-        topRatio: Double,
-        leftRatio: Double,
-        widthRatio: Double,
-        heightRatio: Double
-    ): Result? {
-        val width: Int
-        val height: Int
-        val left: Int
-        val top: Int
-        val identifyWidth: Int
-        val identifyHeight: Int
-        val array: ByteArray
-        if (verticalScreen) {
-            array = rotateByteArray(byteArray, image)
-            width = image.height
-            height = image.width
-            identifyWidth = (width * widthRatio).toInt()
-            identifyHeight = (height * heightRatio).toInt()
-            left = (width * leftRatio).toInt()
-            top = (height * topRatio).toInt()
-        } else {
-            width = image.width
-            height = image.height
-            top = (width * leftRatio).toInt()
-            left = (height * topRatio).toInt()
-            identifyWidth = (width * heightRatio).toInt()
-            identifyHeight = (height * widthRatio).toInt()
-            array = byteArray
-        }
-
-        val source = PlanarYUVLuminanceSource(
-            array, width, height, left,
-            top,
-            identifyWidth, identifyHeight, false
-        )
-        val binaryBitmap = BinaryBitmap(GlobalHistogramBinarizer(source))
-        var result: Result? = null
-        try {
-            result = multiFormatReader.decode(binaryBitmap, hints)
-        } catch (e: NotFoundException) {
-            if (verticalScreen) result =
-                decodeImage(byteArray, image, false, topRatio, leftRatio, widthRatio, heightRatio)
-        }
-        return result
-    }
-
-    private fun rotateByteArray(byteArray: ByteArray, image: Image): ByteArray {
-        val width = image.width
-        val height = image.height
-        val rotatedData = ByteArray(byteArray.size)
-        for (y in 0 until height) { // we scan the array by rows
-            for (x in 0 until width) {
-                rotatedData[x * height + height - y - 1] =
-                    byteArray[x + y * width] //
-            }
-        }
-        return rotatedData
-    }
-
 }

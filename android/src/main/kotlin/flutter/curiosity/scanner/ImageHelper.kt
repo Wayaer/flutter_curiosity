@@ -7,7 +7,7 @@ import java.util.*
 import kotlin.math.max
 import kotlin.math.min
 
-class ImageHelper(base: Context) : ContextWrapper(base) {
+class ImageHelper(context: Context) : ContextWrapper(context) {
 
 
     /**
@@ -15,13 +15,13 @@ class ImageHelper(base: Context) : ContextWrapper(base) {
      *
      * @param inputWidth  image width
      * @param inputHeight image height
-     * @param scaled      bmp
+     * @param bitmap      bmp
      * @return YUV420SP数组
      */
-    fun getYUV420(inputWidth: Int, inputHeight: Int, scaled: Bitmap): ByteArray {
+    fun getYUV420(inputWidth: Int, inputHeight: Int, bitmap: Bitmap): ByteArray {
         var yuvs = ByteArray(0)
         val argb = IntArray(inputWidth * inputHeight)
-        scaled.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight)
+        bitmap.getPixels(argb, 0, inputWidth, 0, 0, inputWidth, inputHeight)
         /**
          * 需要转换成偶数的像素点，否则编码YUV420的时候有可能导致分配的空间大小不够而溢出。
          */
@@ -34,7 +34,7 @@ class ImageHelper(base: Context) : ContextWrapper(base) {
             Arrays.fill(yuvs, 0.toByte())
         }
         encodeYUV420(yuvs, argb, inputWidth, inputHeight)
-        scaled.recycle()
+        bitmap.recycle()
         return yuvs
     }
 

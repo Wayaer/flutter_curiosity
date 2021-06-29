@@ -20,7 +20,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
-import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry.ActivityResultListener
@@ -37,13 +36,13 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
     private var curiosityChannel: MethodChannel? = null
     private lateinit var context: Context
     private lateinit var activity: Activity
-    private var scannerEvent: EventChannel? = null
     private var mainView: View? = null
     private var keyboardStatus = false
-    private val curiosity = "Curiosity"
     private lateinit var pluginBinding: FlutterPluginBinding
+
     private var onActivityResultState = false
     private var onRequestPermissionsResultState = false
+
     private var scannerView: ScannerView? = null
 
     companion object {
@@ -64,7 +63,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
     override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
         context = plugin.applicationContext
         pluginBinding = plugin
-        curiosityChannel = MethodChannel(plugin.binaryMessenger, curiosity)
+        curiosityChannel = MethodChannel(plugin.binaryMessenger, "Curiosity")
         curiosityChannel?.setMethodCallHandler(this)
     }
 
@@ -72,16 +71,23 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
         _call: MethodCall,
         _result: MethodChannel.Result
     ) {
-        val scannerEventName = "$curiosity/event/scanner"
         result = _result
         call = _call
         when (call.method) {
             "exitApp" -> NativeTools.exitApp()
             "startCuriosityEvent" -> {
+                if (curiosityEvent != null) {
+                    result.success(true)
+                    return
+                }
                 curiosityEvent = CuriosityEvent(pluginBinding.binaryMessenger)
                 result.success(curiosityEvent != null)
             }
             "stopCuriosityEvent" -> {
+                if (curiosityEvent == null) {
+                    result.success(true)
+                    return
+                }
                 curiosityEvent?.dispose()
                 curiosityEvent = null
                 result.success(true)
@@ -107,9 +113,8 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             "saveFileToGallery" -> GalleryTools.saveFileToGallery(context)
             "saveImageToGallery" -> GalleryTools.saveImageToGallery(context)
             ///扫码相机相关
-            "scanImagePath" -> ScannerTools.scanImagePath(activity)
-            "scanImageUrl" -> ScannerTools.scanImageUrl(activity)
-            "scanImageMemory" -> ScannerTools.scanImageMemory(activity)
+            "scanImageByte" -> ScannerTools.scanImageByte(activity)
+            "scanImageYUV" -> ScannerTools.scanImageYUV()
             "availableCameras" ->
                 result.success(
                     CameraTools.getAvailableCameras(
@@ -117,17 +122,11 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
                     )
                 )
             "initializeCameras" -> {
-                scannerEvent =
-                    EventChannel(
-                        pluginBinding.binaryMessenger,
-                        scannerEventName
-                    )
                 scannerView = ScannerView(
                     pluginBinding.textureRegistry.createSurfaceTexture(),
                     activity,
                     context
                 )
-                scannerEvent?.setStreamHandler(scannerView)
                 scannerView?.initCameraView()
             }
             "setFlashMode" -> {
@@ -137,8 +136,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             }
             "disposeCameras" -> {
                 scannerView?.dispose()
-                scannerEvent?.setStreamHandler(null)
-                scannerEvent = null
+
                 result.success("dispose")
             }
             "onActivityResult" -> {
@@ -185,11 +183,11 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
 
     private fun dispose() {
         curiosityChannel?.setMethodCallHandler(null)
-        scannerEvent?.setStreamHandler(null)
+        curiosityChannel = null
         activity.window.decorView.viewTreeObserver
             .removeOnGlobalLayoutListener(this)
-        scannerEvent = null
-        curiosityChannel = null
+        curiosityEvent?.dispose()
+        curiosityEvent = null
     }
 
     override fun onGlobalLayout() {

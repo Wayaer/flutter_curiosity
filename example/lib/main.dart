@@ -39,7 +39,6 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     if (isMobile) {
-      log('添加 原生回调监听');
       onResultListener(activityResult: (AndroidActivityResult result) {
         log('AndroidResult requestCode = ${result.requestCode}  '
             'resultCode = ${result.resultCode}  data = ${result.data}');
