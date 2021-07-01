@@ -3,30 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
-/// 系统分享
-Future<String?> openSystemShare(
-    {String title = 'Share',
-    String? content,
-    List<String>? imagesPath,
-    required ShareType shareType}) async {
-  if (!supportPlatformMobile) return 'not support Platform';
-  if (shareType == ShareType.images) {
-    if (imagesPath == null || imagesPath.isEmpty)
-      return 'The shareType cannot be empty';
-  }
-  if (content == null && imagesPath == null)
-    return 'A share parameter must be passed content or imagesPath';
-  if (content != null && imagesPath != null)
-    return 'Only one parameter can be passed';
-  return await curiosityChannel
-      .invokeMethod('openSystemShare', <String, dynamic>{
-    'title': title,
-    'content': content,
-    'type': shareType.toString().split('.')[1],
-    'imagesPath': imagesPath
-  });
-}
-
 /// 打开系统相册
 /// 返回文件路径
 /// ios info.plist add

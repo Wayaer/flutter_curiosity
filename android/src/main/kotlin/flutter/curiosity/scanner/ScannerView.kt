@@ -25,8 +25,8 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
     private var _context = context
     private var cameraDevice: CameraDevice? = null
     private var cameraCaptureSession: CameraCaptureSession? = null
-    private var imageStreamReader: ImageReader? = null
     private var captureRequestBuilder: CaptureRequest.Builder? = null
+    private var imageStreamReader: ImageReader? = null
     private var lastCurrentTime = 0L
     private val handler = Handler(Looper.getMainLooper())
     private val singleThreadExecutor: Executor = Executors.newSingleThreadExecutor()
@@ -150,7 +150,7 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
     }
 
 
-    fun enableTorch(status: Boolean) {
+    fun setFlashMode(status: Boolean) {
         if (status) {
             captureRequestBuilder?.set(
                 CaptureRequest.FLASH_MODE, CameraMetadata.FLASH_MODE_TORCH
@@ -162,6 +162,7 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
             )
             cameraCaptureSession?.setRepeatingRequest(captureRequestBuilder!!.build(), null, null)
         }
+
     }
 
     private fun closeCaptureSession() {

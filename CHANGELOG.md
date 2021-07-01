@@ -2,6 +2,7 @@
  * remove [scanImageUrl()]、[scanImageMemory()]、
  * add [scanImageByte()]、[scanImageYUV()]
  * add native message channel support Android and IOS .[CuriosityEvent]
+ * remove [openSystemShare()]
 ## [2.2.3]
  * add [setDesktopSizeToIPad11()]、[setDesktopSizeToIPad10P5()]、[setDesktopSizeToIPad9P7()]
 ## [2.2.2]

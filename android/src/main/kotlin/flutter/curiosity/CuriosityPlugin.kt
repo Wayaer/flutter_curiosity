@@ -99,10 +99,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             "getDeviceInfo" -> result.success(NativeTools.getDeviceInfo(context))
             "getInstalledApp" -> result.success(NativeTools.getInstalledApp(context))
             "getGPSStatus" -> result.success(NativeTools.getGPSStatus(context))
-            "openSystemShare" -> {
-                val data = NativeTools.openSystemShare(activity)
-                if (data != null) result.success(data)
-            }
             "openSystemSetting" -> NativeTools.openSystemSetting(activity)
             ///相机拍照图库选择
             "openSystemGallery" -> GalleryTools.openSystemGallery(activity)
@@ -131,13 +127,12 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             }
             "setFlashMode" -> {
                 val status = call.arguments as Boolean
-                scannerView?.enableTorch(status)
-                result.success("setFlashMode")
+                scannerView?.setFlashMode(status)
+                result.success(true)
             }
             "disposeCameras" -> {
                 scannerView?.dispose()
-
-                result.success("dispose")
+                result.success(true)
             }
             "onActivityResult" -> {
                 onActivityResultState = true

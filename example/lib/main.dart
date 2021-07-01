@@ -1,12 +1,10 @@
 import 'dart:ui';
 
 import 'package:curiosity/src/camera/camera_gallery.dart';
-import 'package:curiosity/src/camera/camera_scan.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/open_app.dart';
-import 'package:curiosity/src/share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -53,9 +51,6 @@ class _AppState extends State<App> {
         setDesktopSizeToIPad9P7(p: 1);
       });
     }
-    addPostFrameCallback((Duration duration) {
-      push(CameraScanPage());
-    });
   }
 
   @override
@@ -66,8 +61,6 @@ class _AppState extends State<App> {
       body: Universal(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (isMobile)
-              ElevatedText(onPressed: () => push(SharePage()), text: '分享'),
             if (isMobile)
               ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
             ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
