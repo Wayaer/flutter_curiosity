@@ -5,19 +5,19 @@ import Foundation
 
 class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDelegate, AVCaptureVideoDataOutputSampleBufferDelegate {
     // 链接相机用的
-    var _captureSession: AVCaptureSession
+    var _captureSession: AVCaptureSession?
     // 获取相机设备
-    var _captureDevice: AVCaptureDevice
+    var _captureDevice: AVCaptureDevice?
     // 视频输入
-    var _captureVideoInput: AVCaptureInput
+    var _captureVideoInput: AVCaptureInput?
     // 视频输出
-    var _captureOutput: AVCaptureMetadataOutput
+    var _captureOutput: AVCaptureMetadataOutput?
     // 视频输出2
-    var _captureVideoOutput: AVCaptureVideoDataOutput
+    var _captureVideoOutput: AVCaptureVideoDataOutput?
    
     var _latestPixelBuffer: CVPixelBuffer?
     
-    var _previewSize: CGSize
+    var _previewSize: CGSize?
     
     var _curiosityEvent: CuriosityEvent
     
@@ -25,14 +25,13 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     
     var _result: FlutterResult
     
-    var viewId: Int64
+    var viewId: Int64?
     
     init(call: FlutterMethodCall, result: @escaping FlutterResult, event: CuriosityEvent, registrar: FlutterPluginRegistrar) {
-        super.init()
         _registrar = registrar
         _curiosityEvent = event
         _result = result
-        
+        super.init()
         let arguments = call.arguments as? [AnyHashable: Any?]
         let cameraId = arguments?["cameraId"] as? String?
         let resolutionPreset = arguments?["resolutionPreset"] as? String?
@@ -44,34 +43,35 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         _captureDevice = AVCaptureDevice(uniqueID: cameraId!!)!
         let queue = DispatchQueue(label: "curiosity.captureQueue")
         do {
-            _captureVideoInput = try AVCaptureDeviceInput(device: _captureDevice)
+            _captureVideoInput = try AVCaptureDeviceInput(device: _captureDevice!)
         } catch {
             result(nil)
             return
         }
         _captureVideoOutput = AVCaptureVideoDataOutput()
-        _captureVideoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
-        _captureVideoOutput.alwaysDiscardsLateVideoFrames = true
-        _captureVideoOutput.setSampleBufferDelegate(self, queue: queue)
+        _captureOutput = AVCaptureMetadataOutput()
+     
+        _captureVideoOutput!.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
+        _captureVideoOutput!.alwaysDiscardsLateVideoFrames = true
+        _captureVideoOutput!.setSampleBufferDelegate(self, queue: queue)
 //
-        let connection = AVCaptureConnection(inputPorts: _captureVideoInput.ports, output: _captureVideoOutput)
+        let connection = AVCaptureConnection(inputPorts: _captureVideoInput!.ports, output: _captureVideoOutput!)
         
-        if _captureDevice.position == AVCaptureDevice.Position.front {
+        if _captureDevice!.position == AVCaptureDevice.Position.front {
             connection.isVideoMirrored = true
         }
-        _captureSession.addInput(_captureVideoInput)
-        _captureSession.addOutput(_captureVideoOutput)
-        _captureOutput = AVCaptureMetadataOutput()
-        
-        _captureOutput.setMetadataObjectsDelegate(self, queue: queue)
-        _captureSession.addOutput(_captureOutput)
-        _captureOutput.metadataObjectTypes = _captureOutput.availableMetadataObjectTypes
+        _captureSession!.addInput(_captureVideoInput!)
+        _captureSession!.addOutput(_captureVideoOutput!)
+     
+        _captureOutput!.setMetadataObjectsDelegate(self, queue: queue)
+        _captureSession!.addOutput(_captureOutput!)
+        _captureOutput!.metadataObjectTypes = _captureOutput!.availableMetadataObjectTypes
         // 扫码区域的大小
 //        var layer = AVCaptureVideoPreviewLayer(layer: _captureSession)
 //        layer.frame = CGRectMake(left, top, size, size)
 //        _captureOutput.rectOfInterest
-        _captureOutput.setMetadataObjectsDelegate(self, queue: queue)
-        _captureOutput.metadataObjectTypes = [
+        _captureOutput!.setMetadataObjectsDelegate(self, queue: queue)
+        _captureOutput!.metadataObjectTypes = [
             AVMetadataObject.ObjectType.aztec,
             AVMetadataObject.ObjectType.code39,
             AVMetadataObject.ObjectType.code93,
@@ -84,7 +84,8 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
             AVMetadataObject.ObjectType.upce,
             AVMetadataObject.ObjectType.code39Mod43,
         ]
-        _captureSession.addConnection(connection)
+       
+        _captureSession!.addConnection(connection)
         setCaptureSessionPreset(resolutionPreset!!)
         viewId = registrar.textures().register(self)
     }
@@ -92,7 +93,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         if metadataObjects.count > 0 {
             let metaObject = metadataObjects[0]
-            _curiosityEvent.sendEvent(arguments: ScannerTools.scanDataToMap(data: metaObject as! AVMetadataMachineReadableCodeObject))
+            _curiosityEvent.sendEvent(arguments: ScannerTools.scanDataToMap(data: metaObject as? AVMetadataMachineReadableCodeObject))
         }
     }
  
@@ -113,88 +114,93 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
 //                CFRelease(old)
 //            }
         
-            _registrar.textures().textureFrameAvailable(viewId)
+            _registrar.textures().textureFrameAvailable(viewId!)
             _result([
                 "cameraState": "onOpened",
-                "textureId": viewId,
-                "previewWidth": _previewSize.width,
-                "previewHeight": _previewSize.height,
+                "textureId": viewId!,
+                "previewWidth": _previewSize!.width,
+                "previewHeight": _previewSize!.height,
             ])
-            _captureSession.startRunning()
+            _captureSession!.startRunning()
         }
     }
 
     // 打开/关闭 闪光灯
     func setFlashMode(status: Bool) {
-        try? _captureDevice.lockForConfiguration()
+        try? _captureDevice!.lockForConfiguration()
         var isSuccess = true
-        if _captureDevice.hasFlash {
+        if _captureDevice!.hasFlash {
             if status {
-                _captureDevice.flashMode = AVCaptureDevice.FlashMode.on
-                _captureDevice.torchMode = AVCaptureDevice.TorchMode.on
+                _captureDevice!.flashMode = AVCaptureDevice.FlashMode.on
+                _captureDevice!.torchMode = AVCaptureDevice.TorchMode.on
             } else {
-                _captureDevice.flashMode = AVCaptureDevice.FlashMode.off
-                _captureDevice.torchMode = AVCaptureDevice.TorchMode.off
+                _captureDevice!.flashMode = AVCaptureDevice.FlashMode.off
+                _captureDevice!.torchMode = AVCaptureDevice.TorchMode.off
             }
         } else {
             isSuccess = false
         }
-        _captureDevice.unlockForConfiguration()
+        _captureDevice!.unlockForConfiguration()
         _result(isSuccess)
     }
     
     func copyPixelBuffer() -> Unmanaged<CVPixelBuffer>? {
-        var pixelBuffer = _latestPixelBuffer!
+//        var pixelBuffer = _latestPixelBuffer!
+//
 //        while !OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, &_latestPixelBuffer) {
 //            pixelBuffer = _latestPixelBuffer!
 //        }
-        return nil
+//        return _latestPixelBuffer
+        nil
     }
     
     func close() {
-        _captureSession.stopRunning()
-        for intput in _captureSession.inputs {
-            _captureSession.removeInput(intput)
+        _captureSession!.stopRunning()
+        for intput in _captureSession!.inputs {
+            _captureSession!.removeInput(intput)
         }
-        for output in _captureSession.outputs {
-            _captureSession.removeOutput(output)
+        for output in _captureSession!.outputs {
+            _captureSession!.removeOutput(output)
         }
-        _registrar.textures().unregisterTexture(viewId)
+        _registrar.textures().unregisterTexture(viewId!)
         _result(true)
     }
     
     private func setCaptureSessionPreset(_ resolutionPreset: String) {
         switch resolutionPreset {
         case "max":
-            if _captureSession.canSetSessionPreset(AVCaptureSession.Preset.high) {
-                _captureSession.sessionPreset = AVCaptureSession.Preset.high
-               
-                _previewSize = CGSize(width: _captureDevice!.activeFormat.highResolutionStillImageDimensions.width!, height: _captureDevice!.activeFormat.highResolutionStillImageDimensions.height!)
+            if _captureSession!.canSetSessionPreset(AVCaptureSession.Preset.high) {
+                _captureSession!.sessionPreset = AVCaptureSession.Preset.high
+                let width = _captureDevice!.activeFormat.highResolutionStillImageDimensions.width
+                let height = _captureDevice!.activeFormat.highResolutionStillImageDimensions.height
+                let widthFloat = CGFloat(Float(bitPattern: UInt32(width)))
+                let heightFloat = CGFloat(Float(bitPattern: UInt32(height)))
+                _previewSize = CGSize(width: widthFloat, height: heightFloat)
             }
             
         case "ultraHigh":
-            if _captureSession.canSetSessionPreset(AVCaptureSession.Preset.hd4K3840x2160) {
-                _captureSession.sessionPreset = AVCaptureSession.Preset.hd4K3840x2160
+            if _captureSession!.canSetSessionPreset(AVCaptureSession.Preset.hd4K3840x2160) {
+                _captureSession!.sessionPreset = AVCaptureSession.Preset.hd4K3840x2160
                 _previewSize = CGSize(width: 3840, height: 2160)
             }
         case "veryHigh":
-            if _captureSession.canSetSessionPreset(AVCaptureSession.Preset.hd1920x1080) {
-                _captureSession.sessionPreset = AVCaptureSession.Preset.hd4K3840x2160
+            if _captureSession!.canSetSessionPreset(AVCaptureSession.Preset.hd1920x1080) {
+                _captureSession!.sessionPreset = AVCaptureSession.Preset.hd4K3840x2160
                 _previewSize = CGSize(width: 1920, height: 1080)
             }
         case "high":
-            if _captureSession.canSetSessionPreset(AVCaptureSession.Preset.hd1280x720) {
-                _captureSession.sessionPreset = AVCaptureSession.Preset.hd1280x720
+            if _captureSession!.canSetSessionPreset(AVCaptureSession.Preset.hd1280x720) {
+                _captureSession!.sessionPreset = AVCaptureSession.Preset.hd1280x720
                 _previewSize = CGSize(width: 1280, height: 720)
             }
         case "medium":
-            if _captureSession.canSetSessionPreset(AVCaptureSession.Preset.vga640x480) {
-                _captureSession.sessionPreset = AVCaptureSession.Preset.hd1280x720
+            if _captureSession!.canSetSessionPreset(AVCaptureSession.Preset.vga640x480) {
+                _captureSession!.sessionPreset = AVCaptureSession.Preset.hd1280x720
                 _previewSize = CGSize(width: 640, height: 480)
             }
         case "low":
-            if _captureSession.canSetSessionPreset(AVCaptureSession.Preset.cif352x288) {
-                _captureSession.sessionPreset = AVCaptureSession.Preset.cif352x288
+            if _captureSession!.canSetSessionPreset(AVCaptureSession.Preset.cif352x288) {
+                _captureSession!.sessionPreset = AVCaptureSession.Preset.cif352x288
                 _previewSize = CGSize(width: 320, height: 288)
             }
  

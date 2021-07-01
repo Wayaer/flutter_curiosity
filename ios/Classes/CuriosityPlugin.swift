@@ -1,6 +1,6 @@
 import Flutter
 
-class CuriosityPlugin: NSObject, FlutterPlugin {
+public class CuriosityPlugin: NSObject, FlutterPlugin {
     var curiosityChannel: FlutterMethodChannel
     var curiosityEvent: CuriosityEvent?
 
@@ -11,10 +11,10 @@ class CuriosityPlugin: NSObject, FlutterPlugin {
     var gallery: GalleryTools?
     var scanner: ScannerView?
 
-    static func register(with registrar: FlutterPluginRegistrar) {
+    public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "Curiosity", binaryMessenger: registrar.messenger())
         let plugin = CuriosityPlugin(registrar, channel)
-        registrar.addApplicationDelegate(plugin)
+        registrar.addMethodCallDelegate(plugin, channel: channel)
     }
 
     init(_ _registrar: FlutterPluginRegistrar, _ _channel: FlutterMethodChannel) {
@@ -22,22 +22,26 @@ class CuriosityPlugin: NSObject, FlutterPlugin {
         registrar = _registrar
         super.init()
         let center = NotificationCenter.default
-        center.addObserver(self, selector: Selector(("didShow")), name: UIResponder.keyboardDidShowNotification, object: nil)
-        center.addObserver(self, selector: Selector(("didShow")), name: UIResponder.keyboardWillShowNotification, object: nil)
-        center.addObserver(self, selector: Selector(("didHide")), name: UIResponder.keyboardWillHideNotification, object: nil)
+        center.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+        center.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        center.addObserver(self, selector: #selector(didHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
 
-    func handle(_call: FlutterMethodCall, _result: @escaping FlutterResult) {
+    public func handle(_ _call: FlutterMethodCall, result _result: @escaping FlutterResult) {
         call = _call
         result = _result
+        print("CuriosityHandle")
+        print(call?.method as Any)
         switch call!.method {
         case "exitApp":
             exit(0)
         case "startCuriosityEvent":
-            if curiosityEvent == nil {
-                curiosityEvent = CuriosityEvent(messenger: registrar.messenger())
+            if curiosityEvent != nil {
+                result!(true)
+                return
             }
-            result!(true)
+            curiosityEvent = CuriosityEvent(messenger: registrar.messenger())
+            result!(false)
         case "stopCuriosityEvent":
             if curiosityEvent != nil {
                 curiosityEvent!.dispose()
@@ -75,7 +79,7 @@ class CuriosityPlugin: NSObject, FlutterPlugin {
                 scanner = ScannerView(call: call!, result: result!, event: curiosityEvent!, registrar: registrar)
                 return
             }
-            result!(false)
+            result!(nil)
         case "setFlashMode":
             if scanner == nil {
                 result!(false)
@@ -106,7 +110,7 @@ class CuriosityPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    func didHide() {
+    @objc func didHide() {
         if keyboardStatus {
             keyboardStatus = false
             curiosityChannel.invokeMethod("keyboardStatus", arguments: keyboardStatus)

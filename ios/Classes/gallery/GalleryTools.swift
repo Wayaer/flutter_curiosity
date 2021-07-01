@@ -42,18 +42,18 @@ class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerContr
     private func open(sourceType: UIImagePickerController.SourceType) {
         if _controller != nil, UIImagePickerController.isSourceTypeAvailable(sourceType) {
             let data = _call.arguments as? [AnyHashable: Any?]
-            let allowsEditing = data["allowsEditing"] as! Bool?
+            let allowsEditing = data!["allowsEditing"] as! Bool?
 
             _controller!.delegate = self
             _controller!.allowsEditing = allowsEditing ?? false
             _controller!.sourceType = sourceType
             if sourceType == UIImagePickerController.SourceType.camera {
-                let flashMode = data["flashMode"] as! Bool?
-                let isFront = data["isFront"] as! Bool?
-                let isSound = data["isSound"] as! Bool?
-                let videoMaximumDuration = data["videoMaximumDuration"] as! Double?
-                let qualityType = data["qualityType"] as! Int?
-                let cameraMode = data["cameraMode"] as! Int?
+                let flashMode = data!["flashMode"] as! Bool?
+                let isFront = data!["isFront"] as! Bool?
+                let isSound = data!["isSound"] as! Bool?
+                let videoMaximumDuration = data!["videoMaximumDuration"] as! Double?
+                let qualityType = data!["qualityType"] as! Int?
+                let cameraMode = data!["cameraMode"] as! Int?
 
                 _controller!.videoMaximumDuration = videoMaximumDuration ?? 10.0
 
