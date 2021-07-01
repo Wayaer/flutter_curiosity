@@ -130,7 +130,7 @@ class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerContr
             if let quality = image?.jpegData(compressionQuality: CGFloat(quality! / 100)),
                let imageQuality = UIImage(data: quality)
             {
-                UIImageWriteToSavedPhotosAlbum(imageQuality, self, Selector(("saveImage")), nil)
+                UIImageWriteToSavedPhotosAlbum(imageQuality, self, #selector(saveImage), nil)
                 return
             }
         }
@@ -141,17 +141,17 @@ class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerContr
         let path = _call.arguments as? String
         if Tools.isImageFile(path) {
             if let image = UIImage(contentsOfFile: path!) {
-                UIImageWriteToSavedPhotosAlbum(image, self, Selector(("saveImage")), nil)
+                UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveImage), nil)
                 return
             }
         } else if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path!) {
-            UISaveVideoAtPathToSavedPhotosAlbum(path!, self, Selector(("saveVideo")), nil)
+            UISaveVideoAtPathToSavedPhotosAlbum(path!, self, #selector(saveVideo), nil)
             return
         }
         _result(false)
     }
 
-    private func saveImage(
+    @objc private func saveImage(
         image: UIImage?,
         didFinishSavingWithError error: Error?,
         contextInfo: UnsafeMutableRawPointer?
@@ -159,7 +159,7 @@ class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerContr
         _result(error == nil)
     }
 
-    private func saveVideo(
+    @objc private func saveVideo(
         videoPath: String?,
         didFinishSavingWithError error: Error?,
         contextInfo: UnsafeMutableRawPointer?

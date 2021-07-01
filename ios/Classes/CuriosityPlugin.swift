@@ -31,7 +31,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         call = _call
         result = _result
         print("CuriosityHandle")
-        print(call?.method as Any)
+        print(call?.method)
         switch call!.method {
         case "exitApp":
             exit(0)
@@ -93,7 +93,8 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             }
             scanner!.close()
         default:
-            result!(FlutterMethodNotImplemented)
+            print("FlutterMethodNotImplemented")
+            result!("FlutterMethodNotImplemented")
         }
     }
 
@@ -103,7 +104,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    func didShow() {
+    @objc func didShow() {
         if !keyboardStatus {
             keyboardStatus = true
             curiosityChannel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
