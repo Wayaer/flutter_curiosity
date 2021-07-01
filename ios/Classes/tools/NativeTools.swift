@@ -3,8 +3,8 @@ import Foundation
 
 let fileManager = FileManager.default
 
-enum NativeTools {
-    func getDeviceInfo() -> [AnyHashable: Any]? {
+public enum NativeTools {
+    public static func getDeviceInfo() -> [AnyHashable: Any]? {
         let device = UIDevice.current
         var un = utsname()
         uname(&un)
@@ -26,7 +26,7 @@ enum NativeTools {
         ]
     }
 
-    func getAppInfo() -> [AnyHashable: Any?]? {
+    public static func getAppInfo() -> [AnyHashable: Any?]? {
         let app = Bundle.main.infoDictionary
         let statusBar = UIApplication.shared.statusBarFrame
         return [
@@ -38,7 +38,7 @@ enum NativeTools {
             "cachesDirectory": NSHomeDirectory() + "/Library/Caches",
             "temporaryDirectory": NSTemporaryDirectory(),
             "versionName": app?["CFBundleShortVersionString"],
-            "versionCode": app?["CFBundleVersion"],
+            "versionCode": Int(app?["CFBundleVersion"] as! String),
             "packageName": app?["CFBundleIdentifier"],
             "appName": app?["CFBundleName"],
             "sdkBuild": app?["DTSDKBuild"],
@@ -49,7 +49,7 @@ enum NativeTools {
     }
 
     // 跳转到设置页面让用户自己手动开启
-    func openSystemSetting() -> Bool {
+    public static func openSystemSetting() -> Bool {
         let url = URL(string: UIApplication.openSettingsURLString)
         if let url = url {
             if UIApplication.shared.canOpenURL(url) {
@@ -61,7 +61,7 @@ enum NativeTools {
     }
 
     // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
-    func getGPSStatus() -> Bool {
-        return CLLocationManager.locationServicesEnabled()
+    public static func getGPSStatus() -> Bool {
+        CLLocationManager.locationServicesEnabled()
     }
 }
