@@ -59,15 +59,13 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> deviceInfo() async {
-    list = <Widget>[];
-    Map<String, dynamic> map = <String, dynamic>{};
     final DeviceInfoModel? model = await getDeviceInfo();
-    if (model != null) map = model.toMap();
-    map.forEach((String key, dynamic value) {
+    list.clear();
+    model?.toMap().forEach((String key, dynamic value) {
       if (value is Map) {
         list.add(showText('=== uts', '==='));
         value.forEach((dynamic k, dynamic v) {
-          list.add(showText(k, v));
+          list.add(showText('  ' + k.toString(), v));
         });
         list.add(showText('=== uts', '==='));
       } else {
@@ -80,23 +78,21 @@ class _GetInfoPageState extends State<GetInfoPage> {
   Future<void> appPath() async {
     final AppPathModel? data = await getAppPath();
     if (data == null) return;
-    final Map<String, dynamic> map = data.toMap();
-    list = <Widget>[];
-    map.forEach((String key, dynamic value) {
+    list.clear();
+    data.toMap().forEach((String key, dynamic value) {
       list.add(showText(key, value));
     });
     setState(() {});
   }
 
   Future<void> appInfo() async {
-    // final AppInfoModel? data = await getPackageInfo();
-    // if (data == null) return;
-    // final Map<String, dynamic> map = data.toJson();
-    // list = <Widget>[];
-    // map.forEach((String key, dynamic value) {
-    //   list.add(showText(key, value));
-    // });
-    // setState(() {});
+    final AppInfoModel? data = await getAppInfo();
+    if (data == null) return;
+    list.clear();
+    data.toMap().forEach((String key, dynamic value) {
+      list.add(showText(key, value));
+    });
+    setState(() {});
   }
 
   Future<void> getGPS() async {

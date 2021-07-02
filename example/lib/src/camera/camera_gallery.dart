@@ -14,18 +14,11 @@ class CameraGalleryPage extends StatefulWidget {
 
 class _CameraGalleryPageState extends State<CameraGalleryPage> {
   bool san = true;
-  String path = '';
+  String? path;
 
   @override
   void initState() {
     super.initState();
-    getAppPath().then((AppPathModel? value) {
-      log(value?.homeDirectory);
-      log(value?.documentDirectory);
-      log(value?.libraryDirectory);
-      log(value?.cachesDirectory);
-      log(value?.temporaryDirectory);
-    });
   }
 
   @override
@@ -48,11 +41,11 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
                   scannerColor: Colors.blue,
                   boxSize: Size(200, 200))),
           showText('path', path),
-          if (path.isNotEmpty)
+          if (path != null && path!.isNotEmpty)
             Container(
                 width: double.infinity,
                 margin: const EdgeInsets.all(20),
-                child: Image.file(File(path)))
+                child: Image.file(File(path!)))
         ]));
   }
 
@@ -84,7 +77,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   Future<void> systemGallery() async {
     final String? data = await openSystemGallery();
-    path = data.toString();
+    path = data;
     setState(() {});
   }
 
@@ -92,7 +85,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (!isMobile) return;
     if (await requestPermissions(Permission.camera, '使用相机')) {
       final String? data = await openSystemCamera();
-      path = data.toString();
+      path = data;
       setState(() {});
     } else {
       showToast('未获取相机权限');
@@ -103,7 +96,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (!isIOS) return;
     if (await requestPermissions(Permission.photos, '使用相册')) {
       final String? data = await openSystemAlbum();
-      path = data.toString();
+      path = data;
       setState(() {});
     } else {
       showToast('未获取相册权限');

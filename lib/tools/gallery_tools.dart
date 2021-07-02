@@ -74,8 +74,10 @@ enum CameraMode {
 Future<String?> openSystemGallery({GalleryOptions? options}) async {
   if (!supportPlatformMobile) return null;
   options ??= GalleryOptions();
-  return await curiosityChannel.invokeMethod(
-      'openSystemGallery', options.toMap());
+  final String? path =
+      await curiosityChannel.invokeMethod('openSystemGallery', options.toMap());
+  log(path);
+  return path?.replaceFirst('file:///', '');
 }
 
 /// 打开系统相机
@@ -86,7 +88,7 @@ Future<String?> openSystemGallery({GalleryOptions? options}) async {
 ///       <string>是否允许APP使用你的相机？</string>
 ///      <key>NSPhotoLibraryUsageDescription</key>
 ///       <string>是否允许APP访问你的相册？</string>
-/// ios path 包含 file:///
+/// ios path
 Future<String?> openSystemCamera({GalleryOptions? options}) async {
   if (!supportPlatformMobile) return null;
   options ??= GalleryOptions();
@@ -94,7 +96,7 @@ Future<String?> openSystemCamera({GalleryOptions? options}) async {
   String? path =
       await curiosityChannel.invokeMethod('openSystemCamera', options.toMap());
   if (isAndroid && options.savePath != null) path = options.savePath;
-  return path;
+  return path?.replaceFirst('file:///', '');
 }
 
 /// 打开相薄 仅支持ios
@@ -104,7 +106,7 @@ Future<String?> openSystemAlbum({GalleryOptions? options}) async {
   log(options.toMap());
   final String? path =
       await curiosityChannel.invokeMethod('openSystemAlbum', options.toMap());
-  return path;
+  return path?.replaceFirst('file:///', '');
 }
 
 /// save image to Gallery

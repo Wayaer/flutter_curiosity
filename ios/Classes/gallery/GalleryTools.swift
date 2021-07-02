@@ -1,6 +1,7 @@
 import Flutter
 import Foundation
 import MobileCoreServices
+import Photos
 
 class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     var _controller: UIImagePickerController?
@@ -81,7 +82,6 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
         _controller?.dismiss(animated: true, completion: { [self] in
-            print(info)
             if _controller?.sourceType == UIImagePickerController.SourceType.photoLibrary {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
@@ -90,7 +90,22 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 }
             }
 
-            if _controller?.sourceType == UIImagePickerController.SourceType.camera {}
+            if _controller?.sourceType == UIImagePickerController.SourceType.camera {
+                let image = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.originalImage.rawValue)] as! UIImage
+                var localId: String?
+
+                PHPhotoLibrary.shared().performChanges {
+                    let assetChangeRequest = PHAssetChangeRequest.creationRequestForAsset(from: image)
+                    localId = assetChangeRequest.placeholderForCreatedAsset?.localIdentifier
+
+                } completionHandler: { _, _ in
+                    let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: [localId!], options: nil)
+                    assetResult.firstObject?.requestContentEditingInput(with: nil, completionHandler: { content, _ in
+                        self._result(content?.fullSizeImageURL?.absoluteString)
+                    })
+                }
+                return
+            }
             if _controller?.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
@@ -99,23 +114,6 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 }
             }
             self._result(nil)
-//            let sourceType = info[UIImagePickerController.InfoKey.mediaType] as! CFString
-//            let sourceType = info[UIImagePickerController.InfoKey.mediaType] as! CFString
-//            print(info)
-//            // 如果是拍照
-//            if sourceType == kUTTypeImage {
-//                if #available(iOS 11.0, *) {
-//                    let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
-//                    _result(url?.absoluteString)
-//                }
-//            }
-//            // 如果是录像
-//            if sourceType == kUTTypeVideo {
-//                if #available(iOS 11.0, *) {
-//                    let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
-//                    _result(url?.absoluteString)
-//                }
-//            }
         })
     }
 
