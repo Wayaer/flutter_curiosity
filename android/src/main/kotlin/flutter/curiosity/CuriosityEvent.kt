@@ -7,12 +7,11 @@ import io.flutter.plugin.common.EventChannel
 
 class CuriosityEvent(binaryMessenger: BinaryMessenger) : EventChannel.StreamHandler {
     private var eventSink: EventChannel.EventSink? = null
-    private val eventName = "curiosity/event"
     private var eventChannel: EventChannel? = null
     private val handler = Handler(Looper.getMainLooper())
 
     init {
-        eventChannel = EventChannel(binaryMessenger, eventName)
+        eventChannel = EventChannel(binaryMessenger, "curiosity/event")
         eventChannel!!.setStreamHandler(this)
     }
 

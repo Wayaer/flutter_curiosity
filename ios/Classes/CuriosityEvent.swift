@@ -18,7 +18,10 @@ class CuriosityEvent: NSObject, FlutterStreamHandler {
     }
     
     func sendEvent(arguments: Any?) {
-        eventSink?(arguments)
+        let mainQueue = DispatchQueue.main
+        mainQueue.async {
+            self.eventSink?(arguments)
+        }
     }
     
     func dispose() {

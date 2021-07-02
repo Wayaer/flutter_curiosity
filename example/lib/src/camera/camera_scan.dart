@@ -46,6 +46,7 @@ class _CameraScanPageState extends State<CameraScanPage> {
     final bool state = await event!.initialize();
     if (!state) return;
     event!.addListener((dynamic value) {
+      log('收到了原生发来的消息== $value');
       if (value != null && hasImageStream) {
         final ScanResult scanResult =
             ScanResult.fromJson(value as Map<dynamic, dynamic>);
@@ -64,8 +65,8 @@ class _CameraScanPageState extends State<CameraScanPage> {
         description = element;
     }
     if (description == null) return;
-    controller =
-        CameraController(description, ResolutionPreset.max, enableAudio: false);
+    controller = CameraController(description, ResolutionPreset.high,
+        enableAudio: false);
     await controller!.initialize();
     setState(() {});
     time = DateTime.now().millisecondsSinceEpoch;
@@ -78,12 +79,11 @@ class _CameraScanPageState extends State<CameraScanPage> {
     controller?.startImageStream((CameraImage image) {
       if ((DateTime.now().millisecond - currentTime) > 400) {
         /// 每500毫秒解析一次
-        if (image.planes.isEmpty ||
-            image.planes[1].bytes.isEmpty ||
-            image.format.group != ImageFormatGroup.yuv420) {
-          return;
-        }
-        scanImageYUV(
+        if (image.planes.isEmpty || image.planes[0].bytes.isEmpty) return;
+
+        if (isAndroid && image.format.group != ImageFormatGroup.yuv420) return;
+
+        return scanImageYUV(
             uint8list: image.planes[0].bytes,
             width: image.width,
             height: image.height);

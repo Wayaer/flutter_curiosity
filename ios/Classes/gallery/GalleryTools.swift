@@ -2,7 +2,7 @@ import Flutter
 import Foundation
 import MobileCoreServices
 
-class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
+class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     var _controller: UIImagePickerController?
     var _call: FlutterMethodCall
     var _result: FlutterResult
@@ -48,50 +48,31 @@ class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerContr
             _controller!.allowsEditing = allowsEditing ?? false
             _controller!.sourceType = sourceType
             if sourceType == UIImagePickerController.SourceType.camera {
-                let flashMode = data!["flashMode"] as! Bool?
+                let flashMode = data!["flashMode"] as! Int?
                 let isFront = data!["isFront"] as! Bool?
-                let isSound = data!["isSound"] as! Bool?
+                let hasSound = data!["hasSound"] as! Bool?
                 let videoMaximumDuration = data!["videoMaximumDuration"] as! Double?
                 let qualityType = data!["qualityType"] as! Int?
                 let cameraMode = data!["cameraMode"] as! Int?
 
                 _controller!.videoMaximumDuration = videoMaximumDuration ?? 10.0
 
-                if isFront != nil && isFront! {
-                    _controller!.cameraDevice = UIImagePickerController.CameraDevice.front
-                } else {
-                    _controller!.cameraDevice = UIImagePickerController.CameraDevice.rear
+                if isFront != nil {
+                    _controller!.cameraDevice = UIImagePickerController.CameraDevice(rawValue: isFront! ? 1 : 0)!
                 }
-
                 if cameraMode == 0 {
-                    _controller!.cameraCaptureMode = UIImagePickerController.CameraCaptureMode.photo
+                    _controller!.mediaTypes = [String(kUTTypeImage), String(kUTTypeVideo)]
                 } else {
-                    _controller!.cameraCaptureMode = UIImagePickerController.CameraCaptureMode.video
+                    if hasSound != nil && hasSound! {
+                        _controller!.mediaTypes = [String(kUTTypeVideo)]
+                    } else {
+                        _controller!.mediaTypes = [String(kUTTypeMovie)]
+                    }
                 }
+                _controller!.cameraCaptureMode = UIImagePickerController.CameraCaptureMode(rawValue: cameraMode!)!
 
-                if isSound != nil && isSound! {
-                    _controller!.mediaTypes = kUTTypeImage as! [String]
-                } else {
-                    _controller!.mediaTypes = kUTTypeVideo as! [String]
-                }
-
-                if qualityType == 0 {
-                    _controller!.videoQuality = UIImagePickerController.QualityType.typeHigh
-                } else if qualityType == 1 {
-                    _controller!.videoQuality = UIImagePickerController.QualityType.typeMedium
-                } else if qualityType == 2 {
-                    _controller!.videoQuality = UIImagePickerController.QualityType.typeLow
-                } else if qualityType == 3 {
-                    _controller!.videoQuality = UIImagePickerController.QualityType.type640x480
-                }
-
-                if flashMode == nil {
-                    _controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode.auto
-                } else if flashMode! {
-                    _controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode.on
-                } else {
-                    _controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode.off
-                }
+                _controller!.videoQuality = UIImagePickerController.QualityType(rawValue: qualityType!)!
+                _controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode(rawValue: flashMode!)!
             }
 
             UIApplication.shared.delegate?.window??.rootViewController?.present(_controller!, animated: true, completion: nil)
@@ -99,20 +80,43 @@ class GalleryTools: NSObject, UINavigationControllerDelegate, UIImagePickerContr
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        // 相册选择图片
-        if _controller?.sourceType == UIImagePickerController.SourceType.photoLibrary {}
-        // 相薄选择图片
-        if _controller?.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {}
-        // 打开的相机
-        if _controller?.sourceType == UIImagePickerController.SourceType.camera {}
+        _controller?.dismiss(animated: true, completion: { [self] in
+            print(info)
+            if _controller?.sourceType == UIImagePickerController.SourceType.photoLibrary {
+                if #available(iOS 11.0, *) {
+                    let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
+                    _result(url?.absoluteString)
+                    return
+                }
+            }
 
-        if #available(iOS 11.0, *) {
-            _result([
-                "imagePath": info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)],
-                "originalImage": info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.originalImage.rawValue)]
-
-            ])
-        }
+            if _controller?.sourceType == UIImagePickerController.SourceType.camera {}
+            if _controller?.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
+                if #available(iOS 11.0, *) {
+                    let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
+                    _result(url?.absoluteString)
+                    return
+                }
+            }
+            self._result(nil)
+//            let sourceType = info[UIImagePickerController.InfoKey.mediaType] as! CFString
+//            let sourceType = info[UIImagePickerController.InfoKey.mediaType] as! CFString
+//            print(info)
+//            // 如果是拍照
+//            if sourceType == kUTTypeImage {
+//                if #available(iOS 11.0, *) {
+//                    let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
+//                    _result(url?.absoluteString)
+//                }
+//            }
+//            // 如果是录像
+//            if sourceType == kUTTypeVideo {
+//                if #available(iOS 11.0, *) {
+//                    let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
+//                    _result(url?.absoluteString)
+//                }
+//            }
+        })
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

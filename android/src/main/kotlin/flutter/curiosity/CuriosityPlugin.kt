@@ -96,6 +96,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             "openAppMarket" -> result.success(NativeTools.openAppMarket(activity))
             "isInstallApp" -> result.success(NativeTools.isInstallApp(activity))
             "getAppInfo" -> result.success(NativeTools.getAppInfo(context))
+            "getAppPath" -> result.success(NativeTools.getAppPath(context))
             "getDeviceInfo" -> result.success(NativeTools.getDeviceInfo(context))
             "getInstalledApp" -> result.success(NativeTools.getInstalledApp(context))
             "getGPSStatus" -> result.success(NativeTools.getGPSStatus(context))

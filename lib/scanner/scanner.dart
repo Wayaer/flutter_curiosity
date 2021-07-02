@@ -288,8 +288,8 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
-  Future<String?> setFlashMode(bool status) async =>
-      await curiosityChannel.invokeMethod('setFlashMode', status);
+  Future<bool?> setFlashMode(bool status) =>
+      curiosityChannel.invokeMethod('setFlashMode', status);
 
   Future<List<Cameras>> availableCameras() async {
     try {
@@ -353,7 +353,6 @@ class ScanResult {
   }
 }
 
-/// 以下方法可以配合 camera 组件 做二维码或条形码识别
 Future<ScanResult?> scanImagePath(String path) async {
   try {
     final File file = File(path);
@@ -368,8 +367,8 @@ Future<ScanResult?> scanImagePath(String path) async {
 
 Future<ScanResult?> scanImageByte(Uint8List uint8list) async {
   try {
-    final Map<dynamic, dynamic>? data =
-        await curiosityChannel.invokeMethod('scanImageByte', uint8list);
+    final Map<dynamic, dynamic>? data = await curiosityChannel
+        .invokeMethod('scanImageByte', <String, dynamic>{'byte': uint8list});
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);
@@ -395,18 +394,23 @@ void scanImageYUV({
   /// [heightRatio]  heightRatio*height 为识别区域的高
   double heightRatio = 0.4,
 }) {
-  try {
-    final Map<String, dynamic> map = <String, dynamic>{
-      'byte': uint8list,
-      'width': width,
-      'height': height,
-      'topRatio': topRatio,
-      'leftRatio': leftRatio,
-      'widthRatio': widthRatio,
-      'heightRatio': heightRatio,
-    };
-    curiosityChannel.invokeMethod<dynamic>('scanImageYUV', map);
-  } on PlatformException catch (e) {
-    log(e);
+  if (isIOS) {
+    curiosityChannel.invokeMethod<dynamic>('scanImageByte',
+        <String, dynamic>{'byte': uint8list, 'useEvent': true});
+  } else if (isAndroid) {
+    try {
+      final Map<String, dynamic> map = <String, dynamic>{
+        'byte': uint8list,
+        'width': width,
+        'height': height,
+        'topRatio': topRatio,
+        'leftRatio': leftRatio,
+        'widthRatio': widthRatio,
+        'heightRatio': heightRatio,
+      };
+      curiosityChannel.invokeMethod<dynamic>('scanImageYUV', map);
+    } on PlatformException catch (e) {
+      log(e);
+    }
   }
 }

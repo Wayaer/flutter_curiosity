@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:curiosity/main.dart';
 import 'package:curiosity/src/camera/camera_scan.dart';
 import 'package:flutter/material.dart';
@@ -12,7 +14,19 @@ class CameraGalleryPage extends StatefulWidget {
 
 class _CameraGalleryPageState extends State<CameraGalleryPage> {
   bool san = true;
-  String text = '';
+  String path = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getAppPath().then((AppPathModel? value) {
+      log(value?.homeDirectory);
+      log(value?.documentDirectory);
+      log(value?.libraryDirectory);
+      log(value?.cachesDirectory);
+      log(value?.temporaryDirectory);
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +36,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           ElevatedText(onPressed: scan, text: '扫码'),
           ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
+          ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
           ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
           ElevatedText(
               onPressed: () => push(FileImageScanPage()), text: '识别图片二维码'),
@@ -32,7 +47,12 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
                   borderColor: Colors.blue,
                   scannerColor: Colors.blue,
                   boxSize: Size(200, 200))),
-          showText('path', text),
+          showText('path', path),
+          if (path.isNotEmpty)
+            Container(
+                width: double.infinity,
+                margin: const EdgeInsets.all(20),
+                child: Image.file(File(path)))
         ]));
   }
 
@@ -53,7 +73,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
         await requestPermissions(Permission.storage, '手机存储');
     if (permission) {
       push(ScannerPage(scanResult: (String value) {
-        text = value;
+        path = value;
         pop();
         setState(() {});
       }));
@@ -64,8 +84,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   Future<void> systemGallery() async {
     final String? data = await openSystemGallery();
-    showToast(data.toString());
-    text = data.toString();
+    path = data.toString();
     setState(() {});
   }
 
@@ -73,11 +92,21 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (!isMobile) return;
     if (await requestPermissions(Permission.camera, '使用相机')) {
       final String? data = await openSystemCamera();
-      showToast(data.toString());
-      text = data.toString();
+      path = data.toString();
       setState(() {});
     } else {
       showToast('未获取相机权限');
+    }
+  }
+
+  Future<void> systemAlbum() async {
+    if (!isIOS) return;
+    if (await requestPermissions(Permission.photos, '使用相册')) {
+      final String? data = await openSystemAlbum();
+      path = data.toString();
+      setState(() {});
+    } else {
+      showToast('未获取相册权限');
     }
   }
 }

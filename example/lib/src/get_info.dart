@@ -18,9 +18,10 @@ class _GetInfoPageState extends State<GetInfoPage> {
       body: ScrollList.builder(
           header: SliverToBoxAdapter(
               child: Column(children: <Widget>[
-            ElevatedText(onPressed: () => getAppInfo(), text: '获取app信息'),
-            ElevatedText(onPressed: () => getGPS(), text: '获取gps状态'),
-            ElevatedText(onPressed: () => getDeviceInfo(), text: '获取设备信息'),
+            ElevatedText(onPressed: getGPS, text: '获取gps状态'),
+            ElevatedText(onPressed: appInfo, text: '获取app信息'),
+            ElevatedText(onPressed: appPath, text: '获取app存储路径'),
+            ElevatedText(onPressed: deviceInfo, text: '获取设备信息'),
             if (isAndroid)
               ElevatedText(
                   onPressed: () => getInstalled(), text: '获取Android已安装应用'),
@@ -38,7 +39,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
     final List<AppsModel> data = await getInstalledApp();
     list = <Widget>[];
     data.builder((AppsModel appsModel) {
-      final Map<String, dynamic> appModel = appsModel.toJson();
+      final Map<String, dynamic> appModel = appsModel.toMap();
       final List<Widget> app = <Widget>[];
       appModel.forEach((String key, dynamic value) {
         app.add(Container(
@@ -57,17 +58,11 @@ class _GetInfoPageState extends State<GetInfoPage> {
     setState(() {});
   }
 
-  Future<void> getDeviceInfo() async {
+  Future<void> deviceInfo() async {
     list = <Widget>[];
     Map<String, dynamic> map = <String, dynamic>{};
-    if (isAndroid) {
-      final AndroidDeviceModel? model = await getAndroidDeviceInfo();
-      if (model != null) map = model.toJson();
-    }
-    if (isIOS) {
-      final IOSDeviceModel? model = await getIOSDeviceInfo();
-      if (model != null) map = model.toJson();
-    }
+    final DeviceInfoModel? model = await getDeviceInfo();
+    if (model != null) map = model.toMap();
     map.forEach((String key, dynamic value) {
       if (value is Map) {
         list.add(showText('=== uts', '==='));
@@ -82,15 +77,26 @@ class _GetInfoPageState extends State<GetInfoPage> {
     setState(() {});
   }
 
-  Future<void> getAppInfo() async {
-    final AppInfoModel? data = await getPackageInfo();
+  Future<void> appPath() async {
+    final AppPathModel? data = await getAppPath();
     if (data == null) return;
-    final Map<String, dynamic> map = data.toJson();
+    final Map<String, dynamic> map = data.toMap();
     list = <Widget>[];
     map.forEach((String key, dynamic value) {
       list.add(showText(key, value));
     });
     setState(() {});
+  }
+
+  Future<void> appInfo() async {
+    // final AppInfoModel? data = await getPackageInfo();
+    // if (data == null) return;
+    // final Map<String, dynamic> map = data.toJson();
+    // list = <Widget>[];
+    // map.forEach((String key, dynamic value) {
+    //   list.add(showText(key, value));
+    // });
+    // setState(() {});
   }
 
   Future<void> getGPS() async {

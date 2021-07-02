@@ -4,31 +4,23 @@ import Foundation
 
 class ScannerTools {
     // 识别图片中的二维码
-    static func scanImageByte(call: FlutterMethodCall) -> [AnyHashable: Any?]? {
-        let byte = call.arguments as! [AnyHashable: Any?]
-        let uint8list = byte["byte"] as! FlutterStandardTypedData?
-
+    static func scanImageByte(_ uint8list: FlutterStandardTypedData?) -> [AnyHashable: Any?]? {
         if uint8list != nil {
-            return getScanCode(data: uint8list!.data as Data)
-        }
-        return nil
-    }
-
-    // 获取二维码 数据 返回map
-    static func getScanCode(data: Data) -> [AnyHashable: Any?]? {
-        let detectImage = CIImage(data: data)
-        let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: nil, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
-        if detectImage != nil {
-            let feature = detector?.features(in: detectImage!, options: nil)
-            if feature != nil, feature!.count > 0 {
-                for item in feature! {
-                    let qrCode = item as! CIQRCodeFeature
-                    return [
-                        "type": AVMetadataObject.ObjectType.qr,
-                        "code": qrCode.messageString
-                    ]
+            let detectImage = CIImage(data: uint8list!.data)
+            let detector = CIDetector(ofType: CIDetectorTypeQRCode, context: nil, options: [CIDetectorAccuracy: CIDetectorAccuracyHigh])
+            if detectImage != nil {
+                let feature = detector?.features(in: detectImage!, options: nil)
+                if feature != nil, feature!.count > 0 {
+                    for item in feature! {
+                        let qrCode = item as! CIQRCodeFeature
+                        return [
+                            "type": AVMetadataObject.ObjectType.qr,
+                            "code": qrCode.messageString
+                        ]
+                    }
                 }
             }
+            return nil
         }
         return nil
     }

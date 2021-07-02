@@ -111,7 +111,7 @@ class ElevatedText extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Universal(
         onTap: onPressed,
-        margin: const EdgeInsets.symmetric(vertical: 6),
+        margin: const EdgeInsets.symmetric(vertical: 12),
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
         decoration: BoxDecoration(boxShadow: const <BoxShadow>[
           BoxShadow(

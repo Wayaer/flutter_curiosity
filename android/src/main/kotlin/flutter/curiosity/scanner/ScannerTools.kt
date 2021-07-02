@@ -15,7 +15,7 @@ object ScannerTools {
     private val multiFormatReader: MultiFormatReader = MultiFormatReader()
 
     fun scanImageByte(activity: Activity) {
-        val byteArray = call.arguments as ByteArray
+        val byteArray = call.argument<ByteArray>("byte")!!
         try {
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
             if (bitmap == null) {

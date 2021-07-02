@@ -44,10 +44,11 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(true)
         case "getAppInfo":
             result(NativeTools.getAppInfo())
+        case "getAppPath":
+            result(NativeTools.getAppPath())
         case "getDeviceInfo":
             result(NativeTools.getDeviceInfo())
         case "getGPSStatus":
-            print("CuriosityHandle")
             result(NativeTools.getGPSStatus())
         case "openSystemSetting":
             result(NativeTools.openSystemSetting())
@@ -67,7 +68,16 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             initGalleryTools(call, result)
             gallery?.saveImageToGallery()
         case "scanImageByte":
-            result(ScannerTools.scanImageByte(call: call))
+
+            let arguments = call.arguments as! [AnyHashable: Any?]
+            let useEvent = arguments["useEvent"] as! Bool?
+            let uint8list = arguments["byte"] as! FlutterStandardTypedData?
+            let code = ScannerTools.scanImageByte(uint8list)
+            if useEvent != nil, useEvent! {
+                curiosityEvent?.sendEvent(arguments: code)
+                return
+            }
+            result(code)
         case "availableCameras":
             result(ScannerTools.availableCameras())
         case "initializeCameras":
