@@ -72,7 +72,7 @@ class _AppState extends State<App> {
                   onPressed: () => push(OpenSettingPage()), text: '跳转APP'),
             if (isIOS)
               const ElevatedText(onPressed: openSystemSetting, text: '跳转设置'),
-            if (isMobile) ...[
+            if (isMobile) ...<Widget>[
               ElevatedText(
                   onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),
               ElevatedText(

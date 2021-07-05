@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
+import 'package:flutter_curiosity/tools/internal.dart';
 
 typedef EventListen = void Function(dynamic data);
 
@@ -18,9 +19,14 @@ class CuriosityEvent {
     return _instance!;
   }
 
+  /// 订阅流
   StreamSubscription<dynamic>? _streamSubscription;
+
+  /// 创建流
+  Stream<dynamic>? _stream;
+
+  /// 消息通道
   EventChannel? _eventChannel;
-  dynamic eventMessage;
 
   bool get isPaused =>
       _streamSubscription != null && _streamSubscription!.isPaused;
@@ -30,50 +36,61 @@ class CuriosityEvent {
     bool? state =
         await curiosityChannel.invokeMethod<bool?>('startCuriosityEvent');
     state ??= false;
-    if (state && _eventChannel == null)
+    if (state && _eventChannel == null) {
       _eventChannel = const EventChannel(curiosityEvent);
-    return state && (_eventChannel != null);
+      _stream = _eventChannel?.receiveBroadcastStream(<dynamic, dynamic>{});
+    }
+    return state && _eventChannel != null && _stream != null;
   }
 
   /// 添加消息流监听
-  bool addListener(EventListen eventListen) {
-    if (_eventChannel == null) return false;
-    _streamSubscription = _eventChannel
-        ?.receiveBroadcastStream(<dynamic, dynamic>{}).listen(eventListen);
-    return true;
+  Future<bool> addListener(EventListen eventListen) async {
+    if (_eventChannel != null && _stream != null) {
+      try {
+        _streamSubscription = _stream!.listen(eventListen);
+        return true;
+      } catch (e) {
+        log(e);
+        return false;
+      }
+    }
+    return false;
   }
 
+  /// 调用原生方法 发送消息
   Future<bool> sendEvent(dynamic arguments) async {
+    if (_eventChannel == null ||
+        _streamSubscription == null ||
+        _streamSubscription!.isPaused) return false;
     final bool? state = await curiosityChannel.invokeMethod<bool?>(
         'sendCuriosityEvent', arguments);
     return state ?? false;
   }
 
   /// 暂停消息流监听
-  bool pause(EventListen eventListen) {
-    if (_streamSubscription == null) return false;
-    _streamSubscription!.pause();
-    return true;
+  bool pause() {
+    if (_streamSubscription != null && !_streamSubscription!.isPaused) {
+      _streamSubscription!.pause();
+      return true;
+    }
+    return false;
   }
 
   /// 重新开始监听
-  bool resume(EventListen eventListen) {
-    if (_streamSubscription == null) return false;
-    _streamSubscription!.resume();
-    return true;
-  }
-
-  /// 移出监听
-  Future<bool> removeListener() async {
-    if (_streamSubscription == null) return false;
-    await _streamSubscription?.cancel();
-    _streamSubscription = null;
-    return true;
+  bool resume() {
+    if (_streamSubscription != null && _streamSubscription!.isPaused) {
+      _streamSubscription!.resume();
+      return true;
+    }
+    return false;
   }
 
   /// 关闭并销毁消息通道
   Future<bool> dispose() async {
-    if (_streamSubscription != null) removeListener();
+    await _streamSubscription?.cancel();
+    _streamSubscription = null;
+    _stream = null;
+    _eventChannel = null;
     final bool? state =
         await curiosityChannel.invokeMethod<bool>('stopCuriosityEvent');
     return state ?? false;

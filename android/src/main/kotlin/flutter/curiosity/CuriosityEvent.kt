@@ -24,6 +24,7 @@ class CuriosityEvent(binaryMessenger: BinaryMessenger) : EventChannel.StreamHand
 
     fun dispose() {
         eventSink?.endOfStream()
+        eventSink = null
         eventChannel?.setStreamHandler(null)
         eventChannel = null
     }
@@ -33,7 +34,6 @@ class CuriosityEvent(binaryMessenger: BinaryMessenger) : EventChannel.StreamHand
     }
 
     override fun onCancel(arguments: Any?) {
-        eventSink?.endOfStream()
-        eventSink = null
+        dispose();
     }
 }

@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:curiosity/main.dart';
-import 'package:curiosity/src/camera_scan.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -29,7 +28,6 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
           if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
-
           const SizedBox(height: 20),
           Container(
               padding: const EdgeInsets.only(top: 100),
@@ -45,8 +43,6 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
                 child: Image.file(File(path!)))
         ]));
   }
-
-
 
   Future<void> systemGallery() async {
     if (await requestPermissions(Permission.photos, '使用相册')) {

@@ -281,9 +281,8 @@ class ScannerController extends ChangeNotifier {
           notifyListeners();
         });
       }
-    } on PlatformException catch (e) {
-      /// 原生异常抛出
-      log('initializeCameras PlatformException');
+    } catch (e) {
+      log('initializeCameras Exception');
       log(e);
     }
   }

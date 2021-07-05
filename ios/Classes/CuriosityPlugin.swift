@@ -1,7 +1,7 @@
 import Flutter
 
 public class CuriosityPlugin: NSObject, FlutterPlugin {
-    var curiosityChannel: FlutterMethodChannel
+    var curiosityChannel: FlutterMethodChannel?
     var curiosityEvent: CuriosityEvent?
 
     var registrar: FlutterPluginRegistrar
@@ -31,21 +31,15 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         case "exitApp":
             exit(0)
         case "startCuriosityEvent":
-            print("startCuriosityEvent")
             if curiosityEvent == nil {
-                print("初始化CuriosityEvent ")
-                curiosityEvent = CuriosityEvent(messenger: registrar.messenger())
+                curiosityEvent = CuriosityEvent(registrar.messenger())
             }
-            print(curiosityEvent != nil)
             result(curiosityEvent != nil)
         case "sendCuriosityEvent":
             curiosityEvent?.sendEvent(arguments: call.arguments)
             result(curiosityEvent != nil)
         case "stopCuriosityEvent":
-            if curiosityEvent != nil {
-                curiosityEvent!.dispose()
-                curiosityEvent = nil
-            }
+            disposeEvent()
             result(curiosityEvent == nil)
         case "getAppInfo":
             result(NativeTools.getAppInfo())
@@ -117,14 +111,27 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
     @objc func didShow() {
         if !keyboardStatus {
             keyboardStatus = true
-            curiosityChannel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
+            curiosityChannel?.invokeMethod("keyboardStatus", arguments: keyboardStatus)
         }
     }
 
     @objc func didHide() {
         if keyboardStatus {
             keyboardStatus = false
-            curiosityChannel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
+            curiosityChannel?.invokeMethod("keyboardStatus", arguments: keyboardStatus)
+        }
+    }
+
+    public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
+        curiosityChannel?.setMethodCallHandler(nil)
+        curiosityChannel = nil
+        disposeEvent()
+    }
+
+    private func disposeEvent() {
+        if curiosityEvent != nil {
+            curiosityEvent!.dispose()
+            curiosityEvent = nil
         }
     }
 }
