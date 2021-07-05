@@ -76,7 +76,6 @@ Future<String?> openSystemGallery({GalleryOptions? options}) async {
   options ??= GalleryOptions();
   final String? path =
       await curiosityChannel.invokeMethod('openSystemGallery', options.toMap());
-  log(path);
   return path?.replaceFirst('file:///', '');
 }
 

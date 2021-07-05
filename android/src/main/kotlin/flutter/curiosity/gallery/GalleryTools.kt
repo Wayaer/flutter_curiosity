@@ -31,7 +31,8 @@ object GalleryTools {
     }
 
     fun openSystemCamera(context: Context, activity: Activity) {
-        var cameraSavePath = call.arguments as String?
+        val arguments = call.arguments as MutableMap<*, *>
+        var cameraSavePath = arguments["savePath"] as String?
         if (cameraSavePath == null) cameraSavePath =
             context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)

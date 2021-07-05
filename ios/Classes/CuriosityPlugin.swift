@@ -31,17 +31,22 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         case "exitApp":
             exit(0)
         case "startCuriosityEvent":
-            if curiosityEvent != nil {
-                result(true)
-                return
+            print("startCuriosityEvent")
+            if curiosityEvent == nil {
+                print("初始化CuriosityEvent ")
+                curiosityEvent = CuriosityEvent(messenger: registrar.messenger())
             }
-            curiosityEvent = CuriosityEvent(messenger: registrar.messenger())
-            result(false)
+            print(curiosityEvent != nil)
+            result(curiosityEvent != nil)
+        case "sendCuriosityEvent":
+            curiosityEvent?.sendEvent(arguments: call.arguments)
+            result(curiosityEvent != nil)
         case "stopCuriosityEvent":
             if curiosityEvent != nil {
                 curiosityEvent!.dispose()
+                curiosityEvent = nil
             }
-            result(true)
+            result(curiosityEvent == nil)
         case "getAppInfo":
             result(NativeTools.getAppInfo())
         case "getAppPath":
@@ -68,7 +73,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             initGalleryTools(call, result)
             gallery?.saveImageToGallery()
         case "scanImageByte":
-
             let arguments = call.arguments as! [AnyHashable: Any?]
             let useEvent = arguments["useEvent"] as! Bool?
             let uint8list = arguments["byte"] as! FlutterStandardTypedData?
@@ -99,15 +103,15 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             }
             scanner!.close()
         default:
-            print("FlutterMethodNotImplemented")
-            result("FlutterMethodNotImplemented")
+            result(FlutterMethodNotImplemented)
         }
     }
 
     func initGalleryTools(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        if gallery == nil {
-            gallery = GalleryTools(call: call, result: result)
+        if gallery != nil {
+            gallery = nil
         }
+        gallery = GalleryTools(call: call, result: result)
     }
 
     @objc func didShow() {

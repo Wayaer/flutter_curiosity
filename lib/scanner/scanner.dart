@@ -367,8 +367,9 @@ Future<ScanResult?> scanImagePath(String path) async {
 
 Future<ScanResult?> scanImageByte(Uint8List uint8list) async {
   try {
-    final Map<dynamic, dynamic>? data = await curiosityChannel
-        .invokeMethod('scanImageByte', <String, dynamic>{'byte': uint8list});
+    final Map<dynamic, dynamic>? data = await curiosityChannel.invokeMethod(
+        'scanImageByte',
+        <String, dynamic>{'byte': uint8list, 'useEvent': false});
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
     log(e);

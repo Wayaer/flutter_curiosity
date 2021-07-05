@@ -76,21 +76,21 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
         when (call.method) {
             "exitApp" -> NativeTools.exitApp()
             "startCuriosityEvent" -> {
-                if (curiosityEvent != null) {
-                    result.success(true)
-                    return
+                if (curiosityEvent == null) {
+                    curiosityEvent = CuriosityEvent(pluginBinding.binaryMessenger)
                 }
-                curiosityEvent = CuriosityEvent(pluginBinding.binaryMessenger)
+                result.success(curiosityEvent != null)
+            }
+            "sendCuriosityEvent" -> {
+                curiosityEvent?.sendEvent(call.arguments)
                 result.success(curiosityEvent != null)
             }
             "stopCuriosityEvent" -> {
-                if (curiosityEvent == null) {
-                    result.success(true)
-                    return
+                if (curiosityEvent != null) {
+                    curiosityEvent?.dispose()
+                    curiosityEvent = null
                 }
-                curiosityEvent?.dispose()
-                curiosityEvent = null
-                result.success(true)
+                result.success(curiosityEvent == null)
             }
             "installApp" -> NativeTools.installApp(context, activity)
             "openAppMarket" -> result.success(NativeTools.openAppMarket(activity))

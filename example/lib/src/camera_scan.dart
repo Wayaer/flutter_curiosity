@@ -7,25 +7,70 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-class ScannerPage extends StatelessWidget {
-  const ScannerPage({Key? key, required this.scanResult}) : super(key: key);
+class ScannerPage extends StatefulWidget {
+  const ScannerPage({Key? key}) : super(key: key);
 
-  final ValueChanged<String> scanResult;
+  @override
+  _ScannerPageState createState() => _ScannerPageState();
+}
+
+class _ScannerPageState extends State<ScannerPage> {
+  bool san = true;
+  String? path;
 
   @override
   Widget build(BuildContext context) {
     return OverlayScaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: ScannerView(scanResult: scanResult)));
+        appBar: AppBarText('Camera and Scanner'),
+        body: Universal(isScroll: true, children: <Widget>[
+          ElevatedText(onPressed: scan, text: '扫码'),
+          ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
+          ElevatedText(
+              onPressed: () => push(_FileImageScanPage()), text: '识别图片二维码'),
+          const SizedBox(height: 20),
+          Container(
+              padding: const EdgeInsets.only(top: 100),
+              child: const ScannerBox(
+                  borderColor: Colors.blue,
+                  scannerColor: Colors.blue,
+                  boxSize: Size(200, 200))),
+          showText('path', path),
+        ]));
+  }
+
+  Future<void> scanImage() async {
+    if (!isMobile) return;
+    final bool permission = await requestPermissions(Permission.camera, '相机') &&
+        await requestPermissions(Permission.storage, '手机存储');
+    if (permission) {
+      push(_CameraScanPage());
+    } else {
+      openAppSettings();
+    }
+  }
+
+  Future<void> scan() async {
+    if (!isMobile) return;
+    final bool permission = await requestPermissions(Permission.camera, '相机') &&
+        await requestPermissions(Permission.storage, '手机存储');
+    if (permission) {
+      push(ScannerView(scanResult: (String value) {
+        path = value;
+        pop();
+        setState(() {});
+      }));
+    } else {
+      openAppSettings();
+    }
   }
 }
 
-class CameraScanPage extends StatefulWidget {
+class _CameraScanPage extends StatefulWidget {
   @override
   _CameraScanPageState createState() => _CameraScanPageState();
 }
 
-class _CameraScanPageState extends State<CameraScanPage> {
+class _CameraScanPageState extends State<_CameraScanPage> {
   CameraController? controller;
   int time = 0;
   bool hasImageStream = false;
@@ -113,13 +158,13 @@ class _CameraScanPageState extends State<CameraScanPage> {
   }
 }
 
-class FileImageScanPage extends StatefulWidget {
+class _FileImageScanPage extends StatefulWidget {
   @override
   _FileImageScanPageState createState() => _FileImageScanPageState();
 }
 
-class _FileImageScanPageState extends State<FileImageScanPage> {
-  String path = '';
+class _FileImageScanPageState extends State<_FileImageScanPage> {
+  String? path;
   String code = '';
   String type = '';
 
@@ -128,42 +173,47 @@ class _FileImageScanPageState extends State<FileImageScanPage> {
     return OverlayScaffold(
         appBar: AppBarText('San file image'),
         padding: const EdgeInsets.all(20),
+        isScroll: true,
         children: <Widget>[
-          ElevatedText(onPressed: () => openGallery(), text: '选择图片'),
-          showText('path', path),
-          ElevatedText(onPressed: () => scanPath(), text: '识别(使用Path识别)'),
-          ElevatedText(onPressed: () => scanByte(), text: '识别(从内存中识别)'),
           showText('code', code),
           showText('type', type),
+          ElevatedText(onPressed: () => openGallery(), text: '选择图片'),
+          ElevatedText(onPressed: () => scanPath(), text: '识别(使用Path识别)'),
+          ElevatedText(onPressed: () => scanByte(), text: '识别(从内存中识别)'),
+          showText('path', path),
+          if (path != null && path!.isNotEmpty)
+            Container(
+                width: double.infinity,
+                margin:
+                    const EdgeInsets.symmetric(vertical: 10, horizontal: 40),
+                child: Image.file(File(path!))),
         ]);
   }
 
   Future<void> scanPath() async {
-    if (path.isEmpty) return showToast('请选择图片');
+    if (path == null || path!.isEmpty) return showToast('请选择图片');
     if (await requestPermissions(Permission.storage, '读取文件')) {
-      final ScanResult? data = await scanImagePath(path);
-      if (data == null) return;
-      code = data.code;
-      type = data.type;
+      final ScanResult? data = await scanImagePath(path!);
+      code = data?.code ?? '未识别';
+      type = data?.type ?? '未识别';
       setState(() {});
     }
   }
 
   Future<void> scanByte() async {
-    if (path.isEmpty) return showToast('请选择图片');
+    if (path == null || path!.isEmpty) return showToast('请选择图片');
     if (await requestPermissions(Permission.storage, '读取文件')) {
-      final File file = File(path);
+      final File file = File(path!);
       final ScanResult? data = await scanImageByte(file.readAsBytesSync());
-      if (data == null) return;
-      code = data.code;
-      type = data.type;
+      code = data?.code ?? '未识别';
+      type = data?.type ?? '未识别';
       setState(() {});
     }
   }
 
   Future<void> openGallery() async {
     final String? data = await openSystemGallery();
-    path = data.toString();
+    path = data;
     setState(() {});
   }
 }

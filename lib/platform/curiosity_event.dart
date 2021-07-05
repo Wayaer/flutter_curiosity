@@ -30,7 +30,8 @@ class CuriosityEvent {
     bool? state =
         await curiosityChannel.invokeMethod<bool?>('startCuriosityEvent');
     state ??= false;
-    if (state) _eventChannel = const EventChannel(curiosityEvent);
+    if (state && _eventChannel == null)
+      _eventChannel = const EventChannel(curiosityEvent);
     return state && (_eventChannel != null);
   }
 
@@ -40,6 +41,12 @@ class CuriosityEvent {
     _streamSubscription = _eventChannel
         ?.receiveBroadcastStream(<dynamic, dynamic>{}).listen(eventListen);
     return true;
+  }
+
+  Future<bool> sendEvent(dynamic arguments) async {
+    final bool? state = await curiosityChannel.invokeMethod<bool?>(
+        'sendCuriosityEvent', arguments);
+    return state ?? false;
   }
 
   /// 暂停消息流监听

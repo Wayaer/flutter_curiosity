@@ -19,36 +19,39 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
     func initPickerController() {
         if _controller == nil {
             _controller = UIImagePickerController()
+            _controller!.delegate = self
         }
     }
 
     // 打开相机
     func openSystemCamera() {
         initPickerController()
-        open(sourceType: UIImagePickerController.SourceType.camera)
+        _controller?.sourceType = UIImagePickerController.SourceType.camera
+        open()
     }
 
     // 打开相册
     func openSystemGallery() {
         initPickerController()
-        open(sourceType: UIImagePickerController.SourceType.photoLibrary)
+        _controller?.sourceType = UIImagePickerController.SourceType.photoLibrary
+        open()
     }
 
     // 打开相簿
     func openSystemAlbum() {
         initPickerController()
-        open(sourceType: UIImagePickerController.SourceType.savedPhotosAlbum)
+        _controller?.sourceType = UIImagePickerController.SourceType.savedPhotosAlbum
+        open()
     }
 
-    private func open(sourceType: UIImagePickerController.SourceType) {
-        if _controller != nil, UIImagePickerController.isSourceTypeAvailable(sourceType) {
+    private func open() {
+        if _controller != nil, UIImagePickerController.isSourceTypeAvailable(_controller!.sourceType) {
             let data = _call.arguments as? [AnyHashable: Any?]
             let allowsEditing = data!["allowsEditing"] as! Bool?
 
-            _controller!.delegate = self
             _controller!.allowsEditing = allowsEditing ?? false
-            _controller!.sourceType = sourceType
-            if sourceType == UIImagePickerController.SourceType.camera {
+
+            if _controller!.sourceType == UIImagePickerController.SourceType.camera {
                 let flashMode = data!["flashMode"] as! Int?
                 let isFront = data!["isFront"] as! Bool?
                 let hasSound = data!["hasSound"] as! Bool?
@@ -75,22 +78,22 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 _controller!.videoQuality = UIImagePickerController.QualityType(rawValue: qualityType!)!
                 _controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode(rawValue: flashMode!)!
             }
-
             UIApplication.shared.delegate?.window??.rootViewController?.present(_controller!, animated: true, completion: nil)
         }
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        _controller?.dismiss(animated: true, completion: { [self] in
-            if _controller?.sourceType == UIImagePickerController.SourceType.photoLibrary {
+        _controller!.dismiss(animated: true, completion: { [self] in
+            if _controller!.sourceType == UIImagePickerController.SourceType.photoLibrary {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
                     _result(url?.absoluteString)
+                    _controller = nil
                     return
                 }
             }
 
-            if _controller?.sourceType == UIImagePickerController.SourceType.camera {
+            if _controller!.sourceType == UIImagePickerController.SourceType.camera {
                 let image = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.originalImage.rawValue)] as! UIImage
                 var localId: String?
 
@@ -101,25 +104,29 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 } completionHandler: { _, _ in
                     let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: [localId!], options: nil)
                     assetResult.firstObject?.requestContentEditingInput(with: nil, completionHandler: { content, _ in
-                        self._result(content?.fullSizeImageURL?.absoluteString)
+                        _result(content?.fullSizeImageURL?.absoluteString)
+                        _controller = nil
                     })
                 }
                 return
             }
-            if _controller?.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
+            if _controller!.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
                     _result(url?.absoluteString)
+                    _controller = nil
                     return
                 }
             }
-            self._result(nil)
+            _result(nil)
+            _controller = nil
         })
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        _controller?.dismiss(animated: true, completion: {
-            self._result(nil)
+        _controller?.dismiss(animated: true, completion: { [self] in
+            _result(nil)
+            _controller = nil
         })
     }
 
