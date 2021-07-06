@@ -25,7 +25,7 @@ class ScannerTools {
         return nil
     }
 
-    static func availableCameras() -> [AnyHashable: Any?]? {
+    static func availableCameras() -> [[AnyHashable: Any?]] {
         if #available(iOS 10.0, *) {
             let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera], mediaType: AVMediaType.video, position: AVCaptureDevice.Position.unspecified)
 
@@ -47,8 +47,9 @@ class ScannerTools {
                     "lensFacing": lensFacing
                 ])
             }
+            return reply
         }
-        return nil
+        return []
     }
 
     // 转换map

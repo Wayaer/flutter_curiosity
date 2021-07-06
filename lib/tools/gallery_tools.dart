@@ -91,7 +91,6 @@ Future<String?> openSystemGallery({GalleryOptions? options}) async {
 Future<String?> openSystemCamera({GalleryOptions? options}) async {
   if (!supportPlatformMobile) return null;
   options ??= GalleryOptions();
-  log(options.toMap());
   String? path =
       await curiosityChannel.invokeMethod('openSystemCamera', options.toMap());
   if (isAndroid && options.savePath != null) path = options.savePath;
@@ -102,7 +101,6 @@ Future<String?> openSystemCamera({GalleryOptions? options}) async {
 Future<String?> openSystemAlbum({GalleryOptions? options}) async {
   if (!isIOS) return null;
   options ??= GalleryOptions();
-  log(options.toMap());
   final String? path =
       await curiosityChannel.invokeMethod('openSystemAlbum', options.toMap());
   return path?.replaceFirst('file:///', '');

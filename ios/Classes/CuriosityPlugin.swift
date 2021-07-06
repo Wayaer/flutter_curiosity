@@ -79,7 +79,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         case "availableCameras":
             result(ScannerTools.availableCameras())
         case "initializeCameras":
-            if scanner == nil, curiosityEvent != nil {
+           if scanner == nil, curiosityEvent != nil {
                 scanner = ScannerView(call: call, result: result, event: curiosityEvent!, registrar: registrar)
                 return
             }

@@ -8,13 +8,9 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     var _captureSession: AVCaptureSession?
     // 获取相机设备
     var _captureDevice: AVCaptureDevice?
-    // 视频输入
-    var _captureVideoInput: AVCaptureInput?
     // 视频输出
-    var _captureOutput: AVCaptureMetadataOutput?
-    // 视频输出2
     var _captureVideoOutput: AVCaptureVideoDataOutput?
-   
+
     var _latestPixelBuffer: CVPixelBuffer?
     
     var _previewSize: CGSize?
@@ -25,7 +21,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     
     var _result: FlutterResult
     
-    var viewId: Int64?
+    var textureId: Int64?
     
     init(call: FlutterMethodCall, result: @escaping FlutterResult, event: CuriosityEvent, registrar: FlutterPluginRegistrar) {
         _registrar = registrar
@@ -40,38 +36,50 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
             return
         }
         _captureSession = AVCaptureSession()
-        _captureDevice = AVCaptureDevice(uniqueID: cameraId!!)!
-        let queue = DispatchQueue(label: "curiosity.captureQueue")
+        _captureDevice = AVCaptureDevice(uniqueID: cameraId!!)
+       
+        _captureDevice!.addObserver(self, forKeyPath: #keyPath(AVCaptureDevice.torchMode), options: .new, context: nil)
+        _captureSession!.beginConfiguration()
+        
+        // Add device input.
+        var videoInput: AVCaptureInput?
         do {
-            _captureVideoInput = try AVCaptureDeviceInput(device: _captureDevice!)
+            videoInput = try AVCaptureDeviceInput(device: _captureDevice!)
+            _captureSession!.addInput(videoInput!)
         } catch {
             result(nil)
             return
         }
+        // Add video output.
         _captureVideoOutput = AVCaptureVideoDataOutput()
-        _captureOutput = AVCaptureMetadataOutput()
-     
         _captureVideoOutput!.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         _captureVideoOutput!.alwaysDiscardsLateVideoFrames = true
-        _captureVideoOutput!.setSampleBufferDelegate(self, queue: queue)
-//
-        let connection = AVCaptureConnection(inputPorts: _captureVideoInput!.ports, output: _captureVideoOutput!)
-        
-        if _captureDevice!.position == AVCaptureDevice.Position.front {
-            connection.isVideoMirrored = true
-        }
-        _captureSession!.addInput(_captureVideoInput!)
-        _captureSession!.addOutput(_captureVideoOutput!)
+        _captureVideoOutput!.setSampleBufferDelegate(self, queue: DispatchQueue.main)
      
-        _captureOutput!.setMetadataObjectsDelegate(self, queue: queue)
-        _captureSession!.addOutput(_captureOutput!)
-        _captureOutput!.metadataObjectTypes = _captureOutput!.availableMetadataObjectTypes
+        _captureSession!.addOutput(_captureVideoOutput!)
+//        let connection = AVCaptureConnection(inputPorts: _captureVideoInput!.ports, output: _captureVideoOutput!)
+        
+        for connection in _captureVideoOutput!.connections {
+            connection.videoOrientation = .portrait
+            if _captureDevice!.position == .front, connection.isVideoMirroringSupported {
+                connection.isVideoMirrored = true
+            }
+        }
+        
+//        if _captureDevice!.position == AVCaptureDevice.Position.front {
+        ////            connection.isVideoMirrored = true
+        ////            _captureSession.customMirror=ViedeoMirr
+//        }
+        // Add metadata output.
+        let captureOutput = AVCaptureMetadataOutput()
+//        captureOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+      
+        captureOutput.metadataObjectTypes = captureOutput.availableMetadataObjectTypes
         // 扫码区域的大小
 //        var layer = AVCaptureVideoPreviewLayer(layer: _captureSession)
 //        layer.frame = CGRectMake(left, top, size, size)
 //        _captureOutput.rectOfInterest
-        _captureOutput!.setMetadataObjectsDelegate(self, queue: queue)
-        _captureOutput!.metadataObjectTypes = [
+        captureOutput.metadataObjectTypes = [
             AVMetadataObject.ObjectType.aztec,
             AVMetadataObject.ObjectType.code39,
             AVMetadataObject.ObjectType.code93,
@@ -84,10 +92,25 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
             AVMetadataObject.ObjectType.upce,
             AVMetadataObject.ObjectType.code39Mod43,
         ]
-       
-        _captureSession!.addConnection(connection)
+        captureOutput.setMetadataObjectsDelegate(self, queue: DispatchQueue.main)
+        _captureSession!.addOutput(captureOutput)
+        
+        
+        _captureSession!.commitConfiguration()
+        
+//        _captureSession?.removeConnection(connection)
+//        _captureSession?.addConnection(connection)
+//        _captureSession?.canAddConnection(connection)
         setCaptureSessionPreset(resolutionPreset!!)
-        viewId = registrar.textures().register(self)
+        print("相机创建完毕")
+        textureId = registrar.textures().register(self)
+        _result([
+            "cameraState": "onOpened",
+            "textureId": textureId!,
+            "previewWidth": _previewSize!.width,
+            "previewHeight": _previewSize!.height,
+        ])
+        _captureSession!.startRunning()
     }
 
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
@@ -114,14 +137,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
 //                CFRelease(old)
 //            }
         
-            _registrar.textures().textureFrameAvailable(viewId!)
-            _result([
-                "cameraState": "onOpened",
-                "textureId": viewId!,
-                "previewWidth": _previewSize!.width,
-                "previewHeight": _previewSize!.height,
-            ])
-            _captureSession!.startRunning()
+            _registrar.textures().textureFrameAvailable(textureId!)
         }
     }
 
@@ -151,7 +167,10 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
 //            pixelBuffer = _latestPixelBuffer!
 //        }
 //        return _latestPixelBuffer
-        nil
+        if _latestPixelBuffer == nil {
+            return nil
+        }
+        return Unmanaged<CVPixelBuffer>.passRetained(_latestPixelBuffer!)
     }
     
     func close() {
@@ -162,7 +181,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         for output in _captureSession!.outputs {
             _captureSession!.removeOutput(output)
         }
-        _registrar.textures().unregisterTexture(viewId!)
+        _registrar.textures().unregisterTexture(textureId!)
         _result(true)
     }
     

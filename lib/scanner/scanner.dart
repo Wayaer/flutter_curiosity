@@ -118,6 +118,7 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   Future<void> getCameras() async {
     Cameras? camera;
     final List<Cameras>? cameras = await controller!.availableCameras();
+    print(cameras);
     if (cameras == null) return;
     for (final Cameras cameraInfo in cameras) {
       if (cameraInfo.lensFacing == widget.lensFacing) {
@@ -143,7 +144,6 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
       previewHeight = previewHeight * p;
       setState(() {});
       if (controller!.cameraState == null) return;
-      log('cameraState ' + controller!.cameraState!);
     });
   }
 
@@ -242,13 +242,12 @@ class ScannerController extends ChangeNotifier {
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1);
 
-  final Cameras? camera;
   final double topRatio;
   final double leftRatio;
   final double widthRatio;
   final double heightRatio;
   final CameraResolution resolution;
-
+  Cameras? camera;
   ScanResult? scanResult;
   int? textureId;
   double? previewWidth;
@@ -256,16 +255,23 @@ class ScannerController extends ChangeNotifier {
   String? cameraState;
 
   Future<void> initialize({Cameras? cameras}) async {
-    if (cameras == null && camera == null) return;
+    if (cameras != null) camera = cameras;
+    if (camera == null) return;
     try {
       final Map<String, dynamic> arguments = <String, dynamic>{
-        'cameraId': cameras?.name ?? camera!.name,
+        'cameraId': camera!.name,
         'resolutionPreset': resolution.toString().split('.')[1],
         'topRatio': topRatio,
         'leftRatio': leftRatio,
         'widthRatio': widthRatio,
         'heightRatio': heightRatio,
       };
+
+      /// 先初始化 消息通道
+      final CuriosityEvent event = CuriosityEvent.instance;
+      final bool eventState = await event.initialize();
+
+      /// 初始化相机组件
       final Map<String, dynamic>? reply = await curiosityChannel
           .invokeMapMethod<String, dynamic>('initializeCameras', arguments);
       if (reply == null) return;
@@ -273,8 +279,6 @@ class ScannerController extends ChangeNotifier {
       cameraState = reply['cameraState'] as String?;
       previewWidth = double.parse(reply['previewWidth'].toString());
       previewHeight = double.parse(reply['previewHeight'].toString());
-      final CuriosityEvent event = CuriosityEvent.instance;
-      final bool eventState = await event.initialize();
       if (eventState) {
         event.addListener((dynamic data) {
           scanResult = ScanResult.fromJson(data as Map<dynamic, dynamic>);

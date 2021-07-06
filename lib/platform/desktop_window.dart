@@ -112,7 +112,6 @@ void setDesktopSizeToIPad9P7({double p = 1}) {
   if (!supportPlatformDesktop) return;
   assert(p <= 2);
   final Size size = Size(768 / p, 1024 / p);
-  log(size);
   setDesktopWindowSize(size);
   setDesktopMinWindowSize(size);
   setDesktopMaxWindowSize(size);

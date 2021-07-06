@@ -53,6 +53,15 @@ class _AppState extends State<App> {
         setDesktopSizeToIPad9P7(p: 1);
       });
     }
+    1.seconds.delayed(() {
+      requestPermissions(Permission.camera, '相机').then((value) {
+        if (value) {
+          push(ScannerView(scanResult: (String value) {
+            log(value);
+          }));
+        }
+      });
+    });
   }
 
   @override
