@@ -14,38 +14,49 @@ Future<Size?> getDesktopWindowSize() async {
   return null;
 }
 
-Future<void> setDesktopWindowSize(Size size) async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('setWindowSize',
+Future<bool> setDesktopWindowSize(Size size) async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel.invokeMethod<bool?>(
+      'setWindowSize',
       <String, double>{'width': size.width, 'height': size.height});
+  return state ?? false;
 }
 
-Future<void> setDesktopMinWindowSize(Size size) async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('setMinWindowSize',
+Future<bool> setDesktopMinWindowSize(Size size) async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel.invokeMethod<bool?>(
+      'setMinWindowSize',
       <String, double>{'width': size.width, 'height': size.height});
+  return state ?? false;
 }
 
-Future<void> setDesktopMaxWindowSize(Size size) async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('setMaxWindowSize',
+Future<bool> setDesktopMaxWindowSize(Size size) async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel.invokeMethod<bool?>(
+      'setMaxWindowSize',
       <String, double>{'width': size.width, 'height': size.height});
+  return state ?? false;
 }
 
-Future<void> resetDesktopMaxWindowSize() async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('resetMaxWindowSize');
+Future<bool> resetDesktopMaxWindowSize() async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state =
+      await curiosityChannel.invokeMethod<bool?>('resetMaxWindowSize');
+  return state ?? false;
 }
 
-Future<void> toggleDesktopFullScreen() async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('toggleFullScreen');
+Future<bool> toggleDesktopFullScreen() async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state =
+      await curiosityChannel.invokeMethod<bool?>('toggleFullScreen');
+  return state ?? false;
 }
 
-Future<void> setDesktopFullScreen(bool fullscreen) async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>(
+Future<bool> setDesktopFullScreen(bool fullscreen) async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel.invokeMethod<bool?>(
       'setFullScreen', <String, bool>{'fullscreen': fullscreen});
+  return state ?? false;
 }
 
 Future<bool?> getDesktopFullScreen() async {
@@ -59,94 +70,71 @@ Future<bool?> getDesktopFullScreen() async {
 Future<bool> get hasDesktopBorders async {
   if (!supportPlatformDesktop) return false;
   final bool? hasBorders =
-      await curiosityChannel.invokeMethod<bool>('hasBorders');
+      await curiosityChannel.invokeMethod<bool?>('hasBorders');
   if (hasBorders is bool) return hasBorders;
   return hasBorders ?? false;
 }
 
-Future<void> toggleDesktopBorders() async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('toggleBorders');
+Future<bool> toggleDesktopBorders() async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state =
+      await curiosityChannel.invokeMethod<bool?>('toggleBorders');
+  return state ?? false;
 }
 
-Future<void> setDesktopBorders(bool border) async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel
-      .invokeMethod<dynamic>('setBorders', <String, dynamic>{'border': border});
+Future<bool> setDesktopBorders(bool border) async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel
+      .invokeMethod<bool?>('setBorders', <String, dynamic>{'border': border});
+  return state ?? false;
 }
 
-Future<void> stayOnTopWithDesktop([bool stayOnTop = true]) async {
-  if (!supportPlatformDesktop) return;
-  if (!isWeb && (isWindows || isLinux || isMacOS))
-    curiosityChannel.invokeMethod<dynamic>(
-        'stayOnTop', <String, dynamic>{'stayOnTop': stayOnTop});
+Future<bool> stayOnTopWithDesktop([bool stayOnTop = true]) async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel.invokeMethod<bool?>(
+      'stayOnTop', <String, dynamic>{'stayOnTop': stayOnTop});
+  return state ?? false;
 }
 
-Future<void> focusDesktop() async {
-  if (!supportPlatformDesktop) return;
-  curiosityChannel.invokeMethod<dynamic>('focus');
+Future<bool> focusDesktop() async {
+  if (!supportPlatformDesktop) return false;
+  final bool? state = await curiosityChannel.invokeMethod<bool?>('focus');
+  return state ?? false;
 }
 
 /// set desktop size to iphone 4.7
-void setDesktopSizeTo4P7({double p = 1}) {
-  if (!supportPlatformDesktop) return;
-  final Size size = Size(375 / p, 667 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
-}
+Future<bool> setDesktopSizeTo4P7({double p = 1}) =>
+    _setDesktopSize(Size(375 / p, 667 / p));
 
 /// set desktop size to iphone 5.5
-void setDesktopSizeTo5P5({double p = 1}) {
-  if (!supportPlatformDesktop) return;
-  final Size size = Size(414 / p, 736 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
-}
+Future<bool> setDesktopSizeTo5P5({double p = 1}) =>
+    _setDesktopSize(Size(414 / p, 736 / p));
 
 /// set desktop size to iphone 5.8
-void setDesktopSizeTo5P8({double p = 1}) {
-  if (!supportPlatformDesktop) return;
-  final Size size = Size(375 / p, 812 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
-}
+Future<bool> setDesktopSizeTo5P8({double p = 1}) =>
+    _setDesktopSize(Size(375 / p, 812 / p));
 
 /// set desktop size to iphone 6.1
-void setDesktopSizeTo6P1({double p = 1}) {
-  if (!supportPlatformDesktop) return;
-  final Size size = Size(414 / p, 896 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
-}
+Future<bool> setDesktopSizeTo6P1({double p = 1}) =>
+    _setDesktopSize(Size(414 / p, 896 / p));
 
 /// set desktop size to ipad 11
-void setDesktopSizeToIPad11({double p = 1}) {
-  if (!supportPlatformDesktop) return;
-  final Size size = Size(834 / p, 1194 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
-}
+Future<bool> setDesktopSizeToIPad11({double p = 1}) =>
+    _setDesktopSize(Size(834 / p, 1194 / p));
 
 /// set desktop size to ipad 10.5
-void setDesktopSizeToIPad10P5({double p = 1}) {
-  if (!supportPlatformDesktop) return;
-  final Size size = Size(834 / p, 1112 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
-}
+Future<bool> setDesktopSizeToIPad10P5({double p = 1}) =>
+    _setDesktopSize(Size(834 / p, 1112 / p));
 
 /// set desktop size to ipad 9.7 or 7.9
-void setDesktopSizeToIPad9P7({double p = 1}) {
-  if (!supportPlatformDesktop) return;
+Future<bool> setDesktopSizeToIPad9P7({double p = 1}) async {
   assert(p <= 2);
-  final Size size = Size(768 / p, 1024 / p);
-  setDesktopWindowSize(size);
-  setDesktopMinWindowSize(size);
-  setDesktopMaxWindowSize(size);
+  return await _setDesktopSize(Size(768 / p, 1024 / p));
+}
+
+Future<bool> _setDesktopSize(Size size) async {
+  final bool _size = await setDesktopWindowSize(size);
+  final bool _min = await setDesktopMinWindowSize(size);
+  final bool _max = await setDesktopMaxWindowSize(size);
+  return _size && _min && _max;
 }

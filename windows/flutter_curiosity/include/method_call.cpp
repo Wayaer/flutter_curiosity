@@ -1,7 +1,7 @@
 #include "method_call.h"
 #include "borders.h"
 
-namespace DesktopWindowMethodCall
+namespace CuriosityPluginMethodCall
 {
     MethodCall::MethodCall(const flutter::MethodCall<flutter::EncodableValue> &Cmethod_call,
                            std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> Cresult): method_call(Cmethod_call)

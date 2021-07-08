@@ -6,7 +6,7 @@
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
 
-namespace DesktopWindowMethodCall
+namespace CuriosityPluginMethodCall
 {
     class MethodCall
     {
@@ -29,4 +29,4 @@ namespace DesktopWindowMethodCall
     };
 }
 
-#endif // FLUTTER_PLUGIN_DESKTOP_WINDOW_PLUGIN_WINDOW_METHOD_CALL_
+#endif

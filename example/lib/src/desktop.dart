@@ -22,10 +22,37 @@ class _DesktopPageState extends State<DesktopPage> {
             children: <Widget>[
               Container(
                   height: 40,
-                  margin: const EdgeInsets.only(bottom: 10),
+                  margin: const EdgeInsets.all(10),
                   alignment: Alignment.center,
                   color: Colors.grey.withOpacity(0.3),
-                  child: BasisText(text, color: Colors.black)),
+                  child: BasisText(text, color: Colors.black, height: 1.5)),
+              Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 10,
+                  children: const <Widget>[
+                    ElevatedText(
+                        onPressed: setDesktopSizeTo4P7,
+                        text: 'setDesktopSizeTo4P7'),
+                    ElevatedText(
+                        onPressed: setDesktopSizeTo5P5,
+                        text: 'setDesktopSizeTo5P5'),
+                    ElevatedText(
+                        onPressed: setDesktopSizeTo5P8,
+                        text: 'setDesktopSizeTo5P8'),
+                    ElevatedText(
+                        onPressed: setDesktopSizeTo6P1,
+                        text: 'setDesktopSizeTo6P1'),
+                    ElevatedText(
+                        onPressed: setDesktopSizeToIPad11,
+                        text: 'setDesktopSizeToIPad11'),
+                    ElevatedText(
+                        onPressed: setDesktopSizeToIPad10P5,
+                        text: 'setDesktopSizeToIPad10P5'),
+                    ElevatedText(
+                        onPressed: setDesktopSizeToIPad9P7,
+                        text: 'setDesktopSizeToIPad9P7'),
+                  ]),
+              const SizedBox(height: 20),
               ElevatedText(
                   onPressed: () async {
                     final Size? size = await getDesktopWindowSize();
@@ -34,65 +61,55 @@ class _DesktopPageState extends State<DesktopPage> {
                   },
                   text: 'getDesktopWindowSize'),
               ElevatedText(
-                  onPressed: () => setDesktopWindowSize(const Size(600, 600)),
+                  onPressed: () =>
+                      changeState(setDesktopWindowSize(const Size(600, 600))),
                   text: 'setDesktopWindowSize(600,600)'),
               ElevatedText(
-                  onPressed: () =>
-                      setDesktopMinWindowSize(const Size(300, 300)),
+                  onPressed: () => changeState(
+                      setDesktopMinWindowSize(const Size(300, 300))),
                   text: 'setDesktopMinWindowSize(300,300)'),
               ElevatedText(
-                  onPressed: () =>
-                      setDesktopMaxWindowSize(const Size(900, 900)),
+                  onPressed: () => changeState(
+                      setDesktopMaxWindowSize(const Size(900, 900))),
                   text: 'setDesktopMaxWindowSize(900,900)'),
               ElevatedText(
-                  onPressed: () => resetDesktopMaxWindowSize(),
+                  onPressed: () => changeState(resetDesktopMaxWindowSize()),
                   text: 'resetDesktopMaxWindowSize'),
               ElevatedText(
-                  onPressed: () => toggleDesktopFullScreen(),
+                  onPressed: () => changeState(toggleDesktopFullScreen()),
                   text: 'toggleDesktopFullScreen'),
               ElevatedText(
-                  onPressed: () => setDesktopFullScreen(true),
+                  onPressed: () => changeState(setDesktopFullScreen(true)),
                   text: 'setDesktopFullScreen true'),
               ElevatedText(
-                  onPressed: () => setDesktopFullScreen(false),
+                  onPressed: () => changeState(setDesktopFullScreen(false)),
                   text: 'setDesktopFullScreen false'),
               ElevatedText(
-                  onPressed: () async {
-                    final bool? full = await getDesktopFullScreen();
-                    text = full.toString();
-                    setState(() {});
-                  },
+                  onPressed: () => changeState(getDesktopFullScreen()),
                   text: 'getDesktopFullScreen'),
               ElevatedText(
-                  onPressed: () async {
-                    final bool? hasBorders = await hasDesktopBorders;
-                    text = hasBorders.toString();
-                    setState(() {});
-                  },
+                  onPressed: () => changeState(hasDesktopBorders),
                   text: 'hasDesktopBorders'),
-              const ElevatedText(
-                  onPressed: toggleDesktopBorders,
+              ElevatedText(
+                  onPressed: () => changeState(toggleDesktopBorders()),
                   text: 'toggleDesktopBorders'),
               ElevatedText(
-                  onPressed: () => setDesktopBorders(true),
+                  onPressed: () => changeState(setDesktopBorders(true)),
                   text: 'setDesktopBorders'),
-              const ElevatedText(
-                  onPressed: stayOnTopWithDesktop,
+              ElevatedText(
+                  onPressed: () => changeState(stayOnTopWithDesktop()),
                   text: 'stayOnTopWithDesktop'),
+              ElevatedText(
+                  onPressed: () => changeState(stayOnTopWithDesktop(false)),
+                  text: 'stayOnTopWithDesktop (false)'),
               const ElevatedText(onPressed: focusDesktop, text: 'focusDesktop'),
-              const SizedBox(height: 10),
-              ElevatedText(
-                  onPressed: () => setDesktopSizeTo4P7(),
-                  text: 'setDesktopSizeTo4P7'),
-              ElevatedText(
-                  onPressed: () => setDesktopSizeTo5P5(),
-                  text: 'setDesktopSizeTo5P5'),
-              ElevatedText(
-                  onPressed: () => setDesktopSizeTo5P8(),
-                  text: 'setDesktopSizeTo5P8'),
-              ElevatedText(
-                  onPressed: () => setDesktopSizeTo6P1(),
-                  text: 'setDesktopSizeTo6P1'),
             ]));
+  }
+
+  void changeState(Future<dynamic> state) {
+    state.then((dynamic value) {
+      text = 'hashCode(${state.hashCode}): ' + value.toString();
+      setState(() {});
+    });
   }
 }

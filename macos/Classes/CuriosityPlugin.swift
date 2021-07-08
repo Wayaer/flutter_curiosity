@@ -57,9 +57,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             if #available(macOS 10.15, *) { let arguments = call.arguments as! [AnyHashable: Any?]
                 let useEvent = arguments["useEvent"] as! Bool?
                 let uint8list = arguments["byte"] as! FlutterStandardTypedData?
-
                 let code = ScannerTools.scanImageByte(uint8list)
-
                 if useEvent != nil, useEvent! {
                     curiosityEvent?.sendEvent(arguments: code)
                     return
@@ -74,113 +72,32 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
                 result(nil)
             }
         case "getWindowSize":
-            let window = NSApplication.shared.mainWindow
-            let width = window?.frame.size.width
-            let height = window?.frame.size.height
-            result([width, height])
+            result(DesktopTools.getWindowSize())
         case "setWindowSize":
-            let window = NSApplication.shared.mainWindow
-            if window != nil, let width: Float = (call.arguments as? [String: Any])?["width"] as? Float,
-               let height: Float = (call.arguments as? [String: Any])?["height"] as? Float
-            {
-                var rect = window!.frame
-                rect.origin.y += (rect.size.height - CGFloat(height))
-                rect.size.width = CGFloat(width)
-                rect.size.height = CGFloat(height)
-                window!.setFrame(rect, display: true)
-            }
-            result(true)
+            result(DesktopTools.setWindowSize(call))
         case "setMinWindowSize":
-            let window = NSApplication.shared.mainWindow
-            if window != nil, let width: Float = (call.arguments as? [String: Any])?["width"] as? Float,
-               let height: Float = (call.arguments as? [String: Any])?["height"] as? Float
-            {
-                window!.minSize = CGSize(width: CGFloat(width), height: CGFloat(height))
-            }
-            result(true)
+            result(DesktopTools.setMinWindowSize(call))
         case "setMaxWindowSize":
-            let window = NSApplication.shared.mainWindow
-            if window != nil, let width: Float = (call.arguments as? [String: Any])?["width"] as? Float,
-               let height: Float = (call.arguments as? [String: Any])?["height"] as? Float
-            {
-                if width == 0 || height == 0 {
-                    window!.maxSize = CGSize(
-                        width: CGFloat(Float.greatestFiniteMagnitude),
-                        height: CGFloat(Float.greatestFiniteMagnitude))
-                } else {
-                    window?.maxSize = CGSize(width: CGFloat(width), height: CGFloat(height))
-                }
-            }
-            result(true)
-
+            result(DesktopTools.setMaxWindowSize(call))
         case "resetMaxWindowSize":
-            let window = NSApplication.shared.mainWindow
-            if window != nil {
-                window!.maxSize = CGSize(
-                    width: CGFloat(Float.greatestFiniteMagnitude),
-                    height: CGFloat(Float.greatestFiniteMagnitude))
-            }
-            result(true)
-
+            result(DesktopTools.resetMaxWindowSize())
         case "toggleFullScreen":
-            let window = NSApplication.shared.mainWindow
-            if window != nil { window!.toggleFullScreen(nil) }
-            result(true)
+            result(DesktopTools.toggleFullScreen())
         case "setFullScreen":
-            let window = NSApplication.shared.mainWindow
-            if window != nil, let bFullScreen: Bool = (call.arguments as? [String: Any])?["fullscreen"] as? Bool {
-                if bFullScreen {
-                    if !window!.styleMask.contains(.fullScreen) {
-                        window!.toggleFullScreen(nil)
-                    }
-                } else {
-                    if window!.styleMask.contains(.fullScreen) {
-                        window!.toggleFullScreen(nil)
-                    }
-                }
-                result(true)
-                return
-            }
-            result(false)
+            result(DesktopTools.setFullScreen(call))
         case "getFullScreen":
-            let window = NSApplication.shared.mainWindow
-            result(window?.styleMask.contains(.fullScreen))
+            result(DesktopTools.getFullScreen())
         case "toggleBorders":
-            let window = NSApplication.shared.mainWindow
-            if window != nil {
-                if window!.styleMask.contains(.borderless) {
-                    window!.styleMask.remove(.borderless)
-                } else {
-                    window!.styleMask.insert(.borderless)
-                }
-            }
-            result(true)
+            result(DesktopTools.toggleBorders())
         case "setBorders":
-            let window = NSApplication.shared.mainWindow
-            if window != nil, let bBorders: Bool = (call.arguments as? [String: Any])?["borders"] as? Bool {
-                if window!.styleMask.contains(.borderless) == bBorders {
-                    if bBorders {
-                        window!.styleMask.remove(.borderless)
-                    } else {
-                        window!.styleMask.insert(.borderless)
-                    }
-                }
-                result(true)
-                return
-            }
-            result(false)
+            result(DesktopTools.setBorders(call))
         case "hasBorders":
-            let window = NSApplication.shared.mainWindow
-            result(!(window?.styleMask.contains(.borderless) ?? false))
+            result(DesktopTools.hasBorders())
         case "focus":
             NSApplication.shared.activate(ignoringOtherApps: true)
             result(true)
         case "stayOnTop":
-            let window = NSApplication.shared.mainWindow
-            if window != nil, let bstayOnTop: Bool = (call.arguments as? [String: Any])?["stayOnTop"] as? Bool {
-                window!.level = bstayOnTop ? .floating : .normal
-            }
-            result(true)
+            result(DesktopTools.stayOnTop(call))
         default:
             result(FlutterMethodNotImplemented)
         }

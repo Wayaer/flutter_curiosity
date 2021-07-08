@@ -114,7 +114,6 @@ CuriosityPlugin::~CuriosityPlugin() {}
   {
     maxWidth = 0;
     maxHeight = 0;
-
     result->Success(flutter::EncodableValue(true));
   }
 
@@ -145,7 +144,6 @@ CuriosityPlugin::~CuriosityPlugin() {}
 
     minWidth = int(width + 0.5);
     minHeight = int(height + 0.5);
-
     result->Success(flutter::EncodableValue(true));
   }
   void setMaxWindowSize(const flutter::MethodCall<flutter::EncodableValue> &method_call,
