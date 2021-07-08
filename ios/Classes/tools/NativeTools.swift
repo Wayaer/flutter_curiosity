@@ -24,7 +24,7 @@ class NativeTools {
             ]
         ]
     }
-
+    
     static func getUTS(_ subject: Any) -> String {
         let mirror = Mirror(reflecting: subject)
         let identifier = mirror.children.reduce("") { identifier, element in
@@ -33,24 +33,24 @@ class NativeTools {
         }
         return identifier
     }
-
+    
     static func getAppPath() -> [AnyHashable: Any?]? {
         [
             "homeDirectory": NSHomeDirectory(),
-            "documentDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.documentDirectory),
-            "libraryDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.libraryDirectory),
-            "cachesDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.cachesDirectory),
-            "directoryMusic": getDirectoryOfType(FileManager.SearchPathDirectory.musicDirectory),
-            "directoryDownloads": getDirectoryOfType(FileManager.SearchPathDirectory.downloadsDirectory),
-            "directoryMovies": getDirectoryOfType(FileManager.SearchPathDirectory.moviesDirectory),
-            "directoryPictures": getDirectoryOfType(FileManager.SearchPathDirectory.picturesDirectory),
-            "directoryDocuments": getDirectoryOfType(FileManager.SearchPathDirectory.documentDirectory),
-            "applicationSupportDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.applicationSupportDirectory),
-            "applicationDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.applicationDirectory),
+            "documentDirectory": getDirectoryOfType(.documentDirectory),
+            "libraryDirectory": getDirectoryOfType(.libraryDirectory),
+            "cachesDirectory": getDirectoryOfType(.cachesDirectory),
+            "directoryMusic": getDirectoryOfType(.musicDirectory),
+            "directoryDownloads": getDirectoryOfType(.downloadsDirectory),
+            "directoryMovies": getDirectoryOfType(.moviesDirectory),
+            "directoryPictures": getDirectoryOfType(.picturesDirectory),
+            "directoryDocuments": getDirectoryOfType(.documentDirectory),
+            "applicationSupportDirectory": getDirectoryOfType(.applicationSupportDirectory),
+            "applicationDirectory": getDirectoryOfType(.applicationDirectory),
             "temporaryDirectory": NSTemporaryDirectory()
         ]
     }
-
+    
     static func getAppInfo() -> [AnyHashable: Any?]? {
         let appInfo = Bundle.main.infoDictionary
         let statusBar = UIApplication.shared.statusBarFrame
@@ -67,12 +67,12 @@ class NativeTools {
             "platformVersion": appInfo?["DTPlatformVersion"]
         ]
     }
-
+    
     static func getDirectoryOfType(_ directory: FileManager.SearchPathDirectory) -> String {
-        let path = NSSearchPathForDirectoriesInDomains(directory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        let path = NSSearchPathForDirectoriesInDomains(directory, .userDomainMask, true)
         return path.first! as String
     }
-
+    
     // 跳转到设置页面让用户自己手动开启
     static func openSystemSetting() -> Bool {
         let url = URL(string: UIApplication.openSettingsURLString)
@@ -84,7 +84,7 @@ class NativeTools {
         }
         return false
     }
-
+    
     // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
     static func getGPSStatus() -> Bool {
         CLLocationManager.locationServicesEnabled()

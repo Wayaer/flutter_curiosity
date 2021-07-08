@@ -22,13 +22,13 @@ class Tools {
         return (TARGET_IPHONE_SIMULATOR == 1) && (TARGET_OS_IPHONE == 1)
     }
     
-    static func isImageFile(_ path: String?) -> Bool {
-        return path?.hasSuffix(".jpg") ?? false
-            || path?.hasSuffix(".png") ?? false
-            || path?.hasSuffix(".PNG") ?? false
-            || path?.hasSuffix(".JPEG") ?? false
-            || path?.hasSuffix(".JPG") ?? false
-            || path?.hasSuffix(".GiF") ?? false
-            || path?.hasSuffix(".gif") ?? false
+    static func isImageFile(_ path: String) -> Bool {
+        return path.hasSuffix(".jpg")
+            || path.hasSuffix(".png")
+            || path.hasSuffix(".PNG")
+            || path.hasSuffix(".JPEG")
+            || path.hasSuffix(".JPG")
+            || path.hasSuffix(".GiF")
+            || path.hasSuffix(".gif")
     }
 }

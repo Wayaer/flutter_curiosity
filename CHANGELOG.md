@@ -1,3 +1,5 @@
+## [3.0.0]
+ * add [getAppPath()]、[getDeviceInfo()] 、[getAppInfo()]  support Android/IOS/MacOS
 ## [2.3.0]
  * remove [scanImageUrl()]、[scanImageMemory()]、
  * add [scanImageByte()]、[scanImageYUV()]

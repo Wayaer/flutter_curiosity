@@ -34,16 +34,16 @@ class NativeTools {
     static func getAppPath() -> [AnyHashable: Any?]? {
         [
             "homeDirectory": NSHomeDirectory(),
-            "documentDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.documentDirectory),
-            "libraryDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.libraryDirectory),
-            "cachesDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.cachesDirectory),
-            "directoryMusic": getDirectoryOfType(FileManager.SearchPathDirectory.musicDirectory),
-            "directoryDownloads": getDirectoryOfType(FileManager.SearchPathDirectory.downloadsDirectory),
-            "directoryMovies": getDirectoryOfType(FileManager.SearchPathDirectory.moviesDirectory),
-            "directoryPictures": getDirectoryOfType(FileManager.SearchPathDirectory.picturesDirectory),
-            "directoryDocuments": getDirectoryOfType(FileManager.SearchPathDirectory.documentDirectory),
-            "applicationSupportDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.applicationSupportDirectory),
-            "applicationDirectory": getDirectoryOfType(FileManager.SearchPathDirectory.applicationDirectory),
+            "documentDirectory": getDirectoryOfType(.documentDirectory),
+            "libraryDirectory": getDirectoryOfType(.libraryDirectory),
+            "cachesDirectory": getDirectoryOfType(.cachesDirectory),
+            "directoryMusic": getDirectoryOfType(.musicDirectory),
+            "directoryDownloads": getDirectoryOfType(.downloadsDirectory),
+            "directoryMovies": getDirectoryOfType(.moviesDirectory),
+            "directoryPictures": getDirectoryOfType(.picturesDirectory),
+            "directoryDocuments": getDirectoryOfType(.documentDirectory),
+            "applicationSupportDirectory": getDirectoryOfType(.applicationSupportDirectory),
+            "applicationDirectory": getDirectoryOfType(.applicationDirectory),
             "temporaryDirectory": NSTemporaryDirectory()
         ]
     }
@@ -63,7 +63,7 @@ class NativeTools {
     }
 
     static func getDirectoryOfType(_ directory: FileManager.SearchPathDirectory) -> String {
-        let path = NSSearchPathForDirectoriesInDomains(directory, FileManager.SearchPathDomainMask.userDomainMask, true)
+        let path = NSSearchPathForDirectoriesInDomains(directory, .userDomainMask, true)
         return path.first! as String
     }
 

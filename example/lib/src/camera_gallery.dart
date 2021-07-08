@@ -45,7 +45,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> systemGallery() async {
-    if (await requestPermissions(Permission.photos, '使用相册')) {
+    if (await getPermission(Permission.photos)) {
       final String? data = await openSystemGallery();
       print('systemGallery : $data');
       path = data;
@@ -57,7 +57,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   Future<void> systemCamera() async {
     if (!isMobile) return;
-    if (await requestPermissions(Permission.camera, '使用相机')) {
+    if (await getPermission(Permission.camera)) {
       final String? data = await openSystemCamera();
       print('systemCamera : $data');
       path = data;
@@ -69,7 +69,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   Future<void> systemAlbum() async {
     if (!isIOS) return;
-    if (await requestPermissions(Permission.photos, '使用相册')) {
+    if (await getPermission(Permission.photos)) {
       final String? data = await openSystemAlbum();
       print('systemAlbum : $data');
       path = data;

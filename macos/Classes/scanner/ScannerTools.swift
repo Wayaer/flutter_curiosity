@@ -27,18 +27,18 @@ enum ScannerTools {
     }
 
     static func availableCameras() -> [[AnyHashable: Any?]] {
-        let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera], mediaType: AVMediaType.video, position: AVCaptureDevice.Position.unspecified)
+        let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .unspecified)
 
         let devices = discoverySession.devices
         var reply: [[AnyHashable: Any?]] = []
         for device in devices {
             var lensFacing: String?
             switch device.position {
-            case AVCaptureDevice.Position.back:
+            case .back:
                 lensFacing = "back"
-            case AVCaptureDevice.Position.front:
+            case .front:
                 lensFacing = "front"
-            case AVCaptureDevice.Position.unspecified:
+            case .unspecified:
                 lensFacing = "external"
             default: break
             }

@@ -55,7 +55,8 @@ class _AppState extends State<App> {
     }
     if (isMobile)
       1.seconds.delayed(() {
-        requestPermissions(Permission.camera, '相机').then((bool value) {
+        getPermission(Permission.camera).then((bool value) {
+          log('是否获取相机权限&$value');
           if (value) {
             push(ScannerView(scanResult: (String value) {
               log(value);
@@ -109,16 +110,15 @@ Widget showText(dynamic key, dynamic value) {
           child: Text(key.toString() + ' = ' + value.toString())));
 }
 
-Future<bool> requestPermissions(Permission permission, String text) async {
-  if (isMobile) return false;
-  final PermissionStatus status = await permission.status;
-  if (status != PermissionStatus.granted) {
-    final Map<Permission, PermissionStatus> statuses =
-        await <Permission>[permission].request();
-    if (!(statuses[permission] == PermissionStatus.granted)) {
-      openAppSettings();
+Future<bool> getPermission(Permission permission) async {
+  PermissionStatus status = await permission.status;
+  if (!status.isGranted) {
+    status = await permission.request();
+    if (!status.isGranted) {
+      final bool has = await openAppSettings();
+      return has;
     }
-    return statuses[permission] == PermissionStatus.granted;
+    return status.isGranted;
   }
   return true;
 }
@@ -132,18 +132,17 @@ class ElevatedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Universal(
-        onTap: onPressed,
-        margin: const EdgeInsets.symmetric(vertical: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-        decoration: BoxDecoration(boxShadow: const <BoxShadow>[
-          BoxShadow(
-              color: color,
-              offset: Offset(0, 0),
-              blurRadius: 1.0,
-              spreadRadius: 1.0)
-        ], color: color, borderRadius: BorderRadius.circular(4)),
-        child: BText(text, color: Colors.black),
-      );
+      onTap: onPressed,
+      margin: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(boxShadow: const <BoxShadow>[
+        BoxShadow(
+            color: color,
+            offset: Offset(0, 0),
+            blurRadius: 1.0,
+            spreadRadius: 1.0)
+      ], color: color, borderRadius: BorderRadius.circular(4)),
+      child: BText(text, color: Colors.black));
 }
 
 class AppBarText extends AppBar {

@@ -10,7 +10,7 @@ Future<DeviceInfoModel?> getDeviceInfo() async {
   return null;
 }
 
-/// get app path
+/// get Android/IOS/MacOS path
 Future<AppPathModel?> getAppPath() async {
   if (!supportPlatform) return null;
   final Map<String, dynamic>? map =
@@ -19,7 +19,7 @@ Future<AppPathModel?> getAppPath() async {
   return null;
 }
 
-/// get App info
+/// get Android/IOS/MacOS info
 Future<AppInfoModel?> getAppInfo() async {
   if (!supportPlatform) return null;
   final Map<String, dynamic>? map =

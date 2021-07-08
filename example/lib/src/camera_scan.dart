@@ -40,8 +40,8 @@ class _ScannerPageState extends State<ScannerPage> {
 
   Future<void> scanImage() async {
     if (!isMobile) return;
-    final bool permission = await requestPermissions(Permission.camera, '相机') &&
-        await requestPermissions(Permission.storage, '手机存储');
+    final bool permission = await getPermission(Permission.camera) &&
+        await getPermission(Permission.storage);
     if (permission) {
       push(_CameraScanPage());
     } else {
@@ -51,8 +51,8 @@ class _ScannerPageState extends State<ScannerPage> {
 
   Future<void> scan() async {
     if (!isMobile) return;
-    final bool permission = await requestPermissions(Permission.camera, '相机') &&
-        await requestPermissions(Permission.storage, '手机存储');
+    final bool permission = await getPermission(Permission.camera) &&
+        await getPermission(Permission.storage);
     if (permission) {
       push(ScannerView(scanResult: (String value) {
         path = value;
@@ -192,7 +192,7 @@ class _FileImageScanPageState extends State<_FileImageScanPage> {
 
   Future<void> scanPath() async {
     if (path == null || path!.isEmpty) return showToast('请选择图片');
-    if (await requestPermissions(Permission.storage, '读取文件')) {
+    if (await getPermission(Permission.storage)) {
       final ScanResult? data = await scanImagePath(path!);
       code = data?.code ?? '未识别';
       type = data?.type ?? '未识别';
@@ -202,7 +202,7 @@ class _FileImageScanPageState extends State<_FileImageScanPage> {
 
   Future<void> scanByte() async {
     if (path == null || path!.isEmpty) return showToast('请选择图片');
-    if (await requestPermissions(Permission.storage, '读取文件')) {
+    if (await getPermission(Permission.storage)) {
       final File file = File(path!);
       final ScanResult? data = await scanImageByte(file.readAsBytesSync());
       code = data?.code ?? '未识别';

@@ -24,21 +24,21 @@ class ScannerTools {
         }
         return nil
     }
-
+    
     static func availableCameras() -> [[AnyHashable: Any?]] {
         if #available(iOS 10.0, *) {
-            let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [AVCaptureDevice.DeviceType.builtInWideAngleCamera], mediaType: AVMediaType.video, position: AVCaptureDevice.Position.unspecified)
-
+            let discoverySession = AVCaptureDevice.DiscoverySession(deviceTypes: [.builtInWideAngleCamera], mediaType: .video, position: .unspecified)
+            
             let devices = discoverySession.devices
             var reply: [[AnyHashable: Any?]] = []
             for device in devices {
                 var lensFacing: String?
                 switch device.position {
-                case AVCaptureDevice.Position.back:
+                case .back:
                     lensFacing = "back"
-                case AVCaptureDevice.Position.front:
+                case .front:
                     lensFacing = "front"
-                case AVCaptureDevice.Position.unspecified:
+                case .unspecified:
                     lensFacing = "external"
                 default: break
                 }
@@ -51,7 +51,7 @@ class ScannerTools {
         }
         return []
     }
-
+    
     // 转换map
     static func scanDataToMap(data: AVMetadataMachineReadableCodeObject?) -> [AnyHashable: Any?]? {
         if data != nil {
@@ -60,7 +60,7 @@ class ScannerTools {
                 "type": data?.type
             ]
         }
-
+        
         return nil
     }
 }

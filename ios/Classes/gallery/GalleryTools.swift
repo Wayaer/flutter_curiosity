@@ -147,15 +147,17 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
     }
 
     func saveFileToGallery() {
-        let path = _call.arguments as? String
-        if Tools.isImageFile(path) {
-            if let image = UIImage(contentsOfFile: path!) {
-                UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveImage), nil)
+        let path = _call.arguments as? String?
+        if path != nil {
+            if Tools.isImageFile(path!!) {
+                if let image = UIImage(contentsOfFile: path!!) {
+                    UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveImage), nil)
+                    return
+                }
+            } else if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path!!) {
+                UISaveVideoAtPathToSavedPhotosAlbum(path!!, self, #selector(saveVideo), nil)
                 return
             }
-        } else if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path!) {
-            UISaveVideoAtPathToSavedPhotosAlbum(path!, self, #selector(saveVideo), nil)
-            return
         }
         _result(false)
     }
