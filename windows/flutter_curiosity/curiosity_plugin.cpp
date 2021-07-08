@@ -9,13 +9,6 @@
 #include <memory>
 #include <sstream>
 
-void CuriosityPluginRegisterWithRegistrar(
-    FlutterDesktopPluginRegistrarRef registrar)
-{
-  CuriosityPlugin::RegisterWithRegistrar(
-      flutter::PluginRegistrarManager::GetInstance()
-          ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
-}
 namespace
 {
 
@@ -62,67 +55,10 @@ namespace
     oldProc = reinterpret_cast<WNDPROC>(GetWindowLongPtr(handle, GWLP_WNDPROC));
     SetWindowLongPtr(handle, GWLP_WNDPROC, (LONG_PTR)MyWndProc);
   }
-  LRESULT CALLBACK MyWndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
-  {
-    if (iMessage == WM_GETMINMAXINFO)
-    {
-      bool changed = false;
-      if (maxWidth != 0 && maxHeight != 0)
-      {
-        ((MINMAXINFO *)lParam)->ptMaxTrackSize.x = maxWidth;
-        ((MINMAXINFO *)lParam)->ptMaxTrackSize.y = maxHeight;
-        changed = true;
-      }
-      if (minWidth != 0 && minHeight != 0)
-      {
-        ((MINMAXINFO *)lParam)->ptMinTrackSize.x = minWidth;
-        ((MINMAXINFO *)lParam)->ptMinTrackSize.y = minHeight;
-        changed = true;
-      }
-      if (changed)
-      {
-        return FALSE;
-      }
-    }
 
-    return oldProc(hWnd, iMessage, wParam, lParam);
-  }
   CuriosityPlugin::CuriosityPlugin() {}
 
   CuriosityPlugin::~CuriosityPlugin() {}
-  void CuriosityPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call,
-                                         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
-  {
-    const std::string method_name = method_call.method_name();
-    if (method_name == "getWindowSize")
-      getWindowSize(std::move(result));
-    else if (method_name == "setWindowSize")
-      setWindowSize(method_call, std::move(result));
-    else if (method_name == "resetMaxWindowSize")
-      resetMaxWindowSize(std::move(result));
-    else if (method_name == "setMinWindowSize")
-      setMinWindowSize(method_call, std::move(result));
-    else if (method_name == "setMaxWindowSize")
-      setMaxWindowSize(method_call, std::move(result));
-    else if (method_name == "setFullScreen")
-      setFullScreen(method_call, std::move(result));
-    else if (method_name == "getFullScreen")
-      getFullScreen(std::move(result));
-    else if (method_name == "toggleFullScreen")
-      toggleFullScreen(std::move(result));
-    else if (method_name == "setBorders")
-      setBorders(method_call, std::move(result));
-    else if (method_name == "hasBorders")
-      hasBorders(std::move(result));
-    else if (method_name == "toggleBorders")
-      toggleBorders(std::move(result));
-    else if (method_name == "stayOnTop")
-      stayOnTop(method_call, std::move(result));
-    else if (method_name == "focus")
-      focus(std::move(result));
-    else
-      result->NotImplemented();
-  }
 
   void getWindowSize(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
@@ -235,7 +171,7 @@ namespace
   }
 
   void setFullscreen(const flutter::MethodCall<flutter::EncodableValue> &method_call,
-                                 std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+                     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
     bool fullscreen = false;
@@ -290,7 +226,7 @@ namespace
   }
 
   void setBorders(const flutter::MethodCall<flutter::EncodableValue> &method_call,
-                              std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+                  std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
     bool border = false;
@@ -322,7 +258,7 @@ namespace
   }
 
   void stayOnTop(const flutter::MethodCall<flutter::EncodableValue> &method_call,
-                             std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+                 std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
     bool stayOnTop = false;
@@ -348,5 +284,71 @@ namespace
     SetFocus(hWnd);
     result->Success(flutter::EncodableValue(true));
   }
+  void CuriosityPlugin::HandleMethodCall(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+                                         std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  {
+    const std::string method_name = method_call.method_name();
 
+    if (method_name == "getWindowSize")
+      getWindowSize(std::move(result));
+    else if (method_name == "setWindowSize")
+      setWindowSize(method_call, std::move(result));
+    else if (method_name == "resetMaxWindowSize")
+      resetMaxWindowSize(std::move(result));
+    else if (method_name == "setMinWindowSize")
+      setMinWindowSize(method_call, std::move(result));
+    else if (method_name == "setMaxWindowSize")
+      setMaxWindowSize(method_call, std::move(result));
+    else if (method_name == "setFullScreen")
+      setFullScreen(method_call, std::move(result));
+    else if (method_name == "getFullScreen")
+      getFullScreen(std::move(result));
+    else if (method_name == "toggleFullScreen")
+      toggleFullScreen(std::move(result));
+    else if (method_name == "setBorders")
+      setBorders(method_call, std::move(result));
+    else if (method_name == "hasBorders")
+      hasBorders(std::move(result));
+    else if (method_name == "toggleBorders")
+      toggleBorders(std::move(result));
+    else if (method_name == "stayOnTop")
+      stayOnTop(method_call, std::move(result));
+    else if (method_name == "focus")
+      focus(std::move(result));
+    else
+      result->NotImplemented();
+  }
+
+  LRESULT CALLBACK MyWndProc(HWND hWnd, UINT iMessage, WPARAM wParam, LPARAM lParam)
+  {
+    if (iMessage == WM_GETMINMAXINFO)
+    {
+      bool changed = false;
+      if (maxWidth != 0 && maxHeight != 0)
+      {
+        ((MINMAXINFO *)lParam)->ptMaxTrackSize.x = maxWidth;
+        ((MINMAXINFO *)lParam)->ptMaxTrackSize.y = maxHeight;
+        changed = true;
+      }
+      if (minWidth != 0 && minHeight != 0)
+      {
+        ((MINMAXINFO *)lParam)->ptMinTrackSize.x = minWidth;
+        ((MINMAXINFO *)lParam)->ptMinTrackSize.y = minHeight;
+        changed = true;
+      }
+      if (changed)
+      {
+        return FALSE;
+      }
+    }
+
+    return oldProc(hWnd, iMessage, wParam, lParam);
+  }
+}
+void CuriosityPluginRegisterWithRegistrar(
+    FlutterDesktopPluginRegistrarRef registrar)
+{
+  CuriosityPlugin::RegisterWithRegistrar(
+      flutter::PluginRegistrarManager::GetInstance()
+          ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
 }
