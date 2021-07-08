@@ -22,7 +22,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return ExtendedScaffold(
         appBar: AppBarText('Camera and Gallery'),
         body: Universal(isScroll: true, children: <Widget>[
           ElevatedText(onPressed: systemGallery, text: '打开系统相册'),

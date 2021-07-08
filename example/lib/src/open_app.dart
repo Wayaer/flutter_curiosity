@@ -22,7 +22,7 @@ class OpenSettingPage extends StatelessWidget {
         .map((SettingType value) => ElevatedText(
             onPressed: () => openSystemSetting(value), text: value.toString()))
         .toList());
-    return OverlayScaffold(
+    return ExtendedScaffold(
         appBar: AppBarText('Android Open Setting'),
         body: Universal(isScroll: true, children: children));
   }

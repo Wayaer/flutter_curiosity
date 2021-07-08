@@ -17,7 +17,7 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return ExtendedScaffold(
         appBar: AppBarText('CuriosityEvent 消息通道'),
         body: Universal(children: <Widget>[
           showText('state', stateText),

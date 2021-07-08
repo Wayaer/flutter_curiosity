@@ -14,7 +14,7 @@ class _DesktopPageState extends State<DesktopPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return ExtendedScaffold(
         appBar: AppBarText('Desktop'),
         body: Universal(
             padding: const EdgeInsets.all(10),
@@ -25,7 +25,7 @@ class _DesktopPageState extends State<DesktopPage> {
                   margin: const EdgeInsets.all(10),
                   alignment: Alignment.center,
                   color: Colors.grey.withOpacity(0.3),
-                  child: BasisText(text, color: Colors.black, height: 1.5)),
+                  child: BText(text, color: Colors.black, height: 1.5)),
               Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 10,

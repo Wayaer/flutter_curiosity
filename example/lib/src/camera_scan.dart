@@ -20,7 +20,7 @@ class _ScannerPageState extends State<ScannerPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return ExtendedScaffold(
         appBar: AppBarText('Camera and Scanner'),
         body: Universal(isScroll: true, children: <Widget>[
           ElevatedText(onPressed: scan, text: '扫码'),
@@ -140,7 +140,7 @@ class _CameraScanPageState extends State<_CameraScanPage> {
   Widget build(BuildContext context) {
     Widget child = Container();
     if (controller != null) child = CameraPreview(controller!);
-    return OverlayScaffold(
+    return ExtendedScaffold(
         backgroundColor: Colors.black, body: Center(child: child));
   }
 
@@ -170,7 +170,7 @@ class _FileImageScanPageState extends State<_FileImageScanPage> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return ExtendedScaffold(
         appBar: AppBarText('San file image'),
         padding: const EdgeInsets.all(20),
         isScroll: true,

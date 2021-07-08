@@ -25,7 +25,7 @@ void main() {
   print('isIOS = $isIOS');
   print('isMobile = $isMobile');
   print('isDesktop = $isDesktop');
-  runApp(GlobalWidgetsApp(
+  runApp(ExtendedWidgetsApp(
       debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
 }
 
@@ -66,7 +66,7 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return OverlayScaffold(
+    return ExtendedScaffold(
       backgroundColor: Colors.white,
       appBar: AppBarText('Flutter Curiosity Plugin Example'),
       body: Universal(
@@ -139,7 +139,7 @@ class ElevatedText extends StatelessWidget {
               blurRadius: 1.0,
               spreadRadius: 1.0)
         ], color: color, borderRadius: BorderRadius.circular(4)),
-        child: BasisText(text, color: Colors.black),
+        child: BText(text, color: Colors.black),
       );
 }
 
@@ -149,7 +149,7 @@ class AppBarText extends AppBar {
           key: key,
           elevation: 0,
           iconTheme: const IconThemeData.fallback(),
-          title: BasisText(text,
+          title: BText(text,
               color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
           centerTitle: true,
           backgroundColor: color,
