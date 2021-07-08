@@ -53,15 +53,16 @@ class _AppState extends State<App> {
         setDesktopSizeToIPad9P7(p: 1);
       });
     }
-    1.seconds.delayed(() {
-      requestPermissions(Permission.camera, '相机').then((bool value) {
-        if (value) {
-          push(ScannerView(scanResult: (String value) {
-            log(value);
-          }));
-        }
+    if (isMobile)
+      1.seconds.delayed(() {
+        requestPermissions(Permission.camera, '相机').then((bool value) {
+          if (value) {
+            push(ScannerView(scanResult: (String value) {
+              log(value);
+            }));
+          }
+        });
       });
-    });
   }
 
   @override
@@ -72,10 +73,12 @@ class _AppState extends State<App> {
       body: Universal(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            ElevatedText(
-                onPressed: () => push(const CuriosityEventPage()),
-                text: 'CuriosityEvent'),
-            ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
+            if (isMobile || isMacOS) ...<Widget>[
+              ElevatedText(
+                  onPressed: () => push(const CuriosityEventPage()),
+                  text: 'CuriosityEvent'),
+              ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
+            ],
             if (isAndroid)
               ElevatedText(
                   onPressed: () => push(OpenSettingPage()), text: '跳转APP'),

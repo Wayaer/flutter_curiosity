@@ -6,6 +6,7 @@ set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 
 add_library(${PLUGIN_NAME} SHARED
   "${PROJECT_NAME}/curiosity_plugin.cpp"
+  "${PROJECT_NAME}/include/borders.cpp"
 )
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
