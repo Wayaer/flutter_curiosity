@@ -33,6 +33,7 @@ class CuriosityEvent {
 
   /// 初始化消息通道
   Future<bool> initialize() async {
+    if (!supportPlatform) return false;
     bool? state =
         await curiosityChannel.invokeMethod<bool?>('startCuriosityEvent');
     state ??= false;
@@ -45,6 +46,7 @@ class CuriosityEvent {
 
   /// 添加消息流监听
   Future<bool> addListener(EventListen eventListen) async {
+    if (!supportPlatform) return false;
     if (_eventChannel != null && _stream != null) {
       try {
         _streamSubscription = _stream!.listen(eventListen);
@@ -59,6 +61,7 @@ class CuriosityEvent {
 
   /// 调用原生方法 发送消息
   Future<bool> sendEvent(dynamic arguments) async {
+    if (!supportPlatform) return false;
     if (_eventChannel == null ||
         _streamSubscription == null ||
         _streamSubscription!.isPaused) return false;
@@ -69,6 +72,7 @@ class CuriosityEvent {
 
   /// 暂停消息流监听
   bool pause() {
+    if (!supportPlatform) return false;
     if (_streamSubscription != null && !_streamSubscription!.isPaused) {
       _streamSubscription!.pause();
       return true;
@@ -78,6 +82,7 @@ class CuriosityEvent {
 
   /// 重新开始监听
   bool resume() {
+    if (!supportPlatform) return false;
     if (_streamSubscription != null && _streamSubscription!.isPaused) {
       _streamSubscription!.resume();
       return true;
@@ -87,6 +92,7 @@ class CuriosityEvent {
 
   /// 关闭并销毁消息通道
   Future<bool> dispose() async {
+    if (!supportPlatform) return false;
     await _streamSubscription?.cancel();
     _streamSubscription = null;
     _stream = null;

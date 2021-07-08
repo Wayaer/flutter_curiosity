@@ -63,6 +63,23 @@ class _DesktopPageState extends State<DesktopPage> {
                     setState(() {});
                   },
                   text: 'getDesktopFullScreen'),
+              ElevatedText(
+                  onPressed: () async {
+                    final bool? hasBorders = await hasDesktopBorders;
+                    text = hasBorders.toString();
+                    setState(() {});
+                  },
+                  text: 'hasDesktopBorders'),
+              const ElevatedText(
+                  onPressed: toggleDesktopBorders,
+                  text: 'toggleDesktopBorders'),
+              ElevatedText(
+                  onPressed: () => setDesktopBorders(true),
+                  text: 'setDesktopBorders'),
+              const ElevatedText(
+                  onPressed: stayOnTopWithDesktop,
+                  text: 'stayOnTopWithDesktop'),
+              const ElevatedText(onPressed: focusDesktop, text: 'focusDesktop'),
               const SizedBox(height: 10),
               ElevatedText(
                   onPressed: () => setDesktopSizeTo4P7(),

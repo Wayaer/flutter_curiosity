@@ -1,35 +1,37 @@
 # flutter_curiosity
+
 集成部分原生功能，支持ios android
 
 ## android
-1.自动 添加 android http无法请求接口 解决方法
-2.自动 添加 FileProvider 配置至 AndroidManifest
-3.按需要 添加以下权限
+
+1.自动 添加 android http无法请求接口 解决方法 2.自动 添加 FileProvider 配置至 AndroidManifest 3.按需要 添加以下权限
+
 ```xml
       <!--允许程序打开网络-->
-      <uses-permission android:name="android.permission.INTERNET" />
-      <!--允许程序使用相机-->
-      <uses-permission android:name="android.permission.CAMERA" />
-      <!--允许程序写入本地存储-->
-      <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-      <!--允许程序读取本地存储-->
-      <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-      <!--允许程序打开闪光灯-->
-      <uses-permission android:name="android.permission.FLASHLIGHT" />
-      <!--允许程序访问有关GSM网络信息-->
-      <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-      <!--允许程序防止休眠-->
-      <uses-permission android:name="android.permission.WAKE_LOCK" />
-      <!--允许程序拨打电话-->
-      <uses-permission android:name="android.permission.CALL_PHONE" />
-      <!--允许程序安装应用程序-->
-      <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+<uses-permission android:name="android.permission.INTERNET"/>
+        <!--允许程序使用相机-->
+<uses-permission android:name="android.permission.CAMERA"/>
+        <!--允许程序写入本地存储-->
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+        <!--允许程序读取本地存储-->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+        <!--允许程序打开闪光灯-->
+<uses-permission android:name="android.permission.FLASHLIGHT"/>
+        <!--允许程序访问有关GSM网络信息-->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+        <!--允许程序防止休眠-->
+<uses-permission android:name="android.permission.WAKE_LOCK"/>
+        <!--允许程序拨打电话-->
+<uses-permission android:name="android.permission.CALL_PHONE"/>
+        <!--允许程序安装应用程序-->
+<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
 ```
 
 ## ios添加权限
- * ios/Runner/Info.plist 按需要 添加权限
- 
+
+* ios/Runner/Info.plist 按需要 添加权限
+
 ```
     <key>NSCameraUsageDescription</key>    
     <string>请允许打开相机拍照</string>
@@ -54,73 +56,61 @@
 ### 4.[Android ios 跳转设置](./lib/tools/setting.dart)
 
 ### 5.键盘状态监听
+
 ```dart
 
-    @override
-    void initState() {
-      super.initState();
-      keyboardListener((bool visibility) {
-        log(visibility);
-        showToast(visibility ? '键盘已弹出' : '键盘已关闭');
-      });
-    }
+@override
+void initState() {
+  super.initState();
+  keyboardListener((bool visibility) {
+    log(visibility);
+    showToast(visibility ? '键盘已弹出' : '键盘已关闭');
+  });
+}
 
 ```
+
 ### 6.原生回调
+
 ```dart
   @override
-  void initState() {
-    super.initState();
-    if (isMobile) {
-      log('添加 原生回调监听');
-      onResultListener(activityResult: (AndroidActivityResult result) {
-        log('AndroidResult requestCode = ${result.requestCode}  '
-            'resultCode = ${result.resultCode}  data = ${result.data}');
-      }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
-        log('AndroidRequestPermissionsResult: requestCode = ${result.requestCode}  \n'
-            ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
-      });
-    }
+void initState() {
+  super.initState();
+  if (isMobile) {
+    log('添加 原生回调监听');
+    onResultListener(activityResult: (AndroidActivityResult result) {
+      log('AndroidResult requestCode = ${result.requestCode}  '
+          'resultCode = ${result.resultCode}  data = ${result.data}');
+    }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
+      log('AndroidRequestPermissionsResult: requestCode = ${result.requestCode}  \n'
+          ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
+    });
   }
+}
 
 
 ```
+
 ### 7.[设备平台](./lib/platform/platform.dart)
 
 ## 桌面端窗口尺寸设置（支持 macOS windows linux）
+
 ```dart
-void fun(){ 
-  
-     getDesktopWindowSize();
+void fun() {
 
-     setDesktopWindowSize();
+  /// 设置桌面版 为 手机 或 ipad 尺寸
+  setDesktopSizeTo4P7();
 
-     setDesktopMinWindowSize();
+  setDesktopSizeTo5P5();
 
-     setDesktopMaxWindowSize();
+  setDesktopSizeTo5P8();
 
-     resetDesktopMaxWindowSize();
+  setDesktopSizeTo6P1();
 
-     toggleDesktopFullScreen();
+  setDesktopSizeToIPad11();
 
-     setDesktopFullScreen();
+  setDesktopSizeToIPad10P5();
 
-     getDesktopFullScreen();
-
-     /// 设置桌面版 为 手机 或 ipad 尺寸
-     setDesktopSizeTo4P7();
-
-     setDesktopSizeTo5P5();
-
-     setDesktopSizeTo5P8();
-
-     setDesktopSizeTo6P1();
-
-     setDesktopSizeToIPad11();
-
-     setDesktopSizeToIPad10P5();
-
-     setDesktopSizeToIPad9P7();
-
+  setDesktopSizeToIPad9P7();
 }
 ```

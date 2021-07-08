@@ -1,10 +1,9 @@
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/tools/internal.dart';
 
-/// get Android/IOS Device Info
+/// get Android/IOS/MacOS Device Info
 Future<DeviceInfoModel?> getDeviceInfo() async {
   if (!supportPlatform) return null;
-  if (!isIOS) return null;
   final Map<String, dynamic>? map =
       await curiosityChannel.invokeMapMethod<String, dynamic>('getDeviceInfo');
   if (map != null) return DeviceInfoModel.fromJson(map);

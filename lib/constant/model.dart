@@ -171,6 +171,7 @@ class AppsModel {
 
 class DeviceInfoModel {
   DeviceInfoModel.fromJson(Map<String, dynamic> json) {
+    /// Android and IOS
     model = json['model'] as String?;
     isEmulator = json['isEmulator'] as bool?;
 
@@ -205,8 +206,13 @@ class DeviceInfoModel {
     localizedModel = json['localizedModel'] as String?;
     systemVersion = json['systemVersion'] as String?;
     name = json['name'] as String?;
+    address = json['address'] as String?;
+    final List<dynamic>? addressesList = json['addresses'] as List<dynamic>?;
+    if (addressesList != null && addressesList.isNotEmpty)
+      addresses = addressesList.map((dynamic e) => e as String).toList();
   }
 
+  /// Android and IOS
   bool? isEmulator;
   String? model;
 
@@ -231,10 +237,16 @@ class DeviceInfoModel {
   /// only ios
   String? systemName;
   String? uuid;
-  UTSModel? uts;
-  String? localizedModel;
   String? systemVersion;
+
+  /// only ios and macOS
+  String? localizedModel;
+  UTSModel? uts;
   String? name;
+
+  /// only macOS
+  String? address;
+  List<String>? addresses;
 
   Map<String, dynamic> toMap() => <String, dynamic>{
         'isEmulator': isEmulator,
@@ -264,7 +276,9 @@ class DeviceInfoModel {
         'uts': uts == null ? null : uts!.toMap(),
         'localizedModel': localizedModel,
         'systemVersion': systemVersion,
-        'name': name
+        'name': name,
+        'address': address,
+        'addresses': addresses
       };
 }
 

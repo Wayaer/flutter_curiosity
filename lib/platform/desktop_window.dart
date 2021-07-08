@@ -42,8 +42,11 @@ Future<void> toggleDesktopFullScreen() async {
   curiosityChannel.invokeMethod<dynamic>('toggleFullScreen');
 }
 
-Future<void> setDesktopFullScreen(bool fullscreen) => curiosityChannel
-    .invokeMethod('setFullScreen', <String, bool>{'fullscreen': fullscreen});
+Future<void> setDesktopFullScreen(bool fullscreen) async {
+  if (!supportPlatformDesktop) return;
+  curiosityChannel.invokeMethod<dynamic>(
+      'setFullScreen', <String, bool>{'fullscreen': fullscreen});
+}
 
 Future<bool?> getDesktopFullScreen() async {
   if (!supportPlatformDesktop) return null;
@@ -51,6 +54,37 @@ Future<bool?> getDesktopFullScreen() async {
       await curiosityChannel.invokeMethod<bool?>('getFullScreen');
   if (fullscreen is bool) return fullscreen;
   return null;
+}
+
+Future<bool> get hasDesktopBorders async {
+  if (!supportPlatformDesktop) return false;
+  final bool? hasBorders =
+      await curiosityChannel.invokeMethod<bool>('hasBorders');
+  if (hasBorders is bool) return hasBorders;
+  return hasBorders ?? false;
+}
+
+Future<void> toggleDesktopBorders() async {
+  if (!supportPlatformDesktop) return;
+  curiosityChannel.invokeMethod<dynamic>('toggleBorders');
+}
+
+Future<void> setDesktopBorders(bool border) async {
+  if (!supportPlatformDesktop) return;
+  curiosityChannel
+      .invokeMethod<dynamic>('setBorders', <String, dynamic>{'border': border});
+}
+
+Future<void> stayOnTopWithDesktop([bool stayOnTop = true]) async {
+  if (!supportPlatformDesktop) return;
+  if (!isWeb && (isWindows || isLinux || isMacOS))
+    curiosityChannel.invokeMethod<dynamic>(
+        'stayOnTop', <String, dynamic>{'stayOnTop': stayOnTop});
+}
+
+Future<void> focusDesktop() async {
+  if (!supportPlatformDesktop) return;
+  curiosityChannel.invokeMethod<dynamic>('focus');
 }
 
 /// set desktop size to iphone 4.7

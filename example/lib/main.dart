@@ -54,7 +54,7 @@ class _AppState extends State<App> {
       });
     }
     1.seconds.delayed(() {
-      requestPermissions(Permission.camera, '相机').then((value) {
+      requestPermissions(Permission.camera, '相机').then((bool value) {
         if (value) {
           push(ScannerView(scanResult: (String value) {
             log(value);
@@ -107,6 +107,7 @@ Widget showText(dynamic key, dynamic value) {
 }
 
 Future<bool> requestPermissions(Permission permission, String text) async {
+  if (isMobile) return false;
   final PermissionStatus status = await permission.status;
   if (status != PermissionStatus.granted) {
     final Map<Permission, PermissionStatus> statuses =
