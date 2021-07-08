@@ -170,7 +170,7 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void setFullscreen(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+  void setFullScreen(const flutter::MethodCall<flutter::EncodableValue> &method_call,
                      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
@@ -199,7 +199,7 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void getFullscreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void getFullScreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND handle = GetActiveWindow();
     WINDOWPLACEMENT placement;
@@ -207,7 +207,7 @@ namespace
 
     result->Success(flutter::EncodableValue(placement.showCmd == SW_MAXIMIZE));
   }
-  void toggleFullscreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void toggleFullScreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND handle = GetActiveWindow();
     WINDOWPLACEMENT placement;
