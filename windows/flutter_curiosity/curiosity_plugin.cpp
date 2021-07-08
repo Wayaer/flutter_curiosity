@@ -234,7 +234,7 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void MethodCall::setFullscreen(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+  void setFullscreen(const flutter::MethodCall<flutter::EncodableValue> &method_call,
                                  std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
@@ -263,7 +263,7 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void MethodCall::getFullscreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void getFullscreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND handle = GetActiveWindow();
     WINDOWPLACEMENT placement;
@@ -271,7 +271,7 @@ namespace
 
     result->Success(flutter::EncodableValue(placement.showCmd == SW_MAXIMIZE));
   }
-  void MethodCall::toggleFullscreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void toggleFullscreen(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND handle = GetActiveWindow();
     WINDOWPLACEMENT placement;
@@ -289,7 +289,7 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void MethodCall::setBorders(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+  void setBorders(const flutter::MethodCall<flutter::EncodableValue> &method_call,
                               std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
@@ -308,20 +308,20 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void MethodCall::hasBorders(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void hasBorders(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND hWnd = GetActiveWindow();
     result->Success(flutter::EncodableValue(Borders::hasBorders(&hWnd)));
   }
 
-  void MethodCall::toggleBorders(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void toggleBorders(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND hWnd = GetActiveWindow();
     Borders::toggleBorders(&hWnd, true);
     result->Success(flutter::EncodableValue(true));
   }
 
-  void MethodCall::stayOnTop(const flutter::MethodCall<flutter::EncodableValue> &method_call,
+  void stayOnTop(const flutter::MethodCall<flutter::EncodableValue> &method_call,
                              std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     const auto *arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
@@ -342,7 +342,7 @@ namespace
     result->Success(flutter::EncodableValue(true));
   }
 
-  void MethodCall::focus(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
+  void focus(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result)
   {
     HWND hWnd = GetActiveWindow();
     SetFocus(hWnd);
