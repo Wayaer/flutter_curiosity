@@ -38,10 +38,10 @@
 	<string>是否允许Curiosity访问运动与健身？</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>是否允许Curiosity访问你的相册？</string>
-	<key>Privacy - Photo Library Usage Descriptionkey</key>
-	<string>是否允许Curiosity访问你的相册？</string>
 	<key>NSSpeechRecognitionUsageDescription</key>
 	<string>是否允许Curiosity使用语音识别？</string>
+	<key>Privacy - Photo Library Usage Descriptionkey</key>
+	<string>是否允许Curiosity访问你的相册？</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

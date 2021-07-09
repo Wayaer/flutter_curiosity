@@ -92,10 +92,11 @@ class _CameraScanPageState extends State<_CameraScanPage> {
     if (!state) return;
     event!.addListener((dynamic value) {
       log('收到了原生发来的消息== $value');
+      log(value.runtimeType);
       if (value != null && hasImageStream) {
         final ScanResult scanResult =
             ScanResult.fromJson(value as Map<dynamic, dynamic>);
-        showToast(scanResult.code);
+        showToast(scanResult.code ?? '');
       } else {
         showToast(value.toString());
       }

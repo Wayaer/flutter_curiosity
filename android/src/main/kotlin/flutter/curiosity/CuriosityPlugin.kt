@@ -119,20 +119,25 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
                     )
                 )
             "initializeCameras" -> {
-                scannerView = ScannerView(
-                    pluginBinding.textureRegistry.createSurfaceTexture(),
-                    activity,
-                    context
-                )
-                scannerView?.initCameraView()
+                if (scannerView == null) {
+                    scannerView = ScannerView(
+                        pluginBinding.textureRegistry.createSurfaceTexture(),
+                        activity,
+                        context
+                    )
+                    scannerView?.initCameraView()
+                } else {
+                    result.success(null)
+                }
             }
             "setFlashMode" -> {
                 val status = call.arguments as Boolean
                 scannerView?.setFlashMode(status)
-                result.success(true)
+                result.success(scannerView != null)
             }
             "disposeCameras" -> {
                 scannerView?.dispose()
+                scannerView = null
                 result.success(true)
             }
             "onActivityResult" -> {

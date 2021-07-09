@@ -8,6 +8,7 @@ export 'platform/platform.dart';
 export 'platform/result_listener.dart';
 export 'scanner/scanner.dart';
 export 'scanner/scanner_box.dart';
+export 'scanner/scanner_tools.dart';
 export 'tools/app_device.dart';
 export 'tools/gallery_tools.dart';
 export 'tools/keyboard.dart';

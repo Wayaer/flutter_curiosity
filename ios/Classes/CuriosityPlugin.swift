@@ -81,23 +81,23 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         case "initializeCameras":
             if scanner == nil, curiosityEvent != nil {
                 scanner = ScannerView(call: call, result: result, event: curiosityEvent!, registrar: registrar)
-             
                 scanner?.start()
                 return
             }
             result(nil)
         case "setFlashMode":
-            if scanner == nil {
-                result(false)
+            if scanner != nil {
+                scanner!.setFlashMode(status: call.arguments as! Bool)
+                result(true)
                 return
             }
-            scanner!.setFlashMode(status: call.arguments as! Bool)
+            result(false)
         case "disposeCameras":
-            if scanner == nil {
-                result(false)
-                return
+            if scanner != nil {
+                scanner!.close()
+                scanner = nil
             }
-            scanner!.close()
+            result(true)
         default:
             result(FlutterMethodNotImplemented)
         }

@@ -70,15 +70,10 @@ object ScannerTools {
     }
 
 
-    fun scanDataToMap(result: Result?): Map<String, Any> {
+    fun scanDataToMap(result: Result): Map<String, Any> {
         val data: MutableMap<String, Any> = HashMap()
-        if (result == null) {
-            data["code"] = ""
-            data["type"] = ""
-        } else {
-            data["code"] = result.text
-            data["type"] = result.barcodeFormat.name
-        }
+        data["code"] = result.text
+        data["type"] = result.barcodeFormat.name
         return data
     }
 
@@ -152,24 +147,32 @@ object ScannerTools {
     private val hints: Map<DecodeHintType, Any>
         get() {
             val decodeFormats: MutableCollection<BarcodeFormat> = ArrayList()
-            //一维码
-            decodeFormats.add(BarcodeFormat.UPC_A)
-            decodeFormats.add(BarcodeFormat.UPC_E)
-            decodeFormats.add(BarcodeFormat.EAN_13)
-            decodeFormats.add(BarcodeFormat.EAN_8)
-            decodeFormats.add(BarcodeFormat.CODABAR)
-            decodeFormats.add(BarcodeFormat.CODE_39)
-            decodeFormats.add(BarcodeFormat.CODE_93)
-            decodeFormats.add(BarcodeFormat.CODE_128)
-            decodeFormats.add(BarcodeFormat.ITF)
-            decodeFormats.add(BarcodeFormat.RSS_14)
-            decodeFormats.add(BarcodeFormat.RSS_EXPANDED)
-            //二维码
-            decodeFormats.add(BarcodeFormat.QR_CODE)
-            decodeFormats.add(BarcodeFormat.AZTEC)
-            decodeFormats.add(BarcodeFormat.DATA_MATRIX)
-//            decodeFormats.add(BarcodeFormat.MAXICODE)
-//            decodeFormats.add(BarcodeFormat.PDF_417)
+            val scanTypes = call.argument<List<String>?>("scanTypes")
+            if (!scanTypes.isNullOrEmpty()) {
+                scanTypes.forEach { type ->
+                    when (type) {
+                        "upcA" -> decodeFormats.add(BarcodeFormat.UPC_A)
+                        "upcE" -> decodeFormats.add(BarcodeFormat.UPC_E)
+                        "ean13" -> decodeFormats.add(BarcodeFormat.EAN_13)
+                        "ean8" -> decodeFormats.add(BarcodeFormat.EAN_8)
+                        "codaBar" -> decodeFormats.add(BarcodeFormat.CODABAR)
+                        "code39" -> decodeFormats.add(BarcodeFormat.CODE_39)
+                        "code93" -> decodeFormats.add(BarcodeFormat.CODE_93)
+                        "code128" -> decodeFormats.add(BarcodeFormat.CODE_128)
+                        "itf" -> decodeFormats.add(BarcodeFormat.ITF)
+                        "rss14" -> decodeFormats.add(BarcodeFormat.RSS_14)
+                        "rssExpanded" -> decodeFormats.add(BarcodeFormat.RSS_EXPANDED)
+                        "qrCode" -> decodeFormats.add(BarcodeFormat.QR_CODE)
+                        "aztec" -> decodeFormats.add(BarcodeFormat.AZTEC)
+                        "dataMatrix" -> decodeFormats.add(BarcodeFormat.DATA_MATRIX)
+                        "maxICode" -> decodeFormats.add(BarcodeFormat.MAXICODE)
+                        "pdf417" -> decodeFormats.add(BarcodeFormat.PDF_417)
+                        "upcEanExtension" -> decodeFormats.add(BarcodeFormat.UPC_EAN_EXTENSION)
+                    }
+                }
+            } else {
+                decodeFormats.add(BarcodeFormat.QR_CODE)
+            }
             val hints: MutableMap<DecodeHintType, Any> = mutableMapOf()
             hints[DecodeHintType.CHARACTER_SET] = "UTF-8"
             hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats

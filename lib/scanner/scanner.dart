@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -116,11 +114,11 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   }
 
   Future<void> getCameras() async {
-    Cameras? camera;
-    final List<Cameras>? cameras = await controller!.availableCameras();
+    CameraOptions? camera;
+    final List<CameraOptions>? cameras = await controller!.availableCameras();
     print(cameras);
     if (cameras == null) return;
-    for (final Cameras cameraInfo in cameras) {
+    for (final CameraOptions cameraInfo in cameras) {
       if (cameraInfo.lensFacing == widget.lensFacing) {
         camera = cameraInfo;
         break;
@@ -230,31 +228,89 @@ class Scanner extends StatelessWidget {
   }
 }
 
+enum ScanType {
+  /// Android ios
+  upcE,
+  ean13,
+  ean8,
+  code39,
+  code93,
+  code128,
+  qrCode,
+  aztec,
+  dataMatrix,
+  pdf417,
+
+  /// only ios
+  code39Mod43,
+  itf14,
+  interleaved2of5,
+  dogBody,
+  catBody,
+  humanBody,
+
+  /// only android
+  upcA,
+  codaBar,
+  itf,
+  rss14,
+  rssExpanded,
+  maxICode,
+  upcEanExtension
+}
+
 class ScannerController extends ChangeNotifier {
   ScannerController({
     CameraResolution? resolution,
+    List<ScanType>? scanTypes,
     this.topRatio = 0.3,
     this.camera,
     this.leftRatio = 0.1,
     this.widthRatio = 0.8,
     this.heightRatio = 0.4,
   })  : resolution = resolution ?? CameraResolution.veryHigh,
+        scanTypes = scanTypes ?? <ScanType>[ScanType.qrCode],
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1);
 
+  /// 识别区域距离顶部占整个高度的比值
   final double topRatio;
+
+  /// 识别区域距离左边占整个宽度的比值
   final double leftRatio;
+
+  /// 识别区域宽度的比值
   final double widthRatio;
+
+  /// 识别区域高度的比值
   final double heightRatio;
+
+  /// 相机
   final CameraResolution resolution;
-  Cameras? camera;
+
+  /// 识别码的类型 默认只识别二维码
+  /// 识别类型越少，识别速度越快
+  final List<ScanType> scanTypes;
+
+  /// 预览的相机信息
+  CameraOptions? camera;
+
+  /// 扫描结果
   ScanResult? scanResult;
+
+  /// 外接纹理id
   int? textureId;
+
+  /// 相机预览区域的宽度
   double? previewWidth;
+
+  /// 相机预览区域的高度
   double? previewHeight;
+
+  /// 相机状态
   String? cameraState;
 
-  Future<void> initialize({Cameras? cameras}) async {
+  Future<void> initialize({CameraOptions? cameras}) async {
     if (cameras != null) camera = cameras;
     if (camera == null) return;
     try {
@@ -265,6 +321,8 @@ class ScannerController extends ChangeNotifier {
         'leftRatio': leftRatio,
         'widthRatio': widthRatio,
         'heightRatio': heightRatio,
+        'scanTypes':
+            scanTypes.map((ScanType e) => e.toString().split('.')[1]).toList(),
       };
 
       /// 先初始化 消息通道
@@ -294,20 +352,20 @@ class ScannerController extends ChangeNotifier {
   Future<bool?> setFlashMode(bool status) =>
       curiosityChannel.invokeMethod('setFlashMode', status);
 
-  Future<List<Cameras>> availableCameras() async {
+  Future<List<CameraOptions>> availableCameras() async {
     try {
       final List<Map<dynamic, dynamic>>? cameras = await curiosityChannel
           .invokeListMethod<Map<dynamic, dynamic>>('availableCameras');
-      if (cameras == null) return <Cameras>[];
+      if (cameras == null) return <CameraOptions>[];
       return cameras
-          .map((Map<dynamic, dynamic> camera) => Cameras(
+          .map((Map<dynamic, dynamic> camera) => CameraOptions(
               name: camera['name'] as String,
               lensFacing: _getCameraLensFacing(camera['lensFacing'] as String)))
           .toList();
     } on PlatformException catch (e) {
       log(e);
     }
-    return <Cameras>[];
+    return <CameraOptions>[];
   }
 
   void disposeCameras() {
@@ -329,8 +387,9 @@ class ScannerController extends ChangeNotifier {
   }
 }
 
-class Cameras {
-  Cameras({required this.name, required this.lensFacing});
+/// 相机信息
+class CameraOptions {
+  CameraOptions({required this.name, required this.lensFacing});
 
   String name;
   CameraLensFacing lensFacing;
@@ -338,83 +397,18 @@ class Cameras {
 
 /// 扫码识别数据模型
 class ScanResult {
-  ScanResult(this.code, this.type);
-
   ScanResult.fromJson(Map<dynamic, dynamic> json) {
-    code = (json['code'] as String?) ?? '';
-    type = (json['type'] as String?) ?? '';
+    code = json['code'] as String?;
+    type = json['type'] as String?;
   }
 
-  late String code;
-  late String type;
+  String? code;
+  String? type;
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = <String, dynamic>{};
     data['code'] = code;
     data['type'] = type;
     return data;
-  }
-}
-
-Future<ScanResult?> scanImagePath(String path) async {
-  try {
-    final File file = File(path);
-    if (file.existsSync()) {
-      return await scanImageByte(file.readAsBytesSync());
-    }
-  } on PlatformException catch (e) {
-    log(e);
-  }
-  return null;
-}
-
-Future<ScanResult?> scanImageByte(Uint8List uint8list) async {
-  try {
-    final Map<dynamic, dynamic>? data = await curiosityChannel.invokeMethod(
-        'scanImageByte',
-        <String, dynamic>{'byte': uint8list, 'useEvent': false});
-    if (data != null) return ScanResult.fromJson(data);
-  } on PlatformException catch (e) {
-    log(e);
-  }
-  return null;
-}
-
-void scanImageYUV({
-  required Uint8List uint8list,
-  required int width,
-  required int height,
-
-  /// 识别区域设置
-  /// [topRatio]  topRatio*height 为识别区域的top到图片最垂直向 0 的位置
-  double topRatio = 0.3,
-
-  /// [leftRatio]  leftRatio*width 为识别区域的left到图片最纵向 0 的位置
-  double leftRatio = 0.1,
-
-  /// [widthRatio]  widthRatio*width 为识别区域的宽
-  double widthRatio = 0.8,
-
-  /// [heightRatio]  heightRatio*height 为识别区域的高
-  double heightRatio = 0.4,
-}) {
-  if (isIOS) {
-    curiosityChannel.invokeMethod<dynamic>('scanImageByte',
-        <String, dynamic>{'byte': uint8list, 'useEvent': true});
-  } else if (isAndroid) {
-    try {
-      final Map<String, dynamic> map = <String, dynamic>{
-        'byte': uint8list,
-        'width': width,
-        'height': height,
-        'topRatio': topRatio,
-        'leftRatio': leftRatio,
-        'widthRatio': widthRatio,
-        'heightRatio': heightRatio,
-      };
-      curiosityChannel.invokeMethod<dynamic>('scanImageYUV', map);
-    } on PlatformException catch (e) {
-      log(e);
-    }
   }
 }

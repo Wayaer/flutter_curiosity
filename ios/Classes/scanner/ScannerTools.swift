@@ -14,7 +14,7 @@ class ScannerTools {
                     for item in feature! {
                         let qrCode = item as! CIQRCodeFeature
                         return [
-                            "type": AVMetadataObject.ObjectType.qr,
+                            "type": "qrCode",
                             "code": qrCode.messageString
                         ]
                     }
@@ -52,6 +52,60 @@ class ScannerTools {
         return []
     }
     
+    static func getScanType(_ arguments: [AnyHashable: Any?]?) -> [AVMetadataObject.ObjectType] {
+        var types = [AVMetadataObject.ObjectType]()
+        let scanTypes = arguments?["scanTypes"] as? [String]?
+        if scanTypes != nil {
+            for type in scanTypes!! {
+                switch type {
+                case "aztec":
+                    types.append(.aztec)
+                case "upcE":
+                    types.append(.upce)
+                case "ean13":
+                    types.append(.ean13)
+                case "ean8":
+                    types.append(.ean8)
+                case "code39":
+                    types.append(.code39)
+                case "code93":
+                    types.append(.code93)
+                case "code128":
+                    types.append(.code128)
+                case "qrCode":
+                    types.append(.qr)
+                case "dataMatrix":
+                    types.append(.dataMatrix)
+                case "pdf417":
+                    types.append(.pdf417)
+                case "code39Mod43":
+                    types.append(.code39Mod43)
+                case "itf14":
+                    types.append(.itf14)
+                case "interleaved2of5":
+                    types.append(.interleaved2of5)
+                case "dogBody":
+                    if #available(iOS 13.0, *) {
+                        types.append(.dogBody)
+                    }
+                case "catBody":
+                    if #available(iOS 13.0, *) {
+                        types.append(.catBody)
+                    }
+                case "humanBody":
+                    if #available(iOS 13.0, *) {
+                        types.append(.humanBody)
+                    }
+                default:
+                    break
+                }
+            }
+        } else {
+            types.append(AVMetadataObject.ObjectType.qr)
+        }
+        return types
+    }
+    
     // 转换map
     static func scanDataToMap(data: AVMetadataMachineReadableCodeObject?) -> [AnyHashable: Any?]? {
         if data != nil {
@@ -60,7 +114,6 @@ class ScannerTools {
                 "type": data?.type
             ]
         }
-        
         return nil
     }
 }
