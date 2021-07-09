@@ -28,12 +28,13 @@ class _ScannerPageState extends State<ScannerPage> {
           ElevatedText(
               onPressed: () => push(_FileImageScanPage()), text: '识别图片二维码'),
           const SizedBox(height: 20),
-          Container(
-              padding: const EdgeInsets.only(top: 100),
-              child: const ScannerBox(
+          const ScannerShadow(
+              child: ScannerBox(
+                  size: Size(200, 200),
                   borderColor: Colors.blue,
-                  scannerColor: Colors.blue,
-                  boxSize: Size(200, 200))),
+                  scannerColor: Colors.blue),
+              size: Size(300, 300),
+              clipSize: Size(200, 200)),
           showText('path', path),
         ]));
   }

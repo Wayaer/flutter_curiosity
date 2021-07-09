@@ -29,12 +29,6 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
           if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
           const SizedBox(height: 20),
-          Container(
-              padding: const EdgeInsets.only(top: 100),
-              child: const ScannerBox(
-                  borderColor: Colors.blue,
-                  scannerColor: Colors.blue,
-                  boxSize: Size(200, 200))),
           showText('path', path),
           if (path != null && path!.isNotEmpty)
             Container(

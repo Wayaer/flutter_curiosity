@@ -89,7 +89,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         {
             captureOutput.rectOfInterest = CGRect(x: CGFloat(topRatio!), y: CGFloat(leftRatio!), width: CGFloat(widthRatio!), height: CGFloat(heightRatio!))
         }
-        
+
         captureOutput.setMetadataObjectsDelegate(self, queue: .main)
         captureOutput.metadataObjectTypes = ScannerTools.getScanType(arguments)
         
@@ -101,7 +101,6 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     func start() {
         textureId = _registrar.textures().register(self)
         _result([
-            "cameraState": "onOpened",
             "textureId": textureId!,
             "previewWidth": _previewSize!.width,
             "previewHeight": _previewSize!.height,
@@ -144,13 +143,6 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     }
     
     func copyPixelBuffer() -> Unmanaged<CVPixelBuffer>? {
-//        print("copyPixelBuffer")
-        //        var pixelBuffer = _latestPixelBuffer!
-        //
-        //        while !OSAtomicCompareAndSwapPtrBarrier(pixelBuffer, nil, &_latestPixelBuffer) {
-        //            pixelBuffer = _latestPixelBuffer!
-        //        }
-        //        return _latestPixelBuffer
         if _latestPixelBuffer == nil {
             return nil
         }

@@ -58,9 +58,9 @@ class _AppState extends State<App> {
         getPermission(Permission.camera).then((bool value) {
           log('是否获取相机权限&$value');
           if (value) {
-            push(ScannerView(scanResult: (String value) {
-              log(value);
-            }));
+            // push(ScannerView(scanResult: (String value) {
+            //   log(value);
+            // }));
           }
         });
       });

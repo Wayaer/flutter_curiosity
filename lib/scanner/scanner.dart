@@ -19,7 +19,6 @@ class ScannerView extends StatefulWidget {
     this.leftRatio = 0.1,
     this.widthRatio = 0.8,
     this.heightRatio = 0.4,
-    this.bestFit = true,
     this.hornStrokeWidth,
     this.scannerStrokeWidth,
     this.scannerBox = true,
@@ -57,9 +56,6 @@ class ScannerView extends StatefulWidget {
 
   /// 识别区域的宽高度比例
   final double heightRatio;
-
-  /// 限制最佳宽高
-  final bool bestFit;
 
   /// 屏幕宽度比例=leftRatio + widthRatio + leftRatio
   /// 屏幕高度比例=topRatio + heightRatio + topRatio
@@ -148,40 +144,43 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   @override
   Widget build(BuildContext context) {
     if (controller?.textureId == null) return Container();
-    Widget child = Scanner(controller: controller!);
+    final Widget child = Scanner(controller: controller!);
     final List<Widget> children = <Widget>[];
     children.add(Align(alignment: Alignment.center, child: child));
-    if (widget.scannerBox) {
-      children.add(ScannerBox(
-          size: Size(previewWidth, previewHeight),
-          borderColor: widget.borderColor,
-          scannerColor: widget.scannerColor,
-          hornStrokeWidth: widget.hornStrokeWidth,
-          scannerStrokeWidth: widget.scannerStrokeWidth));
-    }
-    children.add(Align(
+    if (widget.scannerBox) children.add(previewBox);
+    children.add(Container(
+      margin: const EdgeInsets.only(bottom: 20),
       alignment: Alignment.bottomCenter,
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 20),
-        child: GestureDetector(
-            onTap: openFlash,
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Icon(Icons.highlight,
-                  size: 30,
-                  color: flash ? widget.flashOnColor : widget.flashOffColor),
-              Text(widget.flashText ?? '轻触点亮',
-                  style: BaseTextStyle(
-                      color:
-                          flash ? widget.flashOnColor : widget.flashOffColor))
-            ])),
-      ),
+      child: GestureDetector(
+          onTap: openFlash,
+          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            Icon(Icons.highlight,
+                size: 30,
+                color: flash ? widget.flashOnColor : widget.flashOffColor),
+            Text(widget.flashText ?? '轻触点亮',
+                style: BaseTextStyle(
+                    color: flash ? widget.flashOnColor : widget.flashOffColor))
+          ])),
     ));
     if (widget.child != null) children.add(widget.child!);
-    child = Stack(children: children);
-    if (widget.bestFit)
-      child =
-          Container(width: previewWidth, height: previewHeight, child: child);
-    return child;
+    return Stack(children: children);
+  }
+
+  Widget get previewBox {
+    final Size size = getWindowSize;
+    final double w = size.width * widget.widthRatio;
+    final double h = size.height * widget.heightRatio;
+    return Align(
+        alignment: Alignment.center,
+        child: ScannerShadow(
+          clipSize: Size(w, h),
+          child: ScannerBox(
+              size: Size(w, h),
+              borderColor: widget.borderColor,
+              scannerColor: widget.scannerColor,
+              hornStrokeWidth: widget.hornStrokeWidth,
+              scannerStrokeWidth: widget.scannerStrokeWidth),
+        ));
   }
 
   /// 打开闪光灯
@@ -371,6 +370,7 @@ class ScannerController extends ChangeNotifier {
   void disposeCameras() {
     if (textureId == null) return;
     curiosityChannel.invokeMethod<dynamic>('disposeCameras', textureId);
+    super.dispose();
   }
 
   CameraLensFacing _getCameraLensFacing(String lensFacing) {

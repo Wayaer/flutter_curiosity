@@ -1,5 +1,58 @@
 import 'package:flutter/material.dart';
 
+class ScannerShadow extends StatelessWidget {
+  const ScannerShadow({Key? key, this.child, this.size, this.clipSize})
+      : super(key: key);
+  final Widget? child;
+
+  /// 整个阴影的颜色 [size] == null 使用父组件的宽高¬
+  final Size? size;
+
+  /// 内部裁剪区域大小
+  final Size? clipSize;
+
+  @override
+  Widget build(BuildContext context) {
+    Widget current = Align(alignment: Alignment.center, child: child);
+    if (clipSize != null)
+      current = CustomPaint(
+          foregroundPainter:
+              _ScannerShadowPainter(clipSize: clipSize!, color: Colors.black38),
+          child: current);
+    if (size != null) current = SizedBox.fromSize(size: size, child: current);
+    return current;
+  }
+}
+
+class _ScannerShadowPainter extends CustomPainter {
+  const _ScannerShadowPainter({
+    required this.clipSize,
+    required this.color,
+  });
+
+  final Size clipSize;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final double w = (size.width - clipSize.width) / 2;
+    final double h = (size.height - clipSize.height) / 2;
+    late final Paint paintValue = Paint()
+      ..color = color
+      ..strokeWidth = 10;
+    final Path path = Path();
+    path.addRect(Rect.fromLTWH(0, 0, w, size.height));
+    path.addRect(Rect.fromLTWH(w, 0, clipSize.width, h));
+    path.addRect(Rect.fromLTWH(size.width - w, 0, w, size.height));
+    path.addRect(Rect.fromLTWH(w, size.height - h, clipSize.width, h));
+    canvas.drawPath(path, paintValue);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+/// 扫码框动画
 class ScannerBox extends StatefulWidget {
   const ScannerBox(
       {Key? key,
@@ -7,16 +60,26 @@ class ScannerBox extends StatefulWidget {
       this.borderColor,
       this.scannerColor,
       this.size,
-      this.boxSize,
       this.hornStrokeWidth,
       this.scannerStrokeWidth})
       : super(key: key);
+
+  /// 扫码框内的组件
   final Widget? child;
+
+  /// [size]==null 使用父组件的宽高
   final Size? size;
-  final Size? boxSize;
+
+  /// 四角线宽度
   final double? hornStrokeWidth;
+
+  /// 四边线宽度
   final double? scannerStrokeWidth;
+
+  /// 四边线颜色
   final Color? borderColor;
+
+  /// 中间滚动线颜色
   final Color? scannerColor;
 
   @override
@@ -43,93 +106,82 @@ class _ScannerBoxState extends State<ScannerBox> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
       animation: controller,
-      builder: (BuildContext context, Widget? child) => CustomPaint(
-          foregroundPainter: ScannerPainter(
-              scannerStrokeWidth: widget.scannerStrokeWidth,
-              hornStrokeWidth: widget.hornStrokeWidth,
-              value: controller.value,
-              size: widget.size,
-              boxSize: widget.boxSize,
-              borderColor: widget.borderColor,
-              scannerColor: widget.scannerColor),
-          child: widget.child,
-          willChange: true));
+      builder: (BuildContext context, Widget? child) {
+        Widget current = CustomPaint(
+            painter: ScannerPainter(
+                scannerStrokeWidth: widget.scannerStrokeWidth,
+                hornStrokeWidth: widget.hornStrokeWidth,
+                value: controller.value,
+                borderColor: widget.borderColor,
+                scannerColor: widget.scannerColor),
+            child: widget.child,
+            willChange: true);
+        if (widget.size != null)
+          current = SizedBox.fromSize(size: widget.size, child: current);
+        return current;
+      });
 }
 
+/// 扫码框+浅色背景
 class ScannerPainter extends CustomPainter {
   ScannerPainter({
     double? hornStrokeWidth,
     double? scannerStrokeWidth,
+    double? hornWidth,
     Color? scannerColor,
     Color? borderColor,
     required this.value,
-    this.size,
-    this.boxSize,
   })  : scannerColor = scannerColor ?? Colors.white,
         borderColor = borderColor ?? Colors.white,
-        hornStrokeWidth = hornStrokeWidth ?? 3,
-        scannerStrokeWidth = scannerStrokeWidth ?? 0.5;
+        hornStrokeWidth = hornStrokeWidth ?? 4,
+        hornWidth = hornWidth ?? 15,
+        scannerStrokeWidth = scannerStrokeWidth ?? 2;
   final double value;
   final Color borderColor;
   final Color scannerColor;
-  final Size? size;
-  final Size? boxSize;
 
   /// 四角的线宽度
   final double hornStrokeWidth;
 
+  /// 四角线长度
+  final double hornWidth;
+
   /// 识别框中间的线
   final double scannerStrokeWidth;
-  late Paint paintValue;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Size initSize = this.size ?? size;
-    final Size initBoxSize =
-        boxSize ?? Size(initSize.width * 0.7, initSize.height * 0.3);
-    paintValue = Paint()
+    late final Paint paintValue = Paint()
+      ..color = borderColor
       ..style = PaintingStyle.stroke
-      ..strokeWidth = 0.5
       ..isAntiAlias = true
       ..strokeCap = StrokeCap.round
-      ..strokeJoin = StrokeJoin.bevel;
-    final double left = (initSize.width - initBoxSize.width) / 2;
-    final double top = (initSize.height - initBoxSize.height) / 2;
-    final double boxWidth = initBoxSize.width;
-    final double boxHeight = initBoxSize.height;
-    final double bottom = top + boxHeight;
-    final double right = left + boxWidth;
-    paintValue.color = borderColor;
-    final Rect rect = Rect.fromLTWH(left, top, boxWidth, boxHeight);
+      ..strokeJoin = StrokeJoin.round;
+    paintValue.strokeWidth = scannerStrokeWidth;
+    final Rect rect = Rect.fromLTWH(0, 0, size.width, size.height);
     canvas.drawRect(rect, paintValue);
     paintValue.strokeWidth = hornStrokeWidth;
-    final Path path1 = Path()
-      ..moveTo(left, top + 10)
-      ..lineTo(left, top)
-      ..lineTo(left + 10, top);
-    canvas.drawPath(path1, paintValue);
-    final Path path2 = Path()
-      ..moveTo(left, bottom - 10)
-      ..lineTo(left, bottom)
-      ..lineTo(left + 10, bottom);
-    canvas.drawPath(path2, paintValue);
-    final Path path3 = Path()
-      ..moveTo(right, bottom - 10)
-      ..lineTo(right, bottom)
-      ..lineTo(right - 10, bottom);
-    canvas.drawPath(path3, paintValue);
-    final Path path4 = Path()
-      ..moveTo(right, top + 10)
-      ..lineTo(right, top)
-      ..lineTo(right - 10, top);
-    canvas.drawPath(path4, paintValue);
-    final Rect scanRect = Rect.fromLTWH(
-        left + 10, top + 10 + (value * (boxHeight - 20)), boxWidth - 20, 0);
+    final Path path = Path()
+      ..moveTo(0, hornWidth)
+      ..lineTo(0, 0)
+      ..lineTo(hornWidth, 0)
+      ..moveTo(size.width - hornWidth, 0)
+      ..lineTo(size.width, 0)
+      ..lineTo(size.width, hornWidth)
+      ..moveTo(size.width, size.height - hornWidth)
+      ..lineTo(size.width, size.height)
+      ..lineTo(size.width - hornWidth, size.height)
+      ..moveTo(hornWidth, size.height)
+      ..lineTo(0, size.height)
+      ..lineTo(0, size.height - hornWidth);
+    canvas.drawPath(path, paintValue);
+    final Rect scanRect =
+        Rect.fromLTWH(10, value * (size.height - 20), size.width - 20, 0);
     final List<double> stop = <double>[0.0, 0.5, 1];
     paintValue.shader = LinearGradient(colors: <Color>[
-      scannerColor.withOpacity(0.5),
+      scannerColor.withOpacity(0.2),
       scannerColor,
-      scannerColor.withOpacity(0.5),
+      scannerColor.withOpacity(0.2),
     ], stops: stop)
         .createShader(scanRect);
     paintValue.strokeWidth = scannerStrokeWidth;
