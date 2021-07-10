@@ -10,11 +10,12 @@ import 'package:flutter_curiosity/tools/internal.dart';
 /// 基于原始扫描预览
 /// 使用简单
 class ScannerView extends StatefulWidget {
-  const ScannerView({
+  ScannerView({
     Key? key,
     CameraLensFacing? lensFacing,
     Color? flashOnColor,
     Color? flashOffColor,
+    List<ScanType>? scanTypes,
     this.topRatio = 0.3,
     this.leftRatio = 0.1,
     this.widthRatio = 0.8,
@@ -30,13 +31,17 @@ class ScannerView extends StatefulWidget {
     this.scannerColor,
   })  : lensFacing = lensFacing ?? CameraLensFacing.back,
         flashOnColor = flashOnColor ?? Colors.white,
-        flashOffColor = flashOffColor ?? Colors.black26,
+        flashOffColor = flashOffColor ?? Colors.white60,
+        scanTypes = scanTypes ?? <ScanType>[ScanType.qrCode],
         assert(leftRatio * 2 + widthRatio == 1),
         assert(topRatio * 2 + heightRatio == 1),
         super(key: key);
 
   /// 相机位置
   final CameraLensFacing lensFacing;
+
+  /// 识别的二维码类型
+  final List<ScanType>? scanTypes;
 
   /// 预览顶层添加组件
   final Widget? child;
@@ -89,13 +94,14 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   void initState() {
     super.initState();
     WidgetsBinding.instance?.addObserver(this);
-    controller = ScannerController(
-        resolution: widget.resolution ?? CameraResolution.high);
     WidgetsBinding.instance!.addPostFrameCallback((Duration timeStamp) =>
         Timer(const Duration(milliseconds: 300), initController));
   }
 
   Future<void> initController() async {
+    controller = ScannerController(
+        scanTypes: widget.scanTypes,
+        resolution: widget.resolution ?? CameraResolution.medium);
     controller!.addListener(() {
       final String? code = controller?.scanResult?.code;
       if (code != null && isFirst && code.isNotEmpty) {
@@ -106,10 +112,6 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
       }
     });
     controller!.setFlashMode(false);
-    getCameras();
-  }
-
-  Future<void> getCameras() async {
     CameraOptions? camera;
     final List<CameraOptions>? cameras = await controller!.availableCameras();
     print(cameras);
@@ -146,7 +148,11 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
     if (controller?.textureId == null) return Container();
     final Widget child = Scanner(controller: controller!);
     final List<Widget> children = <Widget>[];
-    children.add(Align(alignment: Alignment.center, child: child));
+    children.add(Align(
+        alignment: Alignment.center,
+        child: AspectRatio(
+            aspectRatio: controller!.previewHeight! / controller!.previewWidth!,
+            child: child)));
     if (widget.scannerBox) children.add(previewBox);
     children.add(Container(
       margin: const EdgeInsets.only(bottom: 20),
@@ -170,17 +176,12 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
     final Size size = getWindowSize;
     final double w = size.width * widget.widthRatio;
     final double h = size.height * widget.heightRatio;
-    return Align(
-        alignment: Alignment.center,
-        child: ScannerShadow(
-          clipSize: Size(w, h),
-          child: ScannerBox(
-              size: Size(w, h),
-              borderColor: widget.borderColor,
-              scannerColor: widget.scannerColor,
-              hornStrokeWidth: widget.hornStrokeWidth,
-              scannerStrokeWidth: widget.scannerStrokeWidth),
-        ));
+    return ScannerBox(
+        scannerSize: Size(w, h),
+        borderColor: widget.borderColor,
+        scannerColor: widget.scannerColor,
+        hornStrokeWidth: widget.hornStrokeWidth,
+        scannerStrokeWidth: widget.scannerStrokeWidth);
   }
 
   /// 打开闪光灯
@@ -196,8 +197,7 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     WidgetsBinding.instance?.removeObserver(this);
-    controller!.disposeCameras();
-    controller!.dispose();
+    controller?.dispose();
     controller = null;
   }
 
@@ -205,9 +205,9 @@ class _ScannerViewState extends State<ScannerView> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (controller != null) {
       if (state == AppLifecycleState.resumed) {
-        getCameras();
+        initController();
       } else {
-        controller!.disposeCameras();
+        controller!.dispose();
       }
     }
   }
@@ -309,6 +309,7 @@ class ScannerController extends ChangeNotifier {
   /// 相机状态
   String? cameraState;
 
+  /// 初始化相机
   Future<void> initialize({CameraOptions? cameras}) async {
     if (cameras != null) camera = cameras;
     if (camera == null) return;
@@ -320,8 +321,10 @@ class ScannerController extends ChangeNotifier {
         'leftRatio': leftRatio,
         'widthRatio': widthRatio,
         'heightRatio': heightRatio,
-        'scanTypes':
-            scanTypes.map((ScanType e) => e.toString().split('.')[1]).toList(),
+        'scanTypes': scanTypes
+            .map((ScanType e) => e.toString().split('.')[1])
+            .toSet()
+            .toList(),
       };
 
       /// 先初始化 消息通道
@@ -338,6 +341,7 @@ class ScannerController extends ChangeNotifier {
       previewHeight = double.parse(reply['previewHeight'].toString());
       if (eventState) {
         event.addListener((dynamic data) {
+          if (data == null) return;
           scanResult = ScanResult.fromJson(data as Map<dynamic, dynamic>);
           notifyListeners();
         });
@@ -348,9 +352,11 @@ class ScannerController extends ChangeNotifier {
     }
   }
 
+  /// 打开/关闭闪光灯
   Future<bool?> setFlashMode(bool status) =>
       curiosityChannel.invokeMethod('setFlashMode', status);
 
+  /// 获取可用的相机
   Future<List<CameraOptions>> availableCameras() async {
     try {
       final List<Map<dynamic, dynamic>>? cameras = await curiosityChannel
@@ -367,9 +373,12 @@ class ScannerController extends ChangeNotifier {
     return <CameraOptions>[];
   }
 
-  void disposeCameras() {
+  /// 销毁相机组件
+
+  @override
+  Future<void> dispose() async {
     if (textureId == null) return;
-    curiosityChannel.invokeMethod<dynamic>('disposeCameras', textureId);
+    await curiosityChannel.invokeMethod<bool>('disposeCameras', textureId);
     super.dispose();
   }
 

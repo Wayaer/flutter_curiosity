@@ -26,11 +26,14 @@ Future<ScanResult?> scanImageByte(Uint8List uint8list,
     {List<ScanType>? scanTypes}) async {
   try {
     scanTypes ??= <ScanType>[ScanType.qrCode];
-    final Map<dynamic, dynamic>? data = await curiosityChannel.invokeMethod(
-        'scanImageByte', <String, dynamic>{
+    final Map<dynamic, dynamic>? data =
+        await curiosityChannel.invokeMethod('scanImageByte', <String, dynamic>{
       'byte': uint8list,
       'useEvent': false,
       'scanTypes': scanTypes
+          .map((ScanType e) => e.toString().split('.')[1])
+          .toSet()
+          .toList(),
     });
     if (data != null) return ScanResult.fromJson(data);
   } on PlatformException catch (e) {
@@ -77,6 +80,9 @@ void scanImageYUV({
         'widthRatio': widthRatio,
         'heightRatio': heightRatio,
         'scanTypes': scanTypes
+            .map((ScanType e) => e.toString().split('.')[1])
+            .toSet()
+            .toList(),
       };
       curiosityChannel.invokeMethod<dynamic>('scanImageYUV', map);
     } on PlatformException catch (e) {

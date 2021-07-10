@@ -93,10 +93,8 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             }
             result(false)
         case "disposeCameras":
-            if scanner != nil {
-                scanner!.close()
-                scanner = nil
-            }
+            scanner?.close()
+            scanner = nil
             result(true)
         default:
             result(FlutterMethodNotImplemented)

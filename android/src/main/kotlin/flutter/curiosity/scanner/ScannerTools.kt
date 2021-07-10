@@ -16,6 +16,8 @@ object ScannerTools {
 
     fun scanImageByte(activity: Activity) {
         val byteArray = call.argument<ByteArray>("byte")!!
+        val scanTypes = call.argument<List<String>?>("scanTypes")
+        if (scanTypes != null) setHints(scanTypes)
         try {
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
             if (bitmap == null) {
@@ -52,6 +54,8 @@ object ScannerTools {
         val leftRatio = call.argument<Double>("leftRatio")!!
         val widthRatio = call.argument<Double>("widthRatio")!!
         val heightRatio = call.argument<Double>("heightRatio")!!
+        val scanTypes = call.argument<List<String>?>("scanTypes")
+        if (scanTypes != null) setHints(scanTypes)
         val resultData = decodeImage(
             byteArray,
             height,
@@ -95,7 +99,7 @@ object ScannerTools {
         val identifyWidth: Int
         val identifyHeight: Int
         val array: ByteArray
-        multiFormatReader.setHints(hints)
+
         if (verticalScreen) {
             array = rotateByteArray(byteArray, imageWidth, imageHeight)
             width = imageHeight
@@ -126,7 +130,16 @@ object ScannerTools {
             result = multiFormatReader.decodeWithState(binaryBitmap)
         } catch (e: NotFoundException) {
             if (verticalScreen) result =
-                decodeImage(byteArray, imageHeight, imageWidth, false, topRatio, leftRatio, widthRatio, heightRatio)
+                decodeImage(
+                    byteArray,
+                    imageHeight,
+                    imageWidth,
+                    false,
+                    topRatio,
+                    leftRatio,
+                    widthRatio,
+                    heightRatio
+                )
         }
         return result
     }
@@ -143,40 +156,37 @@ object ScannerTools {
         return rotatedData
     }
 
-    // 这里设置可扫描的类型
-    private val hints: Map<DecodeHintType, Any>
-        get() {
-            val decodeFormats: MutableCollection<BarcodeFormat> = ArrayList()
-            val scanTypes = call.argument<List<String>?>("scanTypes")
-            if (!scanTypes.isNullOrEmpty()) {
-                scanTypes.forEach { type ->
-                    when (type) {
-                        "upcA" -> decodeFormats.add(BarcodeFormat.UPC_A)
-                        "upcE" -> decodeFormats.add(BarcodeFormat.UPC_E)
-                        "ean13" -> decodeFormats.add(BarcodeFormat.EAN_13)
-                        "ean8" -> decodeFormats.add(BarcodeFormat.EAN_8)
-                        "codaBar" -> decodeFormats.add(BarcodeFormat.CODABAR)
-                        "code39" -> decodeFormats.add(BarcodeFormat.CODE_39)
-                        "code93" -> decodeFormats.add(BarcodeFormat.CODE_93)
-                        "code128" -> decodeFormats.add(BarcodeFormat.CODE_128)
-                        "itf" -> decodeFormats.add(BarcodeFormat.ITF)
-                        "rss14" -> decodeFormats.add(BarcodeFormat.RSS_14)
-                        "rssExpanded" -> decodeFormats.add(BarcodeFormat.RSS_EXPANDED)
-                        "qrCode" -> decodeFormats.add(BarcodeFormat.QR_CODE)
-                        "aztec" -> decodeFormats.add(BarcodeFormat.AZTEC)
-                        "dataMatrix" -> decodeFormats.add(BarcodeFormat.DATA_MATRIX)
-                        "maxICode" -> decodeFormats.add(BarcodeFormat.MAXICODE)
-                        "pdf417" -> decodeFormats.add(BarcodeFormat.PDF_417)
-                        "upcEanExtension" -> decodeFormats.add(BarcodeFormat.UPC_EAN_EXTENSION)
-                    }
+    fun setHints(scanTypes: List<String>) {
+        val decodeFormats: MutableCollection<BarcodeFormat> = ArrayList()
+        if (!scanTypes.isNullOrEmpty()) {
+            scanTypes.forEach { type ->
+                when (type) {
+                    "upcA" -> decodeFormats.add(BarcodeFormat.UPC_A)
+                    "upcE" -> decodeFormats.add(BarcodeFormat.UPC_E)
+                    "ean13" -> decodeFormats.add(BarcodeFormat.EAN_13)
+                    "ean8" -> decodeFormats.add(BarcodeFormat.EAN_8)
+                    "codaBar" -> decodeFormats.add(BarcodeFormat.CODABAR)
+                    "code39" -> decodeFormats.add(BarcodeFormat.CODE_39)
+                    "code93" -> decodeFormats.add(BarcodeFormat.CODE_93)
+                    "code128" -> decodeFormats.add(BarcodeFormat.CODE_128)
+                    "itf" -> decodeFormats.add(BarcodeFormat.ITF)
+                    "rss14" -> decodeFormats.add(BarcodeFormat.RSS_14)
+                    "rssExpanded" -> decodeFormats.add(BarcodeFormat.RSS_EXPANDED)
+                    "qrCode" -> decodeFormats.add(BarcodeFormat.QR_CODE)
+                    "aztec" -> decodeFormats.add(BarcodeFormat.AZTEC)
+                    "dataMatrix" -> decodeFormats.add(BarcodeFormat.DATA_MATRIX)
+                    "maxICode" -> decodeFormats.add(BarcodeFormat.MAXICODE)
+                    "pdf417" -> decodeFormats.add(BarcodeFormat.PDF_417)
+                    "upcEanExtension" -> decodeFormats.add(BarcodeFormat.UPC_EAN_EXTENSION)
                 }
-            } else {
-                decodeFormats.add(BarcodeFormat.QR_CODE)
             }
-            val hints: MutableMap<DecodeHintType, Any> = mutableMapOf()
-            hints[DecodeHintType.CHARACTER_SET] = "UTF-8"
-            hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
-            hints[DecodeHintType.TRY_HARDER] = true
-            return hints
+        } else {
+            decodeFormats.add(BarcodeFormat.QR_CODE)
         }
+        val hints: MutableMap<DecodeHintType, Any> = mutableMapOf()
+        hints[DecodeHintType.CHARACTER_SET] = "UTF-8"
+        hints[DecodeHintType.POSSIBLE_FORMATS] = decodeFormats
+        hints[DecodeHintType.TRY_HARDER] = true
+        multiFormatReader.setHints(hints)
+    }
 }

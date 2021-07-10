@@ -47,11 +47,11 @@
     <true/>
 ```
 
-### 1.[原生方法](./lib/tools/native.dart)
+### 1.[原生方法](./lib/tools/)
 
 ### 2.[二维码扫描](./lib/scanner)
 
-### 3.[获取手机硬件信息 (app信息,设备信息)](./lib/tools/device_info.dart)
+### 3.[获取手机硬件信息 (app信息,设备信息)](./lib/tools/app_device.dart)
 
 ### 4.[Android ios 跳转设置](./lib/tools/setting.dart)
 

@@ -16,26 +16,34 @@ class ScannerPage extends StatefulWidget {
 
 class _ScannerPageState extends State<ScannerPage> {
   bool san = true;
-  String? path;
+  String? code;
 
   @override
   Widget build(BuildContext context) {
     return ExtendedScaffold(
         appBar: AppBarText('Camera and Scanner'),
         body: Universal(isScroll: true, children: <Widget>[
-          ElevatedText(onPressed: scan, text: '扫码'),
+          ElevatedText(
+              onPressed: () => scan(<ScanType>[
+                    ScanType.qrCode,
+                    ScanType.ean8,
+                    ScanType.ean13,
+                    ScanType.upcA,
+                    ScanType.upcE,
+                  ]),
+              text: '扫码(识别支持全部)'),
+          ElevatedText(onPressed: scan, text: '扫码(只识别二维码)'),
           ElevatedText(onPressed: scanImage, text: '官方相机扫码'),
           ElevatedText(
               onPressed: () => push(_FileImageScanPage()), text: '识别图片二维码'),
           const SizedBox(height: 20),
-          const ScannerShadow(
-              child: ScannerBox(
-                  size: Size(200, 200),
+          SizedBox.fromSize(
+              size: const Size(300, 300),
+              child: const ScannerBox(
+                  scannerSize: Size(200, 200),
                   borderColor: Colors.blue,
-                  scannerColor: Colors.blue),
-              size: Size(300, 300),
-              clipSize: Size(200, 200)),
-          showText('path', path),
+                  scannerColor: Colors.blue)),
+          showText('code', code),
         ]));
   }
 
@@ -50,16 +58,18 @@ class _ScannerPageState extends State<ScannerPage> {
     }
   }
 
-  Future<void> scan() async {
+  Future<void> scan([List<ScanType>? scanTypes]) async {
     if (!isMobile) return;
     final bool permission = await getPermission(Permission.camera) &&
         await getPermission(Permission.storage);
     if (permission) {
-      push(ScannerView(scanResult: (String value) {
-        path = value;
-        pop();
-        setState(() {});
-      }));
+      push(ScannerView(
+          scanTypes: scanTypes,
+          scanResult: (String value) {
+            code = value;
+            pop();
+            setState(() {});
+          }));
     } else {
       openAppSettings();
     }

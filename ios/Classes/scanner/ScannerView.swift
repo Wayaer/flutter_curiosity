@@ -10,19 +10,19 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
     var _captureDevice: AVCaptureDevice?
     // 视频输出
     var _captureVideoOutput: AVCaptureVideoDataOutput?
-    
+
     var _latestPixelBuffer: CVPixelBuffer?
-    
+
     var _previewSize: CGSize?
-    
+
     var _curiosityEvent: CuriosityEvent
-    
+
     var _registrar: FlutterPluginRegistrar
-    
+
     var _result: FlutterResult
-    
+
     var textureId: Int64?
-    
+
     init(call: FlutterMethodCall, result: @escaping FlutterResult, event: CuriosityEvent, registrar: FlutterPluginRegistrar) {
         _registrar = registrar
         _curiosityEvent = event
@@ -35,9 +35,9 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
             result(nil)
             return
         }
-        
+
         _captureDevice = AVCaptureDevice(uniqueID: cameraId!!)
-        
+
         // Add device input.
         var videoInput: AVCaptureInput?
         do {
@@ -51,27 +51,27 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         _captureVideoOutput!.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
         _captureVideoOutput!.alwaysDiscardsLateVideoFrames = true
         _captureVideoOutput!.setSampleBufferDelegate(self, queue: .main)
-        
+
         let connection = AVCaptureConnection(inputPorts: videoInput!.ports, output: _captureVideoOutput!)
         if connection.isVideoOrientationSupported {
             connection.videoOrientation = .portrait
         }
-    
+
         for connection in _captureVideoOutput!.connections {
             connection.videoOrientation = .portrait
             if _captureDevice?.position == .front, connection.isVideoMirroringSupported {
                 connection.isVideoMirrored = true
             }
         }
-     
+
         // Add metadata output.
         let captureOutput = AVCaptureMetadataOutput()
-        
+
         _captureSession = AVCaptureSession()
         if _captureSession!.canAddInput(videoInput!) {
             _captureSession!.addInput(videoInput!)
         }
-        
+
         if _captureSession!.canAddOutput(_captureVideoOutput!) {
             _captureSession!.addOutput(_captureVideoOutput!)
         }
@@ -85,14 +85,13 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         if let topRatio = arguments!["topRatio"] as? Double?,
            let leftRatio = arguments!["leftRatio"] as? Double?,
            let widthRatio = arguments!["widthRatio"] as? Double?,
-           let heightRatio = arguments!["heightRatio"] as? Double?
-        {
+           let heightRatio = arguments!["heightRatio"] as? Double? {
             captureOutput.rectOfInterest = CGRect(x: CGFloat(topRatio!), y: CGFloat(leftRatio!), width: CGFloat(widthRatio!), height: CGFloat(heightRatio!))
         }
 
         captureOutput.setMetadataObjectsDelegate(self, queue: .main)
         captureOutput.metadataObjectTypes = ScannerTools.getScanType(arguments)
-        
+
         if _captureSession!.canAddConnection(connection) {
             _captureSession!.addConnection(connection)
         }
@@ -107,7 +106,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         ])
         _captureSession?.startRunning()
     }
-    
+
     func metadataOutput(_ output: AVCaptureMetadataOutput, didOutput metadataObjects: [AVMetadataObject], from connection: AVCaptureConnection) {
         print("解析出来数据")
         if metadataObjects.count > 0 {
@@ -141,14 +140,14 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         _captureDevice!.unlockForConfiguration()
         _result(isSuccess)
     }
-    
+
     func copyPixelBuffer() -> Unmanaged<CVPixelBuffer>? {
         if _latestPixelBuffer == nil {
             return nil
         }
         return Unmanaged<CVPixelBuffer>.passRetained(_latestPixelBuffer!)
     }
-    
+
     func close() {
         _captureSession!.stopRunning()
         for intput in _captureSession!.inputs {
@@ -164,7 +163,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
         _latestPixelBuffer = nil
         _result(true)
     }
-    
+
     private func setCaptureSessionPreset(_ resolutionPreset: String) {
         switch resolutionPreset {
         case "max":
@@ -176,7 +175,7 @@ class ScannerView: NSObject, FlutterTexture, AVCaptureMetadataOutputObjectsDeleg
                 let heightFloat = CGFloat(Float(bitPattern: UInt32(height)))
                 _previewSize = CGSize(width: widthFloat, height: heightFloat)
             }
-            
+
         case "ultraHigh":
             if _captureSession!.canSetSessionPreset(.hd4K3840x2160) {
                 _captureSession!.sessionPreset = .hd4K3840x2160

@@ -20,7 +20,8 @@ import java.util.concurrent.Executors
 
 class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, context: Context) {
 
-    private var cameraManager: CameraManager = activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
+    private var cameraManager: CameraManager =
+        activity.getSystemService(Context.CAMERA_SERVICE) as CameraManager
     private lateinit var previewSize: Size
     private var _context = context
     private var cameraDevice: CameraDevice? = null
@@ -97,6 +98,8 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
             CaptureRequest.CONTROL_AF_MODE,
             CaptureRequest.CONTROL_AF_MODE_CONTINUOUS_PICTURE
         )
+        val scanTypes = call.argument<List<String>?>("scanTypes")
+        if (scanTypes != null) ScannerTools.setHints(scanTypes)
         imageStreamReader?.setOnImageAvailableListener({ imageReader ->
             singleThreadExecutor.execute {
                 val image = imageReader.acquireLatestImage()
@@ -116,7 +119,11 @@ class ScannerView(private val texture: SurfaceTextureEntry, activity: Activity, 
                             widthRatio,
                             heightRatio
                         )
-                        if (result != null) curiosityEvent?.sendEvent(ScannerTools.scanDataToMap(result))
+                        if (result != null) curiosityEvent?.sendEvent(
+                            ScannerTools.scanDataToMap(
+                                result
+                            )
+                        )
                         buffer.clear()
                         lastCurrentTime = currentTime
                     }
