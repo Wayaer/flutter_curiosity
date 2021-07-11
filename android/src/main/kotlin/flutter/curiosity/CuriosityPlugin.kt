@@ -1,7 +1,6 @@
 package flutter.curiosity
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
 import android.net.Uri
@@ -27,23 +26,19 @@ import io.flutter.plugin.common.PluginRegistry.RequestPermissionsResultListener
 import java.util.*
 
 
-/**
- * CuriosityPlugin
- */
 class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
     ViewTreeObserver.OnGlobalLayoutListener, MethodChannel.MethodCallHandler,
     RequestPermissionsResultListener {
     private var curiosityChannel: MethodChannel? = null
-    private lateinit var context: Context
-    private lateinit var activity: Activity
-    private var mainView: View? = null
-    private var keyboardStatus = false
-    private lateinit var pluginBinding: FlutterPluginBinding
+    private var plugin: FlutterPluginBinding? = null
+    private var activityPlugin: ActivityPluginBinding? = null
 
     private var onActivityResultState = false
     private var onRequestPermissionsResultState = false
 
     private var scannerView: ScannerView? = null
+    private var mainView: View? = null
+    private var keyboardStatus = false
 
     companion object {
         var openSystemGalleryCode = 100
@@ -60,10 +55,9 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
         var curiosityEvent: CuriosityEvent? = null
     }
 
-    override fun onAttachedToEngine(@NonNull plugin: FlutterPluginBinding) {
-        context = plugin.applicationContext
-        pluginBinding = plugin
-        curiosityChannel = MethodChannel(plugin.binaryMessenger, "Curiosity")
+    override fun onAttachedToEngine(@NonNull pluginBinding: FlutterPluginBinding) {
+        plugin = pluginBinding
+        curiosityChannel = MethodChannel(pluginBinding.binaryMessenger, "Curiosity")
         curiosityChannel?.setMethodCallHandler(this)
     }
 
@@ -77,7 +71,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             "exitApp" -> NativeTools.exitApp()
             "startCuriosityEvent" -> {
                 if (curiosityEvent == null) {
-                    curiosityEvent = CuriosityEvent(pluginBinding.binaryMessenger)
+                    curiosityEvent = CuriosityEvent(plugin!!.binaryMessenger)
                 }
                 result.success(curiosityEvent != null)
             }
@@ -92,38 +86,41 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
                 }
                 result.success(curiosityEvent == null)
             }
-            "installApp" -> NativeTools.installApp(context, activity)
-            "openAppMarket" -> result.success(NativeTools.openAppMarket(activity))
-            "isInstallApp" -> result.success(NativeTools.isInstallApp(activity))
-            "getAppInfo" -> result.success(NativeTools.getAppInfo(context))
-            "getAppPath" -> result.success(NativeTools.getAppPath(context))
-            "getDeviceInfo" -> result.success(NativeTools.getDeviceInfo(context))
-            "getInstalledApp" -> result.success(NativeTools.getInstalledApp(context))
-            "getGPSStatus" -> result.success(NativeTools.getGPSStatus(context))
-            "openSystemSetting" -> NativeTools.openSystemSetting(activity)
-            ///相机拍照图库选择
-            "openSystemGallery" -> GalleryTools.openSystemGallery(activity)
-            "openSystemCamera" -> GalleryTools.openSystemCamera(
-                context,
-                activity
+            "installApp" -> NativeTools.installApp(
+                plugin!!.applicationContext,
+                activityPlugin!!.activity
             )
-            "saveFileToGallery" -> GalleryTools.saveFileToGallery(context)
-            "saveImageToGallery" -> GalleryTools.saveImageToGallery(context)
+            "openAppMarket" -> result.success(NativeTools.openAppMarket(activityPlugin!!.activity))
+            "isInstallApp" -> result.success(NativeTools.isInstallApp(activityPlugin!!.activity))
+            "getAppInfo" -> result.success(NativeTools.getAppInfo(plugin!!.applicationContext))
+            "getAppPath" -> result.success(NativeTools.getAppPath(plugin!!.applicationContext))
+            "getDeviceInfo" -> result.success(NativeTools.getDeviceInfo(activityPlugin!!.activity))
+            "getInstalledApp" -> result.success(NativeTools.getInstalledApp(activityPlugin!!.activity))
+            "getGPSStatus" -> result.success(NativeTools.getGPSStatus(activityPlugin!!.activity))
+            "openSystemSetting" -> NativeTools.openSystemSetting(activityPlugin!!.activity)
+            ///相机拍照图库选择
+            "openSystemGallery" -> GalleryTools.openSystemGallery(activityPlugin!!.activity)
+            "openSystemCamera" -> GalleryTools.openSystemCamera(
+                plugin!!.applicationContext,
+                activityPlugin!!.activity
+            )
+            "saveFileToGallery" -> GalleryTools.saveFileToGallery(plugin!!.applicationContext)
+            "saveImageToGallery" -> GalleryTools.saveImageToGallery(plugin!!.applicationContext)
             ///扫码相机相关
-            "scanImageByte" -> ScannerTools.scanImageByte(activity)
+            "scanImageByte" -> ScannerTools.scanImageByte(activityPlugin!!.activity)
             "scanImageYUV" -> ScannerTools.scanImageYUV()
             "availableCameras" ->
                 result.success(
                     CameraTools.getAvailableCameras(
-                        activity
+                        activityPlugin!!.activity
                     )
                 )
             "initializeCameras" -> {
                 if (scannerView == null) {
                     scannerView = ScannerView(
-                        pluginBinding.textureRegistry.createSurfaceTexture(),
-                        activity,
-                        context
+                        plugin!!.textureRegistry.createSurfaceTexture(),
+                        activityPlugin!!.activity,
+                        plugin!!.applicationContext
                     )
                     scannerView?.initCameraView()
                 } else {
@@ -154,48 +151,43 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
 
     }
 
-    ///主要是用于获取当前flutter页面所处的Activity.
-    override fun onAttachedToActivity(plugin: ActivityPluginBinding) {
-        activity = plugin.activity
-        mainView = activity.window.decorView
+    override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
+        activityPlugin = pluginBinding
+        mainView = pluginBinding.activity.window.decorView
         mainView!!.viewTreeObserver.addOnGlobalLayoutListener(this)
-        plugin.addActivityResultListener(this)
-        plugin.addRequestPermissionsResultListener(this)
+        pluginBinding.addActivityResultListener(this)
+        pluginBinding.addRequestPermissionsResultListener(this)
     }
 
-
-    ///主要是用于获取当前flutter页面所处的Activity.
-    override fun onDetachedFromActivity() {
-    }
-
-    ///Activity注销时
     override fun onReattachedToActivityForConfigChanges(plugin: ActivityPluginBinding) {
-        plugin.removeActivityResultListener(this)
-        plugin.removeRequestPermissionsResultListener(this)
+        onAttachedToActivity(plugin)
+    }
+
+    override fun onDetachedFromActivity() {
+        activityPlugin?.removeActivityResultListener(this)
+        activityPlugin?.removeRequestPermissionsResultListener(this)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
-        dispose()
+        onDetachedFromActivity()
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        dispose()
-    }
-
-    private fun dispose() {
+        plugin = null
+        activityPlugin = null
         curiosityChannel?.setMethodCallHandler(null)
         curiosityChannel = null
-        activity.window.decorView.viewTreeObserver
+        activityPlugin!!.activity.window.decorView.viewTreeObserver
             .removeOnGlobalLayoutListener(this)
         curiosityEvent?.dispose()
         curiosityEvent = null
     }
 
     override fun onGlobalLayout() {
-        val r = Rect()
+        val rect = Rect()
         if (mainView != null) {
-            mainView!!.getWindowVisibleDisplayFrame(r)
-            val newStatus = r.height()
+            mainView!!.getWindowVisibleDisplayFrame(rect)
+            val newStatus = rect.height()
                 .toDouble() / mainView!!.rootView.height.toDouble() < 0.85
             if (keyboardStatus == newStatus) return
             keyboardStatus = newStatus
@@ -227,14 +219,14 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
                     result.success(
                         Tools.getRealPathFromURI(
                             uri,
-                            context
+                            plugin!!.applicationContext
                         )
                     )
                 }
                 openSystemCameraCode -> {
                     val photoPath: String =
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
+                            plugin!!.applicationContext.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
                         } else {
                             intent?.data?.encodedPath.toString()
                         }
@@ -243,8 +235,8 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
                 installApkCode -> result.success(resultSuccess)
                 openSystemShareCode -> result.success(resultSuccess)
                 installPermissionCode -> NativeTools.installApp(
-                    context,
-                    activity
+                    plugin!!.applicationContext,
+                    activityPlugin!!.activity
                 )
             }
         } else if (resultCode == Activity.RESULT_CANCELED) {
