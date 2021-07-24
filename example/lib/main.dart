@@ -148,14 +148,13 @@ class ElevatedText extends StatelessWidget {
 class AppBarText extends AppBar {
   AppBarText(String text, {Key? key})
       : super(
-          key: key,
-          elevation: 0,
-          iconTheme: const IconThemeData.fallback(),
-          title: BText(text,
-              color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-          centerTitle: true,
-          backgroundColor: color,
-        );
+            key: key,
+            elevation: 0,
+            iconTheme: const IconThemeData.fallback(),
+            title: BText(text,
+                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+            centerTitle: true,
+            backgroundColor: color);
 }
 
 const Color color = Colors.amber;
