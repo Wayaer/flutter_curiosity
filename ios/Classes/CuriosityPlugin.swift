@@ -8,7 +8,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
     var keyboardStatus = false
 
     var gallery: GalleryTools?
-    var scanner: ScannerView?
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "Curiosity", binaryMessenger: registrar.messenger())
@@ -66,36 +65,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         case "saveImageToGallery":
             initGalleryTools(call, result)
             gallery?.saveImageToGallery()
-        case "scanImageByte":
-            let arguments = call.arguments as! [AnyHashable: Any?]
-            let useEvent = arguments["useEvent"] as! Bool?
-            let uint8list = arguments["byte"] as! FlutterStandardTypedData?
-            let code = ScannerTools.scanImageByte(uint8list)
-            if useEvent != nil, useEvent! {
-                curiosityEvent?.sendEvent(arguments: code)
-                return
-            }
-            result(code)
-        case "availableCameras":
-            result(ScannerTools.availableCameras())
-        case "initializeCameras":
-            if scanner == nil, curiosityEvent != nil {
-                scanner = ScannerView(call: call, result: result, event: curiosityEvent!, registrar: registrar)
-                scanner?.start()
-                return
-            }
-            result(nil)
-        case "setFlashMode":
-            if scanner != nil {
-                scanner!.setFlashMode(status: call.arguments as! Bool)
-                result(true)
-                return
-            }
-            result(false)
-        case "disposeCameras":
-            scanner?.close()
-            scanner = nil
-            result(true)
         default:
             result(FlutterMethodNotImplemented)
         }

@@ -29,7 +29,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
           if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
           const SizedBox(height: 20),
-          showText('path', path),
+          ShowText('path', path),
           if (path != null && path!.isNotEmpty)
             Container(
                 width: double.infinity,

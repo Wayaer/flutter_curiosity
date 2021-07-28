@@ -1,5 +1,6 @@
 ## [3.0.0]
  * add [getAppPath()]、[getDeviceInfo()] 、[getAppInfo()]  support Android/IOS/MacOS
+ * delete [ScannerView()] , Split to [fl_mlkit_scanning](https://github.com/Wayaer/fl_mlkit_scanning)
 ## [2.3.0]
  * remove [scanImageUrl()]、[scanImageMemory()]、
  * add [scanImageByte()]、[scanImageYUV()]

@@ -63,13 +63,13 @@ class _GetInfoPageState extends State<GetInfoPage> {
     list.clear();
     model?.toMap().forEach((String key, dynamic value) {
       if (value is Map) {
-        list.add(showText('=== uts', '==='));
+        list.add(const ShowText('=== uts', '==='));
         value.forEach((dynamic k, dynamic v) {
-          list.add(showText('  ' + k.toString(), v));
+          list.add(ShowText('  ' + k.toString(), v));
         });
-        list.add(showText('=== uts', '==='));
+        list.add(const ShowText('=== uts', '==='));
       } else {
-        list.add(showText(key, value));
+        list.add(ShowText(key, value));
       }
     });
     setState(() {});
@@ -80,7 +80,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
-      list.add(showText(key, value));
+      list.add(ShowText(key, value));
     });
     setState(() {});
   }
@@ -90,7 +90,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
-      list.add(showText(key, value));
+      list.add(ShowText(key, value));
     });
     setState(() {});
   }

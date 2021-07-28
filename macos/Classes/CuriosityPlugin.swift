@@ -52,25 +52,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
 //        case "openSystemAlbum":
 //            initGalleryTools(call, result)
 //            gallery?.openSystemAlbum()
-
-        case "scanImageByte":
-            if #available(macOS 10.15, *) { let arguments = call.arguments as! [AnyHashable: Any?]
-                let useEvent = arguments["useEvent"] as! Bool?
-                let uint8list = arguments["byte"] as! FlutterStandardTypedData?
-                let code = ScannerTools.scanImageByte(uint8list)
-                if useEvent != nil, useEvent! {
-                    curiosityEvent?.sendEvent(arguments: code)
-                    return
-                }
-                result(code)
-            }
-            result(nil)
-        case "availableCameras":
-            if #available(macOS 10.15, *) {
-                result(ScannerTools.availableCameras())
-            } else {
-                result(nil)
-            }
         case "getWindowSize":
             result(DesktopTools.getWindowSize())
         case "setWindowSize":

@@ -20,7 +20,7 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
     return ExtendedScaffold(
         appBar: AppBarText('CuriosityEvent 消息通道'),
         body: Universal(children: <Widget>[
-          showText('state', stateText),
+          ShowText('state', stateText),
           Universal(
               width: double.infinity,
               wrapSpacing: 15,
@@ -64,7 +64,7 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
                     reverse: true,
                     itemCount: value.length,
                     itemBuilder: (BuildContext context, int index) =>
-                        showText(index, value[index]));
+                        ShowText(index, value[index]));
               }).expandedNull
         ]));
   }

@@ -10,9 +10,6 @@ import android.view.View
 import android.view.ViewTreeObserver
 import androidx.annotation.NonNull
 import flutter.curiosity.gallery.GalleryTools
-import flutter.curiosity.scanner.CameraTools
-import flutter.curiosity.scanner.ScannerTools
-import flutter.curiosity.scanner.ScannerView
 import flutter.curiosity.tools.NativeTools
 import flutter.curiosity.tools.Tools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -36,7 +33,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
     private var onActivityResultState = false
     private var onRequestPermissionsResultState = false
 
-    private var scannerView: ScannerView? = null
     private var mainView: View? = null
     private var keyboardStatus = false
 
@@ -106,37 +102,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             )
             "saveFileToGallery" -> GalleryTools.saveFileToGallery(plugin!!.applicationContext)
             "saveImageToGallery" -> GalleryTools.saveImageToGallery(plugin!!.applicationContext)
-            ///扫码相机相关
-            "scanImageByte" -> ScannerTools.scanImageByte(activityPlugin!!.activity)
-            "scanImageYUV" -> ScannerTools.scanImageYUV()
-            "availableCameras" ->
-                result.success(
-                    CameraTools.getAvailableCameras(
-                        activityPlugin!!.activity
-                    )
-                )
-            "initializeCameras" -> {
-                if (scannerView == null) {
-                    scannerView = ScannerView(
-                        plugin!!.textureRegistry.createSurfaceTexture(),
-                        activityPlugin!!.activity,
-                        plugin!!.applicationContext
-                    )
-                    scannerView?.initCameraView()
-                } else {
-                    result.success(null)
-                }
-            }
-            "setFlashMode" -> {
-                val status = call.arguments as Boolean
-                scannerView?.setFlashMode(status)
-                result.success(scannerView != null)
-            }
-            "disposeCameras" -> {
-                scannerView?.dispose()
-                scannerView = null
-                result.success(true)
-            }
             "onActivityResult" -> {
                 onActivityResultState = true
                 result.success(true)

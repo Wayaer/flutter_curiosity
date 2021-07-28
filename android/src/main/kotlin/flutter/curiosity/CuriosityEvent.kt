@@ -15,7 +15,6 @@ class CuriosityEvent(binaryMessenger: BinaryMessenger) : EventChannel.StreamHand
         eventChannel!!.setStreamHandler(this)
     }
 
-
     fun sendEvent(arguments: Any?) {
         handler.post {
             eventSink?.success(arguments)

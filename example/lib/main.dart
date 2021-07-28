@@ -1,7 +1,6 @@
 import 'dart:ui';
 
 import 'package:curiosity/src/camera_gallery.dart';
-import 'package:curiosity/src/camera_scan.dart';
 import 'package:curiosity/src/curiosity_event.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
@@ -88,8 +87,6 @@ class _AppState extends State<App> {
             if (isMobile) ...<Widget>[
               ElevatedText(
                   onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),
-              ElevatedText(
-                  onPressed: () => push(const ScannerPage()), text: '二维码识别'),
               ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
             ],
             if (isDesktop)
@@ -100,14 +97,21 @@ class _AppState extends State<App> {
   }
 }
 
-Widget showText(dynamic key, dynamic value) {
-  return Visibility(
-      visible: value != null &&
-          value.toString().isNotEmpty &&
-          value.toString() != 'null',
-      child: Container(
-          margin: const EdgeInsets.all(10),
-          child: Text(key.toString() + ' = ' + value.toString())));
+class ShowText extends StatelessWidget {
+  const ShowText(this.keyName, this.value) : super();
+  final dynamic keyName;
+  final dynamic value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+        visible: value != null &&
+            value.toString().isNotEmpty &&
+            value.toString() != 'null',
+        child: Container(
+            margin: const EdgeInsets.all(10),
+            child: Text(keyName.toString() + ' = ' + value.toString())));
+  }
 }
 
 Future<bool> getPermission(Permission permission) async {
