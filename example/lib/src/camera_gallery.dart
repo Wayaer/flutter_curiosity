@@ -40,8 +40,10 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> systemGallery() async {
-    if (await getPermission(Permission.photos) &&
-        await getPermission(Permission.storage)) {
+    bool hasPermission = false;
+    if (isAndroid) hasPermission = await getPermission(Permission.storage);
+    if (isIOS) hasPermission = true;
+    if (hasPermission) {
       final String? data = await openSystemGallery();
       path = data;
       setState(() {});
