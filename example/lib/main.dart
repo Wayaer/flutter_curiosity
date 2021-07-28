@@ -57,32 +57,30 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return ExtendedScaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBarText('Flutter Curiosity Plugin Example'),
-      body: Universal(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            if (isMobile || isMacOS) ...<Widget>[
-              ElevatedText(
-                  onPressed: () => push(const CuriosityEventPage()),
-                  text: 'CuriosityEvent'),
-              ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
-            ],
-            if (isAndroid)
-              ElevatedText(
-                  onPressed: () => push(OpenSettingPage()), text: '跳转APP'),
-            if (isIOS)
-              const ElevatedText(onPressed: openSystemSetting, text: '跳转设置'),
-            if (isMobile) ...<Widget>[
-              ElevatedText(
-                  onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),
-              ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
-            ],
-            if (isDesktop)
-              ElevatedText(
-                  onPressed: () => push(DesktopPage()), text: 'Desktop窗口控制'),
-          ]),
-    );
+        backgroundColor: Colors.white,
+        appBar: AppBarText('Flutter Curiosity Plugin Example'),
+        body: Universal(mainAxisAlignment: MainAxisAlignment.center, children: <
+            Widget>[
+          if (isMobile || isMacOS) ...<Widget>[
+            ElevatedText(
+                onPressed: () => push(const CuriosityEventPage()),
+                text: 'CuriosityEvent'),
+            ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
+          ],
+          if (isAndroid)
+            ElevatedText(
+                onPressed: () => push(OpenSettingPage()), text: '跳转APP'),
+          if (isIOS)
+            const ElevatedText(onPressed: openSystemSetting, text: '跳转设置'),
+          if (isMobile) ...<Widget>[
+            ElevatedText(
+                onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),
+            ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
+          ],
+          if (isDesktop)
+            ElevatedText(
+                onPressed: () => push(DesktopPage()), text: 'Desktop窗口控制'),
+        ]));
   }
 }
 
@@ -105,15 +103,11 @@ class ShowText extends StatelessWidget {
 
 Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
-  log(status);
   if (status.isGranted) {
     return true;
   } else {
     status = await permission.request();
-    if (!status.isGranted) {
-      final bool has = await openAppSettings();
-      return has;
-    }
+    if (!status.isGranted) openAppSettings();
     return status.isGranted;
   }
 }
