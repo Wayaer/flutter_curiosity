@@ -52,17 +52,6 @@ class _AppState extends State<App> {
         setDesktopSizeToIPad9P7(p: 1);
       });
     }
-    if (isMobile)
-      1.seconds.delayed(() {
-        getPermission(Permission.camera).then((bool value) {
-          log('是否获取相机权限&$value');
-          if (value) {
-            // push(ScannerView(scanResult: (String value) {
-            //   log(value);
-            // }));
-          }
-        });
-      });
   }
 
   @override
@@ -116,7 +105,9 @@ class ShowText extends StatelessWidget {
 
 Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
-  if (!status.isGranted) {
+  if (status.isGranted) {
+    return true;
+  } else {
     status = await permission.request();
     if (!status.isGranted) {
       final bool has = await openAppSettings();
@@ -124,7 +115,6 @@ Future<bool> getPermission(Permission permission) async {
     }
     return status.isGranted;
   }
-  return true;
 }
 
 class ElevatedText extends StatelessWidget {

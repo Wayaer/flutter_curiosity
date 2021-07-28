@@ -25,6 +25,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     return ExtendedScaffold(
         appBar: AppBarText('Camera and Gallery'),
         body: Universal(isScroll: true, children: <Widget>[
+          const SizedBox(height: 12),
           ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
           ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
           if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
@@ -39,9 +40,9 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   }
 
   Future<void> systemGallery() async {
-    if (await getPermission(Permission.photos)) {
+    if (await getPermission(Permission.photos) &&
+        await getPermission(Permission.storage)) {
       final String? data = await openSystemGallery();
-      print('systemGallery : $data');
       path = data;
       setState(() {});
     } else {
@@ -53,7 +54,6 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (!isMobile) return;
     if (await getPermission(Permission.camera)) {
       final String? data = await openSystemCamera();
-      print('systemCamera : $data');
       path = data;
       setState(() {});
     } else {

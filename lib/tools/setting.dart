@@ -36,20 +36,29 @@ Future<InstallResult?> installApp(String apkPath) async {
 Future<bool> openAndroidAppMarket(String packageName,
     {String? marketPackageName}) async {
   if (!isAndroid) return false;
-  final bool? data = await curiosityChannel.invokeMethod<bool>(
-      'openAppMarket', <String, String>{
-    'packageName': packageName,
-    'marketPackageName': marketPackageName ?? ''
-  });
-  return data ?? false;
+  bool? state = false;
+  try {
+    if (marketPackageName != null) {
+      state = await isInstallAppWithAndroid(marketPackageName);
+      if (!state) return state;
+    }
+    state = await curiosityChannel.invokeMethod<bool>(
+        'openAppMarket', <String, String>{
+      'packageName': packageName,
+      'marketPackageName': marketPackageName ?? ''
+    });
+  } catch (e) {
+    state = false;
+  }
+  return state ?? false;
 }
 
 /// 是否安装某个app
-/// Android str 对应包名
-Future<bool> isInstallAppWithAndroid(String str) async {
+/// Android packageName 对应包名
+Future<bool> isInstallAppWithAndroid(String packageName) async {
   if (!isAndroid) return false;
   final bool? data =
-      await curiosityChannel.invokeMethod<bool?>('isInstallApp', str);
+      await curiosityChannel.invokeMethod<bool?>('isInstallApp', packageName);
   return data ?? false;
 }
 
