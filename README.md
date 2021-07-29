@@ -41,13 +41,13 @@
 
 ### 介绍
 
-- [原生方法](./lib/tools/)
+- [获取手机信息 (app信息,设备信息,path)](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/app_device.dart)
 
-- [获取手机信息 (app信息,设备信息,path)](./lib/tools/app_device.dart)
+- [原生相机相册](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/gallery_tools.dart)
 
-- [Android ios 跳转设置](./lib/tools/setting.dart)
+- [Android ios 跳转设置](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/setting.dart)
 
-- 键盘状态监听
+- [键盘状态监听](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/keyboard.dart)
 
 ```dart
 
@@ -83,7 +83,8 @@ void initState() {
 
 ```
 
-- [平台判断](./lib/platform/platform.dart)
+- [Android 回调监听](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/platform/result_listener.dart)
+- [平台判断](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/platform/platform.dart)
 
 - 桌面端窗口尺寸设置（支持 macOS Windows Linux）
 
