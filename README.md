@@ -1,10 +1,12 @@
 # flutter_curiosity
 
-集成部分原生功能，支持ios android
+集成部分原生功能，支持 IOS Android macOS Windows Linux
 
-## android
+### android
 
-1.自动 添加 android http无法请求接口 解决方法 2.自动 添加 FileProvider 配置至 AndroidManifest 3.按需要 添加以下权限
+- 1.自动 添加 android http无法请求接口 解决方法
+- 2.自动 添加 FileProvider 配置至 AndroidManifest
+- 3.按需要 添加以下权限
 
 ```xml
         <!--允许程序写入本地存储-->
@@ -20,7 +22,7 @@
 
 ```
 
-## ios添加权限
+### ios添加权限
 
 * ios/Runner/Info.plist 按需要 添加权限
 
@@ -37,13 +39,15 @@
 	<string>是否允许此App使用你的相机进行拍照？</string>
 ```
 
-### 1.[原生方法](./lib/tools/)
+### 介绍
 
-### 3.[获取手机信息 (app信息,设备信息,path)](./lib/tools/app_device.dart)
+- [原生方法](./lib/tools/)
 
-### 4.[Android ios 跳转设置](./lib/tools/setting.dart)
+- [获取手机信息 (app信息,设备信息,path)](./lib/tools/app_device.dart)
 
-### 5.键盘状态监听
+- [Android ios 跳转设置](./lib/tools/setting.dart)
+
+- 键盘状态监听
 
 ```dart
 
@@ -58,7 +62,7 @@ void initState() {
 
 ```
 
-### 6.原生回调
+- 原生回调
 
 ```dart
   @override
@@ -79,9 +83,9 @@ void initState() {
 
 ```
 
-### 7.[设备平台](./lib/platform/platform.dart)
+- [平台判断](./lib/platform/platform.dart)
 
-## 桌面端窗口尺寸设置（支持 macOS windows linux）
+- 桌面端窗口尺寸设置（支持 macOS Windows Linux）
 
 ```dart
 void fun() {

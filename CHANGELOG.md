@@ -1,7 +1,8 @@
 ## [3.0.0]
- * add [getAppPath()]、[getDeviceInfo()] 、[getAppInfo()]  support Android/IOS/MacOS
+ * add [getAppPath()]、[getDeviceInfo()] 、[getAppInfo()]  support Android/IOS/macOS
  * delete [ScannerView()] , Split to [fl_mlkit_scanning](https://github.com/Wayaer/fl_mlkit_scanning)
  * remove [scanImageUrl()]、[scanImageMemory()]、
+ * modifying swift by OC on IOS and MacOS platforms
  * add native message channel support Android and IOS .[CuriosityEvent]
  * remove [openSystemShare()]
 ## [2.2.3]
