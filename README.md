@@ -4,20 +4,20 @@
 
 ### android
 
-- 1.自动 添加 android http无法请求接口 解决方法
-- 2.自动 添加 FileProvider 配置至 AndroidManifest
-- 3.按需要 添加以下权限
+- 自动 添加 android http无法请求接口 解决方法
+- 自动 添加 FileProvider 配置至 AndroidManifest
+- 按需要 添加以下权限
 
-```xml
-        <!--允许程序写入本地存储-->
+```xhtml
+<!--允许程序写入本地存储-->
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-        <!--允许程序读取本地存储-->
+<!--允许程序读取本地存储-->
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-        <!--允许程序访问有关GSM网络信息-->
+<!--允许程序访问有关GSM网络信息-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-        <!--允许程序防止休眠-->
+<!--允许程序防止休眠-->
 <uses-permission android:name="android.permission.WAKE_LOCK"/>
-        <!--允许程序安装应用程序-->
+<!--允许程序安装应用程序-->
 <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
 ```
@@ -41,7 +41,7 @@
 
 ### 介绍
 
-- [获取手机信息 (app信息,设备信息,path)](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/app_device.dart)
+- [获取手机信息 (app信息,设备信息,path,Android已安装应用)](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/app_device.dart)
 
 - [原生相机相册](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/gallery_tools.dart)
 
