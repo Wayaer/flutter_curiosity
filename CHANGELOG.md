@@ -1,4 +1,5 @@
-## [3.0.0]
+## [3.0.1]
+ * add doc
  * add [getAppPath()]、[getDeviceInfo()] 、[getAppInfo()]  support Android/IOS/macOS
  * delete [ScannerView()] , Split to [fl_mlkit_scanning](https://github.com/Wayaer/fl_mlkit_scanning)
  * remove [scanImageUrl()]、[scanImageMemory()]、
