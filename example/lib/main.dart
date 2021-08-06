@@ -3,6 +3,7 @@ import 'dart:ui';
 import 'package:curiosity/src/camera_gallery.dart';
 import 'package:curiosity/src/curiosity_event.dart';
 import 'package:curiosity/src/desktop.dart';
+import 'package:curiosity/src/file_picker.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/open_app.dart';
@@ -49,7 +50,7 @@ class _AppState extends State<App> {
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
       addPostFrameCallback((Duration duration) {
-        setDesktopSizeToIPad9P7(p: 1);
+        setDesktopSizeTo4P7();
       });
     }
   }
@@ -66,15 +67,15 @@ class _AppState extends State<App> {
                 onPressed: () => push(const CuriosityEventPage()),
                 text: 'CuriosityEvent'),
             ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
-          ],
-          if (isAndroid)
             ElevatedText(
-                onPressed: () => push(OpenSettingPage()), text: '跳转APP'),
-          if (isIOS)
-            const ElevatedText(onPressed: openSystemSetting, text: '跳转设置'),
+                onPressed: () => push(OpenSettingPage()), text: '跳转设置'),
+          ],
+          if (isMacOS)
+            ElevatedText(
+                onPressed: () => push(FilePickerPage()), text: '文件选择器'),
           if (isMobile) ...<Widget>[
             ElevatedText(
-                onPressed: () => push(CameraGalleryPage()), text: '相机和图库'),
+                onPressed: () => push(CameraGalleryPage()), text: '相机、图库'),
             ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
           ],
           if (isDesktop)

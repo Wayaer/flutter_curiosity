@@ -87,7 +87,7 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
             if _controller!.sourceType == UIImagePickerController.SourceType.photoLibrary {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
-                    _result(url?.absoluteString)
+                    _result(url?.path)
                     _controller = nil
                     return
                 }
@@ -104,7 +104,7 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 } completionHandler: { _, _ in
                     let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: [localId!], options: nil)
                     assetResult.firstObject?.requestContentEditingInput(with: nil, completionHandler: { content, _ in
-                        _result(content?.fullSizeImageURL?.absoluteString)
+                        _result(content?.fullSizeImageURL?.path)
                         _controller = nil
                     })
                 }
@@ -113,7 +113,7 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
             if _controller!.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
-                    _result(url?.absoluteString)
+                    _result(url?.path)
                     _controller = nil
                     return
                 }

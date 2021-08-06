@@ -41,11 +41,11 @@
 
 ### 介绍
 
-- [获取手机信息 (app信息,设备信息,path,Android已安装应用)](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/app_device.dart)
+- [获取信息 (app信息,设备信息,path,Android已安装应用)](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/app_device.dart)
 
 - [原生相机相册](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/gallery_tools.dart)
 
-- [Android ios 跳转设置](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/setting.dart)
+- [Android IOS MacOS 跳转设置](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/setting.dart)
 
 - [键盘状态监听](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/keyboard.dart)
 

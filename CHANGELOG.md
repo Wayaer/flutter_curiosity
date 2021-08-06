@@ -1,3 +1,6 @@
+## [3.1.0]
+ * add [openFilePicker] and [saveFilePicker] methods for MacOS
+ * add [openSystemSetting] for MacOS
 ## [3.0.1]
  * add doc
  * add [getAppPath()]、[getDeviceInfo()] 、[getAppInfo()]  support Android/IOS/macOS

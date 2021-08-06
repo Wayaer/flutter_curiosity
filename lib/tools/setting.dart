@@ -71,13 +71,20 @@ Future<bool> getGPSStatus() async {
 
 /// 跳转到系统设置页面
 /// settingType 仅对android 有效
-Future<bool> openSystemSetting([SettingType? settingType]) async {
-  if (!supportPlatformMobile) return false;
-  if (isMobile) {
-    final List<String> type =
-        (settingType ?? SettingType.setting).toString().split('.');
+Future<bool> openSystemSetting(
+    {AndroidSettingPath? path, MacOSSettingPath? macPath}) async {
+  if (supportPlatform) {
+    String? path;
+    if (isAndroid) {
+      final List<String> type =
+          (path ?? AndroidSettingPath.setting).toString().split('.');
+      path = type[1];
+    } else if (isMacOS) {
+      path = macOSSettingPathToString(
+          macPath ?? MacOSSettingPath.accessibilityMain);
+    }
     final bool? state =
-        await curiosityChannel.invokeMethod('openSystemSetting', type[1]);
+        await curiosityChannel.invokeMethod('openSystemSetting', path);
     return state ?? false;
   }
   return false;

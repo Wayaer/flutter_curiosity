@@ -42,16 +42,10 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(NativeTools.getDeviceInfo())
         case "getGPSStatus":
             result(NativeTools.getGPSStatus())
-
-//        case "openSystemGallery":
-//            initGalleryTools(call, result)
-//            gallery?.openSystemGallery()
-//        case "openSystemCamera":
-//            initGalleryTools(call, result)
-//            gallery?.openSystemCamera()
-//        case "openSystemAlbum":
-//            initGalleryTools(call, result)
-//            gallery?.openSystemAlbum()
+        case "openFilePicker":
+            FilePickerTools.openFilePicker(call, result)
+        case "saveFilePicker":
+            FilePickerTools.saveFilePicker(call, result)
         case "getWindowSize":
             result(DesktopTools.getWindowSize())
         case "setWindowSize":
@@ -79,6 +73,8 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(true)
         case "stayOnTop":
             result(DesktopTools.stayOnTop(call))
+        case "openSystemSetting":
+            result(Tools.openUrl(call.arguments as! String))
         default:
             result(FlutterMethodNotImplemented)
         }

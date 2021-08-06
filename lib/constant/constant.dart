@@ -50,7 +50,7 @@ enum CameraLensFacing {
 }
 
 /// Android 系统设置
-enum SettingType {
+enum AndroidSettingPath {
   /// wifi
   wifi,
 
@@ -113,6 +113,113 @@ enum SettingType {
 
   /// 更多连接方式设置界面
   airplaneMode
+}
+
+enum MacOSSettingPath {
+  /// Accessibility 面板相关 ///
+  /// 辅助面板根目录
+  accessibilityMain,
+
+  /// 辅助面板-显示
+  accessibilityDisplay,
+
+  /// 辅助面板-缩放
+  accessibilityZoom,
+
+  /// 辅助面板-显示
+  accessibilityVoiceOver,
+
+  /// 辅助面板-旁白
+  accessibilityDescriptions,
+
+  /// 辅助面板-描述
+  accessibilityCaptions,
+
+  /// 辅助面板-音频
+  accessibilityAudio,
+
+  /// 辅助面板-键盘
+  accessibilityKeyboard,
+
+  /// 辅助面板-指针控制
+  accessibilityMouseTrackpad,
+
+  /// 安全&隐私相关
+  /// 安全&隐私相关-根目录
+  securityMain,
+
+  /// 安全&隐私相关-通用
+  securityGeneral,
+
+  /// 安全&隐私相关-文件保险箱
+  securityFileVault,
+
+  /// 安全&隐私相关-防火墙
+  securityFirewall,
+
+  /// 安全&隐私相关-高级
+  securityAdvanced,
+
+  /// 安全&隐私相关-隐私
+  securityPrivacy,
+
+  /// 安全&隐私相关-辅助功能
+  securityPrivacyAccessibility,
+
+  /// 安全&隐私相关-完全磁盘访问权限
+  securityPrivacyAssistive,
+
+  /// 文件和文件夹
+  securityPrivacyAllFiles,
+
+  /// 安全&隐私相关-定位
+  securityPrivacyLocationServices,
+
+  /// 安全&隐私相关-通讯录
+  securityPrivacyContacts,
+
+  /// 安全&隐私相关-分析与改进
+  securityPrivacyDiagnosticsUsage,
+
+  /// 安全&隐私相关-日历
+  securityPrivacyCalendars,
+
+  /// 安全&隐私相关-提醒事项
+  securityPrivacyReminders,
+
+  /// 键盘-听写
+  speechDictation,
+
+  /// 键盘-siri
+  speechTextToSpeech,
+
+  /// 共享
+  /// 共享-更目录
+  sharingMain,
+
+  /// 共享-屏幕共享
+  sharingScreenSharing,
+
+  /// 共享-文件共享
+  sharingFileSharing,
+
+  /// 共享-打印机共享
+  sharingPrinterSharing,
+
+  /// 共享-远程登录
+  sharingRemoteLogin,
+
+  /// 共享-远程管理
+  sharingRemoteManagement,
+
+  /// 共享-远程apple事件
+  sharingRemoteAppleEvents,
+
+  /// 共享-互联网共享
+  sharingInternetSharing,
+
+  /// 共享-蓝牙共享
+  sharingBluetoothSharing,
 }
 
 /// Connection status check result.

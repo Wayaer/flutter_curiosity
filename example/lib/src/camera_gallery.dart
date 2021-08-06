@@ -13,12 +13,8 @@ class CameraGalleryPage extends StatefulWidget {
 
 class _CameraGalleryPageState extends State<CameraGalleryPage> {
   bool san = true;
-  String? path;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  List<String> paths = <String>[];
+  bool needShow = false;
 
   @override
   Widget build(BuildContext context) {
@@ -26,16 +22,23 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
         appBar: AppBarText('Camera and Gallery'),
         body: Universal(isScroll: true, children: <Widget>[
           const SizedBox(height: 12),
-          ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
-          ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
-          if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
+          if (isMobile) ...<Widget>[
+            ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
+            ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
+            if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
+          ],
           const SizedBox(height: 20),
-          ShowText('path', path),
-          if (path != null && path!.isNotEmpty)
-            Container(
-                width: double.infinity,
-                margin: const EdgeInsets.all(20),
-                child: Image.file(File(path!)))
+          Column(
+              children: paths.builder((String path) => needShow
+                  ? Column(children: <Widget>[
+                      ShowText('path', path),
+                      if (path.isNotEmpty)
+                        Container(
+                            width: double.infinity,
+                            margin: const EdgeInsets.all(20),
+                            child: Image.file(File(path)))
+                    ])
+                  : ShowText('path', path)))
         ]));
   }
 
@@ -45,8 +48,11 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (isIOS) hasPermission = true;
     if (hasPermission) {
       final String? data = await openSystemGallery();
-      path = data;
-      setState(() {});
+      if (data != null) {
+        needShow = true;
+        paths = <String>[data];
+        setState(() {});
+      }
     } else {
       showToast('未获取相册权限');
     }
@@ -54,10 +60,16 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   Future<void> systemCamera() async {
     if (!isMobile) return;
-    if (await getPermission(Permission.camera)) {
+    bool hasPermission = false;
+    if (isAndroid) hasPermission = await getPermission(Permission.storage);
+    if (isIOS) hasPermission = true;
+    if (hasPermission) {
       final String? data = await openSystemCamera();
-      path = data;
-      setState(() {});
+      if (data != null) {
+        needShow = true;
+        paths = <String>[data];
+        setState(() {});
+      }
     } else {
       showToast('未获取相机权限');
     }
@@ -65,11 +77,16 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   Future<void> systemAlbum() async {
     if (!isIOS) return;
-    if (await getPermission(Permission.photos)) {
+    bool hasPermission = false;
+    if (isAndroid) hasPermission = await getPermission(Permission.storage);
+    if (isIOS) hasPermission = true;
+    if (hasPermission) {
       final String? data = await openSystemAlbum();
-      print('systemAlbum : $data');
-      path = data;
-      setState(() {});
+      if (data != null) {
+        needShow = true;
+        paths = <String>[data];
+        setState(() {});
+      }
     } else {
       showToast('未获取相册权限');
     }

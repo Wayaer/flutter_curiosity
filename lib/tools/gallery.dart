@@ -70,13 +70,13 @@ enum CameraMode {
 /// ios info.plist add
 ///       <key>NSPhotoLibraryUsageDescription</key>
 ///       <string>是否允许Curiosity访问你的相册？</string>
-/// ios path 包含 file:///
+/// ios path
 Future<String?> openSystemGallery({GalleryOptions? options}) async {
   if (!supportPlatformMobile) return null;
   options ??= GalleryOptions();
   final String? path =
       await curiosityChannel.invokeMethod('openSystemGallery', options.toMap());
-  return path?.replaceFirst('file:///', '');
+  return path;
 }
 
 /// 打开系统相机
@@ -94,7 +94,7 @@ Future<String?> openSystemCamera({GalleryOptions? options}) async {
   String? path =
       await curiosityChannel.invokeMethod('openSystemCamera', options.toMap());
   if (isAndroid && options.savePath != null) path = options.savePath;
-  return path?.replaceFirst('file:///', '');
+  return path;
 }
 
 /// 打开相薄 仅支持ios
@@ -103,7 +103,7 @@ Future<String?> openSystemAlbum({GalleryOptions? options}) async {
   options ??= GalleryOptions();
   final String? path =
       await curiosityChannel.invokeMethod('openSystemAlbum', options.toMap());
-  return path?.replaceFirst('file:///', '');
+  return path;
 }
 
 /// save image to Gallery
@@ -124,4 +124,32 @@ Future<String?> saveImageToGallery(Uint8List imageBytes,
 Future<String?> saveFileToGallery(String file) async {
   if (!supportPlatformMobile) return null;
   return await curiosityChannel.invokeMethod('saveFileToGallery', file);
+}
+
+/// 文件选择器macos
+Future<List<String>> openFilePicker(
+    {FilePickerOptionsWithMacOS? optionsWithMacOS}) async {
+  if (!isMacOS) return <String>[];
+  Map<String, dynamic> options = <String, dynamic>{};
+  if (isMacOS) {
+    optionsWithMacOS ??= FilePickerOptionsWithMacOS();
+    options = optionsWithMacOS.toMap();
+  }
+  final List<dynamic>? path =
+      await curiosityChannel.invokeMethod('openFilePicker', options);
+  return path?.map((dynamic e) => e as String).toList() ?? <String>[];
+}
+
+/// 保存文件选择器macos
+Future<String?> saveFilePicker(
+    {SaveFilePickerOptionsWithMacOS? optionsWithMacOS}) async {
+  if (!isMacOS) return null;
+  Map<String, dynamic> options = <String, dynamic>{};
+  if (isMacOS) {
+    optionsWithMacOS ??= SaveFilePickerOptionsWithMacOS();
+    options = optionsWithMacOS.toMap();
+  }
+  final String? path =
+      await curiosityChannel.invokeMethod('saveFilePicker', options);
+  return path;
 }

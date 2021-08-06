@@ -21,6 +21,15 @@ class Tools {
     static func isEmulator() -> Bool {
         return (TARGET_IPHONE_SIMULATOR == 1) && (TARGET_OS_IPHONE == 1)
     }
+
+    static func openUrl(_ url: String) -> Bool {
+        let _url = URL(string: url)
+        if _url != nil, NSWorkspace.shared.urlForApplication(toOpen: _url!) != nil {
+            NSWorkspace.shared.open(_url!)
+            return true
+        }
+        return false
+    }
     
     static func isImageFile(_ path: String) -> Bool {
         return path.hasSuffix(".jpg")

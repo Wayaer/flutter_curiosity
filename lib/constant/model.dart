@@ -335,3 +335,143 @@ class UTSModel {
         'version': version
       };
 }
+
+/// macos 保存文件选择器
+class SaveFilePickerOptionsWithMacOS {
+  SaveFilePickerOptionsWithMacOS(
+      {this.nameFieldLabel = '',
+      this.nameFieldStringValue = 'file',
+      this.tagNames = const <String>[],
+      this.canSelectHiddenExtension = true,
+      this.showsTagField = true,
+      this.isExtensionHidden = true,
+      this.canCreateDirectories = true,
+      this.isModal = true,
+      this.allowedFileTypes,
+      this.directoryURL = '',
+      this.prompt = 'prompt',
+      this.title = 'title',
+      this.message = 'message'});
+
+  /// 默认打开的路径
+  late String directoryURL;
+
+  /// 可以选择的文件类型 或储存的可选类型
+  List<String>? allowedFileTypes;
+
+  ///  默认的“打开”那两个字
+  late String prompt;
+
+  /// 面板显示的信息
+  late String message;
+
+  /// 标题
+  late String title;
+
+  /// 默认储存的标签文本。
+  late String nameFieldLabel;
+
+  /// 默认储存的文件名
+  late String nameFieldStringValue;
+
+  /// tagName
+  late List<String> tagNames;
+
+  /// 是否可以创建文件夹
+  late bool canCreateDirectories;
+
+  /// 指示面板是显示用于隐藏还是显示文件扩展名的 UI
+  late bool canSelectHiddenExtension;
+
+  /// 一个布尔值，指示面板是否显示通常对用户隐藏的文件
+  late bool showsTagField;
+
+  /// 指示面板是否展开
+  late bool isExtensionHidden;
+
+  /// 是否使用模态弹窗
+  late bool isModal;
+
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'allowedFileTypes': allowedFileTypes,
+        'directoryURL': directoryURL,
+        'prompt': prompt,
+        'message': message,
+        'title': title,
+        'nameFieldLabel': nameFieldLabel,
+        'nameFieldStringValue': nameFieldStringValue,
+        'isExtensionHidden': isExtensionHidden,
+        'showsTagField': showsTagField,
+        'canSelectHiddenExtension': canSelectHiddenExtension,
+        'canCreateDirectories': canCreateDirectories,
+        'tagNames': tagNames,
+        'isModal': isModal
+      };
+}
+
+/// macos 文件选择器
+class FilePickerOptionsWithMacOS extends SaveFilePickerOptionsWithMacOS {
+  FilePickerOptionsWithMacOS(
+      {this.canChooseFiles = true,
+      this.canChooseDirectories = false,
+      this.resolvesAliases = true,
+      bool isModal = true,
+      this.allowsMultipleSelection = false,
+      this.canDownloadUbiquitousContents = false,
+      this.canResolveUbiquitousConflicts = false,
+      String title = 'title',
+      String nameFieldLabel = '',
+      String nameFieldStringValue = '',
+      List<String> tagNames = const <String>[],
+      bool canSelectHiddenExtension = true,
+      bool showsTagField = true,
+      bool isExtensionHidden = true,
+      bool canCreateDirectories = true,
+      List<String>? allowedFileTypes,
+      String directoryURL = '',
+      String prompt = 'prompt',
+      String message = 'message'})
+      : super(
+            isModal: isModal,
+            allowedFileTypes: allowedFileTypes,
+            directoryURL: directoryURL,
+            prompt: prompt,
+            message: message,
+            title: title,
+            nameFieldLabel: nameFieldLabel,
+            nameFieldStringValue: nameFieldStringValue,
+            tagNames: tagNames,
+            canSelectHiddenExtension: canSelectHiddenExtension,
+            showsTagField: showsTagField,
+            isExtensionHidden: isExtensionHidden,
+            canCreateDirectories: canCreateDirectories);
+
+  /// 是否能选择文件file
+  late bool canChooseFiles;
+
+  /// 是否能打开文件夹
+  late bool canChooseDirectories;
+
+  /// 指示面板是否解析别名
+  late bool resolvesAliases;
+
+  /// 是否允许多选
+  late bool allowsMultipleSelection;
+
+  /// 指示面板如何响应本地未完全下载的iCloud文档。
+  late bool canDownloadUbiquitousContents;
+
+  /// 指示面板如何响应具有冲突版本的iCloud文档
+  late bool canResolveUbiquitousConflicts;
+
+  @override
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        ...super.toMap(),
+        'canChooseFiles': canChooseFiles,
+        'canChooseDirectories': canChooseDirectories,
+        'resolvesAliases': resolvesAliases,
+        'allowsMultipleSelection': allowsMultipleSelection,
+        'canDownloadUbiquitousContents': canDownloadUbiquitousContents,
+        'canResolveUbiquitousConflicts': canResolveUbiquitousConflicts,
+      };
+}
