@@ -1,3 +1,5 @@
+## [3.1.1]
+ * fix bug for DesktopSize
 ## [3.1.0]
  * add [openFilePicker] and [saveFilePicker] methods for MacOS
  * add [openSystemSetting] for MacOS

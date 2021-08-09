@@ -50,7 +50,9 @@ class _AppState extends State<App> {
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
       addPostFrameCallback((Duration duration) {
-        setDesktopSizeTo4P7();
+        setDesktopSizeTo4P7().then((bool value) {
+          log('限制桌面宽高：$value');
+        });
       });
     }
   }
