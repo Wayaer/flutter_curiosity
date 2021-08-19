@@ -113,7 +113,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
             else -> result.notImplemented()
         }
 
-
     }
 
     override fun onAttachedToActivity(pluginBinding: ActivityPluginBinding) {
@@ -128,14 +127,15 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, ActivityResultListener,
         onAttachedToActivity(plugin)
     }
 
+    override fun onDetachedFromActivityForConfigChanges() {
+        onDetachedFromActivity()
+    }
+
     override fun onDetachedFromActivity() {
         activityPlugin?.removeActivityResultListener(this)
         activityPlugin?.removeRequestPermissionsResultListener(this)
     }
 
-    override fun onDetachedFromActivityForConfigChanges() {
-        onDetachedFromActivity()
-    }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         plugin = null
