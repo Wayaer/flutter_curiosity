@@ -475,3 +475,31 @@ class FilePickerOptionsWithMacOS extends SaveFilePickerOptionsWithMacOS {
         'canResolveUbiquitousConflicts': canResolveUbiquitousConflicts,
       };
 }
+
+class AndroidActivityResult {
+  AndroidActivityResult.formJson(Map<dynamic, dynamic> json) {
+    requestCode = json['requestCode'] as int;
+    resultCode = json['resultCode'] as int;
+    data = json['data'] as dynamic;
+    extras = json['extras'] as dynamic;
+  }
+
+  late int requestCode;
+  late int resultCode;
+  dynamic data;
+  dynamic extras;
+}
+
+class AndroidRequestPermissionsResult {
+  AndroidRequestPermissionsResult.formJson(Map<dynamic, dynamic> json) {
+    requestCode = (json['requestCode'] as int?) ?? 0;
+    final List<dynamic> _permissions = json['permissions'] as List<dynamic>;
+    permissions = _permissions.map((dynamic e) => e as String).toList();
+    final List<dynamic> _grantResults = json['grantResults'] as List<dynamic>;
+    grantResults = _grantResults.map((dynamic e) => e as int).toList();
+  }
+
+  late int requestCode;
+  late List<String> permissions;
+  late List<int> grantResults;
+}

@@ -12,25 +12,21 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import androidx.core.content.FileProvider
-
-import flutter.curiosity.CuriosityPlugin
-import flutter.curiosity.CuriosityPlugin.Companion.call
-import flutter.curiosity.CuriosityPlugin.Companion.result
-import flutter.curiosity.CuriosityPlugin.Companion.resultFail
-import flutter.curiosity.CuriosityPlugin.Companion.resultSuccess
+import io.flutter.plugin.common.MethodCall
+import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 
 object GalleryTools {
 
-    fun openSystemGallery(activity: Activity) {
+    fun getSystemGalleryIntent(): Intent {
         val intent = Intent(Intent.ACTION_PICK)
         intent.type = "image/*"
-        activity.startActivityForResult(intent, CuriosityPlugin.openSystemGalleryCode)
+        return intent
     }
 
-    fun openSystemCamera(context: Context, activity: Activity) {
+    fun getSystemCameraIntent(context: Context, activity: Activity, call: MethodCall): Intent {
         val arguments = call.arguments as MutableMap<*, *>
         var cameraSavePath = arguments["savePath"] as String?
         if (cameraSavePath == null) cameraSavePath =
@@ -40,14 +36,18 @@ object GalleryTools {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //第二个参数为 包名.fierier
             uri =
-                FileProvider.getUriForFile(activity, context.packageName.toString() + ".provider", File(cameraSavePath))
+                FileProvider.getUriForFile(
+                    activity,
+                    context.packageName.toString() + ".provider",
+                    File(cameraSavePath)
+                )
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } else uri = Uri.fromFile(File(cameraSavePath))
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
-        activity.startActivityForResult(intent, CuriosityPlugin.openSystemCameraCode)
+        return intent
     }
 
-    fun saveImageToGallery(context: Context) {
+    fun saveImageToGallery(context: Context, call: MethodCall, result: MethodChannel.Result) {
         val image = call.argument<ByteArray>("imageBytes") ?: return
         val quality = call.argument<Int>("quality") ?: return
         val name = call.argument<String>("name")
@@ -64,12 +64,12 @@ object GalleryTools {
             result.success(uri.toString())
         } catch (e: IOException) {
             e.printStackTrace()
-            result.success(resultFail)
+            result.success(null)
         }
 
     }
 
-    fun saveFileToGallery(context: Context) {
+    fun saveFileToGallery(context: Context, call: MethodCall, result: MethodChannel.Result) {
         val filePath = call.arguments as String
         try {
             val originalFile = File(filePath)
@@ -77,10 +77,10 @@ object GalleryTools {
             originalFile.copyTo(file)
             val uri = Uri.fromFile(file)
             context.sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri))
-            result.success(resultSuccess)
+            result.success(true)
         } catch (e: IOException) {
             e.printStackTrace()
-            result.success(resultFail)
+            result.success(null)
         }
     }
 

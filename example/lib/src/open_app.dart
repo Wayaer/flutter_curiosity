@@ -11,27 +11,40 @@ class OpenSettingPage extends StatelessWidget {
       children.addAll(<Widget>[
         ElevatedText(
             onPressed: () async {
-              final bool data = await openAndroidAppMarket(
-                  'com.tencent.mobileqq',
-                  marketPackageName: 'com.coolapk.market');
+              final bool data = await Curiosity.instance.native
+                  .openAndroidAppMarket('com.tencent.mobileqq',
+                      marketPackageName: 'com.coolapk.market');
               showToast(data.toString());
             },
             text: '跳转Android应用市场-酷安'),
         ElevatedText(
-            onPressed: () => openAndroidAppMarket('com.tencent.mobileqq'),
+            onPressed: () => Curiosity.instance.native
+                .openAndroidAppMarket('com.tencent.mobileqq'),
             text: '跳转应用市场'),
+        ElevatedText(
+            onPressed: () async {
+              final AppPathModel? path =
+                  await Curiosity.instance.native.appPath;
+              final bool? state = await Curiosity.instance.native
+                  .installApp(path!.externalFilesDir! + '/app.apk');
+              showToast(state.toString());
+            },
+            text: '安装应用'),
         ...AndroidSettingPath.values.builder((AndroidSettingPath value) =>
             ElevatedText(
-                onPressed: () => openSystemSetting(path: value),
+                onPressed: () =>
+                    Curiosity.instance.native.openSystemSetting(path: value),
                 text: value.toString()))
       ]);
     if (isIOS)
-      children.add(
-          const ElevatedText(onPressed: openSystemSetting, text: '跳转系统设置'));
+      children.add(ElevatedText(
+          onPressed: Curiosity.instance.native.openSystemSetting,
+          text: '跳转系统设置'));
     if (isMacOS)
       children.addAll(MacOSSettingPath.values.builder(
           (MacOSSettingPath value) => ElevatedText(
-              onPressed: () => openSystemSetting(macPath: value),
+              onPressed: () =>
+                  Curiosity.instance.native.openSystemSetting(macPath: value),
               text: value.toString())));
     return ExtendedScaffold(
         appBar: AppBarText('Open App'),

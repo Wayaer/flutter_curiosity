@@ -39,7 +39,8 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     if (isMobile) {
-      onResultListener(activityResult: (AndroidActivityResult result) {
+      Curiosity.instance.native.onResultListener(
+          activityResult: (AndroidActivityResult result) {
         log('AndroidResult requestCode = ${result.requestCode}  '
             'resultCode = ${result.resultCode}  data = ${result.data}');
       }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
@@ -50,7 +51,7 @@ class _AppState extends State<App> {
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
       addPostFrameCallback((Duration duration) {
-        setDesktopSizeTo4P7().then((bool value) {
+        Curiosity.instance.desktop.setDesktopSizeTo4P7().then((bool value) {
           log('限制桌面宽高：$value');
         });
       });

@@ -26,83 +26,97 @@ class _DesktopPageState extends State<DesktopPage> {
                   alignment: Alignment.center,
                   color: Colors.grey.withOpacity(0.3),
                   child: BText(text, color: Colors.black, height: 1.5)),
-              Wrap(
-                  alignment: WrapAlignment.center,
-                  spacing: 10,
-                  children: const <Widget>[
-                    ElevatedText(
-                        onPressed: setDesktopSizeTo4P7,
-                        text: 'setDesktopSizeTo4P7'),
-                    ElevatedText(
-                        onPressed: setDesktopSizeTo5P5,
-                        text: 'setDesktopSizeTo5P5'),
-                    ElevatedText(
-                        onPressed: setDesktopSizeTo5P8,
-                        text: 'setDesktopSizeTo5P8'),
-                    ElevatedText(
-                        onPressed: setDesktopSizeTo6P1,
-                        text: 'setDesktopSizeTo6P1'),
-                    ElevatedText(
-                        onPressed: setDesktopSizeToIPad11,
-                        text: 'setDesktopSizeToIPad11'),
-                    ElevatedText(
-                        onPressed: setDesktopSizeToIPad10P5,
-                        text: 'setDesktopSizeToIPad10P5'),
-                    ElevatedText(
-                        onPressed: setDesktopSizeToIPad9P7,
-                        text: 'setDesktopSizeToIPad9P7'),
-                  ]),
+              Wrap(alignment: WrapAlignment.center, spacing: 10, children: <
+                  Widget>[
+                ElevatedText(
+                    onPressed: Curiosity.instance.desktop.setDesktopSizeTo4P7,
+                    text: 'setDesktopSizeTo4P7'),
+                ElevatedText(
+                    onPressed: Curiosity.instance.desktop.setDesktopSizeTo5P5,
+                    text: 'setDesktopSizeTo5P5'),
+                ElevatedText(
+                    onPressed: Curiosity.instance.desktop.setDesktopSizeTo5P8,
+                    text: 'setDesktopSizeTo5P8'),
+                ElevatedText(
+                    onPressed: Curiosity.instance.desktop.setDesktopSizeTo6P1,
+                    text: 'setDesktopSizeTo6P1'),
+                ElevatedText(
+                    onPressed:
+                        Curiosity.instance.desktop.setDesktopSizeToIPad11,
+                    text: 'setDesktopSizeToIPad11'),
+                ElevatedText(
+                    onPressed:
+                        Curiosity.instance.desktop.setDesktopSizeToIPad10P5,
+                    text: 'setDesktopSizeToIPad10P5'),
+                ElevatedText(
+                    onPressed:
+                        Curiosity.instance.desktop.setDesktopSizeToIPad9P7,
+                    text: 'setDesktopSizeToIPad9P7'),
+              ]),
               const SizedBox(height: 20),
               ElevatedText(
                   onPressed: () async {
-                    final Size? size = await getDesktopWindowSize();
+                    final Size? size =
+                        await Curiosity.instance.desktop.getDesktopWindowSize();
                     text = size.toString();
                     setState(() {});
                   },
                   text: 'getDesktopWindowSize'),
               ElevatedText(
-                  onPressed: () =>
-                      changeState(setDesktopWindowSize(const Size(600, 600))),
+                  onPressed: () => changeState(Curiosity.instance.desktop
+                      .setDesktopWindowSize(const Size(600, 600))),
                   text: 'setDesktopWindowSize(600,600)'),
               ElevatedText(
-                  onPressed: () => changeState(
-                      setDesktopMinWindowSize(const Size(300, 300))),
+                  onPressed: () => changeState(Curiosity.instance.desktop
+                      .setDesktopMinWindowSize(const Size(300, 300))),
                   text: 'setDesktopMinWindowSize(300,300)'),
               ElevatedText(
-                  onPressed: () => changeState(
-                      setDesktopMaxWindowSize(const Size(900, 900))),
+                  onPressed: () => changeState(Curiosity.instance.desktop
+                      .setDesktopMaxWindowSize(const Size(900, 900))),
                   text: 'setDesktopMaxWindowSize(900,900)'),
               ElevatedText(
-                  onPressed: () => changeState(resetDesktopMaxWindowSize()),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.resetDesktopMaxWindowSize()),
                   text: 'resetDesktopMaxWindowSize'),
               ElevatedText(
-                  onPressed: () => changeState(toggleDesktopFullScreen()),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.toggleDesktopFullScreen()),
                   text: 'toggleDesktopFullScreen'),
               ElevatedText(
-                  onPressed: () => changeState(setDesktopFullScreen(true)),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.setDesktopFullScreen(true)),
                   text: 'setDesktopFullScreen true'),
               ElevatedText(
-                  onPressed: () => changeState(setDesktopFullScreen(false)),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.setDesktopFullScreen(false)),
                   text: 'setDesktopFullScreen false'),
               ElevatedText(
-                  onPressed: () => changeState(getDesktopFullScreen()),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.getDesktopFullScreen()),
                   text: 'getDesktopFullScreen'),
               ElevatedText(
-                  onPressed: () => changeState(hasDesktopBorders),
+                  onPressed: () =>
+                      changeState(Curiosity.instance.desktop.hasDesktopBorders),
                   text: 'hasDesktopBorders'),
               ElevatedText(
-                  onPressed: () => changeState(toggleDesktopBorders()),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.toggleDesktopBorders()),
                   text: 'toggleDesktopBorders'),
               ElevatedText(
-                  onPressed: () => changeState(setDesktopBorders(true)),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.setDesktopBorders(true)),
                   text: 'setDesktopBorders'),
               ElevatedText(
-                  onPressed: () => changeState(stayOnTopWithDesktop()),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.stayOnTopWithDesktop()),
                   text: 'stayOnTopWithDesktop'),
               ElevatedText(
-                  onPressed: () => changeState(stayOnTopWithDesktop(false)),
+                  onPressed: () => changeState(
+                      Curiosity.instance.desktop.stayOnTopWithDesktop(false)),
                   text: 'stayOnTopWithDesktop (false)'),
-              const ElevatedText(onPressed: focusDesktop, text: 'focusDesktop'),
+              ElevatedText(
+                  onPressed: Curiosity.instance.desktop.focusDesktop,
+                  text: 'focusDesktop'),
             ]));
   }
 

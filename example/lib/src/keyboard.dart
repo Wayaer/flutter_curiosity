@@ -12,7 +12,7 @@ class _KeyboardState extends State<KeyboardPage> {
   @override
   void initState() {
     super.initState();
-    keyboardListener((bool visibility) {
+    Curiosity.instance.native.keyboardListener((bool visibility) {
       log(visibility);
       showToast(visibility ? '键盘已弹出' : '键盘已关闭');
     });

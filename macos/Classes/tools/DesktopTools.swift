@@ -2,8 +2,6 @@ import FlutterMacOS
 import Foundation
 
 class DesktopTools {
-    static let window = NSApplication.shared.mainWindow
-
     static func getWindowSize() -> [CGFloat?] {
         let window = NSApplication.shared.mainWindow
         let width = window?.frame.size.width
@@ -15,7 +13,8 @@ class DesktopTools {
         let arguments = call.arguments as! [String: Any]
         let width = arguments["width"] as? Double
         let height = arguments["height"] as? Double
-        if width != nil, height != nil {
+        let window = NSApplication.shared.mainWindow
+        if width != nil, height != nil, window != nil {
             var rect = window!.frame
             rect.origin.y += (rect.size.height - CGFloat(height!))
             rect.size.width = CGFloat(width!)
@@ -30,7 +29,8 @@ class DesktopTools {
         let arguments = call.arguments as! [String: Any]
         let width = arguments["width"] as? Double
         let height = arguments["height"] as? Double
-        if width != nil, height != nil {
+        let window = NSApplication.shared.mainWindow
+        if width != nil, height != nil, window != nil {
             window!.minSize = CGSize(width: CGFloat(width!), height: CGFloat(height!))
             return true
         }
@@ -41,7 +41,8 @@ class DesktopTools {
         let arguments = call.arguments as! [String: Any]
         let width = arguments["width"] as? Double
         let height = arguments["height"] as? Double
-        if width != nil, height != nil {
+        let window = NSApplication.shared.mainWindow
+        if width != nil, height != nil, window != nil {
             if width == 0 || height == 0 {
                 window!.maxSize = CGSize(
                     width: CGFloat(Float.greatestFiniteMagnitude),
@@ -55,21 +56,24 @@ class DesktopTools {
     }
 
     static func resetMaxWindowSize() -> Bool {
-        window!.maxSize = CGSize(
+        let window = NSApplication.shared.mainWindow
+        window?.maxSize = CGSize(
             width: CGFloat(Float.greatestFiniteMagnitude),
             height: CGFloat(Float.greatestFiniteMagnitude))
         return true
     }
 
     static func toggleFullScreen() -> Bool {
-        window!.toggleFullScreen(nil)
+        let window = NSApplication.shared.mainWindow
+        window?.toggleFullScreen(nil)
         return true
     }
 
     static func setFullScreen(_ call: FlutterMethodCall) -> Bool {
         let arguments = call.arguments as! [String: Any]
         let fullScreen = arguments["fullscreen"] as? Bool
-        if fullScreen != nil {
+        let window = NSApplication.shared.mainWindow
+        if fullScreen != nil, window != nil {
             if fullScreen! {
                 if !window!.styleMask.contains(.fullScreen) {
                     window!.toggleFullScreen(nil)
@@ -85,41 +89,61 @@ class DesktopTools {
     }
 
     static func getFullScreen() -> Bool? {
-        window!.styleMask.contains(.fullScreen)
-    }
-
-    static func hasBorders() -> Bool {
-        window!.styleMask.contains(.borderless)
-    }
-
-    static func toggleBorders() -> Bool {
-        if window!.styleMask.contains(.borderless) {
-            window!.styleMask.remove(.borderless)
-        } else {
-            window!.styleMask.insert(.borderless)
+        let window = NSApplication.shared.mainWindow
+        if window != nil {
+            return window!.styleMask.contains(.fullScreen)
         }
-        return true
+        return nil
     }
 
-    static func setBorders(_ call: FlutterMethodCall) -> Bool {
-        if let bBorders: Bool = (call.arguments as? [String: Any])?["borders"] as? Bool {
-            if window!.styleMask.contains(.borderless) == bBorders {
-                if bBorders {
-                    window!.styleMask.remove(.borderless)
-                } else {
-                    window!.styleMask.insert(.borderless)
-                }
+    static func hasBorders() -> Bool? {
+        let window = NSApplication.shared.mainWindow
+        if window != nil {
+            return window!.styleMask.contains(.borderless)
+        }
+        return nil
+    }
+
+    static func toggleBorders() -> Bool? {
+        let window = NSApplication.shared.mainWindow
+        if window != nil {
+            if window!.styleMask.contains(.borderless) {
+                window!.styleMask.remove(.borderless)
+            } else {
+                window!.styleMask.insert(.borderless)
             }
             return true
         }
-        return false
+        return nil
     }
 
-    static func stayOnTop(_ call: FlutterMethodCall) -> Bool {
-        if let bstayOnTop: Bool = (call.arguments as? [String: Any])?["stayOnTop"] as? Bool {
-            window!.level = bstayOnTop ? .floating : .normal
-            return true
+    static func setBorders(_ call: FlutterMethodCall) -> Bool? {
+        let window = NSApplication.shared.mainWindow
+        if window != nil {
+            if let bBorders: Bool = (call.arguments as? [String: Any])?["borders"] as? Bool {
+                if window!.styleMask.contains(.borderless) == bBorders {
+                    if bBorders {
+                        window!.styleMask.remove(.borderless)
+                    } else {
+                        window!.styleMask.insert(.borderless)
+                    }
+                }
+                return true
+            }
+            return false
         }
-        return false
+        return nil
+    }
+
+    static func stayOnTop(_ call: FlutterMethodCall) -> Bool? {
+        let window = NSApplication.shared.mainWindow
+        if window != nil {
+            if let bstayOnTop: Bool = (call.arguments as? [String: Any])?["stayOnTop"] as? Bool {
+                window!.level = bstayOnTop ? .floating : .normal
+                return true
+            }
+            return false
+        }
+        return nil
     }
 }

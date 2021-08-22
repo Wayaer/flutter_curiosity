@@ -137,8 +137,7 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
         if imageBytes != nil {
             let image = UIImage(data: imageBytes!.data)
             if let quality = image?.jpegData(compressionQuality: CGFloat(quality! / 100)),
-               let imageQuality = UIImage(data: quality)
-            {
+               let imageQuality = UIImage(data: quality) {
                 UIImageWriteToSavedPhotosAlbum(imageQuality, self, #selector(saveImage), nil)
                 return
             }

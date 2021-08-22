@@ -1,3 +1,6 @@
+## 3.2.0
+ * refactoring code in Native And dart
+ * fix the bug for installApp in Android
 ## 3.1.1
  * fix bug for DesktopSize
 ## 3.1.0

@@ -36,7 +36,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getInstalled() async {
-    final List<AppsModel> data = await getInstalledApp();
+    final List<AppsModel> data = await Curiosity.instance.native.installedApp;
     list = <Widget>[];
     data.builder((AppsModel appsModel) {
       final Map<String, dynamic> appModel = appsModel.toMap();
@@ -59,7 +59,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> deviceInfo() async {
-    final DeviceInfoModel? model = await getDeviceInfo();
+    final DeviceInfoModel? model = await Curiosity.instance.native.deviceInfo;
     list.clear();
     model?.toMap().forEach((String key, dynamic value) {
       if (value is Map) {
@@ -76,7 +76,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> appPath() async {
-    final AppPathModel? data = await getAppPath();
+    final AppPathModel? data = await Curiosity.instance.native.appPath;
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
@@ -86,7 +86,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> appInfo() async {
-    final AppInfoModel? data = await getAppInfo();
+    final AppInfoModel? data = await Curiosity.instance.native.appInfo;
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
@@ -96,7 +96,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getGPS() async {
-    final bool data = await getGPSStatus();
+    final bool data = await Curiosity.instance.native.gpsStatus;
     showToast(data.toString());
   }
 }

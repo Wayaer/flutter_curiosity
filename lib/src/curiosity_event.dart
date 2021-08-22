@@ -1,8 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/tools/internal.dart';
+import 'package:flutter_curiosity/src/internal.dart';
 
 typedef EventListen = void Function(dynamic data);
 
@@ -34,8 +33,7 @@ class CuriosityEvent {
   /// 初始化消息通道
   Future<bool> initialize() async {
     if (!supportPlatform) return false;
-    bool? state =
-        await curiosityChannel.invokeMethod<bool?>('startCuriosityEvent');
+    bool? state = await channel.invokeMethod<bool?>('startCuriosityEvent');
     state ??= false;
     if (state && _eventChannel == null) {
       _eventChannel = const EventChannel(curiosityEvent);
@@ -48,6 +46,7 @@ class CuriosityEvent {
   Future<bool> addListener(EventListen eventListen) async {
     if (!supportPlatform) return false;
     if (_eventChannel != null && _stream != null) {
+      if (_streamSubscription != null) return false;
       try {
         _streamSubscription = _stream!.listen(eventListen);
         return true;
@@ -65,8 +64,8 @@ class CuriosityEvent {
     if (_eventChannel == null ||
         _streamSubscription == null ||
         _streamSubscription!.isPaused) return false;
-    final bool? state = await curiosityChannel.invokeMethod<bool?>(
-        'sendCuriosityEvent', arguments);
+    final bool? state =
+        await channel.invokeMethod<bool?>('sendCuriosityEvent', arguments);
     return state ?? false;
   }
 
@@ -97,8 +96,7 @@ class CuriosityEvent {
     _streamSubscription = null;
     _stream = null;
     _eventChannel = null;
-    final bool? state =
-        await curiosityChannel.invokeMethod<bool>('stopCuriosityEvent');
+    final bool? state = await channel.invokeMethod<bool>('stopCuriosityEvent');
     return state ?? false;
   }
 }

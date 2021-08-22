@@ -8,16 +8,16 @@
 - 自动 添加 FileProvider 配置至 AndroidManifest
 - 按需要 添加以下权限
 
-```xhtml
+```xml
 <!--允许程序写入本地存储-->
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-<!--允许程序读取本地存储-->
+        <!--允许程序读取本地存储-->
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-<!--允许程序访问有关GSM网络信息-->
+        <!--允许程序访问有关GSM网络信息-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-<!--允许程序防止休眠-->
+        <!--允许程序防止休眠-->
 <uses-permission android:name="android.permission.WAKE_LOCK"/>
-<!--允许程序安装应用程序-->
+        <!--允许程序安装应用程序-->
 <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
 ```
@@ -26,7 +26,7 @@
 
 * ios/Runner/Info.plist 按需要 添加权限
 
-```
+```plist
     <key>NSCameraUsageDescription</key>    
     <string>请允许打开相机拍照</string>
     <key>NSLocationWhenInUseUsageDescription</key>
@@ -41,50 +41,38 @@
 
 ### 介绍
 
-- [获取信息 (app信息,设备信息,path,Android已安装应用)](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/app_device.dart)
-
-- [原生相机相册](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/gallery_tools.dart)
-
-- [Android IOS MacOS 跳转设置](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/setting.dart)
-
-- [键盘状态监听](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/tools/keyboard.dart)
+- 原生方法 [获取GPS状态、获取app本地储存路径、获取设备信息、获取app信息、打开系统设置]
 
 ```dart
-
-@override
-void initState() {
-  super.initState();
-  keyboardListener((bool visibility) {
-    log(visibility);
-    showToast(visibility ? '键盘已弹出' : '键盘已关闭');
-  });
+void fun() {
+  Curiosity.instance.native.fun();
 }
 
 ```
 
-- 原生回调
+- Android & IOS 原生摄像头 图库等相关功能
 
 ```dart
-  @override
-void initState() {
-  super.initState();
-  if (isMobile) {
-    log('添加 原生回调监听');
-    onResultListener(activityResult: (AndroidActivityResult result) {
-      log('AndroidResult requestCode = ${result.requestCode}  '
-          'resultCode = ${result.resultCode}  data = ${result.data}');
-    }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
-      log('AndroidRequestPermissionsResult: requestCode = ${result.requestCode}  \n'
-          ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
-    });
-  }
+void gallery() {
+  Curiosity.instance.gallery.fun();
 }
-
-
 ```
 
-- [Android 回调监听](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/platform/result_listener.dart)
-- [平台判断](https://github.com/Wayaer/flutter_curiosity/blob/main/lib/platform/platform.dart)
+- 消息通道
+
+```dart
+void fun() {
+  Curiosity.instance.event.fun();
+}
+```
+
+- 桌面端方法
+
+```dart
+void fun() {
+  Curiosity.instance.desktop.fun();
+}
+```
 
 - 桌面端窗口尺寸设置（支持 macOS Windows Linux）
 

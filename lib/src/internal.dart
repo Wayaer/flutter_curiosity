@@ -1,22 +1,17 @@
-import 'dart:ui';
 
-import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/constant/constant.dart';
-import 'package:flutter_curiosity/platform/platform.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_curiosity/flutter_curiosity.dart';
 
-final MediaQueryData mediaQueryData = MediaQueryData.fromWindow(window);
+const String curiosity = 'Curiosity';
+const String curiosityEvent = 'curiosity/event';
 
-/// size → Size 设备尺寸信息，如屏幕的大小，单位 pixels
-Size get getWindowSize => mediaQueryData.size;
+const MethodChannel channel = MethodChannel(curiosity);
 
-/// devicePixelRatio → double 单位逻辑像素的设备像素数量，即设备像素比。
-/// 这个数字可能不是2的幂，实际上它甚至也可能不是整数。例如，Nexus 6的设备像素比为3.5。
-double get getDevicePixelRatio => mediaQueryData.devicePixelRatio;
 const int _limitLength = 800;
 
 void log<T>(T msg) {
-  final String message = msg.toString();
   if (isDebug) {
+    final String message = msg.toString();
     if (message.length < _limitLength) {
       print(msg);
     } else {
