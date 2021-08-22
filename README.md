@@ -15,8 +15,6 @@
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
         <!--允许程序访问有关GSM网络信息-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-        <!--允许程序防止休眠-->
-<uses-permission android:name="android.permission.WAKE_LOCK"/>
         <!--允许程序安装应用程序-->
 <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
