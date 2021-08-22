@@ -84,25 +84,25 @@ class NativeTools {
   Future<bool> openSystemSetting(
       {AndroidSettingPath? path, MacOSSettingPath? macPath}) async {
     if (supportPlatform) {
-      String? path;
+      String? data;
       if (isAndroid) {
         final List<String> type =
             (path ?? AndroidSettingPath.setting).toString().split('.');
-        path = type[1];
+        data = type[1];
       } else if (isMacOS) {
-        path = macOSSettingPathToString(
+        data = macOSSettingPathToString(
             macPath ?? MacOSSettingPath.accessibilityMain);
       }
-      final bool? state = await channel.invokeMethod('openSystemSetting', path);
+      final bool? state = await channel.invokeMethod('openSystemSetting', data);
       return state ?? false;
     }
     return false;
   }
 
   /// Exit app
-  Future<void> exitApp() async {
+  void exitApp() {
     if (!supportPlatform) return;
-    return await channel.invokeMethod<dynamic>('exitApp');
+    channel.invokeMethod<dynamic>('exitApp');
   }
 
   /// get Android/IOS/MacOS Device Info
