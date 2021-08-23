@@ -31,7 +31,7 @@ class CuriosityMethodCall(
     private lateinit var result: MethodChannel.Result
     private var keyboardStatus = false
 
-    var curiosityEvent: CuriosityEvent? = null
+    var event: CuriosityEvent? = null
 
     private var openSystemGalleryCode = 100
     private var openSystemCameraCode = 101
@@ -42,23 +42,23 @@ class CuriosityMethodCall(
         result = _result
         hasResult = true
         when (call.method) {
-            "exitApp" -> NativeTools.exitApp()
+            "exitApp" -> NativeTools.exitApp(activityBinding.activity)
             "startCuriosityEvent" -> {
-                if (curiosityEvent == null) {
-                    curiosityEvent = CuriosityEvent(pluginBinding.binaryMessenger)
+                if (event == null) {
+                    event = CuriosityEvent(pluginBinding.binaryMessenger)
                 }
-                resultSuccess(curiosityEvent != null)
+                resultSuccess(event != null)
             }
             "sendCuriosityEvent" -> {
-                curiosityEvent?.sendEvent(call.arguments)
-                resultSuccess(curiosityEvent != null)
+                event?.sendEvent(call.arguments)
+                resultSuccess(event != null)
             }
             "stopCuriosityEvent" -> {
-                if (curiosityEvent != null) {
-                    curiosityEvent?.dispose()
-                    curiosityEvent = null
+                if (event != null) {
+                    event?.dispose()
+                    event = null
                 }
-                resultSuccess(curiosityEvent == null)
+                resultSuccess(event == null)
             }
             "checkCanInstallApp" -> {
                 val state = Tools.canRequestPackageInstalls(pluginBinding.applicationContext)

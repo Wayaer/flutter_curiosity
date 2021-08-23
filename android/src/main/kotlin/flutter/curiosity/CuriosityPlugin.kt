@@ -47,7 +47,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin {
 
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        methodCall.curiosityEvent?.dispose()
+        methodCall.event?.dispose()
         channel.setMethodCallHandler(methodCall)
     }
 

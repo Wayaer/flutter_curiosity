@@ -100,7 +100,7 @@ class NativeTools {
   }
 
   /// Exit app
-  void exitApp() {
+  Future<void> exitApp() async {
     if (!supportPlatform) return;
     channel.invokeMethod<dynamic>('exitApp');
   }
