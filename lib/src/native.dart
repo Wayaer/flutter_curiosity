@@ -105,8 +105,13 @@ class NativeTools {
     channel.invokeMethod<dynamic>('exitApp');
   }
 
+  DeviceInfoModel? _deviceInfo;
+
+  Future<DeviceInfoModel?> get deviceInfo async =>
+      _deviceInfo ?? await getDeviceInfo();
+
   /// get Android/IOS/MacOS Device Info
-  Future<DeviceInfoModel?> get deviceInfo async {
+  Future<DeviceInfoModel?> getDeviceInfo() async {
     if (!supportPlatform) return null;
     final Map<String, dynamic>? map =
         await channel.invokeMapMethod<String, dynamic>('getDeviceInfo');
@@ -114,8 +119,12 @@ class NativeTools {
     return null;
   }
 
+  AppPathModel? _appPath;
+
+  Future<AppPathModel?> get appPath async => _appPath ?? await getAppPath();
+
   /// get Android/IOS/MacOS path
-  Future<AppPathModel?> get appPath async {
+  Future<AppPathModel?> getAppPath() async {
     if (!supportPlatform) return null;
     final Map<String, dynamic>? map =
         await channel.invokeMapMethod<String, dynamic>('getAppPath');
@@ -123,8 +132,12 @@ class NativeTools {
     return null;
   }
 
+  AppInfoModel? _appInfo;
+
+  Future<AppInfoModel?> get appInfo async => _appInfo ?? await getAppInfo();
+
   /// get Android/IOS/MacOS info
-  Future<AppInfoModel?> get appInfo async {
+  Future<AppInfoModel?> getAppInfo() async {
     if (!supportPlatform) return null;
     final Map<String, dynamic>? map =
         await channel.invokeMapMethod<String, dynamic>('getAppInfo');
