@@ -1,9 +1,9 @@
 ## 3.2.0
  * refactoring code in Native And dart
- * fix the bug for installApp in Android
+ * fix installApp bug in Android
+ * fix desktop bug in MacOS
 ## 3.1.1
  * fix bug for DesktopSize
-## 3.1.0
  * add `openFilePicker` and `saveFilePicker` methods for MacOS
  * add `openSystemSetting` for MacOS
 ## 3.0.1
