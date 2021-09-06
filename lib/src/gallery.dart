@@ -96,6 +96,10 @@ class GalleryTools {
   /// 打开系统相机
   /// 返回文件路径
   /// Android AndroidManifest.xml 添加以下内容
+  /// <!--允许程序写入本地存储-->
+  /// <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+  /// <!--允许程序读取本地存储-->
+  /// <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
   /// ios info.plist add
   ///     <key>NSCameraUsageDescription</key>
   ///       <string>是否允许APP使用你的相机？</string>

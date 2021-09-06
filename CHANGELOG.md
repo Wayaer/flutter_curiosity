@@ -1,3 +1,7 @@
+## 3.2.1
+ * fix bugs for Android
+ * update gradle version
+ * update kotlin version
 ## 3.2.0
  * refactoring code in Native And dart
  * fix installApp bug in Android

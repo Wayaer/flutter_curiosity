@@ -33,6 +33,6 @@ class CuriosityEvent(binaryMessenger: BinaryMessenger) : EventChannel.StreamHand
     }
 
     override fun onCancel(arguments: Any?) {
-        dispose();
+        dispose()
     }
 }
