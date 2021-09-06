@@ -43,7 +43,7 @@
 
 ```dart
 void fun() {
-  Curiosity.instance.native.fun();
+  Curiosity().native.fun();
 }
 
 ```
@@ -52,7 +52,7 @@ void fun() {
 
 ```dart
 void gallery() {
-  Curiosity.instance.gallery.fun();
+  Curiosity().gallery.fun();
 }
 ```
 
@@ -60,7 +60,7 @@ void gallery() {
 
 ```dart
 void fun() {
-  Curiosity.instance.event.fun();
+  Curiosity().event.fun();
 }
 ```
 
@@ -68,7 +68,7 @@ void fun() {
 
 ```dart
 void fun() {
-  Curiosity.instance.desktop.fun();
+  Curiosity().desktop.fun();
 }
 ```
 

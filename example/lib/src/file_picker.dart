@@ -40,7 +40,7 @@ class _FilePickerPageState extends State<FilePickerPage> {
 
   Future<void> _saveFilePicker() async {
     needShow = false;
-    final String? data = await Curiosity.instance.desktop.saveFilePicker(
+    final String? data = await Curiosity().desktop.saveFilePicker(
         optionsWithMacOS: SaveFilePickerOptionsWithMacOS(
             allowedFileTypes: <String>['png', 'jpe']));
     if (data != null) {
@@ -51,7 +51,7 @@ class _FilePickerPageState extends State<FilePickerPage> {
 
   Future<void> filePicker() async {
     needShow = true;
-    final List<String>? data = await Curiosity.instance.desktop.openFilePicker(
+    final List<String>? data = await Curiosity().desktop.openFilePicker(
         optionsWithMacOS:
             FilePickerOptionsWithMacOS(allowedFileTypes: <String>['png']));
     if (data != null) {

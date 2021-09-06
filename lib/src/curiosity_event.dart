@@ -6,17 +6,14 @@ import 'package:flutter_curiosity/src/internal.dart';
 typedef EventListen = void Function(dynamic data);
 
 class CuriosityEvent {
-  factory CuriosityEvent() => _getInstance();
-
-  CuriosityEvent._internal();
-
-  static CuriosityEvent get instance => _getInstance();
-  static CuriosityEvent? _instance;
-
-  static CuriosityEvent _getInstance() {
-    _instance ??= CuriosityEvent._internal();
-    return _instance!;
+  factory CuriosityEvent() {
+    _singleton ??= CuriosityEvent._();
+    return _singleton!;
   }
+
+  CuriosityEvent._();
+
+  static CuriosityEvent? _singleton;
 
   /// 订阅流
   StreamSubscription<dynamic>? _streamSubscription;

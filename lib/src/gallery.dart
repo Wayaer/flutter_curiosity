@@ -66,18 +66,14 @@ enum CameraMode {
 }
 
 class GalleryTools {
-  factory GalleryTools() => _getInstance();
-
-  GalleryTools._internal();
-
-  static GalleryTools get instance => _getInstance();
-
-  static GalleryTools? _instance;
-
-  static GalleryTools _getInstance() {
-    _instance ??= GalleryTools._internal();
-    return _instance!;
+  factory GalleryTools() {
+    _singleton ??= GalleryTools._();
+    return _singleton!;
   }
+
+  GalleryTools._();
+
+  static GalleryTools? _singleton;
 
   /// 打开系统相册
   /// 返回文件路径

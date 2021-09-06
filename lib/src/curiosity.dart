@@ -3,24 +3,20 @@ import 'package:flutter_curiosity/src/desktop.dart';
 import 'package:flutter_curiosity/src/native.dart';
 
 class Curiosity {
-  factory Curiosity() => _getInstance();
-
-  Curiosity._internal();
-
-  static Curiosity get instance => _getInstance();
-
-  static Curiosity? _instance;
-
-  static Curiosity _getInstance() {
-    _instance ??= Curiosity._internal();
-    return _instance!;
+  factory Curiosity() {
+    _singleton ??= Curiosity._();
+    return _singleton!;
   }
 
-  GalleryTools get gallery => GalleryTools.instance;
+  Curiosity._();
 
-  NativeTools get native => NativeTools.instance;
+  static Curiosity? _singleton;
 
-  CuriosityEvent get event => CuriosityEvent.instance;
+  GalleryTools get gallery => GalleryTools();
 
-  DesktopTools get desktop => DesktopTools.instance;
+  NativeTools get native => NativeTools();
+
+  CuriosityEvent get event => CuriosityEvent();
+
+  DesktopTools get desktop => DesktopTools();
 }

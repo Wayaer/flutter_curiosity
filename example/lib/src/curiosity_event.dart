@@ -71,7 +71,7 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
   }
 
   Future<void> start() async {
-    event = CuriosityEvent.instance;
+    event = CuriosityEvent();
     final bool eventState = await event!.initialize();
     if (eventState) {
       stateText = '初始化成功';

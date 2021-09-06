@@ -47,7 +47,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final String? data = await Curiosity.instance.gallery.openSystemGallery();
+      final String? data = await Curiosity().gallery.openSystemGallery();
       if (data != null) {
         needShow = true;
         paths = <String>[data];
@@ -64,7 +64,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final String? data = await Curiosity.instance.gallery.openSystemCamera();
+      final String? data = await Curiosity().gallery.openSystemCamera();
       if (data != null) {
         needShow = true;
         paths = <String>[data];
@@ -81,7 +81,7 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
     if (isAndroid) hasPermission = await getPermission(Permission.storage);
     if (isIOS) hasPermission = true;
     if (hasPermission) {
-      final String? data = await Curiosity.instance.gallery.openSystemAlbum();
+      final String? data = await Curiosity().gallery.openSystemAlbum();
       if (data != null) {
         needShow = true;
         paths = <String>[data];

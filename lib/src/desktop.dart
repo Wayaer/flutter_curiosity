@@ -5,18 +5,14 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/internal.dart';
 
 class DesktopTools {
-  factory DesktopTools() => _getInstance();
-
-  DesktopTools._internal();
-
-  static DesktopTools get instance => _getInstance();
-
-  static DesktopTools? _instance;
-
-  static DesktopTools _getInstance() {
-    _instance ??= DesktopTools._internal();
-    return _instance!;
+  factory DesktopTools() {
+    _singleton ??= DesktopTools._();
+    return _singleton!;
   }
+
+  DesktopTools._();
+
+  static DesktopTools? _singleton;
 
   Future<Size?> getDesktopWindowSize() async {
     if (!supportPlatformDesktop) return null;

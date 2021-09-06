@@ -1,3 +1,5 @@
+## 3.3.0
+ * remove instance , direct initialization
 ## 3.2.1
  * fix bugs for Android
  * update gradle version

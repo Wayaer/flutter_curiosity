@@ -11,18 +11,14 @@ typedef EventHandlerRequestPermissionsResult = void Function(
 typedef KeyboardStatus = void Function(bool visibility);
 
 class NativeTools {
-  factory NativeTools() => _getInstance();
-
-  NativeTools._internal();
-
-  static NativeTools get instance => _getInstance();
-
-  static NativeTools? _instance;
-
-  static NativeTools _getInstance() {
-    _instance ??= NativeTools._internal();
-    return _instance!;
+  factory NativeTools() {
+    _singleton ??= NativeTools._();
+    return _singleton!;
   }
+
+  NativeTools._();
+
+  static NativeTools? _singleton;
 
   /// 检测是否允许安装apk
   /// only supports Android
