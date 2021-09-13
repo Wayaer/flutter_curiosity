@@ -1,3 +1,10 @@
+## 3.3.1
+ * add style `LaunchThemeFullscreen`,`LaunchThemeLight`,`LaunchThemeBlack` for 
+   Android
+ * add `CuriosityPlugin.getIconSplashScreen(resources)` for 
+   Android，automatically set startup page to `ic_launcher.png` picture,you can set 
+   any picture
+ * optimization method
 ## 3.3.0
  * remove instance , direct initialization
 ## 3.2.1

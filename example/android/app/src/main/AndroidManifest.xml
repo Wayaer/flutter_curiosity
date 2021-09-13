@@ -3,7 +3,8 @@
     package="com.curiosity.example">
 
     <!--允许程序写入本地存储-->
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
     <!--允许程序读取本地存储-->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -17,19 +18,19 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
+        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
-        android:label="Curiosity"
-        android:allowBackup="false">
+        android:label="Curiosity">
         <activity
             android:name="com.curiosity.MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
+            android:exported="true"
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/LaunchTheme"
+            android:theme="@style/LaunchThemeFullscreen"
             android:windowSoftInputMode="adjustResize"
-            tools:ignore="LockedOrientationActivity"
-            android:exported="true">
+            tools:ignore="LockedOrientationActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -38,12 +39,10 @@
             <meta-data
                 android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
                 android:value="true" />
-            <meta-data
-                android:name="io.flutter.embedding.android.SplashScreenDrawable"
-                android:resource="@android:color/white" />
+
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/LaunchTheme" />
+                android:resource="@style/LaunchThemeLight" />
         </activity>
         <meta-data
             android:name="flutterEmbedding"

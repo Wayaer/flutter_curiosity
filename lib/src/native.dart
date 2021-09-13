@@ -104,7 +104,7 @@ class NativeTools {
   DeviceInfoModel? _deviceInfo;
 
   Future<DeviceInfoModel?> get deviceInfo async =>
-      _deviceInfo ?? await getDeviceInfo();
+      _deviceInfo ??= await getDeviceInfo();
 
   /// get Android/IOS/MacOS Device Info
   Future<DeviceInfoModel?> getDeviceInfo() async {
@@ -117,7 +117,7 @@ class NativeTools {
 
   AppPathModel? _appPath;
 
-  Future<AppPathModel?> get appPath async => _appPath ?? await getAppPath();
+  Future<AppPathModel?> get appPath async => _appPath ??= await getAppPath();
 
   /// get Android/IOS/MacOS path
   Future<AppPathModel?> getAppPath() async {
@@ -130,7 +130,7 @@ class NativeTools {
 
   AppInfoModel? _appInfo;
 
-  Future<AppInfoModel?> get appInfo async => _appInfo ?? await getAppInfo();
+  Future<AppInfoModel?> get appInfo async => _appInfo ??= await getAppInfo();
 
   /// get Android/IOS/MacOS info
   Future<AppInfoModel?> getAppInfo() async {
