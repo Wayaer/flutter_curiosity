@@ -28,7 +28,7 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/LaunchThemeFullscreen"
+            android:theme="@style/LaunchThemeFullscreenIcon"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -42,7 +42,7 @@
 
             <meta-data
                 android:name="io.flutter.embedding.android.NormalTheme"
-                android:resource="@style/LaunchThemeLight" />
+                android:resource="@style/NormalTheme" />
         </activity>
         <meta-data
             android:name="flutterEmbedding"

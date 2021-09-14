@@ -1,9 +1,6 @@
 package flutter.curiosity
 
-import android.content.res.Resources
 import androidx.annotation.NonNull
-import io.flutter.embedding.android.DrawableSplashScreen
-import io.flutter.embedding.android.SplashScreen
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -52,16 +49,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin {
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         methodCall.event?.dispose()
         channel.setMethodCallHandler(methodCall)
-    }
-
-    companion object {
-        fun getIconSplashScreen(resources: Resources): SplashScreen {
-            return DrawableSplashScreen(
-                resources.getDrawable(
-                    R.drawable.launch_background, null
-                )
-            )
-        }
     }
 
 }
