@@ -107,11 +107,9 @@ class ShowText extends StatelessWidget {
 
 Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
-  log(status);
   if (!status.isGranted) {
     status = await permission.request();
-    log(status);
-    // if (!status.isGranted) openAppSettings();
+    if (!status.isGranted) openAppSettings();
   }
   return status.isGranted;
 }
