@@ -1,5 +1,5 @@
 import CoreLocation
-import Foundation
+import Flutter
 import UIKit
 
 class NativeTools {
@@ -74,15 +74,17 @@ class NativeTools {
     }
 
     // 跳转到设置页面让用户自己手动开启
-    static func openSystemSetting() -> Bool {
+    static func openSystemSetting(_ result: @escaping FlutterResult) {
         let url = URL(string: UIApplication.openSettingsURLString)
-        if let url = url {
-            if UIApplication.shared.canOpenURL(url) {
-                UIApplication.shared.openURL(url)
-                return true
+        if url != nil {
+            if UIApplication.shared.canOpenURL(url!) {
+                UIApplication.shared.open(url!, options: [:]) { value in
+                    result(value)
+                }
+                return
             }
         }
-        return false
+        result(false)
     }
 
     // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的

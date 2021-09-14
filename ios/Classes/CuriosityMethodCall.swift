@@ -45,7 +45,7 @@ class CuriosityMethodCall: NSObject {
         case "getGPSStatus":
             result(NativeTools.getGPSStatus())
         case "openSystemSetting":
-            result(NativeTools.openSystemSetting())
+            NativeTools.openSystemSetting(result)
         case "openSystemGallery":
             initGalleryTools(call, result)
             gallery?.openSystemGallery()

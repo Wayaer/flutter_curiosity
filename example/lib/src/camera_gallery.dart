@@ -61,8 +61,10 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   Future<void> systemCamera() async {
     if (!isMobile) return;
     bool hasPermission = false;
-    if (isAndroid) hasPermission = await getPermission(Permission.storage);
-    if (isIOS) hasPermission = true;
+    if (isAndroid)
+      hasPermission = await getPermission(Permission.storage) &&
+          await getPermission(Permission.camera);
+    if (isIOS) hasPermission = await getPermission(Permission.camera);
     if (hasPermission) {
       final String? data = await Curiosity().gallery.openSystemCamera();
       if (data != null) {

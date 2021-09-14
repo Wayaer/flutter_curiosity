@@ -107,13 +107,13 @@ class ShowText extends StatelessWidget {
 
 Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
-  if (status.isGranted) {
-    return true;
-  } else {
+  log(status);
+  if (!status.isGranted) {
     status = await permission.request();
-    if (!status.isGranted) openAppSettings();
-    return status.isGranted;
+    log(status);
+    // if (!status.isGranted) openAppSettings();
   }
+  return status.isGranted;
 }
 
 class ElevatedText extends StatelessWidget {
