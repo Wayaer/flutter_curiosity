@@ -1,6 +1,6 @@
 # flutter_curiosity
 
-集成部分原生功能，支持 IOS Android macOS Windows Linux
+## 集成部分原生功能，支持 IOS Android macOS Windows Linux
 
 ### android
 
@@ -11,11 +11,11 @@
 ```xml
 <!--允许程序写入本地存储-->
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-        <!--允许程序读取本地存储-->
+<!--允许程序读取本地存储-->
 <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-        <!--允许程序访问有关GSM网络信息-->
+<!--允许程序访问有关GSM网络信息-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-        <!--允许程序安装应用程序-->
+<!--允许程序安装应用程序-->
 <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
 ```
