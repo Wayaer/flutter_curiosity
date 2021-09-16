@@ -5,6 +5,8 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class DesktopPage extends StatefulWidget {
+  const DesktopPage({Key? key}) : super(key: key);
+
   @override
   _DesktopPageState createState() => _DesktopPageState();
 }

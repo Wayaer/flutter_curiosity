@@ -208,8 +208,9 @@ class DeviceInfoModel {
     name = json['name'] as String?;
     address = json['address'] as String?;
     final List<dynamic>? addressesList = json['addresses'] as List<dynamic>?;
-    if (addressesList != null && addressesList.isNotEmpty)
+    if (addressesList != null && addressesList.isNotEmpty) {
       addresses = addressesList.map((dynamic e) => e as String).toList();
+    }
   }
 
   /// Android and IOS

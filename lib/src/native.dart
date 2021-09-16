@@ -173,24 +173,28 @@ class NativeTools {
   }) async {
     if (!supportPlatformMobile) return;
     if (isAndroid) {
-      if (activityResult != null)
+      if (activityResult != null) {
         await channel.invokeMethod<dynamic>('onActivityResult');
+      }
 
-      if (requestPermissionsResult != null)
+      if (requestPermissionsResult != null) {
         await channel.invokeMethod<dynamic>('onRequestPermissionsResult');
+      }
     }
     channel.setMethodCallHandler((MethodCall call) async {
       final Map<dynamic, dynamic> argument =
           call.arguments as Map<dynamic, dynamic>;
       switch (call.method) {
         case 'onActivityResult':
-          if (activityResult != null)
+          if (activityResult != null) {
             activityResult(AndroidActivityResult.formJson(argument));
+          }
           break;
         case 'onRequestPermissionsResult':
-          if (requestPermissionsResult != null)
+          if (requestPermissionsResult != null) {
             requestPermissionsResult(
                 AndroidRequestPermissionsResult.formJson(argument));
+          }
           break;
       }
     });

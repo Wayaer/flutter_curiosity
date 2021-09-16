@@ -4,10 +4,12 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class OpenSettingPage extends StatelessWidget {
+  const OpenSettingPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     final List<Widget> children = <Widget>[];
-    if (isAndroid)
+    if (isAndroid) {
       children.addAll(<Widget>[
         ElevatedText(
             onPressed: () async {
@@ -36,15 +38,17 @@ class OpenSettingPage extends StatelessWidget {
                     Curiosity().native.openSystemSetting(path: value),
                 text: value.toString()))
       ]);
-    if (isIOS)
+    }
+    if (isIOS) {
       children.add(ElevatedText(
           onPressed: Curiosity().native.openSystemSetting, text: '跳转系统设置'));
-    if (isMacOS)
+    } else if (isMacOS) {
       children.addAll(MacOSSettingPath.values.builder(
           (MacOSSettingPath value) => ElevatedText(
               onPressed: () =>
                   Curiosity().native.openSystemSetting(macPath: value),
               text: value.toString())));
+    }
     return ExtendedScaffold(
         appBar: AppBarText('Open App'),
         body: Universal(isScroll: true, children: children));

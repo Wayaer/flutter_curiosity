@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 
@@ -12,7 +13,7 @@ void log<T>(T msg) {
   if (isDebug) {
     final String message = msg.toString();
     if (message.length < _limitLength) {
-      print(msg);
+      debugPrint(message);
     } else {
       _segmentationLog(message);
     }
@@ -42,12 +43,13 @@ void _segmentationLog(String msg) {
   for (int index = 0; index < msg.length; index++) {
     outStr.write(msg[index]);
     if (index % _limitLength == 0 && index != 0) {
-      print(outStr);
+      debugPrint(outStr.toString());
       outStr.clear();
       final int lastIndex = index + 1;
       if (msg.length - lastIndex < _limitLength) {
         final String remainderStr = msg.substring(lastIndex, msg.length);
-        print(remainderStr);
+        debugPrint(outStr.toString());
+        (remainderStr);
         break;
       }
     }

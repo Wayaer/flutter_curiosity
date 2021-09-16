@@ -19,17 +19,21 @@ void main() {
   window.onSemanticsEnabledChanged = () {};
   RendererBinding.instance!.setSemanticsEnabled(false);
 
-  print('isWeb = $isWeb');
-  print('isMacOS = $isMacOS');
-  print('isAndroid = $isAndroid');
-  print('isIOS = $isIOS');
-  print('isMobile = $isMobile');
-  print('isDesktop = $isDesktop');
+  debugPrint('isWeb = $isWeb');
+  debugPrint('isMacOS = $isMacOS');
+  debugPrint('isAndroid = $isAndroid');
+  debugPrint('isIOS = $isIOS');
+  debugPrint('isMobile = $isMobile');
+  debugPrint('isDesktop = $isDesktop');
   runApp(ExtendedWidgetsApp(
-      debugShowCheckedModeBanner: false, title: 'Curiosity', home: App()));
+      debugShowCheckedModeBanner: false,
+      title: 'Curiosity',
+      home: const App()));
 }
 
 class App extends StatefulWidget {
+  const App({Key? key}) : super(key: key);
+
   @override
   _AppState createState() => _AppState();
 }
@@ -63,33 +67,40 @@ class _AppState extends State<App> {
     return ExtendedScaffold(
         backgroundColor: Colors.white,
         appBar: AppBarText('Flutter Curiosity Plugin Example'),
-        body: Universal(mainAxisAlignment: MainAxisAlignment.center, children: <
-            Widget>[
-          if (isMobile || isMacOS) ...<Widget>[
-            ElevatedText(
-                onPressed: () => push(const CuriosityEventPage()),
-                text: 'CuriosityEvent'),
-            ElevatedText(onPressed: () => push(GetInfoPage()), text: '获取信息'),
-            ElevatedText(
-                onPressed: () => push(OpenSettingPage()), text: '跳转设置'),
-          ],
-          if (isMacOS)
-            ElevatedText(
-                onPressed: () => push(FilePickerPage()), text: '文件选择器'),
-          if (isMobile) ...<Widget>[
-            ElevatedText(
-                onPressed: () => push(CameraGalleryPage()), text: '相机、图库'),
-            ElevatedText(onPressed: () => push(KeyboardPage()), text: '键盘状态'),
-          ],
-          if (isDesktop)
-            ElevatedText(
-                onPressed: () => push(DesktopPage()), text: 'Desktop窗口控制'),
-        ]));
+        body: Universal(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              if (isMobile || isMacOS) ...<Widget>[
+                ElevatedText(
+                    onPressed: () => push(const CuriosityEventPage()),
+                    text: 'CuriosityEvent'),
+                ElevatedText(
+                    onPressed: () => push(const GetInfoPage()), text: '获取信息'),
+                ElevatedText(
+                    onPressed: () => push(const OpenSettingPage()),
+                    text: '跳转设置'),
+              ],
+              if (isMacOS)
+                ElevatedText(
+                    onPressed: () => push(const FilePickerPage()),
+                    text: '文件选择器'),
+              if (isMobile) ...<Widget>[
+                ElevatedText(
+                    onPressed: () => push(const CameraGalleryPage()),
+                    text: '相机、图库'),
+                ElevatedText(
+                    onPressed: () => push(const KeyboardPage()), text: '键盘状态'),
+              ],
+              if (isDesktop)
+                ElevatedText(
+                    onPressed: () => push(const DesktopPage()),
+                    text: 'Desktop窗口控制'),
+            ]));
   }
 }
 
 class ShowText extends StatelessWidget {
-  const ShowText(this.keyName, this.value) : super();
+  const ShowText(this.keyName, this.value, {Key? key}) : super(key: key);
   final dynamic keyName;
   final dynamic value;
 

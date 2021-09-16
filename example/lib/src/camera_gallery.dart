@@ -7,6 +7,8 @@ import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class CameraGalleryPage extends StatefulWidget {
+  const CameraGalleryPage({Key? key}) : super(key: key);
+
   @override
   _CameraGalleryPageState createState() => _CameraGalleryPageState();
 }
@@ -61,9 +63,10 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
   Future<void> systemCamera() async {
     if (!isMobile) return;
     bool hasPermission = false;
-    if (isAndroid)
+    if (isAndroid) {
       hasPermission = await getPermission(Permission.storage) &&
           await getPermission(Permission.camera);
+    }
     if (isIOS) hasPermission = await getPermission(Permission.camera);
     if (hasPermission) {
       final String? data = await Curiosity().gallery.openSystemCamera();

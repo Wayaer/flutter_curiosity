@@ -6,6 +6,8 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class FilePickerPage extends StatefulWidget {
+  const FilePickerPage({Key? key}) : super(key: key);
+
   @override
   _FilePickerPageState createState() => _FilePickerPageState();
 }

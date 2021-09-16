@@ -4,6 +4,8 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class KeyboardPage extends StatefulWidget {
+  const KeyboardPage({Key? key}) : super(key: key);
+
   @override
   _KeyboardState createState() => _KeyboardState();
 }

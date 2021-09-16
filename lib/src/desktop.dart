@@ -18,8 +18,9 @@ class DesktopTools {
     if (!supportPlatformDesktop) return null;
     final List<dynamic>? list =
         await channel.invokeMethod<List<dynamic>?>('getWindowSize');
-    if (list != null && list is List && list.length == 2)
+    if (list != null && list is List && list.length == 2) {
       return Size(list[0] as double, list[1] as double);
+    }
     return null;
   }
 
