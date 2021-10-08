@@ -19,7 +19,7 @@ class DesktopTools {
             rect.origin.y += (rect.size.height - CGFloat(height!))
             rect.size.width = CGFloat(width!)
             rect.size.height = CGFloat(height!)
-            window!.setFrame(rect, display: true)
+            window!.animator().setFrame(rect, display: true, animate: true)
             return true
         }
         return false
