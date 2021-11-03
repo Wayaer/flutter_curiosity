@@ -6,10 +6,7 @@ import 'package:flutter_curiosity/src/internal.dart';
 typedef EventListen = void Function(dynamic data);
 
 class CuriosityEvent {
-  factory CuriosityEvent() {
-    _singleton ??= CuriosityEvent._();
-    return _singleton!;
-  }
+  factory CuriosityEvent() => _singleton ??= CuriosityEvent._();
 
   CuriosityEvent._();
 

@@ -3,10 +3,7 @@ import 'package:flutter_curiosity/src/desktop.dart';
 import 'package:flutter_curiosity/src/native.dart';
 
 class Curiosity {
-  factory Curiosity() {
-    _singleton ??= Curiosity._();
-    return _singleton!;
-  }
+  factory Curiosity() => _singleton ??= Curiosity._();
 
   Curiosity._();
 

@@ -11,10 +11,7 @@ typedef EventHandlerRequestPermissionsResult = void Function(
 typedef KeyboardStatus = void Function(bool visibility);
 
 class NativeTools {
-  factory NativeTools() {
-    _singleton ??= NativeTools._();
-    return _singleton!;
-  }
+  factory NativeTools() => _singleton ??= NativeTools._();
 
   NativeTools._();
 

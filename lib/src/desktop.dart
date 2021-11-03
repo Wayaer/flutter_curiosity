@@ -5,10 +5,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/internal.dart';
 
 class DesktopTools {
-  factory DesktopTools() {
-    _singleton ??= DesktopTools._();
-    return _singleton!;
-  }
+  factory DesktopTools() => _singleton ??= DesktopTools._();
 
   DesktopTools._();
 

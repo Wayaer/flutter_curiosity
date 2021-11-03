@@ -66,10 +66,7 @@ enum CameraMode {
 }
 
 class GalleryTools {
-  factory GalleryTools() {
-    _singleton ??= GalleryTools._();
-    return _singleton!;
-  }
+  factory GalleryTools() => _singleton ??= GalleryTools._();
 
   GalleryTools._();
 
