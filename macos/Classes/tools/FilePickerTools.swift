@@ -26,7 +26,7 @@ class FilePickerTools {
         let isModal = arguments["isModal"] as! Bool
         if isModal {
             let finded = panel.runModal()
-            if finded.rawValue == NSFileHandlingPanelOKButton {
+            if finded == .OK {
                 // 点击了ok
                 var fileUrl = [String]()
                 for url in panel.urls {
@@ -34,7 +34,7 @@ class FilePickerTools {
                 }
                 result(fileUrl)
                 return
-            } else if finded.rawValue == NSFileHandlingPanelCancelButton {
+            } else if finded == .cancel {
                 // 点了取消
             }
             result([])
@@ -63,11 +63,11 @@ class FilePickerTools {
         let isModal = arguments["isModal"] as! Bool
         if isModal {
             let finded = panel.runModal()
-            if finded.rawValue == NSFileHandlingPanelOKButton {
+            if finded == .OK {
                 // 点击了ok
                 result(panel.url?.path)
                 return
-            } else if finded.rawValue == NSFileHandlingPanelCancelButton {
+            } else if finded == .cancel {
                 // 点了取消
             }
             result(nil)

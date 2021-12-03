@@ -54,10 +54,10 @@ class _AppState extends State<App> {
     }
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
-      addPostFrameCallback((Duration duration) {
-        Curiosity().desktop.setDesktopSizeTo4P7().then((bool value) {
-          log('限制桌面宽高：$value');
-        });
+      addPostFrameCallback((Duration duration) async {
+        await Curiosity().desktop.focusDesktop();
+        var value = await Curiosity().desktop.setDesktopSizeTo4P7();
+        log('限制桌面宽高：$value');
       });
     }
   }
