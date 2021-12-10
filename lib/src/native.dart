@@ -144,7 +144,7 @@ class NativeTools {
     final List<Map<dynamic, dynamic>>? appList = await channel
         .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp');
     final List<AppsModel> list = <AppsModel>[];
-    if (appList != null && appList is List) {
+    if (appList != null) {
       for (final dynamic data in appList) {
         list.add(AppsModel.fromJson(data as Map<dynamic, dynamic>));
       }
