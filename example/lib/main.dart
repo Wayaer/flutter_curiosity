@@ -24,10 +24,7 @@ void main() {
   debugPrint('isIOS = $isIOS');
   debugPrint('isMobile = $isMobile');
   debugPrint('isDesktop = $isDesktop');
-  runApp(ExtendedWidgetsApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Curiosity',
-      home: const App()));
+  runApp(const ExtendedWidgetsApp(title: 'Curiosity', home: App()));
 }
 
 class App extends StatefulWidget {
