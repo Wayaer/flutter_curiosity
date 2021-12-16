@@ -72,6 +72,7 @@ void fun() {
 - 桌面端窗口尺寸设置（支持 macOS Windows Linux）
 
 ```dart
+
 void fun() {
 
   /// 设置桌面版 为 手机 或 ipad 尺寸
@@ -89,4 +90,5 @@ void fun() {
 
   setDesktopSizeToIPad9P7();
 }
+
 ```
