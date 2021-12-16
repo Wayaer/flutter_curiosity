@@ -74,7 +74,6 @@ void fun() {
 ```dart
 
 void fun() {
-
   /// 设置桌面版 为 手机 或 ipad 尺寸
   setDesktopSizeTo4P7();
 
@@ -90,5 +89,4 @@ void fun() {
 
   setDesktopSizeToIPad9P7();
 }
-
 ```
