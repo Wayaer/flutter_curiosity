@@ -1,3 +1,7 @@
+## 3.5.0
+
+* Add Open webView for MacOS
+
 ## 3.3.3
 
 * Fix bugs on MacOS

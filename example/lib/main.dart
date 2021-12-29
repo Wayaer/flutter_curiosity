@@ -91,6 +91,10 @@ class _AppState extends State<App> {
                 ElevatedText(
                     onPressed: () => push(const DesktopPage()),
                     text: 'Desktop窗口控制'),
+              if (isMacOS)
+                ElevatedText(
+                    onPressed: () => push(const MacOSWebViewPage()),
+                    text: 'MacOSWebView'),
             ]));
   }
 }

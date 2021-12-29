@@ -7,13 +7,13 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "Curiosity", binaryMessenger: registrar.messenger)
-        let plugin = CuriosityPlugin(registrar.messenger, channel)
+        let plugin = CuriosityPlugin(registrar, channel)
         registrar.addMethodCallDelegate(plugin, channel: channel)
     }
 
-    init(_ messenger: FlutterBinaryMessenger, _ _channel: FlutterMethodChannel) {
+    init(_ registrar: FlutterPluginRegistrar, _ _channel: FlutterMethodChannel) {
         channel = _channel
-        methodCall = CuriosityMethodCall(messenger, _channel)
+        methodCall = CuriosityMethodCall(registrar, _channel)
         super.init()
     }
 

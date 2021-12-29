@@ -1,4 +1,4 @@
-package flutter.curiosity.gallery
+package flutter.curiosity
 
 import android.app.Activity
 import android.content.Context

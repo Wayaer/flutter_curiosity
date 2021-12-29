@@ -8,15 +8,11 @@ import android.os.Build
 import android.os.Environment
 import android.util.Log
 import android.view.ViewTreeObserver
-import flutter.curiosity.gallery.GalleryTools
-import flutter.curiosity.tools.NativeTools
-import flutter.curiosity.tools.Tools
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
-import java.util.*
 
 class CuriosityMethodCall(
     private var activityBinding: ActivityPluginBinding,
