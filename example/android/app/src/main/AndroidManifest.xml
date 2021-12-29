@@ -18,7 +18,6 @@
 
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:allowBackup="false"
         android:icon="@mipmap/ic_launcher"
         android:label="Curiosity">
         <activity
@@ -28,7 +27,7 @@
             android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:theme="@style/LaunchThemeFullscreenIcon"
+            android:theme="@style/LaunchThemeFullscreenWhiteIcon"
             android:windowSoftInputMode="adjustResize"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
