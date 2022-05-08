@@ -5,21 +5,21 @@ class Tools {
         print("CuriosityLog =")
         print(info ?? "null")
     }
-    
+
     static func resultInfo(_ info: String) -> String {
-        return info
+        info
     }
-    
+
     static func resultFail(_ info: String) -> String {
-        return "fail"
+        "fail"
     }
-    
+
     static func resultSuccess(_ info: String) -> String {
-        return "success"
+        "success"
     }
-    
+
     static func isEmulator() -> Bool {
-        return (TARGET_IPHONE_SIMULATOR == 1) && (TARGET_OS_IPHONE == 1)
+        (TARGET_IPHONE_SIMULATOR == 1) && (TARGET_OS_IPHONE == 1)
     }
 
     static func openUrl(_ url: String) -> Bool {
@@ -30,14 +30,14 @@ class Tools {
         }
         return false
     }
-    
+
     static func isImageFile(_ path: String) -> Bool {
-        return path.hasSuffix(".jpg")
-            || path.hasSuffix(".png")
-            || path.hasSuffix(".PNG")
-            || path.hasSuffix(".JPEG")
-            || path.hasSuffix(".JPG")
-            || path.hasSuffix(".GiF")
-            || path.hasSuffix(".gif")
+        path.hasSuffix(".jpg")
+                || path.hasSuffix(".png")
+                || path.hasSuffix(".PNG")
+                || path.hasSuffix(".JPEG")
+                || path.hasSuffix(".JPG")
+                || path.hasSuffix(".GiF")
+                || path.hasSuffix(".gif")
     }
 }

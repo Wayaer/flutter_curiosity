@@ -103,7 +103,7 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
 
                 } completionHandler: { _, _ in
                     let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: [localId!], options: nil)
-                    assetResult.firstObject?.requestContentEditingInput(with: nil, completionHandler: { content, _ in
+                    assetResult.firstObject?.requestContentEditingInput(with: nil, completionHandler: { [self] content, _ in
                         _result(content?.fullSizeImageURL?.path)
                         _controller = nil
                     })
@@ -162,17 +162,17 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
     }
 
     @objc private func saveImage(
-        image: UIImage?,
-        didFinishSavingWithError error: Error?,
-        contextInfo: UnsafeMutableRawPointer?
+            image: UIImage?,
+            didFinishSavingWithError error: Error?,
+            contextInfo: UnsafeMutableRawPointer?
     ) {
         _result(error == nil)
     }
 
     @objc private func saveVideo(
-        videoPath: String?,
-        didFinishSavingWithError error: Error?,
-        contextInfo: UnsafeMutableRawPointer?
+            videoPath: String?,
+            didFinishSavingWithError error: Error?,
+            contextInfo: UnsafeMutableRawPointer?
     ) {
         _result(error == nil)
     }

@@ -6,46 +6,47 @@ class WebViewTools: NSObject {
     private var webViewController: WebViewController?
     private let channel: FlutterMethodChannel
     private let registrar: FlutterPluginRegistrar
-    
+
     init(_ channel: FlutterMethodChannel, _ registrar: FlutterPluginRegistrar) {
         self.channel = channel
         self.registrar = registrar
         super.init()
     }
-    
+
     private lazy var parentViewController: NSViewController? = {
         NSApp.windows.first { w -> Bool in
-            w.contentViewController?.view == registrar.view?.superview
-        }?.contentViewController
+                    w.contentViewController?.view == registrar.view?.superview
+                }?
+                .contentViewController
     }()
 
     public func openWebview(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         let args = call.arguments as! [String: Any]
         guard let url = URL(string: args["url"] as! String) else {
             result(FlutterError(
-                code: "URL_NOT_PROVIDED",
-                message: "No URL to launch found in call arguments",
-                details: call.arguments
+                    code: "URL_NOT_PROVIDED",
+                    message: "No URL to launch found in call arguments",
+                    details: call.arguments
             ))
             return
         }
-        
+
         guard let parentCtrl = parentViewController else {
             result(FlutterError(
-                code: "NO_PARENT_WINDOW",
-                message: "No parent window",
-                details: nil
+                    code: "NO_PARENT_WINDOW",
+                    message: "No parent window",
+                    details: nil
             ))
             return
         }
-        
+
         let presentationStyle = WebViewController.PresentationStyle(
-            rawValue: args["presentationStyle"] as! Int
+                rawValue: args["presentationStyle"] as! Int
         )!
-                
+
         if webViewController == nil {
             let parentFrame = parentCtrl.view.frame
-            
+
             var width = parentFrame.size.width
             var height = parentFrame.size.height
 
@@ -57,7 +58,7 @@ class WebViewTools: NSObject {
                     height = CGFloat(ch)
                 }
             }
-            
+
 //            TODO:
 //            if args["customOrigin"] as! Bool {
 //                if let cx = args["x"] as? Double {
@@ -67,57 +68,57 @@ class WebViewTools: NSObject {
 //                    y = CGFloat(cy)
 //                }
 //            }
-            
+
             webViewController = WebViewController(
-                channel: channel,
-                frame: CGRect(
-                    x: parentFrame.origin.x,
-                    y: parentFrame.origin.y,
-                    width: width,
-                    height: height
-                ),
-                presentationStyle: presentationStyle,
-                modalTitle: args["modalTitle"] as! String,
-                sheetCloseButtonTitle: args["sheetCloseButtonTitle"] as! String
+                    channel: channel,
+                    frame: CGRect(
+                            x: parentFrame.origin.x,
+                            y: parentFrame.origin.y,
+                            width: width,
+                            height: height
+                    ),
+                    presentationStyle: presentationStyle,
+                    modalTitle: args["modalTitle"] as! String,
+                    sheetCloseButtonTitle: args["sheetCloseButtonTitle"] as! String
             )
         }
         guard let webViewCtrl = webViewController else {
             result(FlutterError(
-                code: "WEB_VIEW_CONTROLLER_NOT_INITIALIZED",
-                message: "WebViewController not initialized, nothing to present",
-                details: nil
+                    code: "WEB_VIEW_CONTROLLER_NOT_INITIALIZED",
+                    message: "WebViewController not initialized, nothing to present",
+                    details: nil
             ))
             return
         }
-        
+
         webViewCtrl.javascriptEnabled = args["javascriptEnabled"] as! Bool
         webViewCtrl.userAgent = args["userAgent"] as? String
-        
+
         webViewCtrl.loadUrl(url: url)
-                
+
         if !parentCtrl.presentedViewControllers!.contains(webViewCtrl) {
             if presentationStyle == .modal {
                 parentCtrl.presentAsModalWindow(webViewCtrl)
             } else {
                 parentCtrl.presentAsSheet(webViewCtrl)
             }
-            
+
             NotificationCenter.default.addObserver(
-                self,
-                selector: #selector(close(_:)),
-                name: WebViewController.closeNotification,
-                object: nil
+                    self,
+                    selector: #selector(close(_:)),
+                    name: WebViewController.closeNotification,
+                    object: nil
             )
             channel.invokeMethod("onOpen", arguments: nil)
         }
         result(true)
     }
-    
+
     @objc private func close(_ sender: Any?) {
         guard
-            let webViewCtrl = webViewController,
-            let parentCtrl = parentViewController
-        else {
+                let webViewCtrl = webViewController,
+                let parentCtrl = parentViewController
+                else {
             return
         }
 
@@ -125,16 +126,16 @@ class WebViewTools: NSObject {
             parentCtrl.dismiss(webViewCtrl)
         }
         webViewController = nil
-        
+
         NotificationCenter.default.removeObserver(
-            self,
-            name: WebViewController.closeNotification,
-            object: nil
+                self,
+                name: WebViewController.closeNotification,
+                object: nil
         )
-        
+
         channel.invokeMethod("onClose", arguments: nil)
     }
-    
+
     public func closeWebView() {
         close(nil)
     }
@@ -145,26 +146,28 @@ class WebViewController: NSViewController {
         case modal = 0
         case sheet = 1
     }
-    
+
     static let closeNotification = Notification.Name("WebViewCloseNotification")
-    
+
     private let webview: WKWebView
-    
+
     private let frame: CGRect
     private let channel: FlutterMethodChannel
     private let presentationStyle: PresentationStyle
     private let modalTitle: String!
     private let sheetCloseButtonTitle: String
-    
+
     var javascriptEnabled: Bool {
         set {
             let wkPreferences = WKWebpagePreferences()
             wkPreferences.allowsContentJavaScript = newValue
             webview.configuration.defaultWebpagePreferences = wkPreferences
         }
-        get { webview.configuration.defaultWebpagePreferences.allowsContentJavaScript }
+        get {
+            webview.configuration.defaultWebpagePreferences.allowsContentJavaScript
+        }
     }
-    
+
     var userAgent: String? {
         set {
             if let userAgent = newValue {
@@ -173,15 +176,17 @@ class WebViewController: NSViewController {
                 webview.customUserAgent = nil
             }
         }
-        get { webview.customUserAgent }
+        get {
+            webview.customUserAgent
+        }
     }
-        
+
     required init(
-        channel: FlutterMethodChannel,
-        frame: NSRect,
-        presentationStyle: PresentationStyle,
-        modalTitle: String,
-        sheetCloseButtonTitle: String
+            channel: FlutterMethodChannel,
+            frame: NSRect,
+            presentationStyle: PresentationStyle,
+            modalTitle: String,
+            sheetCloseButtonTitle: String
     ) {
         self.channel = channel
         self.frame = frame
@@ -193,35 +198,35 @@ class WebViewController: NSViewController {
         webview.navigationDelegate = self
         webview.uiDelegate = self
     }
-    
+
     @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+
     func loadUrl(url: URL) {
         let req = URLRequest(url: url)
         webview.load(req)
     }
-    
+
     @objc private func closeSheet() {
         view.window?.close()
     }
-    
+
     private func setupViews() {
         webview.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(webview)
-        
+
         var constraints: [NSLayoutConstraint] = [
             webview.topAnchor.constraint(equalTo: view.topAnchor),
             webview.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             webview.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ]
-        
+
         if presentationStyle == .sheet {
             let bottomBarHeight: CGFloat = 44.0
             constraints.append(
-                webview.heightAnchor.constraint(equalTo: view.heightAnchor, constant: -bottomBarHeight)
+                    webview.heightAnchor.constraint(equalTo: view.heightAnchor, constant: -bottomBarHeight)
             )
 
             let bottomBar = NSView()
@@ -229,7 +234,7 @@ class WebViewController: NSViewController {
             bottomBar.layer?.backgroundColor = NSColor.windowBackgroundColor.cgColor
             bottomBar.translatesAutoresizingMaskIntoConstraints = false
             view.addSubview(bottomBar)
-            
+
             constraints.append(contentsOf: [
                 bottomBar.topAnchor.constraint(equalTo: webview.bottomAnchor),
                 bottomBar.bottomAnchor.constraint(equalTo: view.bottomAnchor),
@@ -237,7 +242,7 @@ class WebViewController: NSViewController {
                 bottomBar.trailingAnchor.constraint(equalTo: view.trailingAnchor),
                 bottomBar.heightAnchor.constraint(equalToConstant: bottomBarHeight)
             ])
-            
+
             let closeButton = NSButton()
             closeButton.isBordered = false
             closeButton.title = sheetCloseButtonTitle
@@ -266,14 +271,14 @@ class WebViewController: NSViewController {
             c.isActive = true
         }
     }
-    
+
     override func loadView() {
         view = NSView(frame: frame)
         view.translatesAutoresizingMaskIntoConstraints = false
-        
+
         setupViews()
     }
-    
+
     override func viewDidAppear() {
         view.window?.delegate = self
     }
@@ -287,7 +292,9 @@ extension WebViewController: NSWindowDelegate {
 
 extension WebViewController: WKUIDelegate {
     public func webView(_ webView: WKWebView, createWebViewWith configuration: WKWebViewConfiguration, for navigationAction: WKNavigationAction, windowFeatures: WKWindowFeatures) -> WKWebView? {
-        guard let isMainFrame = navigationAction.targetFrame?.isMainFrame else { return nil }
+        guard let isMainFrame = navigationAction.targetFrame?.isMainFrame else {
+            return nil
+        }
         if !isMainFrame {
             webView.load(navigationAction.request)
         }
@@ -297,49 +304,53 @@ extension WebViewController: WKUIDelegate {
 
 extension WebViewController: WKNavigationDelegate {
     func webView(_ webView: WKWebView, didStartProvisionalNavigation navigation: WKNavigation!) {
-        guard let url = webView.url?.absoluteString else { return }
+        guard let url = webView.url?.absoluteString else {
+            return
+        }
         channel.invokeMethod("onPageStarted", arguments: ["url": url])
     }
-    
+
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
-        guard let url = webView.url?.absoluteString else { return }
+        guard let url = webView.url?.absoluteString else {
+            return
+        }
         channel.invokeMethod("onPageFinished", arguments: ["url": url])
     }
-    
+
     func webViewWebContentProcessDidTerminate(_ webView: WKWebView) {
         let error = NSError(
-            domain: WKError.errorDomain,
-            code: WKError.webContentProcessTerminated.rawValue,
-            userInfo: nil
+                domain: WKError.errorDomain,
+                code: WKError.webContentProcessTerminated.rawValue,
+                userInfo: nil
         )
         onWebResourceError(error)
     }
-    
+
     func webView(_ webView: WKWebView, didFail navigation: WKNavigation!, withError error: Error) {
         onWebResourceError(error as NSError)
     }
-    
+
     func webView(_ webView: WKWebView, didFailProvisionalNavigation navigation: WKNavigation!, withError error: Error) {
         onWebResourceError(error as NSError)
     }
-    
+
     static func errorCodeToString(code: Int) -> String? {
         switch code {
-            case WKError.unknown.rawValue:
-                return "unknown"
-            case WKError.webContentProcessTerminated.rawValue:
-                return "webContentProcessTerminated"
-            case WKError.webViewInvalidated.rawValue:
-                return "webViewInvalidated"
-            case WKError.javaScriptExceptionOccurred.rawValue:
-                return "javaScriptExceptionOccurred"
-            case WKError.javaScriptResultTypeIsUnsupported.rawValue:
-                return "javaScriptResultTypeIsUnsupported"
-            default:
-                return nil
+        case WKError.unknown.rawValue:
+            return "unknown"
+        case WKError.webContentProcessTerminated.rawValue:
+            return "webContentProcessTerminated"
+        case WKError.webViewInvalidated.rawValue:
+            return "webViewInvalidated"
+        case WKError.javaScriptExceptionOccurred.rawValue:
+            return "javaScriptExceptionOccurred"
+        case WKError.javaScriptResultTypeIsUnsupported.rawValue:
+            return "javaScriptResultTypeIsUnsupported"
+        default:
+            return nil
         }
     }
-    
+
     func onWebResourceError(_ error: NSError) {
         channel.invokeMethod("onWebResourceError", arguments: [
             "errorCode": error.code,
