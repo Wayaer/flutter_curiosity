@@ -193,6 +193,8 @@ class DeviceInfoModel {
     isDeviceRoot = json['isDeviceRoot'] as bool?;
     brand = json['brand'] as String?;
     device = json['device'] as String?;
+    deviceId = json['deviceId'] as String?;
+    generateDeviceId = json['generateDeviceId'] as String?;
     board = json['board'] as String?;
     androidId = json['androidId'] as String?;
     hardware = json['hardware'] as String?;
@@ -231,6 +233,12 @@ class DeviceInfoModel {
   bool? isDeviceRoot;
   String? brand;
   String? device;
+
+  /// 获取设备的 androidId 为空再获取 imei  为空再生成一个新的 UUID
+  String? deviceId;
+
+  /// 根据设备信息生成唯一 deviceId
+  String? generateDeviceId;
   String? board;
   String? androidId;
   String? hardware;
@@ -267,6 +275,8 @@ class DeviceInfoModel {
         'isDeviceRoot': isDeviceRoot,
         'brand': brand,
         'device': device,
+        'deviceId': deviceId,
+        'generateDeviceId': generateDeviceId,
         'board': board,
         'androidId': androidId,
         'hardware': hardware,

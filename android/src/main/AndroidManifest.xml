@@ -2,6 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="flutter.curiosity">
 
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
     <application
         android:networkSecurityConfig="@xml/network_config"
         android:requestLegacyExternalStorage="true"

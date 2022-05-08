@@ -30,17 +30,17 @@ object GalleryTools {
         val arguments = call.arguments as MutableMap<*, *>
         var cameraSavePath = arguments["savePath"] as String?
         if (cameraSavePath == null) cameraSavePath =
-            context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
+                context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val uri: Uri
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             //第二个参数为 包名.fierier
             uri =
-                FileProvider.getUriForFile(
-                    activity,
-                    context.packageName.toString() + ".provider",
-                    File(cameraSavePath)
-                )
+                    FileProvider.getUriForFile(
+                            activity,
+                            context.packageName.toString() + ".provider",
+                            File(cameraSavePath)
+                    )
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         } else uri = Uri.fromFile(File(cameraSavePath))
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri)
@@ -86,8 +86,8 @@ object GalleryTools {
 
 
     private fun generateFile(
-        context: Context, extension: String = "", name:
-        String? = null
+            context: Context, extension: String = "", name:
+            String? = null
     ):
             File {
         val storePath = context.getExternalFilesDir(null)?.path.toString() +

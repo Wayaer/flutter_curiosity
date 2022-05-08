@@ -1,5 +1,6 @@
 ## 3.5.1
 
+* Add `generateDeviceId`、`deviceId` to The Android device for `DeviceInfoModel`
 * Add Open webView for MacOS
 
 ## 3.3.3
