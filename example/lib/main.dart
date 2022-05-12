@@ -16,7 +16,7 @@ import 'package:permission_handler/permission_handler.dart';
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
   window.onSemanticsEnabledChanged = () {};
-  RendererBinding.instance!.setSemanticsEnabled(false);
+  RendererBinding.instance.setSemanticsEnabled(false);
 
   debugPrint('isWeb = $isWeb');
   debugPrint('isMacOS = $isMacOS');

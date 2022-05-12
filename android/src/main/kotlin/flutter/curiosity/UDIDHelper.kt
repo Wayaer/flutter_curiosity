@@ -17,8 +17,8 @@ object UDIDHelper {
     // 生成一个唯一id
     fun generateUniqueDeviceId(): String {
         var serial: String?
-        val serialId = "35" + Build.BOARD.length % 10 + Build.BRAND.length % 10 + Build.CPU_ABI.length % 10 + Build.DEVICE.length % 10 + Build.DISPLAY.length % 10 + Build.HOST.length % 10 + Build.ID.length % 10 + Build.MANUFACTURER.length % 10 + Build.MODEL.length % 10 + Build.PRODUCT.length % 10 + Build.TAGS.length % 10 + Build.TYPE.length % 10 + Build.USER.length % 10
-
+        val serialId =
+            "35" + Build.BOARD.length % 10 + Build.BRAND.length % 10 + Build.CPU_ABI.length % 10 + Build.DEVICE.length % 10 + Build.DISPLAY.length % 10 + Build.HOST.length % 10 + Build.ID.length % 10 + Build.MANUFACTURER.length % 10 + Build.MODEL.length % 10 + Build.PRODUCT.length % 10 + Build.TAGS.length % 10 + Build.TYPE.length % 10 + Build.USER.length % 10
         try {
             serial = Build::class.java.getField("SERIAL")[null]?.toString()
             //API>=9 使用serial号
@@ -27,7 +27,6 @@ object UDIDHelper {
             serial = "serial" // 随便一个初始化
         }
         return UUID(serialId.hashCode().toLong(), serial.hashCode().toLong()).toString()
-
     }
 
     // 获取设备唯一id
@@ -61,8 +60,8 @@ object UDIDHelper {
     @SuppressLint("HardwareIds")
     private fun getAndroidID(context: Context): String? {
         val id = Settings.Secure.getString(
-                context.contentResolver,
-                Settings.Secure.ANDROID_ID
+            context.contentResolver,
+            Settings.Secure.ANDROID_ID
         )
         return if ("9774d56d682e549c" == id) {
             null
@@ -75,7 +74,8 @@ object UDIDHelper {
      * 获取DeviceId
      */
     private fun getDeviceId(context: Context): String? {
-        val tm = context.applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
+        val tm =
+            context.applicationContext.getSystemService(Context.TELEPHONY_SERVICE) as TelephonyManager
         return tm.deviceId
     }
 

@@ -1,3 +1,7 @@
+## 4.0.0
+
+* Compatible with flutter 3.0.0
+
 ## 3.5.1
 
 * Add `generateDeviceId`、`deviceId` to The Android device for `DeviceInfoModel`
