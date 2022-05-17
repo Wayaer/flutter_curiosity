@@ -133,10 +133,10 @@ class DesktopTools {
 
   /// 设置最大 size 最小 size 窗口 size
   Future<bool> setDesktopSize(Size size) async {
-    final bool _size = await setDesktopWindowSize(size);
-    final bool _min = await setDesktopMinWindowSize(size);
-    final bool _max = await setDesktopMaxWindowSize(size);
-    return _size && _min && _max;
+    final bool setSize = await setDesktopWindowSize(size);
+    final bool setMin = await setDesktopMinWindowSize(size);
+    final bool setMax = await setDesktopMaxWindowSize(size);
+    return setSize && setMin && setMax;
   }
 
   /// 文件选择器macos

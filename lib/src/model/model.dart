@@ -504,10 +504,12 @@ class AndroidActivityResult {
 class AndroidRequestPermissionsResult {
   AndroidRequestPermissionsResult.formJson(Map<dynamic, dynamic> json) {
     requestCode = (json['requestCode'] as int?) ?? 0;
-    final List<dynamic> _permissions = json['permissions'] as List<dynamic>;
-    permissions = _permissions.map((dynamic e) => e as String).toList();
-    final List<dynamic> _grantResults = json['grantResults'] as List<dynamic>;
-    grantResults = _grantResults.map((dynamic e) => e as int).toList();
+    permissions = (json['permissions'] as List<dynamic>)
+        .map((dynamic e) => e as String)
+        .toList();
+    grantResults = (json['grantResults'] as List<dynamic>)
+        .map((dynamic e) => e as int)
+        .toList();
   }
 
   late int requestCode;
