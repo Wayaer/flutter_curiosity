@@ -7,7 +7,7 @@ class CuriosityEventPage extends StatefulWidget {
   const CuriosityEventPage({Key? key}) : super(key: key);
 
   @override
-  _CuriosityEventPageState createState() => _CuriosityEventPageState();
+  State<CuriosityEventPage> createState() => _CuriosityEventPageState();
 }
 
 class _CuriosityEventPageState extends State<CuriosityEventPage> {

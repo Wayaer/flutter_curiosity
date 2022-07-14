@@ -28,7 +28,7 @@ class OpenSettingPage extends StatelessWidget {
               final AppPathModel? path = await Curiosity().native.appPath;
               final bool? state = await Curiosity()
                   .native
-                  .installApp(path!.externalFilesDir! + '/app.apk');
+                  .installApp('${path!.externalFilesDir!}/app.apk');
               showToast(state.toString());
             },
             text: '安装应用'),

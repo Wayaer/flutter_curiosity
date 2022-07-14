@@ -55,12 +55,6 @@ class CuriosityMethodCall: NSObject {
         case "openSystemAlbum":
             initGalleryTools(call, result)
             gallery?.openSystemAlbum()
-        case "saveFileToGallery":
-            initGalleryTools(call, result)
-            gallery?.saveFileToGallery()
-        case "saveImageToGallery":
-            initGalleryTools(call, result)
-            gallery?.saveImageToGallery()
         default:
             result(FlutterMethodNotImplemented)
         }

@@ -7,7 +7,7 @@ class GetInfoPage extends StatefulWidget {
   const GetInfoPage({Key? key}) : super(key: key);
 
   @override
-  _GetInfoPageState createState() => _GetInfoPageState();
+  State<GetInfoPage> createState() => _GetInfoPageState();
 }
 
 class _GetInfoPageState extends State<GetInfoPage> {
@@ -30,8 +30,8 @@ class _GetInfoPageState extends State<GetInfoPage> {
           ])),
           placeholder: Container(
               alignment: Alignment.center,
-              child: const Text('暂无数据'),
-              margin: const EdgeInsets.symmetric(vertical: 30)),
+              margin: const EdgeInsets.symmetric(vertical: 30),
+              child: const Text('暂无数据')),
           itemCount: list.length,
           itemBuilder: (_, int index) => list[index]),
     );
@@ -46,7 +46,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
       appModel.forEach((String key, dynamic value) {
         app.add(Container(
             margin: const EdgeInsets.symmetric(vertical: 4),
-            child: Text(key + ' = ' + value.toString())));
+            child: Text('$key = $value')));
       });
       list.add(Container(
         margin: const EdgeInsets.fromLTRB(10, 0, 10, 15),
@@ -67,7 +67,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
       if (value is Map) {
         list.add(const ShowText('=== uts', '==='));
         value.forEach((dynamic k, dynamic v) {
-          list.add(ShowText('  ' + k.toString(), v));
+          list.add(ShowText('  $k', v));
         });
         list.add(const ShowText('=== uts', '==='));
       } else {

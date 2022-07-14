@@ -9,7 +9,7 @@ class FilePickerPage extends StatefulWidget {
   const FilePickerPage({Key? key}) : super(key: key);
 
   @override
-  _FilePickerPageState createState() => _FilePickerPageState();
+  State<FilePickerPage> createState() => _FilePickerPageState();
 }
 
 class _FilePickerPageState extends State<FilePickerPage> {
@@ -53,12 +53,10 @@ class _FilePickerPageState extends State<FilePickerPage> {
 
   Future<void> filePicker() async {
     needShow = true;
-    final List<String>? data = await Curiosity().desktop.openFilePicker(
+    final data = await Curiosity().desktop.openFilePicker(
         optionsWithMacOS:
             FilePickerOptionsWithMacOS(allowedFileTypes: <String>['png']));
-    if (data != null) {
-      paths = data;
-      setState(() {});
-    }
+    paths = data;
+    setState(() {});
   }
 }

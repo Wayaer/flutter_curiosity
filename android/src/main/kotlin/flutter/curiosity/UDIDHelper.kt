@@ -60,8 +60,7 @@ object UDIDHelper {
     @SuppressLint("HardwareIds")
     private fun getAndroidID(context: Context): String? {
         val id = Settings.Secure.getString(
-            context.contentResolver,
-            Settings.Secure.ANDROID_ID
+            context.contentResolver, Settings.Secure.ANDROID_ID
         )
         return if ("9774d56d682e549c" == id) {
             null

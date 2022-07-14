@@ -1,6 +1,5 @@
 package flutter.curiosity
 
-import androidx.annotation.NonNull
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -16,7 +15,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin {
     private lateinit var methodCall: CuriosityMethodCall
 
 
-    override fun onAttachedToEngine(@NonNull binding: FlutterPluginBinding) {
+    override fun onAttachedToEngine(binding: FlutterPluginBinding) {
         pluginBinding = binding
         channel = MethodChannel(binding.binaryMessenger, "Curiosity")
     }

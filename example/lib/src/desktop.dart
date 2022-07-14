@@ -7,7 +7,7 @@ class DesktopPage extends StatefulWidget {
   const DesktopPage({Key? key}) : super(key: key);
 
   @override
-  _DesktopPageState createState() => _DesktopPageState();
+  State<DesktopPage> createState() => _DesktopPageState();
 }
 
 class _DesktopPageState extends State<DesktopPage> {
@@ -125,7 +125,7 @@ class _DesktopPageState extends State<DesktopPage> {
 
   void changeState(Future<dynamic> state) {
     state.then((dynamic value) {
-      text = 'hashCode(${state.hashCode}): ' + value.toString();
+      text = 'hashCode(${state.hashCode}): $value';
       setState(() {});
     });
   }

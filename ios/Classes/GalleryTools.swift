@@ -130,36 +130,6 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
         })
     }
 
-    func saveImageToGallery() {
-        let arguments = _call.arguments as! [AnyHashable: Any?]
-        let imageBytes = arguments["imageBytes"] as? FlutterStandardTypedData
-        let quality = (arguments["quality"] as? Int)
-        if imageBytes != nil {
-            let image = UIImage(data: imageBytes!.data)
-            if let quality = image?.jpegData(compressionQuality: CGFloat(quality! / 100)),
-               let imageQuality = UIImage(data: quality) {
-                UIImageWriteToSavedPhotosAlbum(imageQuality, self, #selector(saveImage), nil)
-                return
-            }
-        }
-        _result(false)
-    }
-
-    func saveFileToGallery() {
-        let path = _call.arguments as? String?
-        if path != nil {
-            if Tools.isImageFile(path!!) {
-                if let image = UIImage(contentsOfFile: path!!) {
-                    UIImageWriteToSavedPhotosAlbum(image, self, #selector(saveImage), nil)
-                    return
-                }
-            } else if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path!!) {
-                UISaveVideoAtPathToSavedPhotosAlbum(path!!, self, #selector(saveVideo), nil)
-                return
-            }
-        }
-        _result(false)
-    }
 
     @objc private func saveImage(
             image: UIImage?,

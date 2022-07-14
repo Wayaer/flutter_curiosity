@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/internal.dart';
 
@@ -57,6 +55,7 @@ enum QualityType { high, medium, low, p640x480, p1280x720, p960x540 }
 
 /// 闪光灯模式
 enum FlashMode { auto, on, off }
+
 enum CameraMode {
   /// 拍照
   photo,
@@ -115,24 +114,5 @@ class GalleryTools {
     final String? path =
         await channel.invokeMethod('openSystemAlbum', options.toMap());
     return path;
-  }
-
-  /// save image to Gallery
-  /// imageBytes can't null
-  Future<String?> saveImageToGallery(Uint8List imageBytes,
-      {int quality = 100, String? name}) async {
-    if (!supportPlatformMobile) return null;
-    return await channel.invokeMethod('saveImageToGallery', <String, dynamic>{
-      'imageBytes': imageBytes,
-      'quality': quality,
-      'name': name
-    });
-  }
-
-  /// Save the PNG，JPG，JPEG image or video located at [file]
-  /// to the local device media gallery.
-  Future<String?> saveFileToGallery(String file) async {
-    if (!supportPlatformMobile) return null;
-    return await channel.invokeMethod('saveFileToGallery', file);
   }
 }

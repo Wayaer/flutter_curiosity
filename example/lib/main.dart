@@ -31,7 +31,7 @@ class App extends StatefulWidget {
   const App({Key? key}) : super(key: key);
 
   @override
-  _AppState createState() => _AppState();
+  State<App> createState() => _AppState();
 }
 
 class _AppState extends State<App> {
@@ -112,7 +112,7 @@ class ShowText extends StatelessWidget {
             value.toString() != 'null',
         child: Container(
             margin: const EdgeInsets.all(10),
-            child: Text(keyName.toString() + ' = ' + value.toString())));
+            child: Text('$keyName = $value')));
   }
 }
 
@@ -120,7 +120,9 @@ Future<bool> getPermission(Permission permission) async {
   PermissionStatus status = await permission.status;
   if (!status.isGranted) {
     status = await permission.request();
-    if (!status.isGranted) openAppSettings();
+    if (!status.isGranted) {
+      openAppSettings();
+    }
   }
   return status.isGranted;
 }

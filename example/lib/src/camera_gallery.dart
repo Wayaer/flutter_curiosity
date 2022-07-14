@@ -10,38 +10,42 @@ class CameraGalleryPage extends StatefulWidget {
   const CameraGalleryPage({Key? key}) : super(key: key);
 
   @override
-  _CameraGalleryPageState createState() => _CameraGalleryPageState();
+  State<CameraGalleryPage> createState() => _CameraGalleryPageState();
 }
 
 class _CameraGalleryPageState extends State<CameraGalleryPage> {
   bool san = true;
   List<String> paths = <String>[];
   bool needShow = false;
+  GlobalKey repaintBoundaryKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
     return ExtendedScaffold(
         appBar: AppBarText('Camera and Gallery'),
-        body: Universal(isScroll: true, children: <Widget>[
-          const SizedBox(height: 12),
-          if (isMobile) ...<Widget>[
-            ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
-            ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
-            if (isIOS) ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
-          ],
-          const SizedBox(height: 20),
-          Column(
-              children: paths.builder((String path) => needShow
-                  ? Column(children: <Widget>[
-                      ShowText('path', path),
-                      if (path.isNotEmpty)
-                        Container(
-                            width: double.infinity,
-                            margin: const EdgeInsets.all(20),
-                            child: Image.file(File(path)))
-                    ])
-                  : ShowText('path', path)))
-        ]));
+        body: RepaintBoundary(
+            key: repaintBoundaryKey,
+            child: Universal(isScroll: true, children: <Widget>[
+              const SizedBox(height: 12),
+              if (isMobile) ...<Widget>[
+                ElevatedText(onPressed: systemGallery, text: '打开系统相册'),
+                ElevatedText(onPressed: systemCamera, text: '打开系统相机'),
+                if (isIOS)
+                  ElevatedText(onPressed: systemAlbum, text: '打开IOS系统相薄'),
+              ],
+              const SizedBox(height: 20),
+              Column(
+                  children: paths.builder((String path) => needShow
+                      ? Column(children: <Widget>[
+                          ShowText('path', path),
+                          if (path.isNotEmpty)
+                            Container(
+                                width: double.infinity,
+                                margin: const EdgeInsets.all(20),
+                                child: Image.file(File(path)))
+                        ])
+                      : ShowText('path', path)))
+            ])));
   }
 
   Future<void> systemGallery() async {

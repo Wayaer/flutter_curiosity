@@ -7,7 +7,7 @@ class KeyboardPage extends StatefulWidget {
   const KeyboardPage({Key? key}) : super(key: key);
 
   @override
-  _KeyboardState createState() => _KeyboardState();
+  State<KeyboardPage> createState() => _KeyboardState();
 }
 
 class _KeyboardState extends State<KeyboardPage> {
