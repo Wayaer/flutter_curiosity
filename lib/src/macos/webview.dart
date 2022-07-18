@@ -9,6 +9,7 @@ enum PresentationStyle {
   modal,
   sheet,
 }
+
 enum WebResourceErrorType {
   unknown,
   webContentProcessTerminated,

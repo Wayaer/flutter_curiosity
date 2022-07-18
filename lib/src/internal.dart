@@ -48,8 +48,7 @@ void _segmentationLog(String msg) {
       final int lastIndex = index + 1;
       if (msg.length - lastIndex < _limitLength) {
         final String remainderStr = msg.substring(lastIndex, msg.length);
-        debugPrint(outStr.toString());
-        (remainderStr);
+        debugPrint(remainderStr);
         break;
       }
     }
