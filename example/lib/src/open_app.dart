@@ -2,6 +2,7 @@ import 'package:curiosity/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class OpenSettingPage extends StatelessWidget {
   const OpenSettingPage({Key? key}) : super(key: key);
@@ -25,6 +26,9 @@ class OpenSettingPage extends StatelessWidget {
             text: '跳转应用市场'),
         ElevatedText(
             onPressed: () async {
+              final result =
+                  await getPermission(Permission.requestInstallPackages);
+              if (!result) return;
               final AppPathModel? path = await Curiosity().native.appPath;
               final bool? state = await Curiosity()
                   .native

@@ -21,8 +21,8 @@ class NativeTools {
   /// only supports Android
   Future<bool> checkCanInstallApp([bool openSetting = true]) async {
     if (!isAndroid) return false;
-    final bool? state =
-        await channel.invokeMethod<bool?>('checkCanInstallApp', openSetting);
+    final bool? state = await Internal.curiosityChannel
+        .invokeMethod<bool?>('checkCanInstallApp', openSetting);
     return state ?? false;
   }
 
@@ -32,7 +32,8 @@ class NativeTools {
     if (!isAndroid) return null;
     final bool state = await checkCanInstallApp(openSetting);
     if (!state) return state;
-    return await channel.invokeMethod<bool?>('installApp', apkPath);
+    return await Internal.curiosityChannel
+        .invokeMethod<bool?>('installApp', apkPath);
   }
 
   /// android  packageName，安装多个应用商店时会弹窗选择, marketPackageName 指定打开应用市场的包名
@@ -45,7 +46,7 @@ class NativeTools {
         state = await hasInstallAppWithAndroid(marketPackageName);
         if (!state) return state;
       }
-      state = await channel.invokeMethod<bool>(
+      state = await Internal.curiosityChannel.invokeMethod<bool>(
           'openAppMarket', <String, String>{
         'packageName': packageName,
         'marketPackageName': marketPackageName ?? ''
@@ -60,33 +61,35 @@ class NativeTools {
   /// Android packageName 对应包名
   Future<bool> hasInstallAppWithAndroid(String packageName) async {
     if (!isAndroid) return false;
-    final bool? data =
-        await channel.invokeMethod<bool?>('isInstallApp', packageName);
+    final bool? data = await Internal.curiosityChannel
+        .invokeMethod<bool?>('isInstallApp', packageName);
     return data ?? false;
   }
 
   /// 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
   Future<bool> get gpsStatus async {
-    if (!supportPlatform) return false;
-    final bool? state = await channel.invokeMethod('getGPSStatus');
+    if (!Internal.supportPlatform) return false;
+    final bool? state =
+        await Internal.curiosityChannel.invokeMethod('getGPSStatus');
     return state ?? false;
   }
 
   /// 跳转到系统设置页面
   /// settingType 仅对android 有效
   Future<bool> openSystemSetting(
-      {AndroidSettingPath? path, MacOSSettingPath? macPath}) async {
-    if (supportPlatform) {
+      {AndroidSettingPath? path,
+      MacOSSettingPath macPath = MacOSSettingPath.accessibilityMain}) async {
+    if (Internal.supportPlatform) {
       String? data;
       if (isAndroid) {
         final List<String> type =
             (path ?? AndroidSettingPath.setting).toString().split('.');
         data = type[1];
       } else if (isMacOS) {
-        data = macOSSettingPathToString(
-            macPath ?? MacOSSettingPath.accessibilityMain);
+        data = macPath.valueString;
       }
-      final bool? state = await channel.invokeMethod('openSystemSetting', data);
+      final bool? state = await Internal.curiosityChannel
+          .invokeMethod('openSystemSetting', data);
       return state ?? false;
     }
     return false;
@@ -94,8 +97,8 @@ class NativeTools {
 
   /// Exit app
   Future<void> exitApp() async {
-    if (!supportPlatform) return;
-    channel.invokeMethod<dynamic>('exitApp');
+    if (!Internal.supportPlatform) return;
+    Internal.curiosityChannel.invokeMethod<dynamic>('exitApp');
   }
 
   DeviceInfoModel? _deviceInfo;
@@ -105,9 +108,9 @@ class NativeTools {
 
   /// get Android/IOS/MacOS Device Info
   Future<DeviceInfoModel?> getDeviceInfo() async {
-    if (!supportPlatform) return null;
-    final Map<String, dynamic>? map =
-        await channel.invokeMapMethod<String, dynamic>('getDeviceInfo');
+    if (!Internal.supportPlatform) return null;
+    final Map<String, dynamic>? map = await Internal.curiosityChannel
+        .invokeMapMethod<String, dynamic>('getDeviceInfo');
     if (map != null) return DeviceInfoModel.fromJson(map);
     return null;
   }
@@ -118,9 +121,9 @@ class NativeTools {
 
   /// get Android/IOS/MacOS path
   Future<AppPathModel?> getAppPath() async {
-    if (!supportPlatform) return null;
-    final Map<String, dynamic>? map =
-        await channel.invokeMapMethod<String, dynamic>('getAppPath');
+    if (!Internal.supportPlatform) return null;
+    final Map<String, dynamic>? map = await Internal.curiosityChannel
+        .invokeMapMethod<String, dynamic>('getAppPath');
     if (map != null) return AppPathModel.fromJson(map);
     return null;
   }
@@ -131,9 +134,9 @@ class NativeTools {
 
   /// get Android/IOS/MacOS info
   Future<AppInfoModel?> getAppInfo() async {
-    if (!supportPlatform) return null;
-    final Map<String, dynamic>? map =
-        await channel.invokeMapMethod<String, dynamic>('getAppInfo');
+    if (!Internal.supportPlatform) return null;
+    final Map<String, dynamic>? map = await Internal.curiosityChannel
+        .invokeMapMethod<String, dynamic>('getAppInfo');
     if (map != null) return AppInfoModel.fromJson(map);
     return null;
   }
@@ -141,7 +144,7 @@ class NativeTools {
   /// get Android  installed apps
   Future<List<AppsModel>> get installedApp async {
     if (!isAndroid) return <AppsModel>[];
-    final List<Map<dynamic, dynamic>>? appList = await channel
+    final List<Map<dynamic, dynamic>>? appList = await Internal.curiosityChannel
         .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp');
     final List<AppsModel> list = <AppsModel>[];
     if (appList != null) {
@@ -154,8 +157,8 @@ class NativeTools {
 
   /// android ios  键盘状态监听
   void keyboardListener(KeyboardStatus keyboardStatus) {
-    if (!supportPlatformMobile) return;
-    channel.setMethodCallHandler((MethodCall call) async {
+    if (!Internal.supportPlatformMobile) return;
+    Internal.curiosityChannel.setMethodCallHandler((MethodCall call) async {
       if (call.method != 'keyboardStatus') return;
       return keyboardStatus(call.arguments as bool);
     });
@@ -168,17 +171,16 @@ class NativeTools {
     EventHandlerActivityResult? activityResult,
     EventHandlerRequestPermissionsResult? requestPermissionsResult,
   }) async {
-    if (!supportPlatformMobile) return;
-    if (isAndroid) {
-      if (activityResult != null) {
-        await channel.invokeMethod<dynamic>('onActivityResult');
-      }
-
-      if (requestPermissionsResult != null) {
-        await channel.invokeMethod<dynamic>('onRequestPermissionsResult');
-      }
+    if (!isAndroid) return;
+    if (activityResult != null) {
+      await Internal.curiosityChannel.invokeMethod<dynamic>('onActivityResult');
     }
-    channel.setMethodCallHandler((MethodCall call) async {
+
+    if (requestPermissionsResult != null) {
+      await Internal.curiosityChannel
+          .invokeMethod<dynamic>('onRequestPermissionsResult');
+    }
+    Internal.curiosityChannel.setMethodCallHandler((MethodCall call) async {
       final Map<dynamic, dynamic> argument =
           call.arguments as Map<dynamic, dynamic>;
       switch (call.method) {

@@ -12,9 +12,9 @@ class DesktopTools {
   static DesktopTools? _singleton;
 
   Future<Size?> getDesktopWindowSize() async {
-    if (!supportPlatformDesktop) return null;
-    final List<dynamic>? list =
-        await channel.invokeMethod<List<dynamic>?>('getWindowSize');
+    if (!Internal.supportPlatformDesktop) return null;
+    final List<dynamic>? list = await Internal.curiosityChannel
+        .invokeMethod<List<dynamic>?>('getWindowSize');
     if (list != null && list.length == 2) {
       return Size(list[0] as double, list[1] as double);
     }
@@ -22,82 +22,91 @@ class DesktopTools {
   }
 
   Future<bool> setDesktopWindowSize(Size size) async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('setWindowSize',
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
+        'setWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
   Future<bool> setDesktopMinWindowSize(Size size) async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('setMinWindowSize',
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
+        'setMinWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
   Future<bool> setDesktopMaxWindowSize(Size size) async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('setMaxWindowSize',
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
+        'setMaxWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
   Future<bool> resetDesktopMaxWindowSize() async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('resetMaxWindowSize');
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel
+        .invokeMethod<bool?>('resetMaxWindowSize');
     return state ?? false;
   }
 
   Future<bool> toggleDesktopFullScreen() async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('toggleFullScreen');
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state =
+        await Internal.curiosityChannel.invokeMethod<bool?>('toggleFullScreen');
     return state ?? false;
   }
 
   Future<bool> setDesktopFullScreen(bool fullscreen) async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>(
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
         'setFullScreen', <String, bool>{'fullscreen': fullscreen});
     return state ?? false;
   }
 
   Future<bool?> getDesktopFullScreen() async {
-    if (!supportPlatformDesktop) return null;
-    final bool? fullscreen = await channel.invokeMethod<bool?>('getFullScreen');
+    if (!Internal.supportPlatformDesktop) return null;
+    final bool? fullscreen =
+        await Internal.curiosityChannel.invokeMethod<bool?>('getFullScreen');
     if (fullscreen is bool) return fullscreen;
     return null;
   }
 
   Future<bool> get hasDesktopBorders async {
-    if (!supportPlatformDesktop) return false;
-    final bool? hasBorders = await channel.invokeMethod<bool?>('hasBorders');
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? hasBorders =
+        await Internal.curiosityChannel.invokeMethod<bool?>('hasBorders');
     if (hasBorders is bool) return hasBorders;
     return hasBorders ?? false;
   }
 
   Future<bool> toggleDesktopBorders() async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('toggleBorders');
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state =
+        await Internal.curiosityChannel.invokeMethod<bool?>('toggleBorders');
     return state ?? false;
   }
 
   Future<bool> setDesktopBorders(bool border) async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel
         .invokeMethod<bool?>('setBorders', <String, dynamic>{'border': border});
     return state ?? false;
   }
 
   Future<bool> stayOnTopWithDesktop([bool stayOnTop = true]) async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>(
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
         'stayOnTop', <String, dynamic>{'stayOnTop': stayOnTop});
     return state ?? false;
   }
 
   Future<bool> focusDesktop() async {
-    if (!supportPlatformDesktop) return false;
-    final bool? state = await channel.invokeMethod<bool?>('focus');
+    if (!Internal.supportPlatformDesktop) return false;
+    final bool? state =
+        await Internal.curiosityChannel.invokeMethod<bool?>('focus');
     return state ?? false;
   }
 
@@ -149,7 +158,7 @@ class DesktopTools {
       options = optionsWithMacOS.toMap();
     }
     final List<dynamic>? path =
-        await channel.invokeMethod('openFilePicker', options);
+        await Internal.curiosityChannel.invokeMethod('openFilePicker', options);
     return path?.map((dynamic e) => e as String).toList() ?? <String>[];
   }
 
@@ -162,7 +171,8 @@ class DesktopTools {
       optionsWithMacOS ??= SaveFilePickerOptionsWithMacOS();
       options = optionsWithMacOS.toMap();
     }
-    final String? path = await channel.invokeMethod('saveFilePicker', options);
+    final String? path =
+        await Internal.curiosityChannel.invokeMethod('saveFilePicker', options);
     return path;
   }
 }

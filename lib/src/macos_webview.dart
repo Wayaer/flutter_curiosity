@@ -1,8 +1,6 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_curiosity/src/internal.dart';
 
 enum PresentationStyle {
@@ -25,9 +23,7 @@ class MacOSWebView {
     this.onPageStarted,
     this.onPageFinished,
     this.onWebResourceError,
-  }) : _channel = const MethodChannel(curiosity);
-
-  final MethodChannel _channel;
+  });
 
   final void Function()? onOpen;
   final void Function()? onClose;
@@ -46,8 +42,8 @@ class MacOSWebView {
     String sheetCloseButtonTitle = 'Close',
   }) async {
     assert(url.trim().isNotEmpty);
-    _channel.setMethodCallHandler(_onMethodCall);
-    return await _channel.invokeMethod<bool?>('openWebView', {
+    Internal.curiosityChannel.setMethodCallHandler(_onMethodCall);
+    return await Internal.curiosityChannel.invokeMethod<bool?>('openWebView', {
       'url': url,
       'javascriptEnabled': javascriptEnabled,
       'presentationStyle': presentationStyle.index,
@@ -65,8 +61,8 @@ class MacOSWebView {
 
   /// Closes WebView
   Future<bool?> close() async {
-    _channel.setMethodCallHandler(null);
-    return await _channel.invokeMethod<bool?>('closeWebView');
+    Internal.curiosityChannel.setMethodCallHandler(null);
+    return await Internal.curiosityChannel.invokeMethod<bool?>('closeWebView');
   }
 
   Future<void> _onMethodCall(MethodCall call) async {

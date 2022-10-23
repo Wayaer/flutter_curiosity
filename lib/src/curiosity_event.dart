@@ -26,11 +26,12 @@ class CuriosityEvent {
 
   /// 初始化消息通道
   Future<bool> initialize() async {
-    if (!supportPlatform) return false;
-    bool? state = await channel.invokeMethod<bool?>('startCuriosityEvent');
+    if (!Internal.supportPlatform) return false;
+    bool? state = await Internal.curiosityChannel
+        .invokeMethod<bool?>('startCuriosityEvent');
     state ??= false;
     if (state && _eventChannel == null) {
-      _eventChannel = const EventChannel(curiosityEvent);
+      _eventChannel = const EventChannel(Internal.curiosityEvent);
       _stream = _eventChannel?.receiveBroadcastStream(<dynamic, dynamic>{});
     }
     return state && _eventChannel != null && _stream != null;
@@ -38,14 +39,14 @@ class CuriosityEvent {
 
   /// 添加消息流监听
   Future<bool> addListener(EventListen eventListen) async {
-    if (!supportPlatform) return false;
+    if (!Internal.supportPlatform) return false;
     if (_eventChannel != null && _stream != null) {
       if (_streamSubscription != null) return false;
       try {
         _streamSubscription = _stream!.listen(eventListen);
         return true;
       } catch (e) {
-        log(e);
+        Internal.log(e);
         return false;
       }
     }
@@ -54,18 +55,18 @@ class CuriosityEvent {
 
   /// 调用原生方法 发送消息
   Future<bool> sendEvent(dynamic arguments) async {
-    if (!supportPlatform) return false;
+    if (!Internal.supportPlatform) return false;
     if (_eventChannel == null ||
         _streamSubscription == null ||
         _streamSubscription!.isPaused) return false;
-    final bool? state =
-        await channel.invokeMethod<bool?>('sendCuriosityEvent', arguments);
+    final bool? state = await Internal.curiosityChannel
+        .invokeMethod<bool?>('sendCuriosityEvent', arguments);
     return state ?? false;
   }
 
   /// 暂停消息流监听
   bool pause() {
-    if (!supportPlatform) return false;
+    if (!Internal.supportPlatform) return false;
     if (_streamSubscription != null && !_streamSubscription!.isPaused) {
       _streamSubscription!.pause();
       return true;
@@ -75,7 +76,7 @@ class CuriosityEvent {
 
   /// 重新开始监听
   bool resume() {
-    if (!supportPlatform) return false;
+    if (!Internal.supportPlatform) return false;
     if (_streamSubscription != null && _streamSubscription!.isPaused) {
       _streamSubscription!.resume();
       return true;
@@ -85,12 +86,13 @@ class CuriosityEvent {
 
   /// 关闭并销毁消息通道
   Future<bool> dispose() async {
-    if (!supportPlatform) return false;
+    if (!Internal.supportPlatform) return false;
     await _streamSubscription?.cancel();
     _streamSubscription = null;
     _stream = null;
     _eventChannel = null;
-    final bool? state = await channel.invokeMethod<bool>('stopCuriosityEvent');
+    final bool? state = await Internal.curiosityChannel
+        .invokeMethod<bool>('stopCuriosityEvent');
     return state ?? false;
   }
 }
