@@ -1,6 +1,6 @@
-## 4.1.0
+## 4.2.0
 
-* Nothing changed
+* Compatible with Flutter 3.7.0
 
 ## 4.0.1+1
 

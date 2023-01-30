@@ -152,7 +152,7 @@ class MacOSWebViewPage extends StatelessWidget {
                   onPressed: () async {
                     var webview = await onOpen(PresentationStyle.sheet);
                     await showToast('Turn it off in 5 seconds',
-                        duration: 5.seconds);
+                        options: ToastOptions(duration: 5.seconds));
                     await webview.close();
                   },
                   text: 'Open as sheet Turn it off in 5 seconds'),
@@ -160,7 +160,7 @@ class MacOSWebViewPage extends StatelessWidget {
                   onPressed: () async {
                     var webview = await onOpen(PresentationStyle.modal);
                     await showToast('Turn it off in 5 seconds',
-                        duration: 5.seconds);
+                        options: ToastOptions(duration: 5.seconds));
                     await webview.close();
                   },
                   text: 'Open as modal Turn it off in 5 seconds'),

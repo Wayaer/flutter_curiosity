@@ -12,11 +12,11 @@ class GalleryOptions {
       this.qualityType = QualityType.medium,
       this.cameraMode = CameraMode.photo});
 
-  ////****** android 配置信息 (仅支持android)  ******////
+  /// ****** android 配置信息 (仅支持android)  ****** ///
   /// savePath =>  图片临时储存位置
   String? savePath;
 
-  ////****** ios 配置信息 (仅支持ios) ******////
+  /// ****** ios 配置信息 (仅支持ios) ****** ///
   /// 是否可编辑
   bool allowsEditing;
 
