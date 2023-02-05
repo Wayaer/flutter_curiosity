@@ -1,4 +1,4 @@
-## 4.2.0
+## 4.2.1
 
 * Compatible with Flutter 3.7.0
 

@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_curiosity/src/internal.dart';
 
 class DesktopTools {
@@ -146,33 +145,5 @@ class DesktopTools {
     final bool setMin = await setDesktopMinWindowSize(size);
     final bool setMax = await setDesktopMaxWindowSize(size);
     return setSize && setMin && setMax;
-  }
-
-  /// 文件选择器macos
-  Future<List<String>> openFilePicker(
-      {FilePickerOptionsWithMacOS? optionsWithMacOS}) async {
-    if (!isMacOS) return <String>[];
-    Map<String, dynamic> options = <String, dynamic>{};
-    if (isMacOS) {
-      optionsWithMacOS ??= FilePickerOptionsWithMacOS();
-      options = optionsWithMacOS.toMap();
-    }
-    final List<dynamic>? path =
-        await Internal.curiosityChannel.invokeMethod('openFilePicker', options);
-    return path?.map((dynamic e) => e as String).toList() ?? <String>[];
-  }
-
-  /// 保存文件选择器macos
-  Future<String?> saveFilePicker(
-      {SaveFilePickerOptionsWithMacOS? optionsWithMacOS}) async {
-    if (!isMacOS) return null;
-    Map<String, dynamic> options = <String, dynamic>{};
-    if (isMacOS) {
-      optionsWithMacOS ??= SaveFilePickerOptionsWithMacOS();
-      options = optionsWithMacOS.toMap();
-    }
-    final String? path =
-        await Internal.curiosityChannel.invokeMethod('saveFilePicker', options);
-    return path;
   }
 }

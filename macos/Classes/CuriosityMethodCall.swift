@@ -38,10 +38,6 @@ class CuriosityMethodCall: NSObject {
             result(NativeTools.getDeviceInfo())
         case "getGPSStatus":
             result(NativeTools.getGPSStatus())
-        case "openFilePicker":
-            FilePickerTools.openFilePicker(call, result)
-        case "saveFilePicker":
-            FilePickerTools.saveFilePicker(call, result)
         case "getWindowSize":
             result(DesktopTools.getWindowSize())
         case "setWindowSize":

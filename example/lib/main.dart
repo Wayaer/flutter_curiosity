@@ -3,7 +3,6 @@ import 'dart:ui';
 import 'package:curiosity/src/camera_gallery.dart';
 import 'package:curiosity/src/curiosity_event.dart';
 import 'package:curiosity/src/desktop.dart';
-import 'package:curiosity/src/file_picker.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/open_app.dart';
@@ -76,11 +75,7 @@ class _AppState extends State<App> {
                     onPressed: () => push(const OpenSettingPage()),
                     text: '跳转设置'),
               ],
-              if (isMacOS)
-                ElevatedText(
-                    onPressed: () => push(const FilePickerPage()),
-                    text: '文件选择器'),
-              if (isMobile) ...<Widget>[
+              if (isMobile) ...[
                 ElevatedText(
                     onPressed: () => push(const CameraGalleryPage()),
                     text: '相机、图库'),
