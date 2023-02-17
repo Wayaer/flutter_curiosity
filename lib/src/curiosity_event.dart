@@ -38,7 +38,7 @@ class CuriosityEvent {
   }
 
   /// 添加消息流监听
-  Future<bool> addListener(EventListen eventListen) async {
+  bool addListener(EventListen eventListen) {
     if (!Internal.supportPlatform) return false;
     if (_eventChannel != null && _stream != null) {
       if (_streamSubscription != null) return false;
