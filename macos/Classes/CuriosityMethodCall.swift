@@ -7,8 +7,6 @@ class CuriosityMethodCall: NSObject {
 
     public var _registrar: FlutterPluginRegistrar
 
-    public var _webview: WebViewTools?
-
     public init(_ registrar: FlutterPluginRegistrar, _ channel: FlutterMethodChannel) {
         _registrar = registrar
         _channel = channel
@@ -67,15 +65,6 @@ class CuriosityMethodCall: NSObject {
             result(DesktopTools.stayOnTop(call))
         case "openSystemSetting":
             result(Tools.openUrl(call.arguments as! String))
-        case "openWebView":
-            if _webview == nil {
-                _webview = WebViewTools(_channel, _registrar)
-            }
-            _webview!.openWebview(call, result)
-
-        case "closeWebView":
-            _webview?.closeWebView()
-            result(_webview != nil)
         default:
             result(FlutterMethodNotImplemented)
         }

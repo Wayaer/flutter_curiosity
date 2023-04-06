@@ -33,11 +33,11 @@ class Tools {
 
     static func isImageFile(_ path: String) -> Bool {
         path.hasSuffix(".jpg")
-                || path.hasSuffix(".png")
-                || path.hasSuffix(".PNG")
-                || path.hasSuffix(".JPEG")
-                || path.hasSuffix(".JPG")
-                || path.hasSuffix(".GiF")
-                || path.hasSuffix(".gif")
+            || path.hasSuffix(".png")
+            || path.hasSuffix(".PNG")
+            || path.hasSuffix(".JPEG")
+            || path.hasSuffix(".JPG")
+            || path.hasSuffix(".GiF")
+            || path.hasSuffix(".gif")
     }
 }

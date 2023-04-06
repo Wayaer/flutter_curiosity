@@ -32,8 +32,7 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
                 ElevatedText(onPressed: start, text: '注册消息通道'),
                 ElevatedText(
                     onPressed: () async {
-                      final bool? state =
-                          await event?.addListener((dynamic data) {
+                      final bool? state = event?.addListener((dynamic data) {
                         text.value.add(data.toString());
                       });
                       stateText = '添加监听 $state';

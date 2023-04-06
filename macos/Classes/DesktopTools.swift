@@ -45,8 +45,8 @@ class DesktopTools {
         if width != nil, height != nil, window != nil {
             if width == 0 || height == 0 {
                 window!.maxSize = CGSize(
-                        width: CGFloat(Float.greatestFiniteMagnitude),
-                        height: CGFloat(Float.greatestFiniteMagnitude))
+                    width: CGFloat(Float.greatestFiniteMagnitude),
+                    height: CGFloat(Float.greatestFiniteMagnitude))
             } else {
                 window?.maxSize = CGSize(width: CGFloat(width!), height: CGFloat(height!))
             }
@@ -58,8 +58,8 @@ class DesktopTools {
     static func resetMaxWindowSize() -> Bool {
         let window = NSApplication.shared.mainWindow
         window?.maxSize = CGSize(
-                width: CGFloat(Float.greatestFiniteMagnitude),
-                height: CGFloat(Float.greatestFiniteMagnitude))
+            width: CGFloat(Float.greatestFiniteMagnitude),
+            height: CGFloat(Float.greatestFiniteMagnitude))
         return true
     }
 

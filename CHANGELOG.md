@@ -1,3 +1,7 @@
+## 4.3.0
+
+* Migrate MacOSWebView to [fl_webview](https://pub.dev/packages/fl_webview)
+
 ## 4.2.1
 
 * Compatible with Flutter 3.7.0
