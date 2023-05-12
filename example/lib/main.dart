@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:curiosity/src/camera_gallery.dart';
 import 'package:curiosity/src/curiosity_event.dart';
 import 'package:curiosity/src/desktop.dart';
@@ -7,16 +5,12 @@ import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
 import 'package:curiosity/src/open_app.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  window.onSemanticsEnabledChanged = () {};
-  RendererBinding.instance.setSemanticsEnabled(false);
-
   debugPrint('isWeb = $isWeb');
   debugPrint('isMacOS = $isMacOS');
   debugPrint('isAndroid = $isAndroid');

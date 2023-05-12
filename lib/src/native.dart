@@ -98,7 +98,7 @@ class NativeTools {
   /// Exit app
   Future<void> exitApp() async {
     if (!Internal.supportPlatform) return;
-    Internal.curiosityChannel.invokeMethod<dynamic>('exitApp');
+    await Internal.curiosityChannel.invokeMethod<dynamic>('exitApp');
   }
 
   DeviceInfoModel? _deviceInfo;
@@ -160,7 +160,7 @@ class NativeTools {
     if (!Internal.supportPlatformMobile) return;
     Internal.curiosityChannel.setMethodCallHandler((MethodCall call) async {
       if (call.method != 'keyboardStatus') return;
-      return keyboardStatus(call.arguments as bool);
+      keyboardStatus(call.arguments as bool);
     });
   }
 

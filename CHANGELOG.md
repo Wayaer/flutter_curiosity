@@ -1,3 +1,7 @@
+## 4.3.1
+
+* dart sdk: '>=2.18.0 <4.0.0'
+
 ## 4.3.0
 
 * Migrate MacOSWebView to [fl_webview](https://pub.dev/packages/fl_webview)
