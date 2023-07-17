@@ -21,7 +21,7 @@ class _KeyboardState extends State<KeyboardPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('Keyboard'),
         body: const Universal(
             mainAxisAlignment: MainAxisAlignment.center,

@@ -21,11 +21,11 @@ class _CameraGalleryPageState extends State<CameraGalleryPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('Camera and Gallery'),
         body: RepaintBoundary(
             key: repaintBoundaryKey,
-            child: Universal(isScroll: true, children: <Widget>[
+            child: Universal(isScroll: true, expand: true, children: <Widget>[
               const SizedBox(height: 12),
               if (isMobile) ...<Widget>[
                 ElevatedText(onPressed: systemGallery, text: '打开系统相册'),

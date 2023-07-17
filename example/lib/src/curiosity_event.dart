@@ -17,10 +17,9 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('CuriosityEvent 消息通道'),
-        padding: const EdgeInsets.all(20),
-        children: <Widget>[
+        body: Universal(padding: const EdgeInsets.all(20), children: [
           ShowText('state', stateText),
           Universal(
               width: double.infinity,
@@ -66,7 +65,7 @@ class _CuriosityEventPageState extends State<CuriosityEventPage> {
                     itemBuilder: (BuildContext context, int index) =>
                         ShowText(index, value[index]));
               }).expandedNull
-        ]);
+        ]));
   }
 
   Future<void> start() async {

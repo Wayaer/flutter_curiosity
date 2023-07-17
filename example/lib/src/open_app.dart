@@ -53,8 +53,8 @@ class OpenSettingPage extends StatelessWidget {
                   Curiosity().native.openSystemSetting(macPath: value),
               text: value.toString())));
     }
-    return ExtendedScaffold(
+    return Scaffold(
         appBar: AppBarText('Open App'),
-        body: Universal(isScroll: true, children: children));
+        body: Universal(isScroll: true, expand: true, children: children));
   }
 }

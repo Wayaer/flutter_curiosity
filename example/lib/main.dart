@@ -17,7 +17,13 @@ void main() {
   debugPrint('isIOS = $isIOS');
   debugPrint('isMobile = $isMobile');
   debugPrint('isDesktop = $isDesktop');
-  runApp(const ExtendedWidgetsApp(title: 'Curiosity', home: App()));
+  runApp(MaterialApp(
+      navigatorKey: GlobalOptions().navigatorKey,
+      theme: ThemeData.light(useMaterial3: true),
+      darkTheme: ThemeData.dark(useMaterial3: true),
+      debugShowCheckedModeBanner: false,
+      title: 'Curiosity',
+      home: const App()));
 }
 
 class App extends StatefulWidget {
@@ -53,13 +59,13 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return ExtendedScaffold(
-        backgroundColor: Colors.white,
+    return Scaffold(
         appBar: AppBarText('Flutter Curiosity Plugin Example'),
         body: Universal(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              if (isMobile || isMacOS) ...<Widget>[
+            expand: true,
+            children: [
+              if (isMobile || isMacOS) ...[
                 ElevatedText(
                     onPressed: () => push(const CuriosityEventPage()),
                     text: 'CuriosityEvent'),
@@ -120,18 +126,8 @@ class ElevatedText extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) => Universal(
-      onTap: onPressed,
-      margin: const EdgeInsets.symmetric(vertical: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-      decoration: BoxDecoration(boxShadow: const <BoxShadow>[
-        BoxShadow(
-            color: color,
-            offset: Offset(0, 0),
-            blurRadius: 1.0,
-            spreadRadius: 1.0)
-      ], color: color, borderRadius: BorderRadius.circular(4)),
-      child: BText(text, color: Colors.black));
+  Widget build(BuildContext context) =>
+      ElevatedButton(onPressed: onPressed, child: BText(text));
 }
 
 class AppBarText extends AppBar {
@@ -139,12 +135,6 @@ class AppBarText extends AppBar {
       : super(
             key: key,
             elevation: 0,
-            systemOverlayStyle: const SystemUiOverlayStyleDark(),
-            iconTheme: const IconThemeData.fallback(),
-            title: BText(text,
-                color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
-            centerTitle: true,
-            backgroundColor: color);
+            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
+            centerTitle: true);
 }
-
-const Color color = Colors.amber;
