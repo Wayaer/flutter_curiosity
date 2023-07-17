@@ -26,7 +26,8 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 33
+    compileSdk 33
+    namespace 'com.curiosity.example'
 
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
@@ -60,6 +61,7 @@ android {
             signingConfig signingConfigs.release
         }
     }
+
 }
 
 flutter {
