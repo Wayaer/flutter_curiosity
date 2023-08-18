@@ -1,5 +1,4 @@
 import 'package:curiosity/src/camera_gallery.dart';
-import 'package:curiosity/src/curiosity_event.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:curiosity/src/keyboard.dart';
@@ -66,9 +65,6 @@ class _AppState extends State<App> {
             expand: true,
             children: [
               if (isMobile || isMacOS) ...[
-                ElevatedText(
-                    onPressed: () => push(const CuriosityEventPage()),
-                    text: 'CuriosityEvent'),
                 ElevatedText(
                     onPressed: () => push(const GetInfoPage()), text: '获取信息'),
                 ElevatedText(

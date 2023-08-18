@@ -22,12 +22,12 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin {
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activityBinding = binding
-        methodCall =
-            CuriosityMethodCall(activityBinding, pluginBinding, channel)
+        methodCall = CuriosityMethodCall(activityBinding, pluginBinding, channel)
         channel.setMethodCallHandler(methodCall)
         onDetachedFromActivity()
-        activityBinding.activity.window?.decorView?.viewTreeObserver
-            ?.addOnGlobalLayoutListener(methodCall)
+        activityBinding.activity.window?.decorView?.viewTreeObserver?.addOnGlobalLayoutListener(
+            methodCall
+        )
     }
 
     override fun onReattachedToActivityForConfigChanges(pluginBinding: ActivityPluginBinding) {
@@ -39,14 +39,14 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin {
     }
 
     override fun onDetachedFromActivity() {
-        activityBinding.activity.window?.decorView?.viewTreeObserver
-            ?.removeOnGlobalLayoutListener(methodCall)
+        activityBinding.activity.window?.decorView?.viewTreeObserver?.removeOnGlobalLayoutListener(
+            methodCall
+        )
         activityBinding.removeRequestPermissionsResultListener(methodCall)
     }
 
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
-        methodCall.event?.dispose()
         channel.setMethodCallHandler(methodCall)
     }
 

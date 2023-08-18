@@ -1,3 +1,8 @@
+## 4.5.0
+
+* Remove `CuriosityEvent`
+* Added [fl_channel](https://pub.dev/packages/fl_channel) plug-in
+
 ## 4.3.1
 
 * dart sdk: '>=2.18.0 <4.0.0'

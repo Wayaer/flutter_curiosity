@@ -26,39 +26,20 @@ class CuriosityMethodCall(
     private lateinit var result: MethodChannel.Result
     private var keyboardStatus = false
 
-    var event: CuriosityEvent? = null
-
     private var openSystemGalleryCode = 100
     private var openSystemCameraCode = 101
     private var installPermissionCode = 102
     private var openActivityResultCode = 111
 
-    override fun onMethodCall(call: MethodCall, _result: MethodChannel.Result) {
-        result = _result
+    override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
+        this.result = result
         hasResult = true
         when (call.method) {
             "exitApp" -> NativeTools.exitApp(activityBinding.activity)
-            "startCuriosityEvent" -> {
-                if (event == null) {
-                    event = CuriosityEvent(pluginBinding.binaryMessenger)
-                }
-                resultSuccess(event != null)
-            }
-            "sendCuriosityEvent" -> {
-                event?.sendEvent(call.arguments)
-                resultSuccess(event != null)
-            }
-            "stopCuriosityEvent" -> {
-                if (event != null) {
-                    event?.dispose()
-                    event = null
-                }
-                resultSuccess(event == null)
-            }
             "checkCanInstallApp" -> {
                 val state = Tools.canRequestPackageInstalls(pluginBinding.applicationContext)
                 if (state) {
-                    resultSuccess(state)
+                    resultSuccess(true)
                 } else {
                     val open = call.arguments as Boolean
                     if (open && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -74,6 +55,7 @@ class CuriosityMethodCall(
                     }
                 }
             }
+
             "installApp" -> resultSuccess(
                 startActivity(
                     NativeTools.getInstallAppIntent(
@@ -81,16 +63,19 @@ class CuriosityMethodCall(
                     ), openActivityResultCode
                 )
             )
+
             "openAppMarket" -> resultSuccess(
                 startActivity(
                     NativeTools.getAppMarketIntent(call), openActivityResultCode
                 )
             )
+
             "isInstallApp" -> resultSuccess(
                 NativeTools.isInstallApp(
                     activityBinding.activity, call
                 )
             )
+
             "getAppInfo" -> resultSuccess(NativeTools.getAppInfo(pluginBinding.applicationContext))
             "getAppPath" -> resultSuccess(NativeTools.getAppPath(pluginBinding.applicationContext))
             "getDeviceInfo" -> resultSuccess(
@@ -98,16 +83,19 @@ class CuriosityMethodCall(
                     activityBinding.activity
                 )
             )
+
             "getInstalledApp" -> resultSuccess(
                 NativeTools.getInstalledApp(
                     activityBinding.activity
                 )
             )
+
             "getGPSStatus" -> resultSuccess(
                 NativeTools.getGPSStatus(
                     activityBinding.activity
                 )
             )
+
             "openSystemSetting" -> resultSuccess(
                 startActivity(
                     NativeTools.getSystemSettingIntent(
@@ -122,6 +110,7 @@ class CuriosityMethodCall(
                 )
                 if (!state) resultSuccess(null)
             }
+
             "openSystemCamera" -> {
                 val state = startActivity(
                     GalleryTools.getSystemCameraIntent(
@@ -130,10 +119,12 @@ class CuriosityMethodCall(
                 )
                 if (!state) resultSuccess(null)
             }
+
             "onActivityResult" -> {
                 onActivityResultState = true
                 resultSuccess(true)
             }
+
             "onRequestPermissionsResult" -> {
                 onRequestPermissionsResultState = true
                 resultSuccess(true)
@@ -194,6 +185,7 @@ class CuriosityMethodCall(
                         )
                     )
                 }
+
                 openSystemCameraCode -> {
                     val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
                         pluginBinding.applicationContext.getExternalFilesDir(
@@ -204,6 +196,7 @@ class CuriosityMethodCall(
                     }
                     resultSuccess(photoPath)
                 }
+
                 installPermissionCode -> resultSuccess(
                     Tools.canRequestPackageInstalls(
                         pluginBinding.applicationContext

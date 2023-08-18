@@ -11,7 +11,5 @@ class Curiosity {
 
   NativeTools get native => NativeTools();
 
-  CuriosityEvent get event => CuriosityEvent();
-
   DesktopTools get desktop => DesktopTools();
 }
