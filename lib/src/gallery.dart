@@ -1,5 +1,4 @@
-import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/src/internal.dart';
+part of '../flutter_curiosity.dart';
 
 class GalleryOptions {
   GalleryOptions(
@@ -78,10 +77,10 @@ class GalleryTools {
   ///       <string>是否允许Curiosity访问你的相册？</string>
   /// ios path
   Future<String?> openSystemGallery({GalleryOptions? options}) async {
-    if (!Internal.supportPlatformMobile) return null;
+    if (!_supportPlatformMobile) return null;
     options ??= GalleryOptions();
-    final String? path = await Internal.curiosityChannel
-        .invokeMethod('openSystemGallery', options.toMap());
+    final String? path =
+        await _channel.invokeMethod('openSystemGallery', options.toMap());
     return path;
   }
 
@@ -99,10 +98,10 @@ class GalleryTools {
   ///       <string>是否允许APP访问你的相册？</string>
   /// ios path
   Future<String?> openSystemCamera({GalleryOptions? options}) async {
-    if (!Internal.supportPlatformMobile) return null;
+    if (!_supportPlatformMobile) return null;
     options ??= GalleryOptions();
-    String? path = await Internal.curiosityChannel
-        .invokeMethod('openSystemCamera', options.toMap());
+    String? path =
+        await _channel.invokeMethod('openSystemCamera', options.toMap());
     if (isAndroid && options.savePath != null) path = options.savePath;
     return path;
   }
@@ -111,8 +110,8 @@ class GalleryTools {
   Future<String?> openSystemAlbum({GalleryOptions? options}) async {
     if (!isIOS) return null;
     options ??= GalleryOptions();
-    final String? path = await Internal.curiosityChannel
-        .invokeMethod('openSystemAlbum', options.toMap());
+    final String? path =
+        await _channel.invokeMethod('openSystemAlbum', options.toMap());
     return path;
   }
 }

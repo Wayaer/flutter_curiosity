@@ -1,3 +1,4 @@
+import CoreLocation
 import Flutter
 
 public class CuriosityPlugin: NSObject, FlutterPlugin {
@@ -26,16 +27,10 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         switch call.method {
         case "exitApp":
             exit(0)
-        case "getAppInfo":
-            result(NativeTools.getAppInfo())
-        case "getAppPath":
-            result(NativeTools.getAppPath())
-        case "getDeviceInfo":
-            result(NativeTools.getDeviceInfo())
+        case "getPackageInfo":
+            result(getPackageInfo())
         case "getGPSStatus":
-            result(NativeTools.getGPSStatus())
-        case "openSystemSetting":
-            NativeTools.openSystemSetting(result)
+            result(getGPSStatus())
         case "openSystemGallery":
             initGalleryTools(call, result)
             gallery?.openSystemGallery()
@@ -58,7 +53,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         if gallery != nil {
             gallery = nil
         }
-        gallery = GalleryTools(call: call, result: result)
+        gallery = GalleryTools(call, result)
     }
 
     @objc func didShow() {
@@ -73,5 +68,24 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             keyboardStatus = false
             channel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
         }
+    }
+
+    func getPackageInfo() -> [AnyHashable: Any?]? {
+        let appInfo = Bundle.main.infoDictionary
+        return [
+            "version": appInfo?["CFBundleShortVersionString"],
+            "buildNumber": appInfo?["CFBundleVersion"] as! String,
+            "packageName": appInfo?["CFBundleIdentifier"],
+            "appName": appInfo?["CFBundleName"],
+            "sdkBuild": appInfo?["DTSDKBuild"],
+            "platformName": appInfo?["DTPlatformName"],
+            "minimumOSVersion": appInfo?["MinimumOSVersion"],
+            "platformVersion": appInfo?["DTPlatformVersion"],
+        ]
+    }
+
+    // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
+    func getGPSStatus() -> Bool {
+        CLLocationManager.locationServicesEnabled()
     }
 }

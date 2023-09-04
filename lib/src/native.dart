@@ -1,12 +1,7 @@
-import 'package:flutter/services.dart';
-import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_curiosity/src/internal.dart';
+part of '../flutter_curiosity.dart';
 
 typedef EventHandlerActivityResult = void Function(
     AndroidActivityResult result);
-
-typedef EventHandlerRequestPermissionsResult = void Function(
-    AndroidRequestPermissionsResult result);
 
 typedef KeyboardStatus = void Function(bool visibility);
 
@@ -17,182 +12,67 @@ class NativeTools {
 
   static NativeTools? _singleton;
 
-  /// 检测是否允许安装apk
-  /// only supports Android
-  Future<bool> checkCanInstallApp([bool openSetting = true]) async {
-    if (!isAndroid) return false;
-    final bool? state = await Internal.curiosityChannel
-        .invokeMethod<bool?>('checkCanInstallApp', openSetting);
-    return state ?? false;
-  }
-
-  /// 安装apk  仅支持android
-  /// Installing APK only supports Android
-  Future<bool?> installApp(String apkPath, {bool openSetting = true}) async {
-    if (!isAndroid) return null;
-    final bool state = await checkCanInstallApp(openSetting);
-    if (!state) return state;
-    return await Internal.curiosityChannel
-        .invokeMethod<bool?>('installApp', apkPath);
-  }
-
-  /// android  packageName，安装多个应用商店时会弹窗选择, marketPackageName 指定打开应用市场的包名
-  Future<bool> openAndroidAppMarket(String packageName,
-      {String? marketPackageName}) async {
-    if (!isAndroid) return false;
-    bool? state = false;
-    try {
-      if (marketPackageName != null) {
-        state = await hasInstallAppWithAndroid(marketPackageName);
-        if (!state) return state;
-      }
-      state = await Internal.curiosityChannel.invokeMethod<bool>(
-          'openAppMarket', <String, String>{
-        'packageName': packageName,
-        'marketPackageName': marketPackageName ?? ''
-      });
-    } catch (e) {
-      state = false;
-    }
-    return state ?? false;
-  }
-
-  /// 是否安装某个app
-  /// Android packageName 对应包名
-  Future<bool> hasInstallAppWithAndroid(String packageName) async {
-    if (!isAndroid) return false;
-    final bool? data = await Internal.curiosityChannel
-        .invokeMethod<bool?>('isInstallApp', packageName);
-    return data ?? false;
-  }
-
   /// 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
   Future<bool> get gpsStatus async {
-    if (!Internal.supportPlatform) return false;
-    final bool? state =
-        await Internal.curiosityChannel.invokeMethod('getGPSStatus');
+    if (!_supportPlatform) return false;
+    final bool? state = await _channel.invokeMethod('getGPSStatus');
     return state ?? false;
-  }
-
-  /// 跳转到系统设置页面
-  /// settingType 仅对android 有效
-  Future<bool> openSystemSetting(
-      {AndroidSettingPath? path,
-      MacOSSettingPath macPath = MacOSSettingPath.accessibilityMain}) async {
-    if (Internal.supportPlatform) {
-      String? data;
-      if (isAndroid) {
-        final List<String> type =
-            (path ?? AndroidSettingPath.setting).toString().split('.');
-        data = type[1];
-      } else if (isMacOS) {
-        data = macPath.valueString;
-      }
-      final bool? state = await Internal.curiosityChannel
-          .invokeMethod('openSystemSetting', data);
-      return state ?? false;
-    }
-    return false;
   }
 
   /// Exit app
   Future<void> exitApp() async {
-    if (!Internal.supportPlatform) return;
-    await Internal.curiosityChannel.invokeMethod<dynamic>('exitApp');
+    if (!_supportPlatform) return;
+    await _channel.invokeMethod<dynamic>('exitApp');
   }
 
-  DeviceInfoModel? _deviceInfo;
+  PackageInfoPlus? _packageInfo;
 
-  Future<DeviceInfoModel?> get deviceInfo async =>
-      _deviceInfo ??= await getDeviceInfo();
-
-  /// get Android/IOS/MacOS Device Info
-  Future<DeviceInfoModel?> getDeviceInfo() async {
-    if (!Internal.supportPlatform) return null;
-    final Map<String, dynamic>? map = await Internal.curiosityChannel
-        .invokeMapMethod<String, dynamic>('getDeviceInfo');
-    if (map != null) return DeviceInfoModel.fromJson(map);
-    return null;
-  }
-
-  AppPathModel? _appPath;
-
-  Future<AppPathModel?> get appPath async => _appPath ??= await getAppPath();
-
-  /// get Android/IOS/MacOS path
-  Future<AppPathModel?> getAppPath() async {
-    if (!Internal.supportPlatform) return null;
-    final Map<String, dynamic>? map = await Internal.curiosityChannel
-        .invokeMapMethod<String, dynamic>('getAppPath');
-    if (map != null) return AppPathModel.fromJson(map);
-    return null;
-  }
-
-  AppInfoModel? _appInfo;
-
-  Future<AppInfoModel?> get appInfo async => _appInfo ??= await getAppInfo();
+  Future<PackageInfoPlus?> get packageInfo async =>
+      _packageInfo ??= await getPackageInfo();
 
   /// get Android/IOS/MacOS info
-  Future<AppInfoModel?> getAppInfo() async {
-    if (!Internal.supportPlatform) return null;
-    final Map<String, dynamic>? map = await Internal.curiosityChannel
-        .invokeMapMethod<String, dynamic>('getAppInfo');
-    if (map != null) return AppInfoModel.fromJson(map);
+  Future<PackageInfoPlus?> getPackageInfo() async {
+    if (!_supportPlatform) return null;
+    final Map<String, dynamic>? map =
+        await _channel.invokeMapMethod<String, dynamic>('getPackageInfo');
+    if (map != null) return PackageInfoPlus.fromJson(map);
     return null;
   }
 
   /// get Android  installed apps
-  Future<List<AppsModel>> get installedApp async {
-    if (!isAndroid) return <AppsModel>[];
-    final List<Map<dynamic, dynamic>>? appList = await Internal.curiosityChannel
-        .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApp');
-    final List<AppsModel> list = <AppsModel>[];
+  Future<List<AppPackageInfo>> get installedApps async {
+    if (!isAndroid) return [];
+    final appList = await _channel
+        .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApps');
+    final List<AppPackageInfo> list = [];
     if (appList != null) {
       for (final dynamic data in appList) {
-        list.add(AppsModel.fromJson(data as Map<dynamic, dynamic>));
+        list.add(AppPackageInfo.fromJson(data as Map<dynamic, dynamic>));
       }
     }
     return list;
   }
 
-  /// android ios  键盘状态监听
-  void keyboardListener(KeyboardStatus keyboardStatus) {
-    if (!Internal.supportPlatformMobile) return;
-    Internal.curiosityChannel.setMethodCallHandler((MethodCall call) async {
-      if (call.method != 'keyboardStatus') return;
-      keyboardStatus(call.arguments as bool);
-    });
-  }
-
   /// android
   /// onActivityResult 监听
   /// onRequestPermissionsResult 监听
-  Future<void> onResultListener({
+  Future<void> setMethodCallHandler({
     EventHandlerActivityResult? activityResult,
-    EventHandlerRequestPermissionsResult? requestPermissionsResult,
+    KeyboardStatus? keyboardStatus,
   }) async {
     if (!isAndroid) return;
-    if (activityResult != null) {
-      await Internal.curiosityChannel.invokeMethod<dynamic>('onActivityResult');
+    if (isAndroid && activityResult != null) {
+      await _channel.invokeMethod<dynamic>('onActivityResult');
     }
-
-    if (requestPermissionsResult != null) {
-      await Internal.curiosityChannel
-          .invokeMethod<dynamic>('onRequestPermissionsResult');
-    }
-    Internal.curiosityChannel.setMethodCallHandler((MethodCall call) async {
-      final Map<dynamic, dynamic> argument =
-          call.arguments as Map<dynamic, dynamic>;
+    _channel.setMethodCallHandler((MethodCall call) async {
       switch (call.method) {
+        case 'keyboardStatus':
+          keyboardStatus?.call(call.arguments as bool);
+          break;
         case 'onActivityResult':
           if (activityResult != null) {
-            activityResult(AndroidActivityResult.formJson(argument));
-          }
-          break;
-        case 'onRequestPermissionsResult':
-          if (requestPermissionsResult != null) {
-            requestPermissionsResult(
-                AndroidRequestPermissionsResult.formJson(argument));
+            activityResult(AndroidActivityResult.formJson(
+                call.arguments as Map<dynamic, dynamic>));
           }
           break;
       }
@@ -200,175 +80,113 @@ class NativeTools {
   }
 }
 
-/// Android 系统设置
-enum AndroidSettingPath {
-  /// wifi
-  wifi,
+abstract class _PackageInfo {
+  _PackageInfo(
+      {this.packageName, this.version, this.buildNumber, this.appName});
 
-  /// wifi ip
-  wifiIp,
-
-  /// 定位
-  location,
-
-  /// 密码安全
-  passwordSecurity,
-
-  /// 蓝牙
-  bluetooth,
-
-  /// 移动数据
-  cellularNetwork,
-
-  /// 语言和时间
-  time,
-
-  /// 显示和亮度
-  displayBrightness,
-
-  /// 通知
-  notification,
-
-  /// 声音和振动
-  soundVibration,
-
-  /// 内部存储
-  internalStorage,
-
-  /// 电量管理
-  battery,
-
-  /// 语言设置
-  localeLanguage,
-
-  /// nfc
-  nfc,
-
-  /// setting
-  setting,
-
-  /// 手机状态信息的界面
-  deviceInfo,
-
-  /// 开发者选项设置
-  applicationDevelopment,
-
-  /// 选取运营商的界面
-  networkOperator,
-
-  /// 添加账户界面
-  addAccount,
-
-  /// 双卡和移动网络设置界面
-  dataRoaming,
-
-  /// 更多连接方式设置界面
-  airplaneMode
+  final String? packageName;
+  final String? version;
+  final String? buildNumber;
+  final String? appName;
 }
 
-enum MacOSSettingPath {
-  /// Accessibility 面板相关 ///
-  /// 辅助面板根目录
-  accessibilityMain,
+class PackageInfoPlus extends _PackageInfo {
+  PackageInfoPlus(
+      {this.firstInstallTime,
+      this.lastUpdateTime,
+      this.minimumOSVersion,
+      this.platformVersion,
+      this.sdkBuild,
+      this.platformName,
+      super.packageName,
+      super.version,
+      super.buildNumber,
+      super.appName});
 
-  /// 辅助面板-显示
-  accessibilityDisplay,
+  factory PackageInfoPlus.fromJson(Map<String, dynamic> json) =>
+      PackageInfoPlus(
 
-  /// 辅助面板-缩放
-  accessibilityZoom,
+          /// android ios
+          version: json['version'] as String?,
+          buildNumber: json['buildNumber'] as String?,
+          packageName: ['packageName'] as String?,
+          appName: json['appName'] as String?,
 
-  /// 辅助面板-显示
-  accessibilityVoiceOver,
+          /// only Android
+          firstInstallTime: json['firstInstallTime'] as int?,
+          lastUpdateTime: json['lastUpdateTime'] as int?,
 
-  /// 辅助面板-旁白
-  accessibilityDescriptions,
+          /// only ios
+          minimumOSVersion: json['minimumOSVersion'] as String?,
+          platformVersion: json['platformVersion'] as String?,
+          sdkBuild: json['sdkBuild'] as String?,
+          platformName: json['platformName'] as String?);
 
-  /// 辅助面板-描述
-  accessibilityCaptions,
+  /// only Android
+  final int? firstInstallTime;
+  final int? lastUpdateTime;
 
-  /// 辅助面板-音频
-  accessibilityAudio,
+  /// only ios
+  final String? minimumOSVersion;
+  final String? platformVersion;
+  final String? sdkBuild;
+  final String? platformName;
 
-  /// 辅助面板-键盘
-  accessibilityKeyboard,
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'version': version,
+        'packageName': packageName,
+        'appName': appName,
+        'buildNumber': buildNumber,
+        'lastUpdateTime': lastUpdateTime,
+        'firstInstallTime': firstInstallTime,
+        'minimumOSVersion': minimumOSVersion,
+        'platformVersion': platformVersion,
+        'sdkBuild': sdkBuild,
+        'platformName': platformName,
+      };
+}
 
-  /// 辅助面板-指针控制
-  accessibilityMouseTrackpad,
+class AppPackageInfo extends _PackageInfo {
+  AppPackageInfo(
+      {this.isSystemApp,
+      this.lastUpdateTime,
+      super.packageName,
+      super.version,
+      super.buildNumber,
+      super.appName});
 
-  /// 安全&隐私相关
-  /// 安全&隐私相关-根目录
-  securityMain,
+  factory AppPackageInfo.fromJson(Map<dynamic, dynamic> json) => AppPackageInfo(
+        isSystemApp: json['isSystemApp'] as bool?,
+        appName: json['appName'] as String?,
+        lastUpdateTime: json['lastUpdateTime'] as int?,
+        buildNumber: json['buildNumber'] as String?,
+        version: json['version'] as String?,
+        packageName: json['packageName'] as String?,
+      );
 
-  /// 安全&隐私相关-通用
-  securityGeneral,
+  final bool? isSystemApp;
+  final int? lastUpdateTime;
 
-  /// 安全&隐私相关-文件保险箱
-  securityFileVault,
+  Map<String, dynamic> toMap() => <String, dynamic>{
+        'isSystemApp': isSystemApp,
+        'appName': appName,
+        'lastUpdateTime': lastUpdateTime,
+        'buildNumber': buildNumber,
+        'version': version,
+        'packageName': packageName
+      };
+}
 
-  /// 安全&隐私相关-防火墙
-  securityFirewall,
+class AndroidActivityResult {
+  AndroidActivityResult.formJson(Map<dynamic, dynamic> json) {
+    requestCode = json['requestCode'] as int;
+    resultCode = json['resultCode'] as int;
+    data = json['data'] as dynamic;
+    extras = json['extras'] as dynamic;
+  }
 
-  /// 安全&隐私相关-高级
-  securityAdvanced,
-
-  /// 安全&隐私相关-隐私
-  securityPrivacy,
-
-  /// 安全&隐私相关-辅助功能
-  securityPrivacyAccessibility,
-
-  /// 安全&隐私相关-完全磁盘访问权限
-  securityPrivacyAssistive,
-
-  /// 文件和文件夹
-  securityPrivacyAllFiles,
-
-  /// 安全&隐私相关-定位
-  securityPrivacyLocationServices,
-
-  /// 安全&隐私相关-通讯录
-  securityPrivacyContacts,
-
-  /// 安全&隐私相关-分析与改进
-  securityPrivacyDiagnosticsUsage,
-
-  /// 安全&隐私相关-日历
-  securityPrivacyCalendars,
-
-  /// 安全&隐私相关-提醒事项
-  securityPrivacyReminders,
-
-  /// 键盘-听写
-  speechDictation,
-
-  /// 键盘-siri
-  speechTextToSpeech,
-
-  /// 共享
-  /// 共享-更目录
-  sharingMain,
-
-  /// 共享-屏幕共享
-  sharingScreenSharing,
-
-  /// 共享-文件共享
-  sharingFileSharing,
-
-  /// 共享-打印机共享
-  sharingPrinterSharing,
-
-  /// 共享-远程登录
-  sharingRemoteLogin,
-
-  /// 共享-远程管理
-  sharingRemoteManagement,
-
-  /// 共享-远程apple事件
-  sharingRemoteAppleEvents,
-
-  /// 共享-互联网共享
-  sharingInternetSharing,
-
-  /// 共享-蓝牙共享
-  sharingBluetoothSharing,
+  late int requestCode;
+  late int resultCode;
+  dynamic data;
+  dynamic extras;
 }

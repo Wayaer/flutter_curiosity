@@ -4,54 +4,50 @@ import MobileCoreServices
 import Photos
 
 class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
-    var _controller: UIImagePickerController?
-    var _call: FlutterMethodCall
-    var _result: FlutterResult
+    var controller: UIImagePickerController?
+    var call: FlutterMethodCall
+    var result: FlutterResult
 
-    var _cameraFlashMode: Bool?
-
-    init(call: FlutterMethodCall, result: @escaping FlutterResult) {
-        _call = call
-        _result = result
+    init(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        self.call = call
+        self.result = result
         super.init()
     }
 
     func initPickerController() {
-        if _controller == nil {
-            _controller = UIImagePickerController()
-            _controller!.delegate = self
+        if controller == nil {
+            controller = UIImagePickerController()
+            controller!.delegate = self
         }
     }
 
     // 打开相机
     func openSystemCamera() {
         initPickerController()
-        _controller?.sourceType = UIImagePickerController.SourceType.camera
+        controller?.sourceType = UIImagePickerController.SourceType.camera
         open()
     }
 
     // 打开相册
     func openSystemGallery() {
         initPickerController()
-        _controller?.sourceType = UIImagePickerController.SourceType.photoLibrary
+        controller?.sourceType = UIImagePickerController.SourceType.photoLibrary
         open()
     }
 
     // 打开相簿
     func openSystemAlbum() {
         initPickerController()
-        _controller?.sourceType = UIImagePickerController.SourceType.savedPhotosAlbum
+        controller?.sourceType = UIImagePickerController.SourceType.savedPhotosAlbum
         open()
     }
 
     private func open() {
-        if _controller != nil, UIImagePickerController.isSourceTypeAvailable(_controller!.sourceType) {
-            let data = _call.arguments as? [AnyHashable: Any?]
+        if controller != nil, UIImagePickerController.isSourceTypeAvailable(controller!.sourceType) {
+            let data = call.arguments as? [AnyHashable: Any?]
             let allowsEditing = data!["allowsEditing"] as! Bool?
-
-            _controller!.allowsEditing = allowsEditing ?? false
-
-            if _controller!.sourceType == UIImagePickerController.SourceType.camera {
+            controller!.allowsEditing = allowsEditing ?? false
+            if controller!.sourceType == UIImagePickerController.SourceType.camera {
                 let flashMode = data!["flashMode"] as! Int?
                 let isFront = data!["isFront"] as! Bool?
                 let hasSound = data!["hasSound"] as! Bool?
@@ -59,41 +55,41 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 let qualityType = data!["qualityType"] as! Int?
                 let cameraMode = data!["cameraMode"] as! Int?
 
-                _controller!.videoMaximumDuration = videoMaximumDuration ?? 10.0
+                controller!.videoMaximumDuration = videoMaximumDuration ?? 10.0
 
                 if isFront != nil {
-                    _controller!.cameraDevice = UIImagePickerController.CameraDevice(rawValue: isFront! ? 1 : 0)!
+                    controller!.cameraDevice = UIImagePickerController.CameraDevice(rawValue: isFront! ? 1 : 0)!
                 }
                 if cameraMode == 0 {
-                    _controller!.mediaTypes = [String(kUTTypeImage), String(kUTTypeVideo)]
+                    controller!.mediaTypes = [String(kUTTypeImage), String(kUTTypeVideo)]
                 } else {
-                    if hasSound != nil && hasSound! {
-                        _controller!.mediaTypes = [String(kUTTypeVideo)]
+                    if hasSound != nil, hasSound! {
+                        controller!.mediaTypes = [String(kUTTypeVideo)]
                     } else {
-                        _controller!.mediaTypes = [String(kUTTypeMovie)]
+                        controller!.mediaTypes = [String(kUTTypeMovie)]
                     }
                 }
-                _controller!.cameraCaptureMode = UIImagePickerController.CameraCaptureMode(rawValue: cameraMode!)!
+                controller!.cameraCaptureMode = UIImagePickerController.CameraCaptureMode(rawValue: cameraMode!)!
 
-                _controller!.videoQuality = UIImagePickerController.QualityType(rawValue: qualityType!)!
-                _controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode(rawValue: flashMode!)!
+                controller!.videoQuality = UIImagePickerController.QualityType(rawValue: qualityType!)!
+                controller!.cameraFlashMode = UIImagePickerController.CameraFlashMode(rawValue: flashMode!)!
             }
-            UIApplication.shared.delegate?.window??.rootViewController?.present(_controller!, animated: true, completion: nil)
+            UIApplication.shared.delegate?.window??.rootViewController?.present(controller!, animated: true, completion: nil)
         }
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey: Any]) {
-        _controller!.dismiss(animated: true, completion: { [self] in
-            if _controller!.sourceType == UIImagePickerController.SourceType.photoLibrary {
+        controller!.dismiss(animated: true, completion: { [self] in
+            if controller!.sourceType == UIImagePickerController.SourceType.photoLibrary {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
-                    _result(url?.path)
-                    _controller = nil
+                    result(url?.path)
+                    controller = nil
                     return
                 }
             }
 
-            if _controller!.sourceType == UIImagePickerController.SourceType.camera {
+            if controller!.sourceType == UIImagePickerController.SourceType.camera {
                 let image = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.originalImage.rawValue)] as! UIImage
                 var localId: String?
 
@@ -104,46 +100,45 @@ class GalleryTools: FlutterAppDelegate, UINavigationControllerDelegate, UIImageP
                 } completionHandler: { _, _ in
                     let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: [localId!], options: nil)
                     assetResult.firstObject?.requestContentEditingInput(with: nil, completionHandler: { [self] content, _ in
-                        _result(content?.fullSizeImageURL?.path)
-                        _controller = nil
+                        result(content?.fullSizeImageURL?.path)
+                        controller = nil
                     })
                 }
                 return
             }
-            if _controller!.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
+            if controller!.sourceType == UIImagePickerController.SourceType.savedPhotosAlbum {
                 if #available(iOS 11.0, *) {
                     let url = info[UIImagePickerController.InfoKey(rawValue: UIImagePickerController.InfoKey.imageURL.rawValue)] as? NSURL
-                    _result(url?.path)
-                    _controller = nil
+                    result(url?.path)
+                    controller = nil
                     return
                 }
             }
-            _result(nil)
-            _controller = nil
+            result(nil)
+            controller = nil
         })
     }
 
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
-        _controller?.dismiss(animated: true, completion: { [self] in
-            _result(nil)
-            _controller = nil
+        controller?.dismiss(animated: true, completion: { [self] in
+            result(nil)
+            controller = nil
         })
     }
 
-
     @objc private func saveImage(
-            image: UIImage?,
-            didFinishSavingWithError error: Error?,
-            contextInfo: UnsafeMutableRawPointer?
+        image: UIImage?,
+        didFinishSavingWithError error: Error?,
+        contextInfo: UnsafeMutableRawPointer?
     ) {
-        _result(error == nil)
+        result(error == nil)
     }
 
     @objc private func saveVideo(
-            videoPath: String?,
-            didFinishSavingWithError error: Error?,
-            contextInfo: UnsafeMutableRawPointer?
+        videoPath: String?,
+        didFinishSavingWithError error: Error?,
+        contextInfo: UnsafeMutableRawPointer?
     ) {
-        _result(error == nil)
+        result(error == nil)
     }
 }

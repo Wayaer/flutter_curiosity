@@ -1,7 +1,4 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-import 'package:flutter_curiosity/src/internal.dart';
+part of '../flutter_curiosity.dart';
 
 class DesktopTools {
   factory DesktopTools() => _singleton ??= DesktopTools._();
@@ -11,9 +8,9 @@ class DesktopTools {
   static DesktopTools? _singleton;
 
   Future<Size?> getDesktopWindowSize() async {
-    if (!Internal.supportPlatformDesktop) return null;
-    final List<dynamic>? list = await Internal.curiosityChannel
-        .invokeMethod<List<dynamic>?>('getWindowSize');
+    if (!_supportPlatformDesktop) return null;
+    final List<dynamic>? list =
+        await _channel.invokeMethod<List<dynamic>?>('getWindowSize');
     if (list != null && list.length == 2) {
       return Size(list[0] as double, list[1] as double);
     }
@@ -21,91 +18,84 @@ class DesktopTools {
   }
 
   Future<bool> setDesktopWindowSize(Size size) async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
-        'setWindowSize',
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>('setWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
   Future<bool> setDesktopMinWindowSize(Size size) async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
-        'setMinWindowSize',
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>('setMinWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
   Future<bool> setDesktopMaxWindowSize(Size size) async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
-        'setMaxWindowSize',
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>('setMaxWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
   Future<bool> resetDesktopMaxWindowSize() async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel
-        .invokeMethod<bool?>('resetMaxWindowSize');
+    if (!_supportPlatformDesktop) return false;
+    final bool? state =
+        await _channel.invokeMethod<bool?>('resetMaxWindowSize');
     return state ?? false;
   }
 
   Future<bool> toggleDesktopFullScreen() async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state =
-        await Internal.curiosityChannel.invokeMethod<bool?>('toggleFullScreen');
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>('toggleFullScreen');
     return state ?? false;
   }
 
   Future<bool> setDesktopFullScreen(bool fullscreen) async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>(
         'setFullScreen', <String, bool>{'fullscreen': fullscreen});
     return state ?? false;
   }
 
   Future<bool?> getDesktopFullScreen() async {
-    if (!Internal.supportPlatformDesktop) return null;
+    if (!_supportPlatformDesktop) return null;
     final bool? fullscreen =
-        await Internal.curiosityChannel.invokeMethod<bool?>('getFullScreen');
+        await _channel.invokeMethod<bool?>('getFullScreen');
     if (fullscreen is bool) return fullscreen;
     return null;
   }
 
   Future<bool> get hasDesktopBorders async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? hasBorders =
-        await Internal.curiosityChannel.invokeMethod<bool?>('hasBorders');
+    if (!_supportPlatformDesktop) return false;
+    final bool? hasBorders = await _channel.invokeMethod<bool?>('hasBorders');
     if (hasBorders is bool) return hasBorders;
     return hasBorders ?? false;
   }
 
   Future<bool> toggleDesktopBorders() async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state =
-        await Internal.curiosityChannel.invokeMethod<bool?>('toggleBorders');
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>('toggleBorders');
     return state ?? false;
   }
 
   Future<bool> setDesktopBorders(bool border) async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel
         .invokeMethod<bool?>('setBorders', <String, dynamic>{'border': border});
     return state ?? false;
   }
 
   Future<bool> stayOnTopWithDesktop([bool stayOnTop = true]) async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state = await Internal.curiosityChannel.invokeMethod<bool?>(
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>(
         'stayOnTop', <String, dynamic>{'stayOnTop': stayOnTop});
     return state ?? false;
   }
 
   Future<bool> focusDesktop() async {
-    if (!Internal.supportPlatformDesktop) return false;
-    final bool? state =
-        await Internal.curiosityChannel.invokeMethod<bool?>('focus');
+    if (!_supportPlatformDesktop) return false;
+    final bool? state = await _channel.invokeMethod<bool?>('focus');
     return state ?? false;
   }
 

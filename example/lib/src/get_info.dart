@@ -22,8 +22,6 @@ class _GetInfoPageState extends State<GetInfoPage> {
               child: Column(children: <Widget>[
             ElevatedText(onPressed: getGPS, text: '获取gps状态'),
             ElevatedText(onPressed: appInfo, text: '获取app信息'),
-            ElevatedText(onPressed: appPath, text: '获取app存储路径'),
-            ElevatedText(onPressed: deviceInfo, text: '获取设备信息'),
             if (isAndroid)
               ElevatedText(
                   onPressed: () => getInstalled(), text: '获取Android已安装应用'),
@@ -38,9 +36,9 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getInstalled() async {
-    final List<AppsModel> data = await Curiosity().native.installedApp;
-    list = <Widget>[];
-    data.builder((AppsModel appsModel) {
+    final data = await Curiosity().native.installedApps;
+    list = [];
+    data.builder((appsModel) {
       final Map<String, dynamic> appModel = appsModel.toMap();
       final List<Widget> app = <Widget>[];
       appModel.forEach((String key, dynamic value) {
@@ -60,35 +58,8 @@ class _GetInfoPageState extends State<GetInfoPage> {
     setState(() {});
   }
 
-  Future<void> deviceInfo() async {
-    final DeviceInfoModel? model = await Curiosity().native.deviceInfo;
-    list.clear();
-    model?.toMap().forEach((String key, dynamic value) {
-      if (value is Map) {
-        list.add(const ShowText('=== uts', '==='));
-        value.forEach((dynamic k, dynamic v) {
-          list.add(ShowText('  $k', v));
-        });
-        list.add(const ShowText('=== uts', '==='));
-      } else {
-        list.add(ShowText(key, value));
-      }
-    });
-    setState(() {});
-  }
-
-  Future<void> appPath() async {
-    final AppPathModel? data = await Curiosity().native.appPath;
-    if (data == null) return;
-    list.clear();
-    data.toMap().forEach((String key, dynamic value) {
-      list.add(ShowText(key, value));
-    });
-    setState(() {});
-  }
-
   Future<void> appInfo() async {
-    final AppInfoModel? data = await Curiosity().native.appInfo;
+    final PackageInfoPlus? data = await Curiosity().native.packageInfo;
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
