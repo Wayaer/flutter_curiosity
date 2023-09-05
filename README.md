@@ -9,51 +9,22 @@
 - 按需要 添加以下权限
 
 ```html
-<!--允许程序写入本地存储-->
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-<!--允许程序读取本地存储-->
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 <!--允许程序访问有关GSM网络信息-->
 <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
-<!--允许程序安装应用程序-->
+<!--允许程序安装应用程序 可选-->
 <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
 ```
 
-### ios添加权限
-
-* ios/Runner/Info.plist 按需要 添加权限
-
-```plist
-    <key>NSCameraUsageDescription</key>    
-    <string>请允许打开相机拍照</string>
-    <key>NSLocationWhenInUseUsageDescription</key>
-	<string>通过您的地理位置信息获取您周边的相关数据</string>
-	<key>NSPhotoLibraryAddUsageDescription</key>
-	<string>请允许访问相册以选取照片</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>请允许访问相册以选取照片</string>
-	<key>NSFileProviderDomainUsageDescription</key>
-	<string>是否允许此App使用你的相机进行拍照？</string>
-```
-
 ### 介绍
 
-- 原生方法 [获取GPS状态、获取app本地储存路径、获取设备信息、获取app信息、打开系统设置]
+- 原生方法 [获取GPS状态、获取app信息、监听键盘状态,监听android activity result]
 
 ```dart
 void fun() {
   Curiosity().native.fun();
 }
 
-```
-
-- Android & IOS 原生摄像头 图库等相关功能
-
-```dart
-void gallery() {
-  Curiosity().gallery.fun();
-}
 ```
 
 - 桌面端方法
