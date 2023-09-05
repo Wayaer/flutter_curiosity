@@ -1,5 +1,8 @@
+import 'package:curiosity/src/camera_gallery.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
+import 'package:curiosity/src/keyboard.dart';
+import 'package:curiosity/src/open_app.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -34,8 +37,14 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     if (isMobile) {
-      Curiosity().native.activityResult.add(onAndroidActivityResult);
-      Curiosity().native.keyboardStatus.add(keyboardStatus);
+      Curiosity().native.onResultListener(
+          activityResult: (AndroidActivityResult result) {
+        log('AndroidResult requestCode = ${result.requestCode}  '
+            'resultCode = ${result.resultCode}  data = ${result.data}');
+      }, requestPermissionsResult: (AndroidRequestPermissionsResult result) {
+        log('AndroidRequestPermissionsResult: requestCode = ${result.requestCode}  \n'
+            ' permissions = ${result.permissions} \n grantResults = ${result.grantResults}');
+      });
     }
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
@@ -45,15 +54,6 @@ class _AppState extends State<App> {
         log('限制桌面宽高：$value');
       });
     }
-  }
-
-  void onAndroidActivityResult(AndroidActivityResult result) {
-    log('AndroidResult requestCode = ${result.requestCode}  '
-        'resultCode = ${result.resultCode}  data = ${result.data}');
-  }
-
-  void keyboardStatus(bool visibility) {
-    showToast(visibility ? '键盘已弹出' : '键盘已关闭');
   }
 
   @override
@@ -67,13 +67,16 @@ class _AppState extends State<App> {
               if (isMobile || isMacOS) ...[
                 ElevatedText(
                     onPressed: () => push(const GetInfoPage()), text: '获取信息'),
+                ElevatedText(
+                    onPressed: () => push(const OpenSettingPage()),
+                    text: '跳转设置'),
               ],
               if (isMobile) ...[
-                const SizedBox(
-                    width: 200,
-                    child: TextField(
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(hintText: '监听键盘状态'))),
+                ElevatedText(
+                    onPressed: () => push(const CameraGalleryPage()),
+                    text: '相机、图库'),
+                ElevatedText(
+                    onPressed: () => push(const KeyboardPage()), text: '键盘状态'),
               ],
               if (isDesktop)
                 ElevatedText(
@@ -81,17 +84,10 @@ class _AppState extends State<App> {
                     text: 'Desktop窗口控制'),
             ]));
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-    Curiosity().native.activityResult.remove(onAndroidActivityResult);
-    Curiosity().native.keyboardStatus.remove(keyboardStatus);
-  }
 }
 
-class TextBox extends StatelessWidget {
-  const TextBox(this.keyName, this.value, {Key? key}) : super(key: key);
+class ShowText extends StatelessWidget {
+  const ShowText(this.keyName, this.value, {Key? key}) : super(key: key);
   final dynamic keyName;
   final dynamic value;
 

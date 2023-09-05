@@ -1,7 +1,3 @@
-## 5.0.0
-
-* Remove duplicate methods
-
 ## 4.5.0
 
 * Remove `CuriosityEvent`

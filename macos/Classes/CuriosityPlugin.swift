@@ -1,4 +1,3 @@
-import CoreLocation
 import FlutterMacOS
 import SwiftUI
 
@@ -20,10 +19,14 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         switch call.method {
         case "exitApp":
             exit(0)
-        case "getPackageInfo":
-            result(getPackageInfo())
+        case "getAppInfo":
+            result(NativeTools.getAppInfo())
+        case "getAppPath":
+            result(NativeTools.getAppPath())
+        case "getDeviceInfo":
+            result(NativeTools.getDeviceInfo())
         case "getGPSStatus":
-            result(getGPSStatus())
+            result(NativeTools.getGPSStatus())
         case "getWindowSize":
             result(DesktopTools.getWindowSize())
         case "setWindowSize":
@@ -51,6 +54,8 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(true)
         case "stayOnTop":
             result(DesktopTools.stayOnTop(call))
+        case "openSystemSetting":
+            result(Tools.openUrl(call.arguments as! String))
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -58,24 +63,5 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
 
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
         channel.setMethodCallHandler(nil)
-    }
-
-    func getPackageInfo() -> [AnyHashable: Any?]? {
-        let appInfo = Bundle.main.infoDictionary
-        return [
-            "version": appInfo?["CFBundleShortVersionString"],
-            "buildNumber": appInfo?["CFBundleVersion"] as! String,
-            "packageName": appInfo?["CFBundleIdentifier"],
-            "appName": appInfo?["CFBundleName"],
-            "sdkBuild": appInfo?["DTSDKBuild"],
-            "platformName": appInfo?["DTPlatformName"],
-            "minimumOSVersion": appInfo?["MinimumOSVersion"],
-            "platformVersion": appInfo?["DTPlatformVersion"]
-        ]
-    }
-
-    // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
-    func getGPSStatus() -> Bool {
-        CLLocationManager.locationServicesEnabled()
     }
 }
