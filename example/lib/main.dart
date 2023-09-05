@@ -1,4 +1,3 @@
-import 'package:curiosity/src/camera_gallery.dart';
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:flutter/material.dart';
@@ -35,13 +34,8 @@ class _AppState extends State<App> {
   void initState() {
     super.initState();
     if (isMobile) {
-      Curiosity().native.setMethodCallHandler(
-          activityResult: (AndroidActivityResult result) {
-        log('AndroidResult requestCode = ${result.requestCode}  '
-            'resultCode = ${result.resultCode}  data = ${result.data}');
-      }, keyboardStatus: (bool visibility) {
-        showToast(visibility ? '键盘已弹出' : '键盘已关闭');
-      });
+      Curiosity().native.activityResult.add(onAndroidActivityResult);
+      Curiosity().native.keyboardStatus.add(keyboardStatus);
     }
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
@@ -51,6 +45,15 @@ class _AppState extends State<App> {
         log('限制桌面宽高：$value');
       });
     }
+  }
+
+  void onAndroidActivityResult(AndroidActivityResult result) {
+    log('AndroidResult requestCode = ${result.requestCode}  '
+        'resultCode = ${result.resultCode}  data = ${result.data}');
+  }
+
+  void keyboardStatus(bool visibility) {
+    showToast(visibility ? '键盘已弹出' : '键盘已关闭');
   }
 
   @override
@@ -66,10 +69,6 @@ class _AppState extends State<App> {
                     onPressed: () => push(const GetInfoPage()), text: '获取信息'),
               ],
               if (isMobile) ...[
-                ElevatedText(
-                    onPressed: () => push(const CameraGalleryPage()),
-                    text: '相机、图库'),
-                10.heightBox,
                 const SizedBox(
                     width: 200,
                     child: TextField(
@@ -81,6 +80,13 @@ class _AppState extends State<App> {
                     onPressed: () => push(const DesktopPage()),
                     text: 'Desktop窗口控制'),
             ]));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    Curiosity().native.activityResult.remove(onAndroidActivityResult);
+    Curiosity().native.keyboardStatus.remove(keyboardStatus);
   }
 }
 

@@ -4,10 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
-import android.net.Uri
-import android.os.Build
-import android.os.Environment
-import android.provider.MediaStore
 import android.util.Log
 import android.view.ViewTreeObserver
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -62,10 +58,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     private lateinit var result: MethodChannel.Result
     private var keyboardStatus = false
 
-    private var openSystemGalleryCode = 100
-    private var openSystemCameraCode = 101
-    private var installPermissionCode = 102
-    private var openActivityResultCode = 111
+    private var installAppResultCode = 111
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         this.result = result
@@ -76,10 +69,9 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
                 startActivity(
                     Tools.getInstallAppIntent(
                         context, call
-                    ), openActivityResultCode
+                    ), installAppResultCode
                 )
             )
-
 
             "getPackageInfo" -> result.success(Tools.getPackageInfo(context))
             "getInstalledApps" -> result.success(
@@ -93,21 +85,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
                     activityBinding.activity
                 )
             )
-
-            "openSystemGallery" -> {
-                val state = startActivity(
-                    Tools.getSystemGalleryIntent(), openSystemGalleryCode
-                )
-                if (!state) result.success(null)
-            }
-
-            "openSystemCamera" -> {
-                val state = startActivity(
-                    Tools.getSystemCameraIntent(context, activityBinding.activity),
-                    openSystemCameraCode
-                )
-                if (!state) result.success(null)
-            }
 
             "onActivityResult" -> {
                 onActivityResultState = true
@@ -148,29 +125,8 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             channel.invokeMethod("onActivityResult", map)
         }
 
-        if (requestCode == openActivityResultCode) {
+        if (requestCode == installAppResultCode) {
             result.success(resultCode == Activity.RESULT_OK)
-        } else if (resultCode == Activity.RESULT_OK) {
-            when (requestCode) {
-                openSystemGalleryCode -> {
-                    val uri: Uri? = intent?.data
-                    result.success(Tools.getRealPathFromURI(uri, context))
-                }
-
-                openSystemCameraCode -> {
-                    val photoPath: String = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                        context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.path.toString() + "/TEMP.JPG"
-                    } else {
-                        intent?.data?.encodedPath.toString()
-                    }
-                    println("===${intent}")
-                    result.success(photoPath)
-                }
-
-                installPermissionCode -> result.success(
-                    Tools.canRequestPackageInstalls(context)
-                )
-            }
         }
         activityBinding.removeActivityResultListener(this)
         return true

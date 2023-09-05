@@ -1,16 +1,38 @@
 part of '../flutter_curiosity.dart';
 
-typedef EventHandlerActivityResult = void Function(
+typedef AndroidActivityResultHandler = void Function(
     AndroidActivityResult result);
 
-typedef KeyboardStatus = void Function(bool visibility);
+typedef KeyboardStatusHandler = void Function(bool visibility);
 
 class NativeTools {
   factory NativeTools() => _singleton ??= NativeTools._();
 
-  NativeTools._();
+  NativeTools._() {
+    _channel.setMethodCallHandler((MethodCall call) async {
+      switch (call.method) {
+        case 'keyboardStatus':
+          for (var element in keyboardStatus) {
+            element(call.arguments as bool);
+          }
+          break;
+        case 'onActivityResult':
+          for (var element in activityResult) {
+            element.call(AndroidActivityResult.formJson(
+                call.arguments as Map<dynamic, dynamic>));
+          }
+          break;
+      }
+    });
+  }
 
   static NativeTools? _singleton;
+
+  /// 添加回调方法
+  final List<AndroidActivityResultHandler> activityResult = [];
+
+  /// 添加回调方法
+  final List<KeyboardStatusHandler> keyboardStatus = [];
 
   /// 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
   Future<bool> get gpsStatus async {
@@ -51,32 +73,6 @@ class NativeTools {
       }
     }
     return list;
-  }
-
-  /// android
-  /// onActivityResult 监听
-  /// onRequestPermissionsResult 监听
-  Future<void> setMethodCallHandler({
-    EventHandlerActivityResult? activityResult,
-    KeyboardStatus? keyboardStatus,
-  }) async {
-    if (!isAndroid) return;
-    if (isAndroid && activityResult != null) {
-      await _channel.invokeMethod<dynamic>('onActivityResult');
-    }
-    _channel.setMethodCallHandler((MethodCall call) async {
-      switch (call.method) {
-        case 'keyboardStatus':
-          keyboardStatus?.call(call.arguments as bool);
-          break;
-        case 'onActivityResult':
-          if (activityResult != null) {
-            activityResult(AndroidActivityResult.formJson(
-                call.arguments as Map<dynamic, dynamic>));
-          }
-          break;
-      }
-    });
   }
 }
 

@@ -7,8 +7,6 @@ import 'package:flutter/services.dart';
 
 part 'src/desktop.dart';
 
-part 'src/gallery.dart';
-
 part 'src/native.dart';
 
 const MethodChannel _channel = MethodChannel('Curiosity');
@@ -19,8 +17,6 @@ class Curiosity {
   Curiosity._();
 
   static Curiosity? _singleton;
-
-  GalleryTools get gallery => GalleryTools();
 
   NativeTools get native => NativeTools();
 

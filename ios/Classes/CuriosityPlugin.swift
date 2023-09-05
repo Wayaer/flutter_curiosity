@@ -6,8 +6,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
 
     var keyboardStatus = false
 
-    var gallery: GalleryTools?
-
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "Curiosity", binaryMessenger: registrar.messenger())
         let plugin = CuriosityPlugin(channel)
@@ -31,15 +29,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(getPackageInfo())
         case "getGPSStatus":
             result(getGPSStatus())
-        case "openSystemGallery":
-            initGalleryTools(call, result)
-            gallery?.openSystemGallery()
-        case "openSystemCamera":
-            initGalleryTools(call, result)
-            gallery?.openSystemCamera()
-        case "openSystemAlbum":
-            initGalleryTools(call, result)
-            gallery?.openSystemAlbum()
         default:
             result(FlutterMethodNotImplemented)
         }
@@ -47,13 +36,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
 
     public func detachFromEngine(for registrar: FlutterPluginRegistrar) {
         channel.setMethodCallHandler(nil)
-    }
-
-    func initGalleryTools(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
-        if gallery != nil {
-            gallery = nil
-        }
-        gallery = GalleryTools(call, result)
     }
 
     @objc func didShow() {
