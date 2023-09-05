@@ -106,10 +106,10 @@ class PackageInfoPlus extends _PackageInfo {
   factory PackageInfoPlus.fromJson(Map<String, dynamic> json) =>
       PackageInfoPlus(
 
-          /// android ios
+          /// android ios macos
           version: json['version'] as String?,
           buildNumber: json['buildNumber'] as String?,
-          packageName: ['packageName'] as String?,
+          packageName: json['packageName'] as String?,
           appName: json['appName'] as String?,
 
           /// only Android
@@ -156,13 +156,12 @@ class AppPackageInfo extends _PackageInfo {
       super.appName});
 
   factory AppPackageInfo.fromJson(Map<dynamic, dynamic> json) => AppPackageInfo(
-        isSystemApp: json['isSystemApp'] as bool?,
-        appName: json['appName'] as String?,
-        lastUpdateTime: json['lastUpdateTime'] as int?,
-        buildNumber: json['buildNumber'] as String?,
-        version: json['version'] as String?,
-        packageName: json['packageName'] as String?,
-      );
+      isSystemApp: json['isSystemApp'] as bool?,
+      appName: json['appName'] as String?,
+      lastUpdateTime: json['lastUpdateTime'] as int?,
+      buildNumber: json['buildNumber'] as String?,
+      version: json['version'] as String?,
+      packageName: json['packageName'] as String?);
 
   final bool? isSystemApp;
   final int? lastUpdateTime;

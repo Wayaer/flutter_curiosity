@@ -8,12 +8,15 @@
 - 自动 添加 FileProvider 配置至 AndroidManifest
 - 按需要 添加以下权限
 
-```xml
+```html
 <!--允许程序写入本地存储-->
-<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" /><!--允许程序读取本地存储-->
-<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" /><!--允许程序访问有关GSM网络信息-->
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" /><!--允许程序安装应用程序-->
-<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<!--允许程序读取本地存储-->
+<uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+<!--允许程序访问有关GSM网络信息-->
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+<!--允许程序安装应用程序-->
+<uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
 ```
 
@@ -50,14 +53,6 @@ void fun() {
 ```dart
 void gallery() {
   Curiosity().gallery.fun();
-}
-```
-
-- 消息通道
-
-```dart
-void fun() {
-  Curiosity().event.fun();
 }
 ```
 

@@ -24,7 +24,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
             ElevatedText(onPressed: appInfo, text: '获取app信息'),
             if (isAndroid)
               ElevatedText(
-                  onPressed: () => getInstalled(), text: '获取Android已安装应用'),
+                  onPressed: () => getInstalledApps(), text: '获取Android已安装应用'),
           ])),
           placeholder: Container(
               alignment: Alignment.center,
@@ -35,12 +35,12 @@ class _GetInfoPageState extends State<GetInfoPage> {
     );
   }
 
-  Future<void> getInstalled() async {
+  Future<void> getInstalledApps() async {
     final data = await Curiosity().native.installedApps;
     list = [];
     data.builder((appsModel) {
       final Map<String, dynamic> appModel = appsModel.toMap();
-      final List<Widget> app = <Widget>[];
+      final List<Widget> app = [];
       appModel.forEach((String key, dynamic value) {
         app.add(Container(
             margin: const EdgeInsets.symmetric(vertical: 4),
@@ -63,7 +63,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
-      list.add(ShowText(key, value));
+      list.add(TextBox(key, value));
     });
     setState(() {});
   }

@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
+import android.provider.MediaStore
 import android.util.Log
 import android.view.ViewTreeObserver
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -102,9 +103,8 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
 
             "openSystemCamera" -> {
                 val state = startActivity(
-                    Tools.getSystemCameraIntent(
-                        context, activityBinding.activity, call
-                    ), openSystemCameraCode
+                    Tools.getSystemCameraIntent(context, activityBinding.activity),
+                    openSystemCameraCode
                 )
                 if (!state) result.success(null)
             }
@@ -163,6 +163,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
                     } else {
                         intent?.data?.encodedPath.toString()
                     }
+                    println("===${intent}")
                     result.success(photoPath)
                 }
 

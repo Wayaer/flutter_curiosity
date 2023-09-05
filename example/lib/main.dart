@@ -84,8 +84,8 @@ class _AppState extends State<App> {
   }
 }
 
-class ShowText extends StatelessWidget {
-  const ShowText(this.keyName, this.value, {Key? key}) : super(key: key);
+class TextBox extends StatelessWidget {
+  const TextBox(this.keyName, this.value, {Key? key}) : super(key: key);
   final dynamic keyName;
   final dynamic value;
 
