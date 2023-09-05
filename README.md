@@ -9,8 +9,6 @@
 - 按需要 添加以下权限
 
 ```html
-<!--允许程序访问有关GSM网络信息-->
-<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
 <!--允许程序安装应用程序 可选-->
 <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES"/>
 
@@ -18,7 +16,7 @@
 
 ### 介绍
 
-- 原生方法 [获取GPS状态、获取app信息、监听键盘状态,监听android activity result]
+- 原生方法 [获取GPS状态、获取app信息、监听键盘状态、获取android已安装应用、监听android activity result]
 
 ```dart
 void fun() {

@@ -1,7 +1,5 @@
 library flutter_curiosity;
 
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
@@ -31,12 +29,6 @@ bool get _supportPlatformDesktop {
 
 bool get _supportPlatform {
   if (!isWeb && (isMobile || isMacOS)) return true;
-  debugPrint('Curiosity is not support Platform');
-  return false;
-}
-
-bool get _supportPlatformMobile {
-  if (isMobile) return true;
   debugPrint('Curiosity is not support Platform');
   return false;
 }
