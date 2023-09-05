@@ -16,8 +16,10 @@ class Curiosity {
 
   static Curiosity? _singleton;
 
+  ///  android ios macos
   NativeTools get native => NativeTools();
 
+  ///  macos windows linux
   DesktopTools get desktop => DesktopTools();
 }
 

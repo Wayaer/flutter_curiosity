@@ -36,7 +36,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getInstalledApps() async {
-    final data = await Curiosity().native.installedApps;
+    final data = await Curiosity().native.getInstalledApps;
     list = [];
     data.builder((appsModel) {
       final Map<String, dynamic> appModel = appsModel.toMap();

@@ -7,7 +7,8 @@ class DesktopTools {
 
   static DesktopTools? _singleton;
 
-  Future<Size?> getDesktopWindowSize() async {
+  /// getWindowSize
+  Future<Size?> getWindowSize() async {
     if (!_supportPlatformDesktop) return null;
     final List<dynamic>? list =
         await _channel.invokeMethod<List<dynamic>?>('getWindowSize');
@@ -17,48 +18,48 @@ class DesktopTools {
     return null;
   }
 
-  Future<bool> setDesktopWindowSize(Size size) async {
+  Future<bool> setWindowSize(Size size) async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('setWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
-  Future<bool> setDesktopMinWindowSize(Size size) async {
+  Future<bool> setMinWindowSize(Size size) async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('setMinWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
-  Future<bool> setDesktopMaxWindowSize(Size size) async {
+  Future<bool> setMaxWindowSize(Size size) async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('setMaxWindowSize',
         <String, double>{'width': size.width, 'height': size.height});
     return state ?? false;
   }
 
-  Future<bool> resetDesktopMaxWindowSize() async {
+  Future<bool> resetMaxWindowSize() async {
     if (!_supportPlatformDesktop) return false;
     final bool? state =
         await _channel.invokeMethod<bool?>('resetMaxWindowSize');
     return state ?? false;
   }
 
-  Future<bool> toggleDesktopFullScreen() async {
+  Future<bool> toggleFullScreen() async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('toggleFullScreen');
     return state ?? false;
   }
 
-  Future<bool> setDesktopFullScreen(bool fullscreen) async {
+  Future<bool> setFullScreen(bool fullscreen) async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>(
         'setFullScreen', <String, bool>{'fullscreen': fullscreen});
     return state ?? false;
   }
 
-  Future<bool?> getDesktopFullScreen() async {
+  Future<bool?> getFullScreen() async {
     if (!_supportPlatformDesktop) return null;
     final bool? fullscreen =
         await _channel.invokeMethod<bool?>('getFullScreen');
@@ -66,74 +67,70 @@ class DesktopTools {
     return null;
   }
 
-  Future<bool> get hasDesktopBorders async {
+  Future<bool> get hasBorders async {
     if (!_supportPlatformDesktop) return false;
     final bool? hasBorders = await _channel.invokeMethod<bool?>('hasBorders');
     if (hasBorders is bool) return hasBorders;
     return hasBorders ?? false;
   }
 
-  Future<bool> toggleDesktopBorders() async {
+  Future<bool> toggleBorders() async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('toggleBorders');
     return state ?? false;
   }
 
-  Future<bool> setDesktopBorders(bool border) async {
+  Future<bool> setBorders(bool border) async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel
         .invokeMethod<bool?>('setBorders', <String, dynamic>{'border': border});
     return state ?? false;
   }
 
-  Future<bool> stayOnTopWithDesktop([bool stayOnTop = true]) async {
+  Future<bool> stayOnTop([bool stayOnTop = true]) async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>(
         'stayOnTop', <String, dynamic>{'stayOnTop': stayOnTop});
     return state ?? false;
   }
 
-  Future<bool> focusDesktop() async {
+  Future<bool> focus() async {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('focus');
     return state ?? false;
   }
 
   /// set desktop size to iphone 4.7
-  Future<bool> setDesktopSizeTo4P7({double p = 1}) =>
-      setDesktopSize(Size(375 / p, 667 / p));
+  Future<bool> setSizeTo4P7({double p = 1}) => setSize(Size(375 / p, 667 / p));
 
   /// set desktop size to iphone 5.5
-  Future<bool> setDesktopSizeTo5P5({double p = 1}) =>
-      setDesktopSize(Size(414 / p, 736 / p));
+  Future<bool> setSizeTo5P5({double p = 1}) => setSize(Size(414 / p, 736 / p));
 
   /// set desktop size to iphone 5.8
-  Future<bool> setDesktopSizeTo5P8({double p = 1}) =>
-      setDesktopSize(Size(375 / p, 812 / p));
+  Future<bool> setSizeTo5P8({double p = 1}) => setSize(Size(375 / p, 812 / p));
 
   /// set desktop size to iphone 6.1
-  Future<bool> setDesktopSizeTo6P1({double p = 1}) =>
-      setDesktopSize(Size(414 / p, 896 / p));
+  Future<bool> setSizeTo6P1({double p = 1}) => setSize(Size(414 / p, 896 / p));
 
   /// set desktop size to ipad 11
-  Future<bool> setDesktopSizeToIPad11({double p = 1}) =>
-      setDesktopSize(Size(834 / p, 1194 / p));
+  Future<bool> setSizeToIPad11({double p = 1}) =>
+      setSize(Size(834 / p, 1194 / p));
 
   /// set desktop size to ipad 10.5
-  Future<bool> setDesktopSizeToIPad10P5({double p = 1}) =>
-      setDesktopSize(Size(834 / p, 1112 / p));
+  Future<bool> setSizeToIPad10P5({double p = 1}) =>
+      setSize(Size(834 / p, 1112 / p));
 
   /// set desktop size to ipad 9.7 or 7.9
-  Future<bool> setDesktopSizeToIPad9P7({double p = 1}) async {
+  Future<bool> setSizeToIPad9P7({double p = 1}) async {
     assert(p <= 2);
-    return await setDesktopSize(Size(768 / p, 1024 / p));
+    return await setSize(Size(768 / p, 1024 / p));
   }
 
   /// 设置最大 size 最小 size 窗口 size
-  Future<bool> setDesktopSize(Size size) async {
-    final bool setSize = await setDesktopWindowSize(size);
-    final bool setMin = await setDesktopMinWindowSize(size);
-    final bool setMax = await setDesktopMaxWindowSize(size);
+  Future<bool> setSize(Size size) async {
+    final bool setSize = await setWindowSize(size);
+    final bool setMin = await setMinWindowSize(size);
+    final bool setMax = await setMaxWindowSize(size);
     return setSize && setMin && setMax;
   }
 }

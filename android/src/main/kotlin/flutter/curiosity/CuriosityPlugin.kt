@@ -1,6 +1,5 @@
 package flutter.curiosity
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.graphics.Rect
@@ -30,6 +29,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activityBinding = binding
         channel.setMethodCallHandler(this)
+        binding.addActivityResultListener(this)
         activityBinding.activity.window?.decorView?.viewTreeObserver?.addOnGlobalLayoutListener(
             this
         )
@@ -44,64 +44,47 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     override fun onDetachedFromActivity() {
+        activityBinding.removeActivityResultListener(this)
         activityBinding.activity.window?.decorView?.viewTreeObserver?.removeOnGlobalLayoutListener(
             this
         )
     }
 
-
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
-    private var onActivityResultState = false
     private lateinit var result: MethodChannel.Result
     private var keyboardStatus = false
 
-    private var installAppResultCode = 111
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         this.result = result
         when (call.method) {
             "exitApp" -> Tools.exitApp(activityBinding.activity)
 
-            "installApp" -> result.success(
-                startActivity(
-                    Tools.getInstallAppIntent(
-                        context, call
-                    ), installAppResultCode
-                )
+            "installApk" -> result.success(
+                startActivity(Tools.getInstallAppIntent(context, call.arguments as String))
             )
 
             "getPackageInfo" -> result.success(Tools.getPackageInfo(context))
+
             "getInstalledApps" -> result.success(
-                Tools.getInstalledApps(
-                    activityBinding.activity
-                )
+                Tools.getInstalledApps(activityBinding.activity)
             )
 
             "getGPSStatus" -> result.success(
-                Tools.getGPSStatus(
-                    activityBinding.activity
-                )
+                Tools.getGPSStatus(activityBinding.activity)
             )
-
-            "onActivityResult" -> {
-                onActivityResultState = true
-                result.success(true)
-            }
 
             else -> result.notImplemented()
         }
     }
 
-    private fun startActivity(intent: Intent?, requestCode: Int): Boolean {
+    private fun startActivity(intent: Intent?): Boolean {
         if (intent != null) {
-            activityBinding.addActivityResultListener(this)
             try {
-                activityBinding.activity.startActivityForResult(
-                    intent, requestCode
-                )
+                activityBinding.activity.startActivity(intent)
                 return true
             } catch (e: Exception) {
                 Log.d("ActivityException", e.toString())
@@ -114,21 +97,14 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     override fun onActivityResult(
         requestCode: Int, resultCode: Int, intent: Intent?
     ): Boolean {
-        if (onActivityResultState) {
-            val map: MutableMap<String, Any> = HashMap()
-            map["requestCode"] = requestCode
-            map["resultCode"] = resultCode
-            if (intent != null) {
-                if (intent.extras != null) map["extras"] = intent.extras.toString()
-                if (intent.data != null) map["data"] = intent.data.toString()
-            }
-            channel.invokeMethod("onActivityResult", map)
+        val map: MutableMap<String, Any> = HashMap()
+        map["requestCode"] = requestCode
+        map["resultCode"] = resultCode
+        if (intent != null) {
+            if (intent.extras != null) map["extras"] = intent.extras.toString()
+            if (intent.data != null) map["data"] = intent.data.toString()
         }
-
-        if (requestCode == installAppResultCode) {
-            result.success(resultCode == Activity.RESULT_OK)
-        }
-        activityBinding.removeActivityResultListener(this)
+        channel.invokeMethod("onActivityResult", map)
         return true
     }
 

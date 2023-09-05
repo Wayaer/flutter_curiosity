@@ -1,5 +1,6 @@
 import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
@@ -19,7 +20,9 @@ void main() {
       darkTheme: ThemeData.dark(useMaterial3: true),
       debugShowCheckedModeBanner: false,
       title: 'Curiosity',
-      home: const App()));
+      home: Scaffold(
+          appBar: AppBarText('Flutter Curiosity Plugin Example'),
+          body: const App())));
 }
 
 class App extends StatefulWidget {
@@ -40,8 +43,8 @@ class _AppState extends State<App> {
     if (!isWeb && isDesktop) {
       /// 设置桌面版为 指定 尺寸
       addPostFrameCallback((Duration duration) async {
-        await Curiosity().desktop.focusDesktop();
-        var value = await Curiosity().desktop.setDesktopSizeTo4P7();
+        await Curiosity().desktop.focus();
+        var value = await Curiosity().desktop.setSizeTo4P7();
         log('限制桌面宽高：$value');
       });
     }
@@ -58,28 +61,38 @@ class _AppState extends State<App> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBarText('Flutter Curiosity Plugin Example'),
-        body: Universal(
-            mainAxisAlignment: MainAxisAlignment.center,
-            expand: true,
-            children: [
-              if (isMobile || isMacOS) ...[
-                ElevatedText(
-                    onPressed: () => push(const GetInfoPage()), text: '获取信息'),
-              ],
-              if (isMobile) ...[
-                const SizedBox(
-                    width: 200,
-                    child: TextField(
-                        textAlign: TextAlign.center,
-                        decoration: InputDecoration(hintText: '监听键盘状态'))),
-              ],
-              if (isDesktop)
-                ElevatedText(
-                    onPressed: () => push(const DesktopPage()),
-                    text: 'Desktop窗口控制'),
-            ]));
+    return Universal(
+        mainAxisAlignment: MainAxisAlignment.center,
+        expand: true,
+        children: [
+          if (isMobile || isMacOS)
+            ElevatedText(
+                onPressed: () => push(const GetInfoPage()), text: '获取信息'),
+          if (isAndroid) ElevatedText(onPressed: installApk, text: '安装apk'),
+          if (isMobile)
+            const SizedBox(
+                width: 200,
+                child: TextField(
+                    textAlign: TextAlign.center,
+                    decoration: InputDecoration(hintText: '监听键盘状态'))),
+          if (isDesktop)
+            ElevatedText(
+                onPressed: () => push(const DesktopPage()),
+                text: 'Desktop窗口控制'),
+        ]);
+  }
+
+  void installApk() async {
+    var status = await getPermission(Permission.requestInstallPackages);
+    if (!status) return;
+    final res = await FilePicker.platform
+        .pickFiles(type: FileType.custom, allowedExtensions: ['apk']);
+    if (res?.files.isNotEmpty ?? false) {
+      final path = res!.files.single.path;
+      if (path.isEmptyOrNull) return;
+      final result = await Curiosity().native.installApk(path!);
+      log("installApk======$result");
+    }
   }
 
   @override
