@@ -15,7 +15,7 @@ void main() {
   debugPrint('isMobile = $isMobile');
   debugPrint('isDesktop = $isDesktop');
   runApp(MaterialApp(
-      navigatorKey: GlobalOptions().navigatorKey,
+      navigatorKey: GlobalWayUI().navigatorKey,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       debugShowCheckedModeBanner: false,
