@@ -39,18 +39,18 @@ void fun() {
 
 void fun() {
   /// 设置桌面版 为 手机 或 ipad 尺寸
-  setDesktopSizeTo4P7();
+  setSizeTo4P7();
 
-  setDesktopSizeTo5P5();
+  setSizeTo5P5();
 
-  setDesktopSizeTo5P8();
+  setSizeTo5P8();
 
-  setDesktopSizeTo6P1();
+  setSizeTo6P1();
 
-  setDesktopSizeToIPad11();
+  setSizeToIPad11();
 
-  setDesktopSizeToIPad10P5();
+  setSizeToIPad10P5();
 
-  setDesktopSizeToIPad9P7();
+  setSizeToIPad9P7();
 }
 ```
