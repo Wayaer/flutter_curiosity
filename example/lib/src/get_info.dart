@@ -4,7 +4,7 @@ import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:flutter_waya/flutter_waya.dart';
 
 class GetInfoPage extends StatefulWidget {
-  const GetInfoPage({Key? key}) : super(key: key);
+  const GetInfoPage({super.key});
 
   @override
   State<GetInfoPage> createState() => _GetInfoPageState();

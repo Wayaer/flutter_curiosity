@@ -26,7 +26,7 @@ void main() {
 }
 
 class App extends StatefulWidget {
-  const App({Key? key}) : super(key: key);
+  const App({super.key});
 
   @override
   State<App> createState() => _AppState();
@@ -45,14 +45,15 @@ class _AppState extends State<App> {
       addPostFrameCallback((Duration duration) async {
         await Curiosity().desktop.focus();
         var value = await Curiosity().desktop.setSizeTo4P7();
-        log('限制桌面宽高：$value');
+        '限制桌面宽高：$value'.log();
       });
     }
   }
 
   void onAndroidActivityResult(AndroidActivityResult result) {
-    log('AndroidResult requestCode = ${result.requestCode}  '
-        'resultCode = ${result.resultCode}  data = ${result.data}');
+    'AndroidResult requestCode = ${result.requestCode}  '
+            'resultCode = ${result.resultCode}  data = ${result.data}'
+        .log();
   }
 
   void keyboardStatus(bool visibility) {
@@ -91,7 +92,7 @@ class _AppState extends State<App> {
       final path = res!.files.single.path;
       if (path.isEmptyOrNull) return;
       final result = await Curiosity().native.installApk(path!);
-      log("installApk======$result");
+      "installApk======$result".log();
     }
   }
 
@@ -104,7 +105,8 @@ class _AppState extends State<App> {
 }
 
 class TextBox extends StatelessWidget {
-  const TextBox(this.keyName, this.value, {Key? key}) : super(key: key);
+  const TextBox(this.keyName, this.value, {super.key});
+
   final dynamic keyName;
   final dynamic value;
 
@@ -132,8 +134,7 @@ Future<bool> getPermission(Permission permission) async {
 }
 
 class ElevatedText extends StatelessWidget {
-  const ElevatedText({Key? key, required this.text, required this.onPressed})
-      : super(key: key);
+  const ElevatedText({super.key, required this.text, required this.onPressed});
 
   final String text;
   final VoidCallback onPressed;
@@ -144,9 +145,8 @@ class ElevatedText extends StatelessWidget {
 }
 
 class AppBarText extends AppBar {
-  AppBarText(String text, {Key? key})
+  AppBarText(String text, {super.key})
       : super(
-            key: key,
             elevation: 0,
             title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
             centerTitle: true);
