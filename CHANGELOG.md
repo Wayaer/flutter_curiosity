@@ -1,3 +1,7 @@
+## 5.0.3
+
+* Add `namespace` in Android
+
 ## 5.0.2
 
 * Remove duplicate methods
