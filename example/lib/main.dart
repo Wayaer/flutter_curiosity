@@ -44,7 +44,7 @@ class _AppState extends State<App> {
       /// 设置桌面版为 指定 尺寸
       addPostFrameCallback((Duration duration) async {
         await Curiosity().desktop.focus();
-        var value = await Curiosity().desktop.setSizeTo4P7();
+        var value = await DesktopWindowsSize.iPhone6P1.set();
         '限制桌面宽高：$value'.log();
       });
     }

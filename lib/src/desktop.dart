@@ -1,5 +1,37 @@
 part of '../flutter_curiosity.dart';
 
+enum DesktopWindowsSize {
+  /// set desktop size to iphone 4.7
+  iPhone4P7(Size(375, 667)),
+
+  /// set desktop size to iphone 5.5
+  iPhone5P5(Size(414, 736)),
+
+  /// set desktop size to iphone 5.8
+  iPhone5P8(Size(375, 812)),
+
+  /// set desktop size to iphone 6.1
+  iPhone6P1(Size(414, 896)),
+
+  /// set desktop size to ipad 9.7 or 7.9
+  iPad9P7(Size(768, 1024)),
+
+  /// set desktop size to ipad 10.5
+  iPad10P5(Size(834, 1112)),
+
+  /// set desktop size to ipad 11
+  iPad11(Size(834, 1194)),
+  ;
+
+  const DesktopWindowsSize(this.size);
+
+  final Size size;
+
+  Size get value => size;
+
+  Future<bool> set() => DesktopTools().setSize(size);
+}
+
 class DesktopTools {
   factory DesktopTools() => _singleton ??= DesktopTools._();
 
@@ -98,32 +130,6 @@ class DesktopTools {
     if (!_supportPlatformDesktop) return false;
     final bool? state = await _channel.invokeMethod<bool?>('focus');
     return state ?? false;
-  }
-
-  /// set desktop size to iphone 4.7
-  Future<bool> setSizeTo4P7({double p = 1}) => setSize(Size(375 / p, 667 / p));
-
-  /// set desktop size to iphone 5.5
-  Future<bool> setSizeTo5P5({double p = 1}) => setSize(Size(414 / p, 736 / p));
-
-  /// set desktop size to iphone 5.8
-  Future<bool> setSizeTo5P8({double p = 1}) => setSize(Size(375 / p, 812 / p));
-
-  /// set desktop size to iphone 6.1
-  Future<bool> setSizeTo6P1({double p = 1}) => setSize(Size(414 / p, 896 / p));
-
-  /// set desktop size to ipad 11
-  Future<bool> setSizeToIPad11({double p = 1}) =>
-      setSize(Size(834 / p, 1194 / p));
-
-  /// set desktop size to ipad 10.5
-  Future<bool> setSizeToIPad10P5({double p = 1}) =>
-      setSize(Size(834 / p, 1112 / p));
-
-  /// set desktop size to ipad 9.7 or 7.9
-  Future<bool> setSizeToIPad9P7({double p = 1}) async {
-    assert(p <= 2);
-    return await setSize(Size(768 / p, 1024 / p));
   }
 
   /// 设置最大 size 最小 size 窗口 size

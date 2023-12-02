@@ -30,29 +30,10 @@ class _DesktopPageState extends State<DesktopPage> {
               Wrap(
                   alignment: WrapAlignment.center,
                   spacing: 10,
-                  children: <Widget>[
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeTo4P7,
-                        text: 'setSizeTo4P7'),
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeTo5P5,
-                        text: 'setSizeTo5P5'),
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeTo5P8,
-                        text: 'setSizeTo5P8'),
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeTo6P1,
-                        text: 'setSizeTo6P1'),
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeToIPad11,
-                        text: 'setSizeToIPad11'),
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeToIPad10P5,
-                        text: 'setSizeToIPad10P5'),
-                    ElevatedText(
-                        onPressed: Curiosity().desktop.setSizeToIPad9P7,
-                        text: 'setSizeToIPad9P7'),
-                  ]),
+                  children: DesktopWindowsSize.values.builder((size) =>
+                      ElevatedText(
+                          onPressed: size.set,
+                          text: 'setSizeTo ${size.name}'))),
               const SizedBox(height: 20),
               ElevatedText(
                   onPressed: () async {

@@ -39,18 +39,6 @@ void fun() {
 
 void fun() {
   /// 设置桌面版 为 手机 或 ipad 尺寸
-  setSizeTo4P7();
-
-  setSizeTo5P5();
-
-  setSizeTo5P8();
-
-  setSizeTo6P1();
-
-  setSizeToIPad11();
-
-  setSizeToIPad10P5();
-
-  setSizeToIPad9P7();
+  DesktopWindowsSize.iPhone6P1.set();
 }
 ```

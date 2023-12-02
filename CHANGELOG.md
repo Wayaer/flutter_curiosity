@@ -1,3 +1,7 @@
+## 5.0.4
+
+* Add `DesktopWindowsSize` in Desktop
+
 ## 5.0.3
 
 * Add `namespace` in Android

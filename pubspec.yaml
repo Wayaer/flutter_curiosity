@@ -1,6 +1,6 @@
 name: flutter_curiosity
 description: The flutter curiosity is compatible with android and ios for multiple native features
-version: 5.0.3
+version: 5.0.4
 repository: https://github.com/Wayaer/flutter_curiosity.git
 
 environment:
@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  flutter_lints: ^3.0.1
+  flutter_lints: any
 
 flutter:
   plugin:
