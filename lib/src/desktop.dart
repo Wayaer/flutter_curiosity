@@ -13,8 +13,11 @@ enum DesktopWindowsSize {
   /// set desktop size to iphone 6.1
   iPhone6P1(Size(414, 896)),
 
-  /// set desktop size to ipad 9.7 or 7.9
+  /// set desktop size to ipad 9.7
   iPad9P7(Size(768, 1024)),
+
+  /// set desktop size to 7.9
+  iPad7P9(Size(1024, 768)),
 
   /// set desktop size to ipad 10.5
   iPad10P5(Size(834, 1112)),
