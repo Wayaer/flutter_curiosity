@@ -59,7 +59,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> appInfo() async {
-    final PackageInfoPlus? data = await Curiosity().native.packageInfo;
+    final data = await Curiosity().native.packageInfo;
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {

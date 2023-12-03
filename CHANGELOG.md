@@ -1,3 +1,7 @@
+## 5.0.5
+
+* `PackageInfoPlus` is changed to `PackageSelfInfo`
+
 ## 5.0.4
 
 * Add `DesktopWindowsSize` in Desktop

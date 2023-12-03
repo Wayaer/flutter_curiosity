@@ -47,17 +47,17 @@ class NativeTools {
     await _channel.invokeMethod<dynamic>('exitApp');
   }
 
-  PackageInfoPlus? _packageInfo;
+  PackageSelfInfo? _packageInfo;
 
-  Future<PackageInfoPlus?> get packageInfo async =>
+  Future<PackageSelfInfo?> get packageInfo async =>
       _packageInfo ??= await getPackageInfo();
 
   /// get Android/IOS/MacOS info
-  Future<PackageInfoPlus?> getPackageInfo() async {
+  Future<PackageSelfInfo?> getPackageInfo() async {
     if (!_supportPlatform) return null;
     final Map<String, dynamic>? map =
         await _channel.invokeMapMethod<String, dynamic>('getPackageInfo');
-    if (map != null) return PackageInfoPlus.fromJson(map);
+    if (map != null) return PackageSelfInfo.fromJson(map);
     return null;
   }
 
@@ -94,8 +94,8 @@ abstract class _PackageInfo {
   final String? appName;
 }
 
-class PackageInfoPlus extends _PackageInfo {
-  PackageInfoPlus(
+class PackageSelfInfo extends _PackageInfo {
+  PackageSelfInfo(
       {this.firstInstallTime,
       this.lastUpdateTime,
       this.minimumOSVersion,
@@ -107,8 +107,8 @@ class PackageInfoPlus extends _PackageInfo {
       super.buildNumber,
       super.appName});
 
-  factory PackageInfoPlus.fromJson(Map<String, dynamic> json) =>
-      PackageInfoPlus(
+  factory PackageSelfInfo.fromJson(Map<String, dynamic> json) =>
+      PackageSelfInfo(
 
           /// android ios macos
           version: json['version'] as String?,
