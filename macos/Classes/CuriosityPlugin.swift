@@ -24,33 +24,6 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(getPackageInfo())
         case "getGPSStatus":
             result(getGPSStatus())
-        case "getWindowSize":
-            result(DesktopTools.getWindowSize())
-        case "setWindowSize":
-            result(DesktopTools.setWindowSize(call))
-        case "setMinWindowSize":
-            result(DesktopTools.setMinWindowSize(call))
-        case "setMaxWindowSize":
-            result(DesktopTools.setMaxWindowSize(call))
-        case "resetMaxWindowSize":
-            result(DesktopTools.resetMaxWindowSize())
-        case "toggleFullScreen":
-            result(DesktopTools.toggleFullScreen())
-        case "setFullScreen":
-            result(DesktopTools.setFullScreen(call))
-        case "getFullScreen":
-            result(DesktopTools.getFullScreen())
-        case "toggleBorders":
-            result(DesktopTools.toggleBorders())
-        case "setBorders":
-            result(DesktopTools.setBorders(call))
-        case "hasBorders":
-            result(DesktopTools.hasBorders())
-        case "focus":
-            NSApplication.shared.activate(ignoringOtherApps: true)
-            result(true)
-        case "stayOnTop":
-            result(DesktopTools.stayOnTop(call))
         default:
             result(FlutterMethodNotImplemented)
         }

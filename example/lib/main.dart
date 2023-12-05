@@ -1,4 +1,3 @@
-import 'package:curiosity/src/desktop.dart';
 import 'package:curiosity/src/get_info.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -40,14 +39,6 @@ class _AppState extends State<App> {
       Curiosity().native.activityResult.add(onAndroidActivityResult);
       Curiosity().native.keyboardStatus.add(keyboardStatus);
     }
-    if (!isWeb && isDesktop) {
-      /// 设置桌面版为 指定 尺寸
-      addPostFrameCallback((Duration duration) async {
-        await Curiosity().desktop.focus();
-        var value = await DesktopWindowsSize.iPhone6P1.set();
-        '限制桌面宽高：$value'.log();
-      });
-    }
   }
 
   void onAndroidActivityResult(AndroidActivityResult result) {
@@ -76,10 +67,6 @@ class _AppState extends State<App> {
                 child: TextField(
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(hintText: '监听键盘状态'))),
-          if (isDesktop)
-            ElevatedText(
-                onPressed: () => push(const DesktopPage()),
-                text: 'Desktop窗口控制'),
         ]);
   }
 

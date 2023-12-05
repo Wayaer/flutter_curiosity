@@ -3,8 +3,6 @@ library flutter_curiosity;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-part 'src/desktop.dart';
-
 part 'src/native.dart';
 
 const MethodChannel _channel = MethodChannel('Curiosity');
@@ -18,15 +16,6 @@ class Curiosity {
 
   ///  android ios macos
   NativeTools get native => NativeTools();
-
-  ///  macos windows linux
-  DesktopTools get desktop => DesktopTools();
-}
-
-bool get _supportPlatformDesktop {
-  if (!isWeb && isDesktop) return true;
-  debugPrint('Curiosity is not support Platform');
-  return false;
 }
 
 bool get _supportPlatform {

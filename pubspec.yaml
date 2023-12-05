@@ -1,6 +1,6 @@
 name: flutter_curiosity
 description: The flutter curiosity is compatible with android and ios for multiple native features
-version: 5.0.5
+version: 6.0.0
 repository: https://github.com/Wayaer/flutter_curiosity.git
 
 environment:
@@ -24,8 +24,5 @@ flutter:
         pluginClass: CuriosityPlugin
       macos:
         pluginClass: CuriosityPlugin
-      linux:
-        pluginClass: CuriosityPlugin
-      windows:
-        pluginClass: CuriosityPlugin
+
 

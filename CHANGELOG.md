@@ -1,10 +1,10 @@
+## 6.0.0
+
+* Remove the DesktopTools
+
 ## 5.0.5
 
 * `PackageInfoPlus` is changed to `PackageSelfInfo`
-
-## 5.0.4
-
-* Add `DesktopWindowsSize` in Desktop
 
 ## 5.0.3
 
@@ -83,14 +83,6 @@
 * Modifying swift by OC on IOS and MacOS platforms
 * Add native message channel support Android and IOS .`CuriosityEvent`
 * Remove `openSystemShare()`
-
-## 2.2.3
-
-* Add `setDesktopSizeToIPad11()`、`setDesktopSizeToIPad10P5()`、`setDesktopSizeToIPad9P7()`
-
-## 2.2.2
-
-* Fix Windows/Linux unable to add dependency
 
 ## 2.2.1
 
