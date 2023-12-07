@@ -5,6 +5,8 @@ import 'package:flutter/services.dart';
 
 part 'src/native.dart';
 
+part 'src/package_info.dart';
+
 const MethodChannel _channel = MethodChannel('Curiosity');
 
 class Curiosity {
