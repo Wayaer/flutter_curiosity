@@ -22,7 +22,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
               child: Column(children: <Widget>[
             ElevatedText(onPressed: getGPS, text: '获取gps状态'),
             ElevatedText(onPressed: appInfo, text: '获取app信息'),
-            if (isAndroid)
+            if (Curiosity.isAndroid)
               ElevatedText(
                   onPressed: () => getInstalledApps(), text: '获取Android已安装应用'),
           ])),
@@ -36,7 +36,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getInstalledApps() async {
-    final data = await Curiosity().native.getInstalledApps;
+    final data = await Curiosity.native.getInstalledApps;
     list = [];
     data.builder((appsModel) {
       final Map<String, dynamic> appModel = appsModel.toMap();
@@ -59,7 +59,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> appInfo() async {
-    final data = await Curiosity().native.packageInfo;
+    final data = await Curiosity.native.packageInfo;
     if (data == null) return;
     list.clear();
     data.toMap().forEach((String key, dynamic value) {
@@ -69,7 +69,7 @@ class _GetInfoPageState extends State<GetInfoPage> {
   }
 
   Future<void> getGPS() async {
-    final bool data = await Curiosity().native.gpsStatus;
+    final bool data = await Curiosity.native.gpsStatus;
     showToast(data.toString());
   }
 }

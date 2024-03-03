@@ -63,7 +63,7 @@ class NativeTools {
 
   /// get Android  installed apps
   Future<List<AppPackageInfo>> get getInstalledApps async {
-    if (!isAndroid) return [];
+    if (!Curiosity.isAndroid) return [];
     final appList = await _channel
         .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApps');
     final List<AppPackageInfo> list = [];
@@ -78,11 +78,8 @@ class NativeTools {
   /// 安装apk  仅支持android
   /// Installing APK only supports Android
   Future<bool> installApk(String apkPath) async {
-    if (!isAndroid) return false;
+    if (!Curiosity.isAndroid) return false;
     final result = await _channel.invokeMethod<bool?>('installApk', apkPath);
     return result ?? false;
   }
-
-
-
 }

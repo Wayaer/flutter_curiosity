@@ -1,3 +1,7 @@
+## 6.1.0
+
+* The call mode of `Curiosity()` is changed to `Curiosity.`
+
 ## 6.0.0
 
 * Remove the DesktopTools

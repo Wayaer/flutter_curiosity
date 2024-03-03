@@ -7,12 +7,12 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  debugPrint('isWeb = $isWeb');
-  debugPrint('isMacOS = $isMacOS');
-  debugPrint('isAndroid = $isAndroid');
-  debugPrint('isIOS = $isIOS');
-  debugPrint('isMobile = $isMobile');
-  debugPrint('isDesktop = $isDesktop');
+  debugPrint('isWeb = ${Curiosity.isWeb}');
+  debugPrint('isMacOS = ${Curiosity.isMacOS}}');
+  debugPrint('isAndroid = ${Curiosity.isAndroid}');
+  debugPrint('isIOS = ${Curiosity.isIOS}');
+  debugPrint('isMobile = ${Curiosity.isMobile}');
+  debugPrint('isDesktop = ${Curiosity.isDesktop}');
   runApp(MaterialApp(
       navigatorKey: GlobalWayUI().navigatorKey,
       theme: ThemeData.light(useMaterial3: true),
@@ -35,9 +35,9 @@ class _AppState extends State<App> {
   @override
   void initState() {
     super.initState();
-    if (isMobile) {
-      Curiosity().native.activityResult.add(onAndroidActivityResult);
-      Curiosity().native.keyboardStatus.add(keyboardStatus);
+    if (Curiosity.isMobile) {
+      Curiosity.native.activityResult.add(onAndroidActivityResult);
+      Curiosity.native.keyboardStatus.add(keyboardStatus);
     }
   }
 
@@ -57,11 +57,12 @@ class _AppState extends State<App> {
         mainAxisAlignment: MainAxisAlignment.center,
         expand: true,
         children: [
-          if (isMobile || isMacOS)
+          if (Curiosity.isMobile || Curiosity.isMacOS)
             ElevatedText(
                 onPressed: () => push(const GetInfoPage()), text: '获取信息'),
-          if (isAndroid) ElevatedText(onPressed: installApk, text: '安装apk'),
-          if (isMobile)
+          if (Curiosity.isAndroid)
+            ElevatedText(onPressed: installApk, text: '安装apk'),
+          if (Curiosity.isMobile)
             const SizedBox(
                 width: 200,
                 child: TextField(
@@ -78,7 +79,7 @@ class _AppState extends State<App> {
     if (res?.files.isNotEmpty ?? false) {
       final path = res!.files.single.path;
       if (path.isEmptyOrNull) return;
-      final result = await Curiosity().native.installApk(path!);
+      final result = await Curiosity.native.installApk(path!);
       "installApk======$result".log();
     }
   }
@@ -86,8 +87,8 @@ class _AppState extends State<App> {
   @override
   void dispose() {
     super.dispose();
-    Curiosity().native.activityResult.remove(onAndroidActivityResult);
-    Curiosity().native.keyboardStatus.remove(keyboardStatus);
+    Curiosity.native.activityResult.remove(onAndroidActivityResult);
+    Curiosity.native.keyboardStatus.remove(keyboardStatus);
   }
 }
 
