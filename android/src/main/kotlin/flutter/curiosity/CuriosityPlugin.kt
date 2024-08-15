@@ -2,6 +2,7 @@ package flutter.curiosity
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.util.Log
 import android.view.ViewTreeObserver
@@ -76,6 +77,22 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             "getGPSStatus" -> result.success(
                 Tools.getGPSStatus(activityBinding.activity)
             )
+
+            "saveImageToGallery" -> {
+                val bytes = call.argument<ByteArray>("bytes")!!
+                val quality = call.argument<Int>("quality")!!
+                val name = call.argument<String?>("name")
+                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                result.success(
+                    ImageGalleryTools.saveImageToGallery(context, bitmap, quality, name)
+                )
+            }
+
+            "saveFileToGallery" -> {
+                val filePath = call.argument<String>("filePath")!!
+                val name = call.argument<String?>("name")
+                result.success(ImageGalleryTools.saveFileToGallery(context, filePath, name))
+            }
 
             else -> result.notImplemented()
         }

@@ -1,11 +1,15 @@
 library flutter_curiosity;
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 part 'src/native.dart';
 
 part 'src/package_info.dart';
+
+part 'src/image_gallery.dart';
 
 const MethodChannel _channel = MethodChannel('Curiosity');
 

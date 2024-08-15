@@ -29,6 +29,31 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(getPackageInfo())
         case "getGPSStatus":
             result(getGPSStatus())
+        case "saveImageToGallery":
+            let arguments = call.arguments as! [String: Any]
+            let bytes = (arguments["bytes"] as! FlutterStandardTypedData).data
+            let image = UIImage(data: bytes)
+            if image != nil {
+                let quality = arguments["quality"] as! Int
+                let isReturnImagePath = arguments["isReturnImagePathOfIOS"] as! Bool
+                let newImage = image!.jpegData(compressionQuality: CGFloat(quality / 100))!
+                ImageGalleryTools.shared.saveImage(result, UIImage(data: newImage) ?? image!, isReturnImagePath: isReturnImagePath)
+            } else {
+                result(false)
+            }
+        case "saveFileToGallery":
+            let arguments = call.arguments as! [String: Any]
+            let path = arguments["filePath"] as! String
+            let isReturnFilePath = arguments["isReturnPathOfIOS"] as! Bool
+            if ImageGalleryTools.shared.isImageFile(filename: path) {
+                ImageGalleryTools.shared.saveImageAtFileUrl(path, isReturnImagePath: isReturnFilePath)
+            } else {
+                if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path) {
+                    ImageGalleryTools.shared.saveVideo(result, path, isReturnImagePath: isReturnFilePath)
+                } else {
+                    result(false)
+                }
+            }
         default:
             result(FlutterMethodNotImplemented)
         }
