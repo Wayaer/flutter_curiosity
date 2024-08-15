@@ -1,7 +1,7 @@
 import 'package:curiosity/main.dart';
+import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 
 class GetInfoPage extends StatefulWidget {
   const GetInfoPage({super.key});
@@ -16,9 +16,9 @@ class _GetInfoPageState extends State<GetInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBarText('App and Device'),
-      body: ScrollList.builder(
-          header: SliverToBoxAdapter(
+        appBar: AppBarText('App and Device'),
+        body: CustomScrollView(slivers: [
+          SliverToBoxAdapter(
               child: Column(children: <Widget>[
             ElevatedText(onPressed: getGPS, text: '获取gps状态'),
             ElevatedText(onPressed: appInfo, text: '获取app信息'),
@@ -26,13 +26,10 @@ class _GetInfoPageState extends State<GetInfoPage> {
               ElevatedText(
                   onPressed: () => getInstalledApps(), text: '获取Android已安装应用'),
           ])),
-          placeholder: Container(
-              alignment: Alignment.center,
-              margin: const EdgeInsets.symmetric(vertical: 30),
-              child: const Text('暂无数据')),
-          itemCount: list.length,
-          itemBuilder: (_, int index) => list[index]),
-    );
+          SliverList.builder(
+              itemCount: list.length,
+              itemBuilder: (_, int index) => list[index])
+        ]));
   }
 
   Future<void> getInstalledApps() async {

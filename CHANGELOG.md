@@ -1,3 +1,5 @@
+## 6.2.0
+
 ## 6.1.0
 
 * The call mode of `Curiosity()` is changed to `Curiosity.`

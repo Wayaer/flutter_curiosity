@@ -1,8 +1,8 @@
 import 'package:curiosity/src/get_info.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'package:flutter_waya/flutter_waya.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 void main() {
@@ -14,7 +14,7 @@ void main() {
   debugPrint('isMobile = ${Curiosity.isMobile}');
   debugPrint('isDesktop = ${Curiosity.isDesktop}');
   runApp(MaterialApp(
-      navigatorKey: GlobalWayUI().navigatorKey,
+      navigatorKey: FlExtended().navigatorKey,
       theme: ThemeData.light(useMaterial3: true),
       darkTheme: ThemeData.dark(useMaterial3: true),
       debugShowCheckedModeBanner: false,
