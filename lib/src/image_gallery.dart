@@ -1,32 +1,32 @@
 part of '../flutter_curiosity.dart';
 
-class ImageGallery {
-  static const MethodChannel _channel = MethodChannel('image_gallery');
+enum ImageGalleryExtension { jpeg, png }
 
+class ImageGalleryTools {
   /// save image to Gallery
-  static Future<bool> saveImage(Uint8List bytes,
-      {int quality = 80,
+  /// [extension] 保存扩展名 仅支持android  默认JPG
+  /// [name]  保存文件名 仅支持android  默认时间戳
+  static Future<bool> saveBytesImage(Uint8List bytes,
+      {int? quality,
       String? name,
-      bool isReturnImagePathOfIOS = false}) async {
+      ImageGalleryExtension extension = ImageGalleryExtension.jpeg}) async {
     if (!Curiosity.isMobile) return false;
-    final result = await _channel.invokeMethod<bool>('saveImageToGallery', {
+    final result =
+        await _channel.invokeMethod<bool>('saveBytesImageToGallery', {
       'bytes': bytes,
       'quality': quality,
-      'name': name,
-      'isReturnImagePathOfIOS': isReturnImagePathOfIOS
+      'extension': extension.name.toUpperCase(),
+      'name': name
     });
     return result == true;
   }
 
   /// Save the PNG，JPG，JPEG image or video located at [path] to the local device media gallery.
-  static Future<bool> saveFile(String filePath,
-      {String? name, bool isReturnPathOfIOS = false}) async {
+  /// [name]  保存文件名 仅支持android  默认时间戳
+  static Future<bool> saveFilePath(String filePath, {String? name}) async {
     if (!Curiosity.isMobile) return false;
-    final result = await _channel.invokeMethod<bool>('saveFileToGallery', {
-      'filePath': filePath,
-      'name': name,
-      'isReturnPathOfIOS': isReturnPathOfIOS
-    });
+    final result = await _channel.invokeMethod<bool>(
+        'saveFilePathToGallery', {'filePath': filePath, 'name': name});
     return result == true;
   }
 }

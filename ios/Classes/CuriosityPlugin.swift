@@ -29,27 +29,33 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             result(getPackageInfo())
         case "getGPSStatus":
             result(getGPSStatus())
-        case "saveImageToGallery":
+        case "saveBytesImageToGallery":
             let arguments = call.arguments as! [String: Any]
             let bytes = (arguments["bytes"] as! FlutterStandardTypedData).data
-            let image = UIImage(data: bytes)
+            var image = UIImage(data: bytes)
+            let quality = arguments["quality"] as? Int
+            if image != nil, quality != nil {
+                let newImage = image!.jpegData(compressionQuality: CGFloat(quality! / 100))
+                if newImage != nil {
+                    let newUIImage = UIImage(data: newImage!)
+                    if newUIImage != nil {
+                        image = newUIImage
+                    }
+                }
+            }
             if image != nil {
-                let quality = arguments["quality"] as! Int
-                let isReturnImagePath = arguments["isReturnImagePathOfIOS"] as! Bool
-                let newImage = image!.jpegData(compressionQuality: CGFloat(quality / 100))!
-                ImageGalleryTools.shared.saveImage(result, UIImage(data: newImage) ?? image!, isReturnImagePath: isReturnImagePath)
+                ImageGalleryTools.shared.saveImage(result, image!)
             } else {
                 result(false)
             }
-        case "saveFileToGallery":
+        case "saveFilePathToGallery":
             let arguments = call.arguments as! [String: Any]
             let path = arguments["filePath"] as! String
-            let isReturnFilePath = arguments["isReturnPathOfIOS"] as! Bool
             if ImageGalleryTools.shared.isImageFile(filename: path) {
-                ImageGalleryTools.shared.saveImageAtFileUrl(path, isReturnImagePath: isReturnFilePath)
+                ImageGalleryTools.shared.saveImageAtFileUrl(result, path)
             } else {
                 if UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(path) {
-                    ImageGalleryTools.shared.saveVideo(result, path, isReturnImagePath: isReturnFilePath)
+                    ImageGalleryTools.shared.saveVideo(result, path)
                 } else {
                     result(false)
                 }

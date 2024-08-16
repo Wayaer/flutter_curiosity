@@ -1,4 +1,5 @@
 import 'package:curiosity/src/get_info.dart';
+import 'package:curiosity/src/image_gallery.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/material.dart';
@@ -7,16 +8,16 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  debugPrint('isWeb = ${Curiosity.isWeb}');
-  debugPrint('isMacOS = ${Curiosity.isMacOS}}');
-  debugPrint('isAndroid = ${Curiosity.isAndroid}');
-  debugPrint('isIOS = ${Curiosity.isIOS}');
-  debugPrint('isMobile = ${Curiosity.isMobile}');
-  debugPrint('isDesktop = ${Curiosity.isDesktop}');
+  log('isWeb = ${Curiosity.isWeb}\n'
+      'isMacOS = ${Curiosity.isMacOS}\n'
+      'isAndroid = ${Curiosity.isAndroid}\n'
+      'isIOS = ${Curiosity.isIOS}\n'
+      'isMobile = ${Curiosity.isMobile}\n'
+      'isDesktop = ${Curiosity.isDesktop}');
   runApp(MaterialApp(
       navigatorKey: FlExtended().navigatorKey,
-      theme: ThemeData.light(useMaterial3: true),
-      darkTheme: ThemeData.dark(useMaterial3: true),
+      theme: ThemeData.light(),
+      darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       title: 'Curiosity',
       home: Scaffold(
@@ -62,12 +63,18 @@ class _AppState extends State<App> {
                 onPressed: () => push(const GetInfoPage()), text: '获取信息'),
           if (Curiosity.isAndroid)
             ElevatedText(onPressed: installApk, text: '安装apk'),
-          if (Curiosity.isMobile)
+          if (Curiosity.isMobile) ...[
+            ElevatedText(
+                onPressed: () {
+                  push(const ImageGalleryPage());
+                },
+                text: 'ImageGalleryTools'),
             const SizedBox(
                 width: 200,
                 child: TextField(
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(hintText: '监听键盘状态'))),
+          ]
         ]);
   }
 

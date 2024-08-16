@@ -1,5 +1,7 @@
 ## 6.2.0
 
+* Added `ImageGalleryTools` for saving images to albums, supporting Android and iOS
+
 ## 6.1.0
 
 * The call mode of `Curiosity()` is changed to `Curiosity.`

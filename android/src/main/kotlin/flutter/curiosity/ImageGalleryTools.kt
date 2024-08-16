@@ -4,6 +4,7 @@ import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Environment
 import android.os.Build
@@ -12,11 +13,14 @@ import java.io.File
 import java.io.FileInputStream
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
+import io.flutter.plugin.common.MethodCall
 import java.io.OutputStream
 
 object ImageGalleryTools {
 
-    private fun generateUri(context: Context, extension: String = "", name: String? = null): Uri? {
+    private fun generateUri(
+        context: Context, extension: String = "JPG", name: String? = null
+    ): Uri? {
         val fileName = name ?: System.currentTimeMillis().toString()
         val mimeType = getMIMEType(extension)
         val isVideo = mimeType?.startsWith("video") == true
@@ -92,25 +96,33 @@ object ImageGalleryTools {
         }
     }
 
-    fun saveImageToGallery(context: Context, bitmap: Bitmap, quality: Int, name: String?): Boolean {
+    fun saveBytesImage(context: Context, call: MethodCall): Boolean {
+        val byteArray = call.argument<ByteArray>("bytes")!!
+        val quality = call.argument<Int?>("quality")
+        val name = call.argument<String?>("name")
+        val extension = call.argument<String>("extension")!!
+        var bitmap: Bitmap? = null
         val fileUri: Uri?
         var fos: OutputStream? = null
         var success = false
         try {
-            fileUri = generateUri(context, "jpg", name = name)
+            bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            fileUri = generateUri(context, extension, name = name)
             if (fileUri != null) {
                 fos = context.contentResolver.openOutputStream(fileUri)
-                if (fos != null) {
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, quality, fos)
-                    fos.flush()
+                fos?.let {
+                    val format = Bitmap.CompressFormat.valueOf(extension)
+                    bitmap.compress(format, quality ?: 100, it)
+                    it.flush()
                     success = true
                 }
             }
         } catch (e: Exception) {
+            println("saveBytesImage exception : $e")
             return false
         } finally {
             fos?.close()
-            bitmap.recycle()
+            bitmap?.recycle()
         }
         if (success) {
             sendBroadcast(context, fileUri)
@@ -118,7 +130,7 @@ object ImageGalleryTools {
         return success
     }
 
-    fun saveFileToGallery(context: Context, filePath: String, name: String?): Boolean {
+    fun saveFilePath(context: Context, filePath: String, name: String?): Boolean {
         val fileUri: Uri?
         var outputStream: OutputStream? = null
         var fileInputStream: FileInputStream? = null
@@ -141,6 +153,7 @@ object ImageGalleryTools {
                 }
             }
         } catch (e: Exception) {
+            println("saveFilePath exception : $e")
             return false
         } finally {
             outputStream?.close()

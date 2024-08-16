@@ -5,7 +5,7 @@ version: 1.0.0+1
 
 environment:
   sdk: '>=2.18.0 <4.0.0'
-  flutter: '>=3.16.0'
+  flutter: '>=3.24.0'
 
 dependencies:
   flutter:
@@ -15,6 +15,7 @@ dependencies:
   fl_extended: ^1.5.0
   permission_handler: ^11.3.1
   file_picker: ^8.1.1
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_lints: ^4.0.0
