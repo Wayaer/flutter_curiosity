@@ -7,11 +7,7 @@ plugins {
 android {
     namespace 'com.curiosity.example'
     compileSdk = flutter.compileSdkVersion
-    ndkVersion = flutter.ndkVersion
 
-    sourceSets {
-        main.java.srcDirs += 'src/main/kotlin'
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -20,6 +16,7 @@ android {
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8
     }
+
     sourceSets {
         main.java.srcDirs += 'src/main/kotlin'
     }
