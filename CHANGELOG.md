@@ -1,3 +1,7 @@
+## 6.3.0
+
+* Update gradle version
+
 ## 6.2.0
 
 * Added `ImageGalleryTools` for saving images to albums, supporting Android and iOS
