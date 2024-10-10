@@ -1,4 +1,4 @@
-group 'flutter.curiosity'
+group "flutter.curiosity"
 version '1.0'
 
 buildscript {
@@ -8,7 +8,7 @@ buildscript {
     }
 
     dependencies {
-        classpath("com.android.tools.build:gradle:8.1.0")
+        classpath 'com.android.tools.build:gradle:8.5.2'
     }
 }
 
@@ -25,17 +25,8 @@ apply plugin: "kotlin-android"
 android {
     compileSdk = 34
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8
-    }
-
     if (project.android.hasProperty("namespace")) {
-        namespace 'flutter.curiosity'
+        namespace = "flutter.curiosity"
     }
 
     sourceSets {
@@ -45,5 +36,4 @@ android {
     defaultConfig {
         minSdk = 21
     }
-
 }
