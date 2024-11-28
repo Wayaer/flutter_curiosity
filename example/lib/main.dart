@@ -7,8 +7,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await 2.seconds.delayed();
   log('isWeb = ${Curiosity.isWeb}\n'
       'isMacOS = ${Curiosity.isMacOS}\n'
       'isAndroid = ${Curiosity.isAndroid}\n'
@@ -23,9 +24,10 @@ void main() {
       title: 'Curiosity',
       home: AnnotatedRegion<SystemUiOverlayStyle>(
         value: SystemUiOverlayStyle(
-            systemNavigationBarColor: Colors.red.withOpacity(0.2),
-            systemNavigationBarIconBrightness: Brightness.light,
-            systemNavigationBarDividerColor: Colors.transparent),
+          // systemNavigationBarColor: Colors.red,
+          systemNavigationBarColor: Colors.transparent,
+          systemNavigationBarIconBrightness: Brightness.light,
+        ),
         child: Scaffold(
             appBar: AppBarText('Curiosity Plugin Example'), body: const App()),
       )));

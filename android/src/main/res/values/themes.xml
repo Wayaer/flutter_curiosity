@@ -5,7 +5,7 @@
         <item name="android:windowBackground">@android:color/white</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowTranslucentStatus">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
         <item name="android:windowTranslucentNavigation">true</item>
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
@@ -16,4 +16,5 @@
         <item name="android:windowBackground">@drawable/launch_light_icon</item>
     </style>
 
+    <style name="NormalTheme" parent="BaseAppTheme" />
 </resources>

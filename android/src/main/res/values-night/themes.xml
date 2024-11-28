@@ -16,4 +16,5 @@
         <item name="android:windowBackground">@drawable/launch_night_icon</item>
     </style>
 
+    <style name="NormalTheme" parent="BaseAppTheme" />
 </resources>
