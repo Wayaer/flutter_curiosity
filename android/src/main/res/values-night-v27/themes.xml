@@ -6,4 +6,6 @@
         <item name="android:windowLightNavigationBar">false</item>
         <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
     </style>
+
+    <style name="BaseNormalTheme" parent="BaseAppTheme" />
 </resources>

@@ -12,9 +12,7 @@
 
     <style name="BaseAppTheme" parent="DefaultBlackTheme" />
 
-    <style name="LaunchIconTheme" parent="BaseAppTheme">
-        <item name="android:windowBackground">@drawable/launch_night_icon</item>
-    </style>
+    <style name="LaunchIconTheme" parent="LaunchIconNightTheme" />
 
-    <style name="NormalTheme" parent="BaseAppTheme" />
+    <style name="BaseNormalTheme" parent="BaseAppTheme" />
 </resources>

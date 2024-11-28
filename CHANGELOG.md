@@ -1,3 +1,7 @@
+## 6.4.0
+
+* Add multiple themes for Android ,`BaseAppTheme` and `BaseNormalTheme`
+
 ## 6.3.1
 
 * Update gradle version

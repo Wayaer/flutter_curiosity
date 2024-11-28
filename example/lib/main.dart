@@ -9,7 +9,6 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await 2.seconds.delayed();
   log('isWeb = ${Curiosity.isWeb}\n'
       'isMacOS = ${Curiosity.isMacOS}\n'
       'isAndroid = ${Curiosity.isAndroid}\n'
@@ -22,15 +21,8 @@ void main() async {
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       title: 'Curiosity',
-      home: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          // systemNavigationBarColor: Colors.red,
-          systemNavigationBarColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
-        ),
-        child: Scaffold(
-            appBar: AppBarText('Curiosity Plugin Example'), body: const App()),
-      )));
+      home: Scaffold(
+          appBar: AppBarText('Curiosity Plugin Example'), body: const App())));
 }
 
 class App extends StatefulWidget {
@@ -65,8 +57,6 @@ class _AppState extends State<App> {
     return Universal(
         mainAxisAlignment: MainAxisAlignment.center,
         expand: true,
-        isScroll: true,
-        color: Colors.amber,
         children: [
           if (Curiosity.isMobile || Curiosity.isMacOS)
             ElevatedText(
@@ -85,7 +75,6 @@ class _AppState extends State<App> {
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(hintText: '监听键盘状态'))),
           ],
-          SizedBox(height: 1000)
         ]);
   }
 

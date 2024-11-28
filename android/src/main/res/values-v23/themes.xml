@@ -5,4 +5,5 @@
         <item name="android:windowLightStatusBar">true</item>
     </style>
 
+    <style name="BaseNormalTheme" parent="BaseAppTheme" />
 </resources>
