@@ -4,7 +4,7 @@
 
 ### android
 
-- 自动 添加 android http无法请求接口 解决方法
+- 自动 添加 android http 允许请求配置
 - 自动 添加 FileProvider 配置至 AndroidManifest
 - 按需要 添加以下权限
 

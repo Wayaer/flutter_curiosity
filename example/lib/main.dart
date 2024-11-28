@@ -3,6 +3,7 @@ import 'package:curiosity/src/image_gallery.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -20,9 +21,14 @@ void main() {
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       title: 'Curiosity',
-      home: Scaffold(
-          appBar: AppBarText('Flutter Curiosity Plugin Example'),
-          body: const App())));
+      home: AnnotatedRegion<SystemUiOverlayStyle>(
+        value: SystemUiOverlayStyle(
+            systemNavigationBarColor: Colors.red.withOpacity(0.2),
+            systemNavigationBarIconBrightness: Brightness.light,
+            systemNavigationBarDividerColor: Colors.transparent),
+        child: Scaffold(
+            appBar: AppBarText('Curiosity Plugin Example'), body: const App()),
+      )));
 }
 
 class App extends StatefulWidget {
@@ -57,6 +63,8 @@ class _AppState extends State<App> {
     return Universal(
         mainAxisAlignment: MainAxisAlignment.center,
         expand: true,
+        isScroll: true,
+        color: Colors.amber,
         children: [
           if (Curiosity.isMobile || Curiosity.isMacOS)
             ElevatedText(
@@ -74,7 +82,8 @@ class _AppState extends State<App> {
                 child: TextField(
                     textAlign: TextAlign.center,
                     decoration: InputDecoration(hintText: '监听键盘状态'))),
-          ]
+          ],
+          SizedBox(height: 1000)
         ]);
   }
 
