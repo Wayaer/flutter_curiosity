@@ -1,3 +1,7 @@
+## 6.5.0
+
+* Migrate to 3.27.0
+
 ## 6.4.0
 
 * Add multiple themes for Android ,`BaseAppTheme` and `BaseNormalTheme`
