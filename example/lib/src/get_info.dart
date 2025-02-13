@@ -21,7 +21,6 @@ class _GetInfoPageState extends State<GetInfoPage> {
           SliverToBoxAdapter(
               child: Column(children: <Widget>[
             ElevatedText(onPressed: getGPS, text: '获取gps状态'),
-            ElevatedText(onPressed: appInfo, text: '获取app信息'),
             if (Curiosity.isAndroid)
               ElevatedText(
                   onPressed: () => getInstalledApps(), text: '获取Android已安装应用'),
@@ -51,16 +50,6 @@ class _GetInfoPageState extends State<GetInfoPage> {
         child:
             Column(crossAxisAlignment: CrossAxisAlignment.start, children: app),
       ));
-    });
-    setState(() {});
-  }
-
-  Future<void> appInfo() async {
-    final data = await Curiosity.native.packageInfo;
-    if (data == null) return;
-    list.clear();
-    data.toMap().forEach((String key, dynamic value) {
-      list.add(TextBox(key, value));
     });
     setState(() {});
   }

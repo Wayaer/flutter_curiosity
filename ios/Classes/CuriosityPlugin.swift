@@ -25,10 +25,9 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         switch call.method {
         case "exitApp":
             exit(0)
-        case "getPackageInfo":
-            result(getPackageInfo())
         case "getGPSStatus":
-            result(getGPSStatus())
+            // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
+            result(CLLocationManager.locationServicesEnabled())
         case "saveBytesImageToGallery":
             let arguments = call.arguments as! [String: Any]
             let bytes = (arguments["bytes"] as! FlutterStandardTypedData).data
@@ -81,24 +80,5 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             keyboardStatus = false
             channel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
         }
-    }
-
-    func getPackageInfo() -> [AnyHashable: Any?]? {
-        let appInfo = Bundle.main.infoDictionary
-        return [
-            "version": appInfo?["CFBundleShortVersionString"],
-            "buildNumber": appInfo?["CFBundleVersion"] as! String,
-            "packageName": appInfo?["CFBundleIdentifier"],
-            "appName": appInfo?["CFBundleName"],
-            "sdkBuild": appInfo?["DTSDKBuild"],
-            "platformName": appInfo?["DTPlatformName"],
-            "minimumOSVersion": appInfo?["MinimumOSVersion"],
-            "platformVersion": appInfo?["DTPlatformVersion"],
-        ]
-    }
-
-    // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的
-    func getGPSStatus() -> Bool {
-        CLLocationManager.locationServicesEnabled()
     }
 }

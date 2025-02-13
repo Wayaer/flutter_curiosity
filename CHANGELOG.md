@@ -1,6 +1,7 @@
-## 6.5.0
+## 6.6.0
 
-* Migrate to 3.27.0
+* Migrate to 3.29.0
+* Compatible with Android 35
 
 ## 6.4.0
 

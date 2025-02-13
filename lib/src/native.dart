@@ -47,20 +47,6 @@ class NativeTools {
     await _channel.invokeMethod<dynamic>('exitApp');
   }
 
-  PackageSelfInfo? _packageInfo;
-
-  Future<PackageSelfInfo?> get packageInfo async =>
-      _packageInfo ??= await getPackageInfo();
-
-  /// get Android/IOS/MacOS info
-  Future<PackageSelfInfo?> getPackageInfo() async {
-    if (!_supportPlatform) return null;
-    final Map<String, dynamic>? map =
-        await _channel.invokeMapMethod<String, dynamic>('getPackageInfo');
-    if (map != null) return PackageSelfInfo.fromJson(map);
-    return null;
-  }
-
   /// get Android  installed apps
   Future<List<AppPackageInfo>> get getInstalledApps async {
     if (!Curiosity.isAndroid) return [];

@@ -8,7 +8,7 @@
 PRODUCT_NAME = curiosity
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.curiosity.example.curiosity
+PRODUCT_BUNDLE_IDENTIFIER = com.curiosity.example
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2021 com.curiosity.example. All rights reserved.

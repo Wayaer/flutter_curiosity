@@ -66,8 +66,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
                 startActivity(Tools.getInstallAppIntent(context, call.arguments as String))
             )
 
-            "getPackageInfo" -> result.success(Tools.getPackageInfo(context))
-
             "getInstalledApps" -> result.success(
                 Tools.getInstalledApps(activityBinding.activity)
             )

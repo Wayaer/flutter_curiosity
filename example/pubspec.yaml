@@ -12,9 +12,9 @@ dependencies:
     sdk: flutter
   flutter_curiosity:
     path: ../
-  fl_extended: ^1.6.0
+  fl_extended: ^1.7.0
   permission_handler: ^11.3.1
-  file_picker: ^8.1.5
+  file_picker: ^8.3.5
   path_provider: ^2.1.5
 
 dev_dependencies:

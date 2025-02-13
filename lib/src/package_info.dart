@@ -1,98 +1,40 @@
 part of '../flutter_curiosity.dart';
 
-abstract class _PackageInfo {
-  _PackageInfo(
-      {this.packageName, this.version, this.buildNumber, this.appName});
-
-  final String? packageName;
-  final String? version;
-  final String? buildNumber;
-  final String? appName;
-}
-
-class PackageSelfInfo extends _PackageInfo {
-  PackageSelfInfo(
-      {this.firstInstallTime,
-      this.lastUpdateTime,
-      this.minimumOSVersion,
-      this.platformVersion,
-      this.sdkBuild,
-      this.platformName,
-      super.packageName,
-      super.version,
-      super.buildNumber,
-      super.appName});
-
-  factory PackageSelfInfo.fromJson(Map<String, dynamic> json) =>
-      PackageSelfInfo(
-
-          /// android ios macos
-          version: json['version'] as String?,
-          buildNumber: json['buildNumber'] as String?,
-          packageName: json['packageName'] as String?,
-          appName: json['appName'] as String?,
-
-          /// only Android
-          firstInstallTime: json['firstInstallTime'] as int?,
-          lastUpdateTime: json['lastUpdateTime'] as int?,
-
-          /// only ios
-          minimumOSVersion: json['minimumOSVersion'] as String?,
-          platformVersion: json['platformVersion'] as String?,
-          sdkBuild: json['sdkBuild'] as String?,
-          platformName: json['platformName'] as String?);
-
-  /// only Android
-  final int? firstInstallTime;
-  final int? lastUpdateTime;
-
-  /// only ios
-  final String? minimumOSVersion;
-  final String? platformVersion;
-  final String? sdkBuild;
-  final String? platformName;
-
-  Map<String, dynamic> toMap() => <String, dynamic>{
-        'version': version,
-        'packageName': packageName,
-        'appName': appName,
-        'buildNumber': buildNumber,
-        'lastUpdateTime': lastUpdateTime,
-        'firstInstallTime': firstInstallTime,
-        'minimumOSVersion': minimumOSVersion,
-        'platformVersion': platformVersion,
-        'sdkBuild': sdkBuild,
-        'platformName': platformName,
-      };
-}
-
-class AppPackageInfo extends _PackageInfo {
+class AppPackageInfo {
   AppPackageInfo(
-      {this.isSystemApp,
-      this.lastUpdateTime,
-      super.packageName,
-      super.version,
-      super.buildNumber,
-      super.appName});
+      {required this.packageName,
+      required this.version,
+      required this.buildNumber,
+      required this.appName,
+      required this.isSystemApp,
+      required this.lastUpdateTime,
+      required this.firstInstallTime});
 
   factory AppPackageInfo.fromJson(Map<dynamic, dynamic> json) => AppPackageInfo(
       isSystemApp: json['isSystemApp'] as bool?,
       appName: json['appName'] as String?,
       lastUpdateTime: json['lastUpdateTime'] as int?,
+      firstInstallTime: json['firstInstallTime'] as int?,
       buildNumber: json['buildNumber'] as String?,
       version: json['version'] as String?,
       packageName: json['packageName'] as String?);
 
+  final String? packageName;
+  final String? version;
+  final String? buildNumber;
+  final String? appName;
   final bool? isSystemApp;
   final int? lastUpdateTime;
+  final int? firstInstallTime;
 
-  Map<String, dynamic> toMap() => <String, dynamic>{
-        'isSystemApp': isSystemApp,
-        'appName': appName,
-        'lastUpdateTime': lastUpdateTime,
-        'buildNumber': buildNumber,
+  Map<String, dynamic> toMap() => {
         'version': version,
-        'packageName': packageName
+        'packageName': packageName,
+        'appName': appName,
+        'buildNumber': buildNumber,
+        'isSystemApp': isSystemApp,
+        'lastUpdateTime': lastUpdateTime,
+        'firstInstallTime': firstInstallTime,
       };
 }
 
