@@ -9,6 +9,8 @@ part 'src/package_info.dart';
 
 part 'src/image_gallery.dart';
 
+part 'src/keyboard.dart';
+
 const MethodChannel _channel = MethodChannel('Curiosity');
 
 class Curiosity {

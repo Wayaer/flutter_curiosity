@@ -10,7 +10,7 @@ class AppPackageInfo {
       required this.lastUpdateTime,
       required this.firstInstallTime});
 
-  factory AppPackageInfo.fromJson(Map<dynamic, dynamic> json) => AppPackageInfo(
+  factory AppPackageInfo.formMap(Map<dynamic, dynamic> json) => AppPackageInfo(
       isSystemApp: json['isSystemApp'] as bool?,
       appName: json['appName'] as String?,
       lastUpdateTime: json['lastUpdateTime'] as int?,
@@ -39,7 +39,7 @@ class AppPackageInfo {
 }
 
 class AndroidActivityResult {
-  AndroidActivityResult.formJson(Map<dynamic, dynamic> json) {
+  AndroidActivityResult.formMap(Map<dynamic, dynamic> json) {
     requestCode = json['requestCode'] as int;
     resultCode = json['resultCode'] as int;
     data = json['data'] as dynamic;

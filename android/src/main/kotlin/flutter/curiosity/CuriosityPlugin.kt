@@ -29,9 +29,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
         activityBinding = binding
         channel.setMethodCallHandler(this)
         binding.addActivityResultListener(this)
-        activityBinding.activity.window?.decorView?.viewTreeObserver?.addOnGlobalLayoutListener(
-            this
-        )
+
     }
 
     override fun onReattachedToActivityForConfigChanges(pluginBinding: ActivityPluginBinding) {
@@ -44,9 +42,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
 
     override fun onDetachedFromActivity() {
         activityBinding.removeActivityResultListener(this)
-        activityBinding.activity.window?.decorView?.viewTreeObserver?.removeOnGlobalLayoutListener(
-            this
-        )
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
@@ -54,14 +49,11 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     private lateinit var result: MethodChannel.Result
-    private var keyboardStatus = false
-
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         this.result = result
         when (call.method) {
             "exitApp" -> Tools.exitApp(activityBinding.activity)
-
             "installApk" -> result.success(
                 startActivity(Tools.getInstallAppIntent(context, call.arguments as String))
             )
@@ -69,6 +61,18 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             "getInstalledApps" -> result.success(
                 Tools.getInstalledApps(activityBinding.activity)
             )
+
+            "addKeyboardListener" -> {
+                val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
+                viewTreeObserver?.addOnGlobalLayoutListener(this)
+                result.success(viewTreeObserver != null)
+            }
+
+            "removeKeyboardListener" -> {
+                val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
+                viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                result.success(viewTreeObserver != null)
+            }
 
             "getGPSStatus" -> result.success(
                 Tools.getGPSStatus(activityBinding.activity)
@@ -120,10 +124,18 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
         val rect = Rect()
         val mainView = activityBinding.activity.window.decorView
         mainView.getWindowVisibleDisplayFrame(rect)
-        val newStatus = rect.height().toDouble() / mainView.rootView.height.toDouble() < 0.85
-        if (keyboardStatus == newStatus) return
-        keyboardStatus = newStatus
-        channel.invokeMethod("keyboardStatus", newStatus)
+        val density = context.resources.displayMetrics.density
+        channel.invokeMethod(
+            "onKeyboardStatus", mapOf(
+                "density" to density,
+                "rootHeight" to mainView.rootView.height,
+                "rootWidth" to mainView.rootView.width,
+                "bottom" to rect.bottom,
+                "top" to rect.top,
+                "left" to rect.left,
+                "right" to rect.right,
+            )
+        )
     }
 
 }

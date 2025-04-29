@@ -3,8 +3,8 @@ import Flutter
 
 public class CuriosityPlugin: NSObject, FlutterPlugin {
     var channel: FlutterMethodChannel
-
-    var keyboardStatus = false
+    
+    let notificationCenter = NotificationCenter.default
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "Curiosity", binaryMessenger: registrar.messenger())
@@ -15,11 +15,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
     init(_ channel: FlutterMethodChannel) {
         self.channel = channel
         super.init()
-        let center = NotificationCenter.default
-        center.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        center.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        center.addObserver(self, selector: #selector(didHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-    }
+   }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
@@ -47,6 +43,19 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             } else {
                 result(false)
             }
+   
+        case "addKeyboardListener":
+            notificationCenter.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardDidShowNotification, object: nil)
+            notificationCenter.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+            notificationCenter.addObserver(self, selector: #selector(didHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+            notificationCenter.addObserver(self, selector: #selector(didHide), name: UIResponder.keyboardDidHideNotification, object: nil)
+            result(true)
+        case "removeKeyboardListener":
+            notificationCenter.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
+            notificationCenter.removeObserver(self,  name: UIResponder.keyboardWillShowNotification, object: nil)
+            notificationCenter.removeObserver(self,  name: UIResponder.keyboardWillHideNotification, object: nil)
+            notificationCenter.removeObserver(self,  name: UIResponder.keyboardDidHideNotification, object: nil)
+            result(true)
         case "saveFilePathToGallery":
             let arguments = call.arguments as! [String: Any]
             let path = arguments["filePath"] as! String
@@ -68,17 +77,31 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
         channel.setMethodCallHandler(nil)
     }
 
-    @objc func didShow() {
-        if !keyboardStatus {
-            keyboardStatus = true
-            channel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
-        }
+    @objc func didShow(_ notification: Notification) {
+       let rect = getKeyboardHeight(notification)
+        channel.invokeMethod("onKeyboardStatus", arguments: [
+            "visibility":true,
+            "width":rect.width,
+            "height":rect.height,
+         
+        ])
     }
-
-    @objc func didHide() {
-        if keyboardStatus {
-            keyboardStatus = false
-            channel.invokeMethod("keyboardStatus", arguments: keyboardStatus)
+    
+    func getKeyboardHeight(_ notification: Notification) ->CGRect{
+        if let userInfo = notification.userInfo,
+           let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
+            return  keyboardFrame
         }
+        return CGRect()
+    }
+    
+
+    @objc func didHide(_ notification: Notification) {
+        let rect = getKeyboardHeight(notification)
+        channel.invokeMethod("onKeyboardStatus", arguments: [
+            "visibility":false,
+            "width":rect.width,
+            "height":rect.height,
+        ])
     }
 }

@@ -1,3 +1,8 @@
+## 6.7.0
+
+* Added `addKeyboardListener`,`removeKeyboardListener` for  `NativeTools`
+* Added `NativeKeyboardStatus` for Native
+
 ## 6.6.0
 
 * Migrate to 3.29.0

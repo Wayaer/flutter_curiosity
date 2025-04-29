@@ -21,7 +21,9 @@ void main() async {
       debugShowCheckedModeBanner: false,
       title: 'Curiosity',
       home: Scaffold(
-          appBar: AppBarText('Curiosity Plugin Example'), body: const App())));
+          resizeToAvoidBottomInset: false,
+          appBar: AppBarText('Curiosity Plugin Example'),
+          body: const App())));
 }
 
 class App extends StatefulWidget {
@@ -31,13 +33,17 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-class _AppState extends State<App> {
+class _AppState extends State<App> with WidgetsBindingObserver {
+  ValueNotifier<NativeKeyboardStatus?> keyboardStatusNotifier =
+      ValueNotifier(null);
+
   @override
   void initState() {
     super.initState();
+    addObserver(this);
     if (Curiosity.isMobile) {
       Curiosity.native.activityResult.add(onAndroidActivityResult);
-      Curiosity.native.keyboardStatus.add(keyboardStatus);
+      Curiosity.native.addKeyboardListener(keyboardStatus);
     }
   }
 
@@ -47,34 +53,37 @@ class _AppState extends State<App> {
         .log();
   }
 
-  void keyboardStatus(bool visibility) {
-    showToast(visibility ? '键盘已弹出' : '键盘已关闭');
+  void keyboardStatus(NativeKeyboardStatus status) {
+    keyboardStatusNotifier.value = status;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Universal(
-        mainAxisAlignment: MainAxisAlignment.center,
-        expand: true,
-        children: [
-          if (Curiosity.isMobile || Curiosity.isMacOS)
-            ElevatedText(
-                onPressed: () => push(const GetInfoPage()), text: '获取信息'),
-          if (Curiosity.isAndroid)
-            ElevatedText(onPressed: installApk, text: '安装apk'),
-          if (Curiosity.isMobile) ...[
-            ElevatedText(
-                onPressed: () {
-                  push(const ImageGalleryPage());
-                },
-                text: 'ImageGalleryTools'),
-            const SizedBox(
-                width: 200,
-                child: TextField(
-                    textAlign: TextAlign.center,
-                    decoration: InputDecoration(hintText: '监听键盘状态'))),
-          ],
-        ]);
+    return Universal(expand: true, children: [
+      if (Curiosity.isMobile || Curiosity.isMacOS)
+        ElevatedText(onPressed: () => push(const GetInfoPage()), text: '获取信息'),
+      if (Curiosity.isAndroid)
+        ElevatedText(onPressed: installApk, text: '安装apk'),
+      if (Curiosity.isMobile) ...[
+        ElevatedText(
+            onPressed: () {
+              push(const ImageGalleryPage());
+            },
+            text: 'ImageGalleryTools'),
+        Universal(padding: EdgeInsets.all(20), children: [
+          ValueListenableBuilder(
+              valueListenable: keyboardStatusNotifier,
+              builder: (_, value, __) {
+                return BText(
+                    'keyboardHeight:${value?.keyboardHeight}\nvisibility:${value?.visibility}',
+                    textAlign: TextAlign.center);
+              }),
+          TextField(
+              textAlign: TextAlign.center,
+              decoration: InputDecoration(hintText: '监听键盘状态'))
+        ]),
+      ],
+    ]);
   }
 
   void installApk() async {
@@ -94,7 +103,7 @@ class _AppState extends State<App> {
   void dispose() {
     super.dispose();
     Curiosity.native.activityResult.remove(onAndroidActivityResult);
-    Curiosity.native.keyboardStatus.remove(keyboardStatus);
+    Curiosity.native.removeKeyboardListener(keyboardStatus);
   }
 }
 
