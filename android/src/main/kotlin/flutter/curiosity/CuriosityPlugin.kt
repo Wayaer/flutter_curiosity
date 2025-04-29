@@ -29,7 +29,6 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
         activityBinding = binding
         channel.setMethodCallHandler(this)
         binding.addActivityResultListener(this)
-
     }
 
     override fun onReattachedToActivityForConfigChanges(pluginBinding: ActivityPluginBinding) {
