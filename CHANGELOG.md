@@ -1,7 +1,7 @@
 ## 6.7.0
 
 * Added `addKeyboardListener`,`removeKeyboardListener` for  `NativeTools`
-* Added `NativeKeyboardStatus` for Native
+* Added `NativeKeyboardStatus`,`AndroidKeyboardParams`,`IOSKeyboardParams` for Native
 
 ## 6.6.0
 

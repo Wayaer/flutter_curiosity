@@ -69,9 +69,12 @@ class AndroidKeyboardParams {
         left = map['left'] as int? ?? 0,
         top = map['top'] as int? ?? 0,
         right = map['right'] as int? ?? 0,
-        bottom = map['bottom'] as int? ?? 0;
+        bottom = map['bottom'] as int? ?? 0 {
+    if (!visibility) _navigationBarHeight = keyboardHeight;
+  }
 
   /// [MediaQuery.of(this).devicePixelRatio]
+  /// 要转换 flutter 单位需要 value/[density]
   final double density;
 
   /// 整个 view 的宽高  px
@@ -86,6 +89,13 @@ class AndroidKeyboardParams {
 
   /// 键盘的高度 如果有导航栏 导航栏也是会包含
   int get keyboardHeight => rootHeight - bottom;
+
+  /// 导航栏高度
+  /// 当键盘关闭时 [keyboardHeight] 如果有值那就是导航栏高度，需要单独保存
+  /// 当键盘打开时 无法判断导航栏高度
+  int _navigationBarHeight = 0;
+
+  int get navigationBarHeight => _navigationBarHeight;
 
   /// 键盘是否显示
   bool get visibility => (bottom / rootHeight) < 0.85;
