@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 part 'src/native.dart';
@@ -9,7 +10,9 @@ part 'src/package_info.dart';
 
 part 'src/image_gallery.dart';
 
-part 'src/keyboard.dart';
+part 'src/keyboard_status.dart';
+
+part 'src/android_activity_result.dart';
 
 const MethodChannel _channel = MethodChannel('Curiosity');
 

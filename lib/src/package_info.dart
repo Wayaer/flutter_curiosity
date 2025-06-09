@@ -37,17 +37,3 @@ class AppPackageInfo {
         'firstInstallTime': firstInstallTime,
       };
 }
-
-class AndroidActivityResult {
-  AndroidActivityResult.formMap(Map<dynamic, dynamic> json) {
-    requestCode = json['requestCode'] as int;
-    resultCode = json['resultCode'] as int;
-    data = json['data'] as dynamic;
-    extras = json['extras'] as dynamic;
-  }
-
-  late int requestCode;
-  late int resultCode;
-  dynamic data;
-  dynamic extras;
-}

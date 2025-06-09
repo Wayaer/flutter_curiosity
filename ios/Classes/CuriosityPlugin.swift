@@ -90,12 +90,11 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
     func getKeyboardHeight(_ notification: Notification) ->CGRect{
         if let userInfo = notification.userInfo,
            let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect {
-            return  keyboardFrame
+            return keyboardFrame
         }
         return CGRect()
     }
     
-
     @objc func didHide(_ notification: Notification) {
         let rect = getKeyboardHeight(notification)
         channel.invokeMethod("onKeyboardStatus", arguments: [
@@ -104,4 +103,5 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
             "height":rect.height,
         ])
     }
+
 }

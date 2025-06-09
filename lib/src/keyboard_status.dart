@@ -38,7 +38,7 @@ class NativeKeyboardStatus {
   double? get keyboardHeight {
     if (Curiosity.isAndroid && _android != null) {
       return _android!.keyboardHeight / _android!.density;
-    } else if (Curiosity.isIOS) {
+    } else if (Curiosity.isIOS && _ios != null) {
       return _ios!.height;
     }
     return null;
@@ -99,4 +99,41 @@ class AndroidKeyboardParams {
 
   /// 键盘是否显示
   bool get visibility => (bottom / rootHeight) < 0.85;
+}
+
+mixin NativeKeyboardStatusMixin {
+  NativeKeyboardStatus? _keyboardParams;
+
+  NativeKeyboardStatus? get keyboardParams => _keyboardParams;
+
+  /// 键盘是否显示
+  bool get keyboardVisible => _keyboardParams?.visibility ?? false;
+
+  /// 键盘监听回调
+  Future<bool> addKeyboardListener() =>
+      NativeTools().addKeyboardListener(keyboardListener);
+
+  /// 键盘监听回调
+  void keyboardListener(NativeKeyboardStatus params) {
+    _keyboardParams = params;
+  }
+
+  /// 移除键盘监听回调
+  Future<bool> removeKeyboardListener() =>
+      NativeTools().removeKeyboardListener(keyboardListener);
+}
+
+abstract class NativeKeyboardStatusState<T extends StatefulWidget>
+    extends State<T> with NativeKeyboardStatusMixin {
+  @override
+  void initState() {
+    super.initState();
+    addKeyboardListener();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    removeKeyboardListener();
+  }
 }

@@ -33,7 +33,8 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-class _AppState extends State<App> with WidgetsBindingObserver {
+class _AppState extends NativeKeyboardStatusState<App>
+    with WidgetsBindingObserver {
   ValueNotifier<NativeKeyboardStatus?> keyboardStatusNotifier =
       ValueNotifier(null);
 
@@ -43,7 +44,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
     addObserver(this);
     if (Curiosity.isMobile) {
       Curiosity.native.activityResult.add(onAndroidActivityResult);
-      Curiosity.native.addKeyboardListener(keyboardStatus);
     }
   }
 
@@ -53,8 +53,10 @@ class _AppState extends State<App> with WidgetsBindingObserver {
         .log();
   }
 
-  void keyboardStatus(NativeKeyboardStatus status) {
-    keyboardStatusNotifier.value = status;
+  @override
+  void keyboardListener(NativeKeyboardStatus params) {
+    log('height:${params.ios?.height}\nwidth:${params.ios?.width}\nvisibility:${params.ios?.visibility}');
+    keyboardStatusNotifier.value = params;
   }
 
   @override
@@ -103,7 +105,6 @@ class _AppState extends State<App> with WidgetsBindingObserver {
   void dispose() {
     super.dispose();
     Curiosity.native.activityResult.remove(onAndroidActivityResult);
-    Curiosity.native.removeKeyboardListener(keyboardStatus);
   }
 }
 
