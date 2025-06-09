@@ -38,8 +38,8 @@ class NativeKeyboardStatus {
   double? get keyboardHeight {
     if (Curiosity.isAndroid && _android != null) {
       return _android!.keyboardHeight / _android!.density;
-    } else if (Curiosity.isIOS && _ios != null) {
-      return _ios!.height;
+    } else if (Curiosity.isIOS) {
+      return _ios?.height;
     }
     return null;
   }
