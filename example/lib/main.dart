@@ -76,7 +76,7 @@ class _AppState extends NativeKeyboardStatusState<App>
           ValueListenableBuilder(
               valueListenable: keyboardStatusNotifier,
               builder: (_, value, __) {
-                return BText(
+                return Text(
                     'keyboardHeight:${value?.keyboardHeight}\nvisibility:${value?.visibility}',
                     textAlign: TextAlign.center);
               }),
@@ -145,13 +145,14 @@ class ElevatedText extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: BText(text));
+      ElevatedButton(onPressed: onPressed, child: Text(text));
 }
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
       : super(
             elevation: 0,
-            title: BText(text, fontSize: 18, fontWeight: FontWeight.bold),
+            title: Text(text,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             centerTitle: true);
 }
