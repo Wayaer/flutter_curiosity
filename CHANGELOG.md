@@ -1,3 +1,7 @@
+## 6.8.0
+
+* Currently supports versions 3.27 to 3.35
+
 ## 6.7.0
 
 * Added `addKeyboardListener`,`removeKeyboardListener` for  `NativeTools`

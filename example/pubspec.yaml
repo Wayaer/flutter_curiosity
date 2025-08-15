@@ -4,15 +4,15 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.8.0 <4.0.0'
-  flutter: '>=3.32.0'
+  sdk: '>=3.6.0 <4.0.0'
+  flutter: '>=3.27.0'
 
 dependencies:
   flutter:
     sdk: flutter
   flutter_curiosity:
     path: ../
-  fl_extended: ^2.0.2
+  fl_extended: ^3.0.0
   permission_handler: ^12.0.1
   file_picker: ^10.1.2
   path_provider: ^2.1.5
