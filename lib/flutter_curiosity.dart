@@ -7,9 +7,7 @@ import 'package:flutter/services.dart';
 part 'src/android_activity_result.dart';
 part 'src/image_gallery.dart';
 part 'src/keyboard_status.dart';
-
 part 'src/native.dart';
-
 part 'src/package_info.dart';
 
 const MethodChannel _channel = MethodChannel('Curiosity');
@@ -41,11 +39,11 @@ class Curiosity {
   /// is fuchsia
   static bool get isFuchsia => defaultTargetPlatform == TargetPlatform.fuchsia;
 
-  /// is ohos
-  static bool get isOhos => defaultTargetPlatform.name == 'ohos';
+  /// is harmony OS
+  static bool get isHarmonyOS => defaultTargetPlatform.name == 'ohos';
 
   /// is mobile
-  static bool get isMobile => isAndroid || isIOS || isOhos;
+  static bool get isMobile => isAndroid || isIOS || isHarmonyOS;
 
   /// is desktop
   static bool get isDesktop => isMacOS || isWindows || isLinux;

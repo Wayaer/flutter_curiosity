@@ -1,7 +1,7 @@
 part of '../flutter_curiosity.dart';
 
 class AndroidActivityResult {
-  AndroidActivityResult.formMap(Map<dynamic, dynamic> json) {
+  AndroidActivityResult.fromMap(Map<dynamic, dynamic> json) {
     requestCode = json['requestCode'] as int;
     resultCode = json['resultCode'] as int;
     data = json['data'] as dynamic;

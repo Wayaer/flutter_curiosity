@@ -52,14 +52,20 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         this.result = result
         when (call.method) {
-            "exitApp" -> Tools.exitApp(activityBinding.activity)
-            "installApk" -> result.success(
-                startActivity(Tools.getInstallAppIntent(context, call.arguments as String))
-            )
+            "exitApp" -> {
+                Tools.exitApp(activityBinding.activity)
+                result.success(true)
+            }
 
-            "getInstalledApps" -> result.success(
-                Tools.getInstalledApps(activityBinding.activity)
-            )
+            "installApk" -> {
+                result.success(
+                    startActivity(Tools.getInstallAppIntent(context, call.arguments as String))
+                )
+            }
+
+            "getInstalledApps" -> {
+                result.success(Tools.getInstalledApps(activityBinding.activity))
+            }
 
             "addKeyboardListener" -> {
                 val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
@@ -73,18 +79,16 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
                 result.success(viewTreeObserver != null)
             }
 
-            "getGPSStatus" -> result.success(
-                Tools.getGPSStatus(activityBinding.activity)
-            )
+            "getGPSStatus" -> {
+                result.success(Tools.getGPSStatus(activityBinding.activity))
+            }
 
             "saveBytesImageToGallery" -> {
-                result.success(ImageGalleryTools.saveBytesImage(context, call))
+                result.success(ImageGalleryTools.saveBytesImageToGallery(context, call))
             }
 
             "saveFilePathToGallery" -> {
-                val filePath = call.argument<String>("filePath")!!
-                val name = call.argument<String?>("name")
-                result.success(ImageGalleryTools.saveFilePath(context, filePath, name))
+                result.success(ImageGalleryTools.saveFilePathToGallery(context, call))
             }
 
             else -> result.notImplemented()

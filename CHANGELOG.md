@@ -1,6 +1,7 @@
-## 6.9.0
+## 7.0.0
 
-* 支持 HarmonyOS
+* Supports HarmonyOS
+* Modify some parameter names
 
 ## 6.8.0
 

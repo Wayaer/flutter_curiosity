@@ -10,7 +10,7 @@ class AppPackageInfo {
       required this.lastUpdateTime,
       required this.firstInstallTime});
 
-  factory AppPackageInfo.formMap(Map<dynamic, dynamic> json) => AppPackageInfo(
+  factory AppPackageInfo.fromMap(Map<dynamic, dynamic> json) => AppPackageInfo(
       isSystemApp: json['isSystemApp'] as bool?,
       appName: json['appName'] as String?,
       lastUpdateTime: json['lastUpdateTime'] as int?,

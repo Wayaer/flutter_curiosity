@@ -11,6 +11,7 @@ void main() async {
   log('isWeb = ${Curiosity.isWeb}\n'
       'isMacOS = ${Curiosity.isMacOS}\n'
       'isAndroid = ${Curiosity.isAndroid}\n'
+      'isHarmonyOS = ${Curiosity.isHarmonyOS}\n'
       'isIOS = ${Curiosity.isIOS}\n'
       'isMobile = ${Curiosity.isMobile}\n'
       'isDesktop = ${Curiosity.isDesktop}');
@@ -54,8 +55,7 @@ class _AppState extends NativeKeyboardStatusState<App>
   }
 
   @override
-  void keyboardListener(NativeKeyboardStatus params) {
-    log('height:${params.ios?.height}\nwidth:${params.ios?.width}\nvisibility:${params.ios?.visibility}');
+  void onKeyboardListener(NativeKeyboardStatus params) {
     keyboardStatusNotifier.value = params;
   }
 
@@ -66,6 +66,7 @@ class _AppState extends NativeKeyboardStatusState<App>
         ElevatedText(onPressed: () => push(const GetInfoPage()), text: '获取信息'),
       if (Curiosity.isAndroid)
         ElevatedText(onPressed: installApk, text: '安装apk'),
+      ElevatedText(onPressed: Curiosity.native.exitApp, text: '退出 App'),
       if (Curiosity.isMobile) ...[
         ElevatedText(
             onPressed: () {

@@ -3,126 +3,114 @@ import UIKit
 
 public class ImageGalleryTools: NSObject {
     static let shared = ImageGalleryTools()
-       
+
     override private init() {}
-    
+
     var result: FlutterResult?
-    
-    func saveVideo(_ result: @escaping FlutterResult, _ path: String) {
-        self.result = result
-        UISaveVideoAtPathToSavedPhotosAlbum(path, self, #selector(didFinishSavingVideo(videoPath:error:contextInfo:)), nil)
-//        var videoIds: [String] = []
-//
-//        PHPhotoLibrary.shared().performChanges({
-//            let req = PHAssetChangeRequest.creationRequestForAssetFromVideo(atFileURL: URL(fileURLWithPath: path))
-//            if let videoId = req?.placeholderForCreatedAsset?.localIdentifier {
-//                videoIds.append(videoId)
-//            }
-//        }, completionHandler: { [unowned self] success, _ in
-//            DispatchQueue.main.async {
-//                if success, videoIds.count > 0 {
-//                    let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: videoIds, options: nil)
-//                    if assetResult.count > 0 {
-//                        let videoAsset = assetResult[0]
-//                        PHImageManager().requestAVAsset(forVideo: videoAsset, options: nil) { avurlAsset, _, _ in
-//                            if let urlStr = (avurlAsset as? AVURLAsset)?.url.absoluteString {
-//                                self.result?(true)
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    self.result?(true)
-//                }
-//            }
-//        })
+
+    public static func saveBytesImageToGallery(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let arguments = call.arguments as! [String: Any]
+        let bytes = (arguments["bytes"] as! FlutterStandardTypedData).data
+        var sourceImage = UIImage(data: bytes)
+        let quality = arguments["quality"] as! Int
+
+        var isJPEG = false
+        if quality < 100 {
+            let newImage = sourceImage!.jpegData(compressionQuality: CGFloat(quality / 100))
+            if newImage != nil {
+                let newUIImage = UIImage(data: newImage!)
+                if newUIImage != nil {
+                    sourceImage = newUIImage
+                    isJPEG = true
+                }
+            }
+        }
+        let sourceExtension = arguments["extension"] as! String
+        switch sourceExtension {
+        case "jpeg":
+            if !isJPEG, let jpedData = sourceImage?.jpegData(compressionQuality: CGFloat(1)) {
+                sourceImage = UIImage(data: jpedData)
+            }
+        case "png":
+            if let pngData = sourceImage?.pngData() {
+                sourceImage = UIImage(data: pngData)
+            }
+        default:
+            result(false)
+            return
+        }
+
+        if sourceImage != nil {
+            ImageGalleryTools.shared.saveImage(sourceImage!, result)
+        } else {
+            result(false)
+        }
     }
-    
-    func saveImage(_ result: @escaping FlutterResult, _ image: UIImage) {
+
+    public static func saveFilePathToGallery(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
+        let arguments = call.arguments as! [String: Any]
+        let sourcePath = arguments["path"] as! String
+        let sourceExtension = arguments["extension"] as! String
+        let fileType = getFileType(sourceExtension)
+        switch fileType {
+        case .image:
+            let sourceImage = UIImage(contentsOfFile: sourcePath)
+            if sourceImage != nil {
+                ImageGalleryTools.shared.saveImage(sourceImage!, result)
+            } else {
+                result(false)
+            }
+
+        case .video:
+            ImageGalleryTools.shared.saveVideo(sourcePath, result)
+
+        case .none:
+            result(false)
+        }
+    }
+
+    func saveImage(_ image: UIImage, _ result: @escaping FlutterResult) {
         self.result = result
         UIImageWriteToSavedPhotosAlbum(image, self, #selector(didFinishSavingImage(image:error:contextInfo:)), nil)
-//        var imageIds: [String] = []
-//
-//        PHPhotoLibrary.shared().performChanges({
-//            let req = PHAssetChangeRequest.creationRequestForAsset(from: image)
-//            if let imageId = req.placeholderForCreatedAsset?.localIdentifier {
-//                imageIds.append(imageId)
-//            }
-//        }, completionHandler: { [unowned self] success, _ in
-//            DispatchQueue.main.async {
-//                if success, imageIds.count > 0 {
-//                    let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: imageIds, options: nil)
-//                    if assetResult.count > 0 {
-//                        let imageAsset = assetResult[0]
-//                        let options = PHContentEditingInputRequestOptions()
-//                        options.canHandleAdjustmentData = { _
-//                            -> Bool in true
-//                        }
-//                        imageAsset.requestContentEditingInput(with: options) { [unowned self] contentEditingInput, _ in
-//                            if let urlStr = contentEditingInput?.fullSizeImageURL?.absoluteString {
-//                                self.result?(true)
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    self.result?(false)
-//                }
-//            }
-//        })
     }
-    
-    func saveImageAtFileUrl(_ result: @escaping FlutterResult, _ url: String) {
+
+    func saveVideo(_ path: String, _ result: @escaping FlutterResult) {
         self.result = result
-        if let image = UIImage(contentsOfFile: url) {
-            UIImageWriteToSavedPhotosAlbum(image, self, #selector(didFinishSavingImage(image:error:contextInfo:)), nil)
-        }
-        
-        //        var imageIds: [String] = []
-//        PHPhotoLibrary.shared().performChanges({
-//            let req = PHAssetChangeRequest.creationRequestForAssetFromImage(atFileURL: URL(string: url)!)
-//            if let imageId = req?.placeholderForCreatedAsset?.localIdentifier {
-//                imageIds.append(imageId)
-//            }
-//        }, completionHandler: { [unowned self] success, _ in
-//            DispatchQueue.main.async {
-//                if success, imageIds.count > 0 {
-//                    let assetResult = PHAsset.fetchAssets(withLocalIdentifiers: imageIds, options: nil)
-//                    if assetResult.count > 0 {
-//                        let imageAsset = assetResult[0]
-//                        let options = PHContentEditingInputRequestOptions()
-//                        options.canHandleAdjustmentData = { _
-//                            -> Bool in true
-//                        }
-//                        imageAsset.requestContentEditingInput(with: options) { [unowned self] contentEditingInput, _ in
-//                            if let urlStr = contentEditingInput?.fullSizeImageURL?.absoluteString {
-//                                self.result?(true)
-//                            }
-//                        }
-//                    }
-//                } else {
-//                    self.result?(false)
-//                }
-//            }
-//        })
+        UISaveVideoAtPathToSavedPhotosAlbum(path, self, #selector(didFinishSavingVideo(videoPath:error:contextInfo:)), nil)
     }
-    
+
     @objc func didFinishSavingImage(image: UIImage, error: NSError?, contextInfo: UnsafeMutableRawPointer?) {
         result?(error == nil)
     }
-    
+
     @objc func didFinishSavingVideo(videoPath: String, error: NSError?, contextInfo: UnsafeMutableRawPointer?) {
         result?(error == nil)
     }
-    
-    func isImageFile(filename: String) -> Bool {
-        return filename.hasSuffix(".jpg")
-            || filename.hasSuffix(".png")
-            || filename.hasSuffix(".jpeg")
-            || filename.hasSuffix(".JPEG")
-            || filename.hasSuffix(".JPG")
-            || filename.hasSuffix(".PNG")
-            || filename.hasSuffix(".gif")
-            || filename.hasSuffix(".GIF")
-            || filename.hasSuffix(".heic")
-            || filename.hasSuffix(".HEIC")
+
+    // 支持的图片扩展名
+    private static let imageExtensions: Set<String> = [
+        "jpg", "jpeg", "png", "gif", "bmp", "webp", "heif", "heic",
+        "svg", "tiff", "raw", "ico"
+    ]
+
+    // 支持的视频扩展名
+    private static let videoExtensions: Set<String> = [
+        "mp4", "mov", "avi", "flv", "wmv", "mkv", "webm", "mpeg",
+        "mpg", "3gp", "m4v", "rmvb", "ts", "mts"
+    ]
+
+    private static func getFileType(_ fileExtension: String) -> FileType? {
+        if imageExtensions.contains(fileExtension.lowercased()) {
+            return .image
+        } else if videoExtensions.contains(fileExtension.lowercased()) {
+            return .video
+        } else {
+            return nil
+        }
     }
+}
+
+private enum FileType {
+    case image
+    case video
 }

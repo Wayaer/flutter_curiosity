@@ -18,6 +18,7 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "exitApp":
+            result(true)
             exit(0)
         case "getGPSStatus":
             // 判断GPS是否开启，GPS或者AGPS开启一个就认为是开启的

@@ -1,12 +1,12 @@
 import 'dart:io';
+import 'dart:ui' as ui;
 
 import 'package:curiosity/main.dart';
 import 'package:fl_extended/fl_extended.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_curiosity/flutter_curiosity.dart';
-import 'dart:ui' as ui;
-
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ImageGalleryPage extends StatefulWidget {
   const ImageGalleryPage({super.key});
@@ -52,6 +52,10 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
       showToast('保存失败');
       return;
     }
+    if (isAndroid) {
+      final status = await getPermission(Permission.photos);
+      if (!status) return;
+    }
     final result = await ImageGalleryTools.saveBytesImage(
         byteData.buffer.asUint8List(),
         extension: ImageGalleryExtension.png);
@@ -90,7 +94,6 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
     await file.create();
     if (File(path).existsSync()) {
       log('文件保存成功=> $path');
-      await showToast('文件保存成功=> $path');
       return path;
     }
     return null;

@@ -6,25 +6,21 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Environment
 import android.os.Build
+import android.os.Environment
 import android.provider.MediaStore
-import java.io.File
-import java.io.FileInputStream
 import android.text.TextUtils
 import android.webkit.MimeTypeMap
 import io.flutter.plugin.common.MethodCall
+import java.io.File
+import java.io.FileInputStream
 import java.io.OutputStream
 
 object ImageGalleryTools {
 
-    private fun generateUri(
-        context: Context, extension: String = "JPG", name: String? = null
-    ): Uri? {
-        val fileName = name ?: System.currentTimeMillis().toString()
+    private fun generateUri(context: Context, extension: String, fileName: String): Uri? {
         val mimeType = getMIMEType(extension)
         val isVideo = mimeType?.startsWith("video") == true
-
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             // >= android 10
             val uri = when {
@@ -96,71 +92,71 @@ object ImageGalleryTools {
         }
     }
 
-    fun saveBytesImage(context: Context, call: MethodCall): Boolean {
+    fun saveBytesImageToGallery(context: Context, call: MethodCall): Boolean {
         val byteArray = call.argument<ByteArray>("bytes")!!
-        val quality = call.argument<Int?>("quality")
-        val name = call.argument<String?>("name")
+        val quality = call.argument<Int>("quality")!!
+        val name = call.argument<String>("name")!!
         val extension = call.argument<String>("extension")!!
-        var bitmap: Bitmap? = null
-        val fileUri: Uri?
-        var fos: OutputStream? = null
+        var sourceBitmap: Bitmap? = null
+        var targetUri: Uri? = null
+        var targetStream: OutputStream? = null
         var success = false
         try {
-            bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
-            fileUri = generateUri(context, extension, name = name)
-            if (fileUri != null) {
-                fos = context.contentResolver.openOutputStream(fileUri)
-                fos?.let {
-                    val format = Bitmap.CompressFormat.valueOf(extension)
-                    bitmap.compress(format, quality ?: 100, it)
+            sourceBitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            targetUri = generateUri(context, extension, name)
+            if (targetUri != null) {
+                targetStream = context.contentResolver.openOutputStream(targetUri)
+                targetStream?.let {
+                    val format = Bitmap.CompressFormat.valueOf(extension.uppercase())
+                    sourceBitmap.compress(format, quality, it)
                     it.flush()
                     success = true
                 }
             }
         } catch (e: Exception) {
-            println("saveBytesImage exception : $e")
-            return false
+            println("saveBytesImageToGallery exception : $e")
         } finally {
-            fos?.close()
-            bitmap?.recycle()
+            targetStream?.close()
+            sourceBitmap?.recycle()
         }
         if (success) {
-            sendBroadcast(context, fileUri)
+            sendBroadcast(context, targetUri)
         }
         return success
     }
 
-    fun saveFilePath(context: Context, filePath: String, name: String?): Boolean {
-        val fileUri: Uri?
-        var outputStream: OutputStream? = null
-        var fileInputStream: FileInputStream? = null
+    fun saveFilePathToGallery(context: Context, call: MethodCall): Boolean {
+        val sourcePath = call.argument<String>("path")!!
+        val name = call.argument<String>("name")!!
+        var targetUri: Uri? = null
+        var targetStream: OutputStream? = null
+        var sourceStream: FileInputStream? = null
         var success = false
         try {
-            val originalFile = File(filePath)
-            if (!originalFile.exists()) return false
-            fileUri = generateUri(context, originalFile.extension, name)
-            if (fileUri != null) {
-                outputStream = context.contentResolver?.openOutputStream(fileUri)
-                if (outputStream != null) {
-                    fileInputStream = FileInputStream(originalFile)
+            val sourceFile = File(sourcePath)
+            if (!sourceFile.exists()) return false
+            targetUri = generateUri(context, sourceFile.extension, name)
+            if (targetUri != null) {
+                targetStream = context.contentResolver?.openOutputStream(targetUri)
+                if (targetStream != null) {
+                    sourceStream = FileInputStream(sourceFile)
                     val buffer = ByteArray(10240)
                     var count: Int
-                    while (fileInputStream.read(buffer).also { count = it } > 0) {
-                        outputStream.write(buffer, 0, count)
+                    while (sourceStream.read(buffer).also { count = it } > 0) {
+                        targetStream.write(buffer, 0, count)
                     }
-                    outputStream.flush()
+                    targetStream.flush()
                     success = true
                 }
             }
         } catch (e: Exception) {
-            println("saveFilePath exception : $e")
-            return false
+            println("saveFilePathToGallery exception : $e")
         } finally {
-            outputStream?.close()
-            fileInputStream?.close()
+            targetStream?.close()
+            sourceStream?.close()
         }
         if (success) {
-            sendBroadcast(context, fileUri)
+            sendBroadcast(context, targetUri)
         }
         return success
     }
