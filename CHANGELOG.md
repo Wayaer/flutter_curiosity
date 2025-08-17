@@ -1,3 +1,7 @@
+## 6.9.0
+
+* 支持 HarmonyOS
+
 ## 6.8.0
 
 * Currently supports versions 3.27 to 3.35

@@ -1,0 +1,10 @@
+{
+  "module": {
+    "name": "flutter_curiosity",
+    "type": "har",
+    "deviceTypes": [
+      "default",
+      "tablet"
+    ]
+  }
+}
