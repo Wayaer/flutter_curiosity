@@ -19,7 +19,7 @@ class Curiosity {
   static NativeTools get native => NativeTools();
 
   /// is web
-  static bool get isWeb => kIsWeb;
+  static const bool isWeb = kIsWeb;
 
   /// is macos
   static bool get isMacOS => defaultTargetPlatform == TargetPlatform.macOS;
@@ -49,13 +49,13 @@ class Curiosity {
   static bool get isDesktop => isMacOS || isWindows || isLinux;
 
   /// is release
-  static bool isRelease = kReleaseMode;
+  static const bool isRelease = kReleaseMode;
 
   /// is profile
-  static bool isProfile = kProfileMode;
+  static const bool isProfile = kProfileMode;
 
   /// is debug
-  static bool isDebug = kDebugMode;
+  static const bool isDebug = kDebugMode;
 }
 
 /// is support platform
