@@ -49,13 +49,13 @@ class Curiosity {
   static bool get isDesktop => isMacOS || isWindows || isLinux;
 
   /// is release
-  static bool get isRelease => kReleaseMode;
+  static bool isRelease = kReleaseMode;
 
   /// is profile
-  static bool get isProfile => kProfileMode;
+  static bool isProfile = kProfileMode;
 
   /// is debug
-  static bool get isDebug => kDebugMode;
+  static bool isDebug = kDebugMode;
 }
 
 /// is support platform
