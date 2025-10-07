@@ -1,4 +1,4 @@
 
 
-import CuriosityPlugin from './src/main/ets/components/plugin/CuriosityPlugin';
+import CuriosityPlugin from './src/main/ets/CuriosityPlugin';
 export default CuriosityPlugin;
