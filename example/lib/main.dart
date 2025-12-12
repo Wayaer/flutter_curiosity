@@ -8,23 +8,29 @@ import 'package:permission_handler/permission_handler.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  log('isWeb = ${Curiosity.isWeb}\n'
-      'isMacOS = ${Curiosity.isMacOS}\n'
-      'isAndroid = ${Curiosity.isAndroid}\n'
-      'isHarmonyOS = ${Curiosity.isHarmonyOS}\n'
-      'isIOS = ${Curiosity.isIOS}\n'
-      'isMobile = ${Curiosity.isMobile}\n'
-      'isDesktop = ${Curiosity.isDesktop}');
-  runApp(MaterialApp(
+  log(
+    'isWeb = ${Curiosity.isWeb}\n'
+    'isMacOS = ${Curiosity.isMacOS}\n'
+    'isAndroid = ${Curiosity.isAndroid}\n'
+    'isHarmonyOS = ${Curiosity.isHarmonyOS}\n'
+    'isIOS = ${Curiosity.isIOS}\n'
+    'isMobile = ${Curiosity.isMobile}\n'
+    'isDesktop = ${Curiosity.isDesktop}',
+  );
+  runApp(
+    MaterialApp(
       navigatorKey: FlExtended().navigatorKey,
       theme: ThemeData.light(),
       darkTheme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
       title: 'Curiosity',
       home: Scaffold(
-          resizeToAvoidBottomInset: false,
-          appBar: AppBarText('Curiosity Plugin Example'),
-          body: const App())));
+        resizeToAvoidBottomInset: false,
+        appBar: AppBarText('Curiosity Plugin Example'),
+        body: const App(),
+      ),
+    ),
+  );
 }
 
 class App extends StatefulWidget {
@@ -36,8 +42,9 @@ class App extends StatefulWidget {
 
 class _AppState extends NativeKeyboardStatusState<App>
     with WidgetsBindingObserver {
-  ValueNotifier<NativeKeyboardStatus?> keyboardStatusNotifier =
-      ValueNotifier(null);
+  ValueNotifier<NativeKeyboardStatus?> keyboardStatusNotifier = ValueNotifier(
+    null,
+  );
 
   @override
   void initState() {
@@ -61,39 +68,54 @@ class _AppState extends NativeKeyboardStatusState<App>
 
   @override
   Widget build(BuildContext context) {
-    return Universal(expand: true, children: [
-      if (Curiosity.isMobile || Curiosity.isMacOS)
-        ElevatedText(onPressed: () => push(const GetInfoPage()), text: '获取信息'),
-      if (Curiosity.isAndroid)
-        ElevatedText(onPressed: installApk, text: '安装apk'),
-      ElevatedText(onPressed: Curiosity.native.exitApp, text: '退出 App'),
-      if (Curiosity.isMobile) ...[
-        ElevatedText(
+    return Universal(
+      expand: true,
+      children: [
+        if (Curiosity.isMobile || Curiosity.isMacOS)
+          ElevatedText(
+            onPressed: () => push(const GetInfoPage()),
+            text: '获取信息',
+          ),
+        if (Curiosity.isAndroid)
+          ElevatedText(onPressed: installApk, text: '安装apk'),
+        ElevatedText(onPressed: Curiosity.native.exitApp, text: '退出 App'),
+        if (Curiosity.isMobile) ...[
+          ElevatedText(
             onPressed: () {
               push(const ImageGalleryPage());
             },
-            text: 'ImageGalleryTools'),
-        Universal(padding: EdgeInsets.all(20), children: [
-          ValueListenableBuilder(
-              valueListenable: keyboardStatusNotifier,
-              builder: (_, value, __) {
-                return Text(
+            text: 'ImageGalleryTools',
+          ),
+          Universal(
+            padding: EdgeInsets.all(20),
+            children: [
+              ValueListenableBuilder(
+                valueListenable: keyboardStatusNotifier,
+                builder: (_, value, __) {
+                  return Text(
                     'keyboardHeight:${value?.keyboardHeight}\nvisibility:${value?.visibility}',
-                    textAlign: TextAlign.center);
-              }),
-          TextField(
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(hintText: '监听键盘状态'))
-        ]),
+                    textAlign: TextAlign.center,
+                  );
+                },
+              ),
+              TextField(
+                textAlign: TextAlign.center,
+                decoration: InputDecoration(hintText: '监听键盘状态'),
+              ),
+            ],
+          ),
+        ],
       ],
-    ]);
+    );
   }
 
   void installApk() async {
     var status = await getPermission(Permission.requestInstallPackages);
     if (!status) return;
-    final res = await FilePicker.platform
-        .pickFiles(type: FileType.custom, allowedExtensions: ['apk']);
+    final res = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: ['apk'],
+    );
     if (res?.files.isNotEmpty ?? false) {
       final path = res!.files.single.path;
       if (path.isEmptyOrNull) return;
@@ -118,12 +140,15 @@ class TextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-        visible: value != null &&
-            value.toString().isNotEmpty &&
-            value.toString() != 'null',
-        child: Container(
-            margin: const EdgeInsets.all(10),
-            child: Text('$keyName = $value')));
+      visible:
+          value != null &&
+          value.toString().isNotEmpty &&
+          value.toString() != 'null',
+      child: Container(
+        margin: const EdgeInsets.all(10),
+        child: Text('$keyName = $value'),
+      ),
+    );
   }
 }
 
@@ -151,9 +176,12 @@ class ElevatedText extends StatelessWidget {
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
-      : super(
-            elevation: 0,
-            title: Text(text,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-            centerTitle: true);
+    : super(
+        elevation: 0,
+        title: Text(
+          text,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+        ),
+        centerTitle: true,
+      );
 }

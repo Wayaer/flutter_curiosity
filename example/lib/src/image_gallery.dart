@@ -21,33 +21,44 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('ImageGalleryTools'),
-        body: Universal(padding: const EdgeInsets.all(20), children: [
+      appBar: AppBarText('ImageGalleryTools'),
+      body: Universal(
+        padding: const EdgeInsets.all(20),
+        children: [
           RepaintBoundary(
-              key: imgKey,
-              child: Container(
-                  width: double.infinity,
-                  height: 200,
-                  alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.deepOrangeAccent),
-                  child: const Text('ImageGalleryTools',
-                      style: TextStyle(
-                          fontSize: 20,
-                          color: Colors.white,
-                          fontWeight: FontWeight.bold)))),
+            key: imgKey,
+            child: Container(
+              width: double.infinity,
+              height: 200,
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.deepOrangeAccent,
+              ),
+              child: const Text(
+                'ImageGalleryTools',
+                style: TextStyle(
+                  fontSize: 20,
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
           20.heightBox,
           ElevatedText(text: 'saveBytesImage', onPressed: saveBytesImage),
           20.heightBox,
           ElevatedText(text: 'saveFilePath', onPressed: saveFilePath),
-        ]));
+        ],
+      ),
+    );
   }
 
   void saveBytesImage() async {
     final byteData = await imgKey.screenshots(
-        format: ui.ImageByteFormat.png,
-        pixelRatio: context.mediaQuery.devicePixelRatio);
+      format: ui.ImageByteFormat.png,
+      pixelRatio: context.mediaQuery.devicePixelRatio,
+    );
     if (byteData == null) {
       showToast('保存失败');
       return;
@@ -57,15 +68,17 @@ class _ImageGalleryPageState extends State<ImageGalleryPage> {
       if (!status) return;
     }
     final result = await ImageGalleryTools.saveBytesImage(
-        byteData.buffer.asUint8List(),
-        extension: ImageGalleryExtension.png);
+      byteData.buffer.asUint8List(),
+      extension: ImageGalleryExtension.png,
+    );
     showToast(result ? '保存成功' : '保存失败');
   }
 
   void saveFilePath() async {
     final byteData = await imgKey.screenshots(
-        format: ui.ImageByteFormat.png,
-        pixelRatio: context.mediaQuery.devicePixelRatio);
+      format: ui.ImageByteFormat.png,
+      pixelRatio: context.mediaQuery.devicePixelRatio,
+    );
     if (byteData == null) {
       showToast('保存失败');
       return;

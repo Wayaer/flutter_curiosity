@@ -16,19 +16,48 @@ class _GetInfoPageState extends State<GetInfoPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBarText('App and Device'),
-        body: CustomScrollView(slivers: [
+      appBar: AppBarText('App and Device'),
+      body: CustomScrollView(
+        slivers: [
           SliverToBoxAdapter(
-              child: Column(children: <Widget>[
-            ElevatedText(onPressed: getGPS, text: '获取gps状态'),
-            if (Curiosity.isAndroid)
-              ElevatedText(
-                  onPressed: () => getInstalledApps(), text: '获取Android已安装应用'),
-          ])),
+            child: Column(
+              children: <Widget>[
+                ElevatedText(onPressed: getGPS, text: '获取gps状态'),
+                if (Curiosity.isAndroid) ...[
+                  ElevatedText(
+                    onPressed: () => getInstalledApps(),
+                    text: '获取Android已安装应用',
+                  ),
+                  12.heightBox,
+                  FutureBuilder(
+                    future: Curiosity.native.getPackageInfo('com.tencent.mm'),
+                    builder: (_, snapshot) {
+                      final data = snapshot.data;
+                      return Column(
+                          spacing: 4,
+                          children: [
+                            Text('是否是微信: ${data != null}'),
+                            if (data != null) ...[
+                              Text('微信版本: ${data.version}'),
+                              Text('微信构建号: ${data.buildNumber}'),
+                              Text('是否是系统应用: ${data.isSystemApp}'),
+                              Text('最后更新时间: ${DateTime.fromMillisecondsSinceEpoch(data.lastUpdateTime ?? 0)}'),
+                              Text('首次安装时间: ${DateTime.fromMillisecondsSinceEpoch(data.firstInstallTime ?? 0)}'),
+                            ],
+                          ]);
+                    },
+                  ),
+                ],
+              ],
+            ),
+          ),
           SliverList.builder(
-              itemCount: list.length,
-              itemBuilder: (_, int index) => list[index])
-        ]));
+            itemCount: list.length,
+            itemBuilder: (_, int index) => list[index],
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> getInstalledApps() async {
@@ -38,18 +67,26 @@ class _GetInfoPageState extends State<GetInfoPage> {
       final Map<String, dynamic> appModel = appsModel.toMap();
       final List<Widget> app = [];
       appModel.forEach((String key, dynamic value) {
-        app.add(Container(
+        app.add(
+          Container(
             margin: const EdgeInsets.symmetric(vertical: 4),
-            child: Text('$key = $value')));
+            child: Text('$key = $value'),
+          ),
+        );
       });
-      list.add(Container(
-        margin: const EdgeInsets.fromLTRB(10, 0, 10, 15),
-        padding: const EdgeInsets.only(bottom: 10),
-        decoration: const BoxDecoration(
-            border: Border(bottom: BorderSide(color: Colors.grey))),
-        child:
-            Column(crossAxisAlignment: CrossAxisAlignment.start, children: app),
-      ));
+      list.add(
+        Container(
+          margin: const EdgeInsets.fromLTRB(10, 0, 10, 15),
+          padding: const EdgeInsets.only(bottom: 10),
+          decoration: const BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.grey)),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: app,
+          ),
+        ),
+      );
     });
     setState(() {});
   }

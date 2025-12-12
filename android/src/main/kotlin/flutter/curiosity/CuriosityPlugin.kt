@@ -2,9 +2,11 @@ package flutter.curiosity
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Rect
 import android.util.Log
 import android.view.ViewTreeObserver
+import flutter.curiosity.Tools.map
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -67,6 +69,10 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
                 result.success(Tools.getInstalledApps(activityBinding.activity))
             }
 
+            "getPackageInfo" -> {
+                result.success(getPackageInfo(call.arguments as String))
+            }
+
             "addKeyboardListener" -> {
                 val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
                 viewTreeObserver?.addOnGlobalLayoutListener(this)
@@ -92,6 +98,17 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             }
 
             else -> result.notImplemented()
+        }
+    }
+
+    private fun getPackageInfo(packageName: String): Map<String, Any?>? {
+        return try {
+            val pm = context.packageManager
+            val packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            packageInfo.map(pm)
+        } catch (e: PackageManager.NameNotFoundException) {
+            println("CuriosityPlugin: Package not found: $e")
+            null
         }
     }
 

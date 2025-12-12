@@ -54,5 +54,6 @@
     </application>
     <queries>
         <package android:name="com.coolapk.market" />
+        <package android:name="com.tencent.mm" />
     </queries>
 </manifest>

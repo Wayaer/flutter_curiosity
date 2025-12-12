@@ -1,3 +1,7 @@
+## 7.1.0
+
+* Add `getPackageInfo` for `NativeTools` on Android
+
 ## 7.0.1
 
 * Supports HarmonyOS

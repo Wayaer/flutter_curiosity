@@ -84,6 +84,15 @@ class NativeTools {
     return list;
   }
 
+  /// 获取指定包名应用信息
+  /// 仅支持 android
+  Future<AppPackageInfo?> getPackageInfo(String packageName) async {
+    if (!Curiosity.isAndroid) return null;
+    final map = await _channel.invokeMapMethod('getPackageInfo', packageName);
+    if (map != null) return AppPackageInfo.fromMap(map);
+    return null;
+  }
+
   /// 安装apk  仅支持android
   /// Installing APK only supports Android
   Future<bool> installApk(String path) async {
