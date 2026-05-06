@@ -1,3 +1,7 @@
+## 7.1.1
+
+* Update version
+
 ## 7.1.0
 
 * Add `getPackageInfo` for `NativeTools` on Android

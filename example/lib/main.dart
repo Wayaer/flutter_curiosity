@@ -40,11 +40,8 @@ class App extends StatefulWidget {
   State<App> createState() => _AppState();
 }
 
-class _AppState extends NativeKeyboardStatusState<App>
-    with WidgetsBindingObserver {
-  ValueNotifier<NativeKeyboardStatus?> keyboardStatusNotifier = ValueNotifier(
-    null,
-  );
+class _AppState extends NativeKeyboardStatusState<App> with WidgetsBindingObserver {
+  ValueNotifier<NativeKeyboardStatus?> keyboardStatusNotifier = ValueNotifier(null);
 
   @override
   void initState() {
@@ -72,12 +69,8 @@ class _AppState extends NativeKeyboardStatusState<App>
       expand: true,
       children: [
         if (Curiosity.isMobile || Curiosity.isMacOS)
-          ElevatedText(
-            onPressed: () => push(const GetInfoPage()),
-            text: '获取信息',
-          ),
-        if (Curiosity.isAndroid)
-          ElevatedText(onPressed: installApk, text: '安装apk'),
+          ElevatedText(onPressed: () => push(const GetInfoPage()), text: '获取信息'),
+        if (Curiosity.isAndroid) ElevatedText(onPressed: installApk, text: '安装apk'),
         ElevatedText(onPressed: Curiosity.native.exitApp, text: '退出 App'),
         if (Curiosity.isMobile) ...[
           ElevatedText(
@@ -112,10 +105,7 @@ class _AppState extends NativeKeyboardStatusState<App>
   void installApk() async {
     var status = await getPermission(Permission.requestInstallPackages);
     if (!status) return;
-    final res = await FilePicker.platform.pickFiles(
-      type: FileType.custom,
-      allowedExtensions: ['apk'],
-    );
+    final res = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['apk']);
     if (res?.files.isNotEmpty ?? false) {
       final path = res!.files.single.path;
       if (path.isEmptyOrNull) return;
@@ -140,14 +130,8 @@ class TextBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Visibility(
-      visible:
-          value != null &&
-          value.toString().isNotEmpty &&
-          value.toString() != 'null',
-      child: Container(
-        margin: const EdgeInsets.all(10),
-        child: Text('$keyName = $value'),
-      ),
+      visible: value != null && value.toString().isNotEmpty && value.toString() != 'null',
+      child: Container(margin: const EdgeInsets.all(10), child: Text('$keyName = $value')),
     );
   }
 }
@@ -170,18 +154,14 @@ class ElevatedText extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) =>
-      ElevatedButton(onPressed: onPressed, child: Text(text));
+  Widget build(BuildContext context) => ElevatedButton(onPressed: onPressed, child: Text(text));
 }
 
 class AppBarText extends AppBar {
   AppBarText(String text, {super.key})
     : super(
         elevation: 0,
-        title: Text(
-          text,
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-        ),
+        title: Text(text, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         centerTitle: true,
       );
 }

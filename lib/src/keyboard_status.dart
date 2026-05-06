@@ -131,8 +131,7 @@ class HarmonyOSKeyboardParams {
   final num keyboardHeight;
 
   /// 键盘是否显示
-  bool get visibility =>
-      (keyboardHeight / displayHeight) < 0.85 && keyboardHeight > 0;
+  bool get visibility => (keyboardHeight / displayHeight) < 0.85 && keyboardHeight > 0;
 }
 
 mixin NativeKeyboardStatusMixin {
@@ -169,8 +168,7 @@ mixin NativeKeyboardStatusMixin {
   }
 }
 
-abstract class NativeKeyboardStatusState<T extends StatefulWidget>
-    extends State<T> with NativeKeyboardStatusMixin {
+abstract class NativeKeyboardStatusState<T extends StatefulWidget> extends State<T> with NativeKeyboardStatusMixin {
   @override
   void initState() {
     super.initState();

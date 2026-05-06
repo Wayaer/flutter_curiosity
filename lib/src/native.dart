@@ -1,13 +1,15 @@
 part of '../flutter_curiosity.dart';
 
-typedef AndroidActivityResultHandler = void Function(
-    AndroidActivityResult result);
+typedef AndroidActivityResultHandler = void Function(AndroidActivityResult result);
 
-typedef NativeKeyboardStatusCallback = void Function(
-    NativeKeyboardStatus status);
+typedef NativeKeyboardStatusCallback = void Function(NativeKeyboardStatus status);
 
 class NativeTools {
-  factory NativeTools() => _singleton ??= NativeTools._();
+  factory NativeTools() => _instance;
+
+  static final NativeTools _instance = NativeTools._();
+
+  static NativeTools get instance => _instance;
 
   NativeTools._() {
     _channel.setMethodCallHandler((MethodCall call) async {
@@ -26,16 +28,11 @@ class NativeTools {
     });
   }
 
-  static NativeTools? _singleton;
-
-  static NativeTools get instance => NativeTools();
-
   /// 添加键盘回调方法
   final List<NativeKeyboardStatusCallback> _keyboardStatus = [];
 
   /// add Keyboard listener
-  Future<bool> addKeyboardListener(
-      NativeKeyboardStatusCallback callback) async {
+  Future<bool> addKeyboardListener(NativeKeyboardStatusCallback callback) async {
     if (!_supportPlatform || Curiosity.isMacOS) return false;
     final needCallNative = _keyboardStatus.isEmpty;
     if (!_keyboardStatus.contains(callback)) {
@@ -46,13 +43,11 @@ class NativeTools {
   }
 
   /// remove Keyboard listener
-  Future<bool> removeKeyboardListener(
-      NativeKeyboardStatusCallback callback) async {
+  Future<bool> removeKeyboardListener(NativeKeyboardStatusCallback callback) async {
     if (!_supportPlatform || Curiosity.isMacOS) return false;
     _keyboardStatus.remove(callback);
     if (_keyboardStatus.isEmpty) return true;
-    return (await _channel.invokeMethod<bool>('removeKeyboardListener')) ??
-        false;
+    return (await _channel.invokeMethod<bool>('removeKeyboardListener')) ?? false;
   }
 
   /// 添加回调方法
@@ -73,8 +68,7 @@ class NativeTools {
   /// get Android  installed apps
   Future<List<AppPackageInfo>> get getInstalledApps async {
     if (!Curiosity.isAndroid) return [];
-    final appList = await _channel
-        .invokeListMethod<Map<dynamic, dynamic>>('getInstalledApps');
+    final appList = await _channel.invokeListMethod<Map<dynamic, dynamic>>('getInstalledApps');
     final List<AppPackageInfo> list = [];
     if (appList != null) {
       for (final dynamic data in appList) {
