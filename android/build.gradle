@@ -1,0 +1,54 @@
+import com.android.Version
+
+group = "flutter.curiosity"
+version = "1.0"
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.7.0")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+def isAgp9OrAbove = Version.ANDROID_GRADLE_PLUGIN_VERSION.tokenize('.')[0].toInteger() >= 9
+
+apply plugin: 'com.android.library'
+if (!isAgp9OrAbove) {
+    apply plugin: 'org.jetbrains.kotlin.android'
+}
+
+android {
+    namespace = "flutter.curiosity"
+
+    compileSdk flutter.compileSdkVersion
+
+    compileOptions {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    if (!isAgp9OrAbove) {
+//        kotlinOptions {
+//            jvmTarget = JavaVersion.VERSION_17.toString()
+//        }
+    }
+
+    sourceSets {
+        main.java.srcDirs += "src/main/kotlin"
+    }
+
+    defaultConfig {
+        minSdk = 24
+    }
+}

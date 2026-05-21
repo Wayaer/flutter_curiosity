@@ -1,0 +1,30 @@
+name: curiosity
+description: Demonstrates how to use the curiosity plugin.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.12.0 <4.0.0'
+  flutter: '>=3.44.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_curiosity:
+    path: ../
+  fl_extended: ^4.0.0
+  file_picker: ^11.0.2
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+
+dependency_overrides:
+  path_provider:
+    git:
+      url: https://gitcode.com/openharmony-tpc/flutter_packages
+      path: packages/path_provider/path_provider
+      ref: br_path_provider-v2.1.5_ohos
+
+flutter:
+  uses-material-design: true
