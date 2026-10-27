@@ -1,43 +1,59 @@
 part of '../flutter_curiosity.dart';
 
+/// The result of an Android activity.
 class AndroidActivityResult {
-  AndroidActivityResult.fromMap(Map<dynamic, dynamic> json) {
-    requestCode = json['requestCode'] as int;
-    resultCode = json['resultCode'] as int;
-    data = json['data'] as dynamic;
-    extras = json['extras'] as dynamic;
-  }
+  /// Creates an [AndroidActivityResult] from a map received from Android.
+  AndroidActivityResult.fromMap(Map<dynamic, dynamic> map)
+    : requestCode = map['requestCode'] as int? ?? 0,
+      resultCode = map['resultCode'] as int? ?? 0,
+      data = map['data'],
+      extras = map['extras'];
 
-  late int requestCode;
-  late int resultCode;
-  dynamic data;
-  dynamic extras;
+  /// The request code of the activity.
+  final int requestCode;
+
+  /// The result code of the activity.
+  final int resultCode;
+
+  /// The data URI returned by the activity.
+  final dynamic data;
+
+  /// The extras returned by the activity.
+  final dynamic extras;
+
+  @override
+  String toString() => 'AndroidActivityResult(requestCode: $requestCode, resultCode: $resultCode, data: $data)';
 }
 
+/// Mixin that listens to [AndroidActivityResult] events.
 mixin AndroidActivityResultMixin {
   AndroidActivityResult? _activityResult;
 
+  /// The latest activity result.
   AndroidActivityResult? get activityResult => _activityResult;
 
-  /// 添加监听
-  /// 注意：需要在 initState 中调用
+  /// Adds an activity result listener.
+  ///
+  /// Call it from [State.initState].
   void addAndroidActivityResultListener() {
-    NativeTools().activityResult.add(onAndroidActivityResult);
+    NativeTools.instance.activityResult.add(onAndroidActivityResult);
   }
 
-  void onAndroidActivityResult(AndroidActivityResult activityResult) {
-    _activityResult = activityResult;
+  /// Called when an activity result is received. Override to handle it.
+  void onAndroidActivityResult(AndroidActivityResult result) {
+    _activityResult = result;
   }
 
-  /// 监听回调
-  /// 注意：需要在 dispose 中调用
+  /// Removes the activity result listener.
+  ///
+  /// Call it from [State.dispose].
   void removeAndroidActivityResultListener() {
-    NativeTools().activityResult.remove(onAndroidActivityResult);
+    NativeTools.instance.activityResult.remove(onAndroidActivityResult);
   }
 }
 
-abstract class AndroidActivityResultState<T extends StatefulWidget>
-    extends State<T> with AndroidActivityResultMixin {
+/// A [State] that listens to [AndroidActivityResult] events.
+abstract class AndroidActivityResultState<T extends StatefulWidget> extends State<T> with AndroidActivityResultMixin {
   @override
   void initState() {
     super.initState();
@@ -46,7 +62,7 @@ abstract class AndroidActivityResultState<T extends StatefulWidget>
 
   @override
   void dispose() {
-    super.dispose();
     removeAndroidActivityResultListener();
+    super.dispose();
   }
 }

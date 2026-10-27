@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Rect
+import android.os.Build
 import android.util.Log
 import android.view.ViewTreeObserver
 import flutter.curiosity.Tools.map
@@ -15,8 +16,12 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry
 
-class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHandler,
-    PluginRegistry.ActivityResultListener, ViewTreeObserver.OnGlobalLayoutListener {
+class CuriosityPlugin :
+    ActivityAware,
+    FlutterPlugin,
+    MethodChannel.MethodCallHandler,
+    PluginRegistry.ActivityResultListener,
+    ViewTreeObserver.OnGlobalLayoutListener {
 
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
@@ -42,21 +47,22 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     }
 
     override fun onDetachedFromActivity() {
-        activityBinding.removeActivityResultListener(this)
+        if (::activityBinding.isInitialized) {
+            activityBinding.removeActivityResultListener(this)
+            val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
+            viewTreeObserver?.removeOnGlobalLayoutListener(this)
+        }
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
     }
 
-    private lateinit var result: MethodChannel.Result
-
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
-        this.result = result
         when (call.method) {
             "exitApp" -> {
-                Tools.exitApp(activityBinding.activity)
                 result.success(true)
+                Tools.exitApp(activityBinding.activity)
             }
 
             "installApk" -> {
@@ -66,7 +72,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             }
 
             "getInstalledApps" -> {
-                result.success(Tools.getInstalledApps(activityBinding.activity))
+                result.success(Tools.getInstalledApps(context))
             }
 
             "getPackageInfo" -> {
@@ -86,7 +92,7 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             }
 
             "getGPSStatus" -> {
-                result.success(Tools.getGPSStatus(activityBinding.activity))
+                result.success(Tools.getGPSStatus(context))
             }
 
             "saveBytesImageToGallery" -> {
@@ -104,30 +110,31 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
     private fun getPackageInfo(packageName: String): Map<String, Any?>? {
         return try {
             val pm = context.packageManager
-            val packageInfo = pm.getPackageInfo(packageName, PackageManager.GET_ACTIVITIES)
+            val packageInfo = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                pm.getPackageInfo(packageName, PackageManager.PackageInfoFlags.of(0))
+            } else {
+                @Suppress("DEPRECATION")
+                pm.getPackageInfo(packageName, 0)
+            }
             packageInfo.map(pm)
         } catch (e: PackageManager.NameNotFoundException) {
-            println("CuriosityPlugin: Package not found: $e")
+            Log.d("CuriosityPlugin", "Package not found: $packageName", e)
             null
         }
     }
 
     private fun startActivity(intent: Intent?): Boolean {
-        if (intent != null) {
-            try {
-                activityBinding.activity.startActivity(intent)
-                return true
-            } catch (e: Exception) {
-                Log.d("ActivityException", e.toString())
-            }
+        if (intent == null) return false
+        return try {
+            activityBinding.activity.startActivity(intent)
+            true
+        } catch (e: Exception) {
+            Log.d("CuriosityPlugin", "startActivity failed", e)
+            false
         }
-        return false
     }
 
-
-    override fun onActivityResult(
-        requestCode: Int, resultCode: Int, intent: Intent?
-    ): Boolean {
+    override fun onActivityResult(requestCode: Int, resultCode: Int, intent: Intent?): Boolean {
         val map: MutableMap<String, Any> = HashMap()
         map["requestCode"] = requestCode
         map["resultCode"] = resultCode
@@ -135,18 +142,21 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             if (intent.extras != null) map["extras"] = intent.extras.toString()
             if (intent.data != null) map["data"] = intent.data.toString()
         }
-        channel.invokeMethod("onActivityResult", map)
+        if (::channel.isInitialized) {
+            channel.invokeMethod("onActivityResult", map)
+        }
         return true
     }
 
-
     override fun onGlobalLayout() {
+        if (!::activityBinding.isInitialized || !::channel.isInitialized) return
         val rect = Rect()
         val mainView = activityBinding.activity.window.decorView
         mainView.getWindowVisibleDisplayFrame(rect)
         val density = context.resources.displayMetrics.density
         channel.invokeMethod(
-            "onKeyboardStatus", mapOf(
+            "onKeyboardStatus",
+            mapOf(
                 "density" to density,
                 "rootHeight" to mainView.rootView.height,
                 "rootWidth" to mainView.rootView.width,
@@ -157,6 +167,4 @@ class CuriosityPlugin : ActivityAware, FlutterPlugin, MethodChannel.MethodCallHa
             )
         )
     }
-
 }
-
