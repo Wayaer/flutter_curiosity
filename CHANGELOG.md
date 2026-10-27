@@ -1,3 +1,35 @@
+## 8.0.0
+
+* Add web support: keyboard status through the browser visual viewport, GPS permission state,
+  image downloads and best-effort window closing.
+* Add Windows and Linux support as Dart-only plugins: `exitApp` and saving images/videos to the
+  Pictures or Videos folder. GPS and keyboard status return `false` on these platforms.
+* Platform helpers such as `Curiosity.isAndroid` and `Curiosity.isMacOS` now return `false` on web.
+* Upgrade the example app's Android, iOS and macOS projects to Flutter 3.47. HarmonyOS support is kept and
+  the `ohos` implementation is not upgraded.
+* Rewrite the example as a single-page Chinese UI with system, Android-only and image saving sections.
+  Demos are enabled per platform and list their supported platforms.
+* Complete Swift Package Manager support for iOS and macOS, including bundled privacy manifests.
+  Remove the duplicated macOS `Classes` sources and align the Podspec deployment targets.
+* Add macOS image and file saving to the Pictures and Videos folders. Sandboxed host apps need the
+  `com.apple.security.assets.pictures.read-write` and `com.apple.security.assets.movies.read-write`
+  entitlements.
+* Fix macOS saving for IDE-launched apps by removing the Photos authorization request, which could
+  terminate the app through TCC when the responsible process had no photo library usage description.
+* Merge the iOS and macOS native implementations into shared Darwin sources. The Dart API, method
+  channel names and parameters are unchanged.
+* Fix `removeKeyboardListener`: the native keyboard listener is now removed when the last callback is
+  removed, and the remaining callbacks keep receiving events.
+* Fix keyboard listener removal on HarmonyOS by keeping the same callback reference.
+* Fix the iOS JPEG compression quality that used integer division and harden the image saving flow.
+* Improve Android image saving (compress result, file extension and MediaStore cleanup) and support
+  package queries on Android 13+.
+* `AppPackageInfo` fields are no longer nullable; `AndroidActivityResult` fields are final.
+* Remove the deprecated `package` attribute from the Android library manifest (AGP 9 compatible).
+* Fix AGP 9 builds when the app disables built-in Kotlin (`android.builtInKotlin=false`), as the
+  Flutter 3.47 template does, by applying the Kotlin Gradle plugin conditionally.
+* Add homepage, issue tracker and topics to `pubspec.yaml`, rewrite the README and bump `flutter_lints` to 6.
+
 ## 7.2.0
 
 * Supports SPM for iOS and macOS,

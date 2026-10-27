@@ -1,8 +1,16 @@
-import 'dart:async';
+/// A plugin that integrates native features for Android, iOS, macOS and HarmonyOS.
+///
+/// See [Curiosity] for platform helpers, [NativeTools] for native methods and
+/// [ImageGalleryTools] for saving images to the system gallery.
+library;
 
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_curiosity/src/platform/io_platform_stub.dart'
+    if (dart.library.io) 'package:flutter_curiosity/src/platform/io_platform.dart';
+import 'package:flutter_curiosity/src/platform/web_platform_stub.dart'
+    if (dart.library.js_interop) 'package:flutter_curiosity/src/platform/web_platform.dart';
 
 part 'src/android_activity_result.dart';
 part 'src/image_gallery.dart';
@@ -12,57 +20,72 @@ part 'src/package_info.dart';
 
 const MethodChannel _channel = MethodChannel('Curiosity');
 
+/// Entry point of the plugin.
+///
+/// Provides platform helpers and native tools.
 class Curiosity {
   Curiosity._();
 
-  ///  android ios macos
+  /// Native tools, such as keyboard status, GPS status and installed apps.
   static NativeTools get native => NativeTools();
 
-  /// is web
+  /// Whether the app is running on web.
   static const bool isWeb = kIsWeb;
 
-  /// is macos
-  static bool get isMacOS => defaultTargetPlatform == TargetPlatform.macOS;
+  /// Whether the app is running on macOS.
+  static bool get isMacOS => !isWeb && defaultTargetPlatform == TargetPlatform.macOS;
 
-  /// is windows
-  static bool get isWindows => defaultTargetPlatform == TargetPlatform.windows;
+  /// Whether the app is running on Windows.
+  static bool get isWindows => !isWeb && defaultTargetPlatform == TargetPlatform.windows;
 
-  /// is linux
-  static bool get isLinux => defaultTargetPlatform == TargetPlatform.linux;
+  /// Whether the app is running on Linux.
+  static bool get isLinux => !isWeb && defaultTargetPlatform == TargetPlatform.linux;
 
-  /// is android
-  static bool get isAndroid => defaultTargetPlatform == TargetPlatform.android;
+  /// Whether the app is running on Android.
+  static bool get isAndroid => !isWeb && defaultTargetPlatform == TargetPlatform.android;
 
-  /// is ios
-  static bool get isIOS => defaultTargetPlatform == TargetPlatform.iOS;
+  /// Whether the app is running on iOS.
+  static bool get isIOS => !isWeb && defaultTargetPlatform == TargetPlatform.iOS;
 
-  /// is fuchsia
-  static bool get isFuchsia => defaultTargetPlatform == TargetPlatform.fuchsia;
+  /// Whether the app is running on Fuchsia.
+  static bool get isFuchsia => !isWeb && defaultTargetPlatform == TargetPlatform.fuchsia;
 
-  /// is harmony OS
-  static bool get isHarmonyOS => defaultTargetPlatform.name == 'ohos';
+  /// Whether the app is running on HarmonyOS.
+  static bool get isHarmonyOS => !isWeb && defaultTargetPlatform.name == 'ohos';
 
-  /// is mobile
+  /// Whether the app is running on a mobile device.
   static bool get isMobile => isAndroid || isIOS || isHarmonyOS;
 
-  /// is desktop
+  /// Whether the app is running on a desktop platform.
   static bool get isDesktop => isMacOS || isWindows || isLinux;
 
-  /// is release
+  /// Whether the app is running in release mode.
   static const bool isRelease = kReleaseMode;
 
-  /// is profile
+  /// Whether the app is running in profile mode.
   static const bool isProfile = kProfileMode;
 
-  /// is debug
+  /// Whether the app is running in debug mode.
   static const bool isDebug = kDebugMode;
 }
 
-/// is support platform
+/// Whether the current platform is supported by native tools.
 bool get _supportPlatform {
   if (!Curiosity.isWeb && (Curiosity.isMobile || Curiosity.isMacOS)) {
     return true;
   }
-  debugPrint('Curiosity is not support Platform');
+  debugPrint('Curiosity is not supported on ${defaultTargetPlatform.name}');
   return false;
+}
+
+/// Dart-only plugin registration for Windows.
+class CuriosityPluginWindows {
+  /// Called by the Flutter tool when the plugin is registered.
+  static void registerWith() {}
+}
+
+/// Dart-only plugin registration for Linux.
+class CuriosityPluginLinux {
+  /// Called by the Flutter tool when the plugin is registered.
+  static void registerWith() {}
 }

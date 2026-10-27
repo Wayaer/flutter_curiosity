@@ -1,18 +1,30 @@
 name: flutter_curiosity
-description: The flutter curiosity is compatible with android and ios for multiple native features
-version: 7.2.0
+description: Integrates native and platform features for Android, iOS, macOS, HarmonyOS, Windows, Linux and web, including GPS, keyboard, apps and image saving.
+version: 8.0.0
+homepage: https://github.com/Wayaer/flutter_curiosity
 repository: https://github.com/Wayaer/flutter_curiosity.git
+issue_tracker: https://github.com/Wayaer/flutter_curiosity/issues
 
 environment:
   sdk: '>=3.8.0 <4.0.0'
   flutter: '>=3.32.0'
 
+topics:
+  - plugin
+  - android
+  - ios
+  - macos
+  - harmonyos
+
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
+  web: ^1.1.1
 
 dev_dependencies:
-  flutter_lints: ^5.0.0
+  flutter_lints: ^6.0.0
 
 flutter:
   plugin:
@@ -24,7 +36,14 @@ flutter:
         pluginClass: CuriosityPlugin
       ios:
         pluginClass: CuriosityPlugin
+        sharedDarwinSource: true
       macos:
         pluginClass: CuriosityPlugin
-
-
+        sharedDarwinSource: true
+      web:
+        pluginClass: CuriosityPluginWeb
+        fileName: flutter_curiosity_web.dart
+      windows:
+        dartPluginClass: CuriosityPluginWindows
+      linux:
+        dartPluginClass: CuriosityPluginLinux

@@ -1,173 +1,222 @@
 part of '../flutter_curiosity.dart';
 
+/// Keyboard status reported by the native platform.
 class NativeKeyboardStatus {
-  final Map<dynamic, dynamic> _map;
-
-  NativeKeyboardStatus.fromMap(this._map) {
+  /// Creates a keyboard status from a map received from the native platform.
+  NativeKeyboardStatus.fromMap(Map<dynamic, dynamic> map) {
     if (Curiosity.isAndroid) {
-      _android = AndroidKeyboardParams.fromMap(_map);
+      _android = AndroidKeyboardParams.fromMap(map);
     } else if (Curiosity.isIOS) {
-      _ios = IOSKeyboardParams.fromMap(_map);
+      _ios = IOSKeyboardParams.fromMap(map);
     } else if (Curiosity.isHarmonyOS) {
-      _harmonyOS = HarmonyOSKeyboardParams.fromMap(_map);
+      _harmonyOS = HarmonyOSKeyboardParams.fromMap(map);
+    } else if (Curiosity.isWeb) {
+      _web = WebKeyboardParams.fromMap(map);
     }
   }
 
-  /// harmony os
+  WebKeyboardParams? _web;
+
+  /// Web keyboard params, only available on web.
+  WebKeyboardParams? get web => _web;
+
   HarmonyOSKeyboardParams? _harmonyOS;
 
+  /// HarmonyOS keyboard params, only available on HarmonyOS.
   HarmonyOSKeyboardParams? get harmonyOS => _harmonyOS;
 
-  /// android
   AndroidKeyboardParams? _android;
 
+  /// Android keyboard params, only available on Android.
   AndroidKeyboardParams? get android => _android;
 
-  /// ios
   IOSKeyboardParams? _ios;
 
+  /// iOS keyboard params, only available on iOS.
   IOSKeyboardParams? get ios => _ios;
 
-  /// visibility
+  /// Whether the keyboard is visible.
   bool get visibility {
-    if (Curiosity.isAndroid) {
-      return _android?.visibility ?? false;
-    } else if (Curiosity.isIOS) {
-      return _ios?.visibility ?? false;
-    } else if (Curiosity.isHarmonyOS) {
-      return _harmonyOS?.visibility ?? false;
-    }
+    if (Curiosity.isAndroid) return _android?.visibility ?? false;
+    if (Curiosity.isIOS) return _ios?.visibility ?? false;
+    if (Curiosity.isHarmonyOS) return _harmonyOS?.visibility ?? false;
+    if (Curiosity.isWeb) return _web?.visibility ?? false;
     return false;
   }
 
-  /// keyboardHeight
-  /// supports iOS Android
+  /// The keyboard height in logical pixels.
+  ///
+  /// Supported on Android, iOS, HarmonyOS and web.
   num? get keyboardHeight {
     if (Curiosity.isAndroid) {
-      if (_android != null) return _android!.keyboardHeight / _android!.density;
+      final AndroidKeyboardParams? params = _android;
+      if (params != null && params.density > 0) return params.keyboardHeight / params.density;
     } else if (Curiosity.isIOS) {
       return _ios?.height;
     } else if (Curiosity.isHarmonyOS) {
-      if (_harmonyOS != null) {
-        return _harmonyOS!.keyboardHeight / _harmonyOS!.density;
-      }
+      final HarmonyOSKeyboardParams? params = _harmonyOS;
+      if (params != null && params.density > 0) return params.keyboardHeight / params.density;
+    } else if (Curiosity.isWeb) {
+      return _web?.height;
     }
     return null;
   }
 }
 
+/// iOS keyboard params.
 class IOSKeyboardParams {
+  /// Creates iOS keyboard params from a map received from iOS.
   IOSKeyboardParams.fromMap(Map<dynamic, dynamic> map)
-      : height = map['height'] as num? ?? 0,
-        width = map['width'] as num? ?? 0,
-        visibility = map['visibility'] as bool? ?? false;
+    : height = map['height'] as num? ?? 0,
+      width = map['width'] as num? ?? 0,
+      visibility = map['visibility'] as bool? ?? false;
 
-  /// 键盘是否显示
+  /// Whether the keyboard is visible.
   final bool visibility;
 
-  /// 键盘高度 [visibility] = false [height] 依然有值
+  /// The keyboard height. It has a value even when [visibility] is `false`.
   final num height;
 
-  /// 键盘宽度
+  /// The keyboard width.
   final num width;
 }
 
+/// Android keyboard params.
 class AndroidKeyboardParams {
+  /// Creates Android keyboard params from a map received from Android.
   AndroidKeyboardParams.fromMap(Map<dynamic, dynamic> map)
-      : density = map['density'] as double? ?? 0,
-        rootHeight = map['rootHeight'] as num? ?? 0,
-        rootWidth = map['rootWidth'] as num? ?? 0,
-        left = map['left'] as num? ?? 0,
-        top = map['top'] as num? ?? 0,
-        right = map['right'] as num? ?? 0,
-        bottom = map['bottom'] as num? ?? 0 {
+    : density = map['density'] as double? ?? 0,
+      rootHeight = map['rootHeight'] as num? ?? 0,
+      rootWidth = map['rootWidth'] as num? ?? 0,
+      left = map['left'] as num? ?? 0,
+      top = map['top'] as num? ?? 0,
+      right = map['right'] as num? ?? 0,
+      bottom = map['bottom'] as num? ?? 0 {
     if (!visibility) _navigationBarHeight = keyboardHeight;
   }
 
-  /// [MediaQuery.of(this).devicePixelRatio]
-  /// 要转换 flutter 单位需要 value/[density]
+  /// The device pixel ratio.
+  ///
+  /// Use `value / density` to convert a value to Flutter logical pixels.
   final double density;
 
-  /// 整个 view 的宽高  px
+  /// The height of the whole view in physical pixels.
   final num rootHeight;
+
+  /// The width of the whole view in physical pixels.
   final num rootWidth;
 
-  /// 没有被键盘遮挡的区域  px
+  /// The left coordinate of the visible area in physical pixels.
   final num left;
+
+  /// The top coordinate of the visible area in physical pixels.
   final num top;
+
+  /// The right coordinate of the visible area in physical pixels.
   final num right;
+
+  /// The bottom coordinate of the visible area in physical pixels.
   final num bottom;
 
-  /// 键盘原始高度 px 如果有导航栏 导航栏也是会包含
-  num get keyboardHeight => rootHeight - bottom;
+  /// The keyboard height in physical pixels, including the navigation bar.
+  num get keyboardHeight {
+    final num height = rootHeight - bottom;
+    return height < 0 ? 0 : height;
+  }
 
-  /// 导航栏高度
-  /// 当键盘关闭时 [keyboardHeight] 如果有值那就是导航栏高度，需要单独保存
-  /// 当键盘打开时 无法判断导航栏高度
   num _navigationBarHeight = 0;
 
+  /// The navigation bar height.
+  ///
+  /// When the keyboard is hidden, [keyboardHeight] is the navigation bar height.
   num get navigationBarHeight => _navigationBarHeight;
 
-  /// 键盘是否显示
-  bool get visibility => (bottom / rootHeight) < 0.85;
+  /// Whether the keyboard is visible.
+  bool get visibility => rootHeight > 0 && (bottom / rootHeight) < 0.85;
 }
 
+/// HarmonyOS keyboard params.
 class HarmonyOSKeyboardParams {
+  /// Creates HarmonyOS keyboard params from a map received from HarmonyOS.
   HarmonyOSKeyboardParams.fromMap(Map<dynamic, dynamic> map)
-      : density = map['density'] as num? ?? 0,
-        displayHeight = map['displayHeight'] as num? ?? 0,
-        displayWidth = map['displayWidth'] as num? ?? 0,
-        keyboardHeight = map['keyboardHeight'] as num? ?? 0;
+    : density = map['density'] as num? ?? 0,
+      displayHeight = map['displayHeight'] as num? ?? 0,
+      displayWidth = map['displayWidth'] as num? ?? 0,
+      keyboardHeight = map['keyboardHeight'] as num? ?? 0;
 
-  /// [MediaQuery.of(this).devicePixelRatio]
-  /// 要转换 flutter 单位需要 value/[density]
+  /// The device pixel ratio.
+  ///
+  /// Use `value / density` to convert a value to Flutter logical pixels.
   final num density;
 
-  /// 整个 设备的 宽高  px
+  /// The height of the whole display in physical pixels.
   final num displayHeight;
+
+  /// The width of the whole display in physical pixels.
   final num displayWidth;
 
-  /// 键盘原始高度 px
+  /// The keyboard height in physical pixels.
   final num keyboardHeight;
 
-  /// 键盘是否显示
-  bool get visibility => (keyboardHeight / displayHeight) < 0.85 && keyboardHeight > 0;
+  /// Whether the keyboard is visible.
+  bool get visibility => displayHeight > 0 && keyboardHeight > 0 && (keyboardHeight / displayHeight) < 0.85;
 }
 
+/// Web keyboard params.
+class WebKeyboardParams {
+  /// Creates web keyboard params from a map received from the browser.
+  WebKeyboardParams.fromMap(Map<dynamic, dynamic> map)
+    : visibility = map['visibility'] as bool? ?? false,
+      height = map['height'] as num? ?? 0,
+      width = map['width'] as num? ?? 0;
+
+  /// Whether the keyboard is visible.
+  final bool visibility;
+
+  /// The keyboard height in CSS pixels.
+  final num height;
+
+  /// The visible viewport width in CSS pixels.
+  final num width;
+}
+
+/// Mixin that listens to keyboard status changes.
 mixin NativeKeyboardStatusMixin {
   NativeKeyboardStatus? _keyboardParams;
 
+  /// The latest keyboard status.
   NativeKeyboardStatus? get keyboardParams => _keyboardParams;
 
-  /// 键盘是否显示
+  /// Whether the keyboard is visible.
   bool get keyboardVisible => _keyboardParams?.visibility ?? false;
 
-  /// 键盘监听回调
-  Future<bool> addKeyboardListener() {
+  /// Adds a keyboard listener.
+  Future<bool> addKeyboardListener() async {
     try {
-      return NativeTools().addKeyboardListener(onKeyboardListener);
-    } catch (e) {
+      return await NativeTools.instance.addKeyboardListener(onKeyboardListener);
+    } on Exception catch (e) {
       debugPrint('addKeyboardListener error = $e');
-      return Future.value(false);
+      return false;
     }
   }
 
-  /// 键盘监听回调
+  /// Called when the keyboard status changes. Override to handle it.
   void onKeyboardListener(NativeKeyboardStatus params) {
     _keyboardParams = params;
   }
 
-  /// 移除键盘监听回调
-  Future<bool> removeKeyboardListener() {
+  /// Removes the keyboard listener.
+  Future<bool> removeKeyboardListener() async {
     try {
-      return NativeTools().removeKeyboardListener(onKeyboardListener);
-    } catch (e) {
+      return await NativeTools.instance.removeKeyboardListener(onKeyboardListener);
+    } on Exception catch (e) {
       debugPrint('removeKeyboardListener error = $e');
-      return Future.value(false);
+      return false;
     }
   }
 }
 
+/// A [State] that listens to keyboard status changes.
 abstract class NativeKeyboardStatusState<T extends StatefulWidget> extends State<T> with NativeKeyboardStatusMixin {
   @override
   void initState() {
@@ -177,7 +226,7 @@ abstract class NativeKeyboardStatusState<T extends StatefulWidget> extends State
 
   @override
   void dispose() {
-    super.dispose();
     removeKeyboardListener();
+    super.dispose();
   }
 }

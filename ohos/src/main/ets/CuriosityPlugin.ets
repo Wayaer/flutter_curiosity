@@ -18,6 +18,7 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
   private channel: MethodChannel | null = null;
   private abilityBinding: AbilityPluginBinding | null = null
   private pluginBinding: FlutterPluginBinding | null = null
+  private keyboardHeightChangeCallback: ((data: number) => void) | null = null
   static logTag = 'CuriosityPlugin:'
 
   constructor() {
@@ -34,9 +35,11 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
   }
 
   onDetachedFromEngine(binding: FlutterPluginBinding): void {
+    this.removeKeyboardHeightChangeCallback()
     if (this.channel != null) {
       this.channel.setMethodCallHandler(null)
     }
+    this.channel = null
     this.pluginBinding = null
   }
 
@@ -45,6 +48,7 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
   }
 
   onDetachedFromAbility(): void {
+    this.removeKeyboardHeightChangeCallback()
     this.abilityBinding = null
   }
 
@@ -55,14 +59,16 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
         result.success(true)
         break;
       case 'addKeyboardListener':
-        this.getMainWindow()?.on('keyboardHeightChange', (data) => this.onKeyboardHeightChange(data))
-        result.success(this.getMainWindow() != null)
+        if (this.keyboardHeightChangeCallback == null) {
+          const callback = (data: number) => this.onKeyboardHeightChange(data)
+          this.keyboardHeightChangeCallback = callback
+          this.getMainWindow()?.on('keyboardHeightChange', callback)
+        }
+        result.success(this.keyboardHeightChangeCallback != null)
         break;
       case 'removeKeyboardListener':
-        this.getMainWindow()?.off("keyboardHeightChange", (data) => {
-          this.onKeyboardHeightChange(data)
-        });
-        result.success(this.getMainWindow() != null)
+        this.removeKeyboardHeightChangeCallback()
+        result.success(true)
         break;
       case 'getGPSStatus':
         result.success(this.getGPSStatus())
@@ -87,6 +93,14 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
         break;
       default:
         result.notImplemented()
+    }
+  }
+
+  private removeKeyboardHeightChangeCallback(): void {
+    const callback = this.keyboardHeightChangeCallback
+    if (callback != null) {
+      this.getMainWindow()?.off('keyboardHeightChange', callback)
+      this.keyboardHeightChangeCallback = null
     }
   }
 

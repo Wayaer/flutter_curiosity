@@ -1,9 +1,9 @@
 {
   "name": "flutter_curiosity",
-  "version": "1.0.0",
-  "description": "Please describe the basic information.",
+  "version": "8.0.0",
+  "description": "Native features for Flutter apps on HarmonyOS.",
   "main": "index.ets",
-  "author": "",
-  "license": "Apache-2.0",
+  "author": "Wayaer",
+  "license": "MIT",
   "dependencies": {}
 }
