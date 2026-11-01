@@ -19,7 +19,7 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
   private abilityBinding: AbilityPluginBinding | null = null
   private pluginBinding: FlutterPluginBinding | null = null
   private keyboardHeightChangeCallback: ((data: number) => void) | null = null
-  static logTag = 'CuriosityPlugin:'
+  static logTag: string = 'CuriosityPlugin:'
 
   constructor() {
   }
@@ -60,7 +60,9 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
         break;
       case 'addKeyboardListener':
         if (this.keyboardHeightChangeCallback == null) {
-          const callback = (data: number) => this.onKeyboardHeightChange(data)
+          const callback = (data: number): void => {
+            this.onKeyboardHeightChange(data)
+          }
           this.keyboardHeightChangeCallback = callback
           this.getMainWindow()?.on('keyboardHeightChange', callback)
         }
@@ -78,18 +80,20 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
           result.success(false)
           return
         }
-        ImageGalleryTools.saveBytesImageToGallery(this.abilityBinding.getAbility().context, call).then((value) => {
-          result.success(value)
-        })
+        ImageGalleryTools.saveBytesImageToGallery(this.abilityBinding.getAbility().context, call)
+          .then((value: boolean): void => {
+            result.success(value)
+          })
         break;
       case 'saveFilePathToGallery':
         if (this.abilityBinding == null) {
           result.success(false)
           return
         }
-        ImageGalleryTools.saveFilePathToGallery(this.abilityBinding.getAbility().context, call).then((value) => {
-          result.success(value)
-        })
+        ImageGalleryTools.saveFilePathToGallery(this.abilityBinding.getAbility().context, call)
+          .then((value: boolean): void => {
+            result.success(value)
+          })
         break;
       default:
         result.notImplemented()
@@ -111,7 +115,7 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
     return null;
   }
 
-  private onKeyboardHeightChange(data: number) {
+  private onKeyboardHeightChange(data: number): void {
     if (this.channel == null) {
       return
     }

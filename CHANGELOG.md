@@ -1,3 +1,8 @@
+## 8.0.1
+
+* Fix the HarmonyOS build by declaring explicit return types in `CuriosityPlugin.ets`, as ArkTS
+  rejects inferred return types (`arkts-no-implicit-return-types`).
+
 ## 8.0.0
 
 * Add web support: keyboard status through the browser visual viewport, GPS permission state,
