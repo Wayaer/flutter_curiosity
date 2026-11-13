@@ -1,5 +1,6 @@
 package flutter.curiosity
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -25,17 +26,21 @@ class CuriosityPlugin :
 
     private lateinit var channel: MethodChannel
     private lateinit var context: Context
-    private lateinit var activityBinding: ActivityPluginBinding
+    private var activityBinding: ActivityPluginBinding? = null
+    private var keyboardListenerRequested = false
 
     override fun onAttachedToEngine(binding: FlutterPluginBinding) {
         context = binding.applicationContext
         channel = MethodChannel(binding.binaryMessenger, "Curiosity")
+        channel.setMethodCallHandler(this)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         activityBinding = binding
-        channel.setMethodCallHandler(this)
         binding.addActivityResultListener(this)
+        if (keyboardListenerRequested) {
+            decorViewTreeObserver()?.addOnGlobalLayoutListener(this)
+        }
     }
 
     override fun onReattachedToActivityForConfigChanges(pluginBinding: ActivityPluginBinding) {
@@ -47,27 +52,36 @@ class CuriosityPlugin :
     }
 
     override fun onDetachedFromActivity() {
-        if (::activityBinding.isInitialized) {
-            activityBinding.removeActivityResultListener(this)
-            val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
-            viewTreeObserver?.removeOnGlobalLayoutListener(this)
-        }
+        activityBinding?.removeActivityResultListener(this)
+        removeKeyboardLayoutListener()
+        activityBinding = null
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        removeKeyboardLayoutListener()
+        activityBinding?.removeActivityResultListener(this)
+        activityBinding = null
+        keyboardListenerRequested = false
     }
 
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "exitApp" -> {
-                result.success(true)
-                Tools.exitApp(activityBinding.activity)
+                val activity = activityBinding?.activity
+                if (activity == null) {
+                    result.success(false)
+                } else {
+                    result.success(true)
+                    Tools.exitApp(activity)
+                }
             }
 
             "installApk" -> {
+                val activity = activityBinding?.activity
                 result.success(
-                    startActivity(Tools.getInstallAppIntent(context, call.arguments as String))
+                    activity != null &&
+                        startActivity(activity, Tools.getInstallAppIntent(context, call.arguments as String))
                 )
             }
 
@@ -80,15 +94,20 @@ class CuriosityPlugin :
             }
 
             "addKeyboardListener" -> {
-                val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
-                viewTreeObserver?.addOnGlobalLayoutListener(this)
-                result.success(viewTreeObserver != null)
+                val viewTreeObserver = decorViewTreeObserver()
+                if (viewTreeObserver == null) {
+                    keyboardListenerRequested = false
+                    result.success(false)
+                } else {
+                    viewTreeObserver.addOnGlobalLayoutListener(this)
+                    keyboardListenerRequested = true
+                    result.success(true)
+                }
             }
 
             "removeKeyboardListener" -> {
-                val viewTreeObserver = activityBinding.activity.window?.decorView?.viewTreeObserver
-                viewTreeObserver?.removeOnGlobalLayoutListener(this)
-                result.success(viewTreeObserver != null)
+                keyboardListenerRequested = false
+                result.success(removeKeyboardLayoutListener())
             }
 
             "getGPSStatus" -> {
@@ -123,10 +142,10 @@ class CuriosityPlugin :
         }
     }
 
-    private fun startActivity(intent: Intent?): Boolean {
+    private fun startActivity(activity: Activity, intent: Intent?): Boolean {
         if (intent == null) return false
         return try {
-            activityBinding.activity.startActivity(intent)
+            activity.startActivity(intent)
             true
         } catch (e: Exception) {
             Log.d("CuriosityPlugin", "startActivity failed", e)
@@ -145,13 +164,13 @@ class CuriosityPlugin :
         if (::channel.isInitialized) {
             channel.invokeMethod("onActivityResult", map)
         }
-        return true
+        return false
     }
 
     override fun onGlobalLayout() {
-        if (!::activityBinding.isInitialized || !::channel.isInitialized) return
+        if (!::channel.isInitialized) return
+        val mainView = activityBinding?.activity?.window?.decorView ?: return
         val rect = Rect()
-        val mainView = activityBinding.activity.window.decorView
         mainView.getWindowVisibleDisplayFrame(rect)
         val density = context.resources.displayMetrics.density
         channel.invokeMethod(
@@ -166,5 +185,17 @@ class CuriosityPlugin :
                 "right" to rect.right,
             )
         )
+    }
+
+    private fun decorViewTreeObserver(): ViewTreeObserver? {
+        return activityBinding?.activity?.window?.decorView?.viewTreeObserver
+    }
+
+    private fun removeKeyboardLayoutListener(): Boolean {
+        val observer = decorViewTreeObserver() ?: return false
+        if (observer.isAlive) {
+            observer.removeOnGlobalLayoutListener(this)
+        }
+        return true
     }
 }

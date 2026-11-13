@@ -61,22 +61,18 @@ public class CuriosityPlugin: NSObject, FlutterPlugin {
     private func addKeyboardObservers() {
         removeKeyboardObservers()
         notificationCenter.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardDidShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(didShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.addObserver(self, selector: #selector(didHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.addObserver(self, selector: #selector(didHide), name: UIResponder.keyboardDidHideNotification, object: nil)
     }
 
     private func removeKeyboardObservers() {
         notificationCenter.removeObserver(self, name: UIResponder.keyboardDidShowNotification, object: nil)
-        notificationCenter.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
-        notificationCenter.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
         notificationCenter.removeObserver(self, name: UIResponder.keyboardDidHideNotification, object: nil)
     }
 
     @objc private func didShow(_ notification: Notification) {
         let rect = getKeyboardHeight(notification)
         channel.invokeMethod("onKeyboardStatus", arguments: [
-            "visibility": true,
+            "visibility": rect.height > 0,
             "width": rect.width,
             "height": rect.height,
         ])

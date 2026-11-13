@@ -1,3 +1,18 @@
+## 8.0.2
+
+* Fix an Android activity leak by clearing the activity binding when detaching from the activity, and
+  register the method call handler when the engine attaches so calls no longer crash before an activity
+  is available.
+* Re-register the Android keyboard listener after a configuration change or activity recreation.
+* Stop consuming all activity results on Android: `onActivityResult` now returns `false`.
+* Fix concurrent iOS image and video saves that could leave a Dart future pending, and release each
+  result after the system completion handler runs.
+* Remove duplicate iOS keyboard notifications and report the keyboard as hidden when its height is zero.
+* Harden HarmonyOS image saving with unique cache file names, closed file handles, and a result for
+  every failure path.
+* Ignore pinch zoom when detecting the web keyboard height and subtract the visual viewport offset.
+* Roll back keyboard listeners in Dart when the platform channel call throws.
+
 ## 8.0.1
 
 * Fix the HarmonyOS build by declaring explicit return types in `CuriosityPlugin.ets`, as ArkTS

@@ -19,6 +19,8 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
   private abilityBinding: AbilityPluginBinding | null = null
   private pluginBinding: FlutterPluginBinding | null = null
   private keyboardHeightChangeCallback: ((data: number) => void) | null = null
+  private keyboardWindow: window.Window | null = null
+  private keyboardListenerRequested: boolean = false
   static logTag: string = 'CuriosityPlugin:'
 
   constructor() {
@@ -35,6 +37,7 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
   }
 
   onDetachedFromEngine(binding: FlutterPluginBinding): void {
+    this.keyboardListenerRequested = false
     this.removeKeyboardHeightChangeCallback()
     if (this.channel != null) {
       this.channel.setMethodCallHandler(null)
@@ -45,6 +48,9 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
 
   onAttachedToAbility(binding: AbilityPluginBinding): void {
     this.abilityBinding = binding
+    if (this.keyboardListenerRequested) {
+      this.attachKeyboardHeightChangeCallback()
+    }
   }
 
   onDetachedFromAbility(): void {
@@ -58,20 +64,20 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
         this.pluginBinding?.getApplicationContext().getApplicationContext().killAllProcesses()
         result.success(true)
         break;
-      case 'addKeyboardListener':
-        if (this.keyboardHeightChangeCallback == null) {
-          const callback = (data: number): void => {
-            this.onKeyboardHeightChange(data)
-          }
-          this.keyboardHeightChangeCallback = callback
-          this.getMainWindow()?.on('keyboardHeightChange', callback)
+      case 'addKeyboardListener': {
+        this.keyboardListenerRequested = true
+        const attached: boolean = this.attachKeyboardHeightChangeCallback()
+        if (!attached) {
+          this.keyboardListenerRequested = false
         }
-        result.success(this.keyboardHeightChangeCallback != null)
+        result.success(attached)
         break;
-      case 'removeKeyboardListener':
-        this.removeKeyboardHeightChangeCallback()
-        result.success(true)
+      }
+      case 'removeKeyboardListener': {
+        this.keyboardListenerRequested = false
+        result.success(this.removeKeyboardHeightChangeCallback())
         break;
+      }
       case 'getGPSStatus':
         result.success(this.getGPSStatus())
         break;
@@ -84,6 +90,10 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
           .then((value: boolean): void => {
             result.success(value)
           })
+          .catch((err: Error): void => {
+            Log.e(`${CuriosityPlugin.logTag} saveBytesImageToGallery error:`, err.message)
+            result.success(false)
+          })
         break;
       case 'saveFilePathToGallery':
         if (this.abilityBinding == null) {
@@ -94,25 +104,63 @@ export default class CuriosityPlugin implements FlutterPlugin, MethodCallHandler
           .then((value: boolean): void => {
             result.success(value)
           })
+          .catch((err: Error): void => {
+            Log.e(`${CuriosityPlugin.logTag} saveFilePathToGallery error:`, err.message)
+            result.success(false)
+          })
         break;
       default:
         result.notImplemented()
     }
   }
 
-  private removeKeyboardHeightChangeCallback(): void {
-    const callback = this.keyboardHeightChangeCallback
-    if (callback != null) {
-      this.getMainWindow()?.off('keyboardHeightChange', callback)
-      this.keyboardHeightChangeCallback = null
+  private attachKeyboardHeightChangeCallback(): boolean {
+    if (this.keyboardHeightChangeCallback != null) {
+      return true
     }
+    const mainWindow = this.getMainWindow()
+    if (mainWindow == null) {
+      return false
+    }
+    const callback = (data: number): void => {
+      this.onKeyboardHeightChange(data)
+    }
+    try {
+      mainWindow.on('keyboardHeightChange', callback)
+    } catch (err) {
+      Log.e(`${CuriosityPlugin.logTag} on keyboardHeightChange error:`, err.message)
+      return false
+    }
+    this.keyboardHeightChangeCallback = callback
+    this.keyboardWindow = mainWindow
+    return true
+  }
+
+  private removeKeyboardHeightChangeCallback(): boolean {
+    const callback = this.keyboardHeightChangeCallback
+    if (callback == null) {
+      return false
+    }
+    try {
+      this.keyboardWindow?.off('keyboardHeightChange', callback)
+    } catch (err) {
+      Log.e(`${CuriosityPlugin.logTag} off keyboardHeightChange error:`, err.message)
+    }
+    this.keyboardWindow = null
+    this.keyboardHeightChangeCallback = null
+    return true
   }
 
   private getMainWindow(): window.Window | null {
-    if (this.abilityBinding != null) {
-      return FlutterManager.getInstance().getWindowStage(this.abilityBinding.getAbility()).getMainWindowSync()
+    if (this.abilityBinding == null) {
+      return null;
     }
-    return null;
+    try {
+      return FlutterManager.getInstance().getWindowStage(this.abilityBinding.getAbility()).getMainWindowSync()
+    } catch (err) {
+      Log.e(`${CuriosityPlugin.logTag} getMainWindow error:`, err.message)
+      return null
+    }
   }
 
   private onKeyboardHeightChange(data: number): void {

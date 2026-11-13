@@ -23,11 +23,29 @@ export default class ImageGalleryTools {
     let quality = call.argument("quality") as number
     let fileName = call.argument("name") as string
     let extension = call.argument("extension") as string
-    const sourcePath = await ImageGalleryTools.saveCacheDir(context, byteArray, quality, extension);
-    let result =
-      await ImageGalleryTools.saveToGallery(context, sourcePath, fileName, extension, photoAccessHelper.PhotoType.IMAGE)
-    fs.unlinkSync(sourcePath)
-    return result;
+    if (byteArray == null || extension == null) {
+      return false
+    }
+    let sourcePath: string = ''
+    try {
+      sourcePath = await ImageGalleryTools.saveCacheDir(context, byteArray, quality, extension);
+    } catch (err) {
+      Log.e(`${CuriosityPlugin.logTag} saveCacheDir error:`, err.message);
+      return false;
+    }
+    try {
+      return await ImageGalleryTools.saveToGallery(context, sourcePath, fileName, extension,
+        photoAccessHelper.PhotoType.IMAGE)
+    } catch (err) {
+      Log.e(`${CuriosityPlugin.logTag} saveToGallery error:`, err.message);
+      return false;
+    } finally {
+      try {
+        fs.unlinkSync(sourcePath)
+      } catch (err) {
+        Log.e(`${CuriosityPlugin.logTag} unlink cache image error:`, err.message);
+      }
+    }
   }
 
   static async saveFilePathToGallery(context: common.Context, call: MethodCall): Promise<boolean> {
@@ -57,6 +75,8 @@ export default class ImageGalleryTools {
   // 保存
   static async saveToGallery(context: common.Context, sourcePath: string, title: string, fileNameExtension: string,
     photoType: photoAccessHelper.PhotoType): Promise<boolean> {
+    let sourceFile: fs.File | null = null
+    let targetFile: fs.File | null = null
     try {
       let phAccessHelper = photoAccessHelper.getPhotoAccessHelper(context);
       let sourceFileUri = fileUri.getUriFromPath(sourcePath);
@@ -66,32 +86,70 @@ export default class ImageGalleryTools {
         photoType,
         subtype: photoAccessHelper.PhotoSubtype.DEFAULT
       }]);
-      let sourceFile: fs.File = await fs.open(sourceFileUri, fs.OpenMode.READ_ONLY);
-      let targetFile: fs.File = await fs.open(targetFileUris[0], fs.OpenMode.READ_WRITE);
+      if (targetFileUris == null || targetFileUris.length == 0) {
+        return false;
+      }
+      sourceFile = await fs.open(sourceFileUri, fs.OpenMode.READ_ONLY);
+      targetFile = await fs.open(targetFileUris[0], fs.OpenMode.READ_WRITE);
       fs.copyFileSync(sourceFile.fd, targetFile.fd);
-      fs.closeSync(sourceFile);
-      fs.closeSync(targetFile);
       return true;
     } catch (err) {
       Log.e(`${CuriosityPlugin.logTag} ImageGalleryTools error:`, err.message);
       return false;
+    } finally {
+      if (sourceFile != null) {
+        try {
+          fs.closeSync(sourceFile);
+        } catch (err) {
+          Log.e(`${CuriosityPlugin.logTag} close source file error:`, err.message);
+        }
+      }
+      if (targetFile != null) {
+        try {
+          fs.closeSync(targetFile);
+        } catch (err) {
+          Log.e(`${CuriosityPlugin.logTag} close target file error:`, err.message);
+        }
+      }
     }
   }
 
   // 将图片暂存到缓存压缩图片
   static async saveCacheDir(context: common.Context, uint8Array: Uint8Array, quality: number,
     extension: string): Promise<string> {
-    let filePath: string = context.cacheDir + '/cache_image_source.' + extension;
+    let filePath: string = context.cacheDir + '/cache_image_source_' + Date.now() + '_' +
+      Math.floor(Math.random() * 1000000) + '.' + extension;
     let outputFile = fs.openSync(filePath, fs.OpenMode.READ_WRITE | fs.OpenMode.CREATE)
-    await fs.write(outputFile.fd, uint8Array.buffer);
-    let imageBuffer: ArrayBuffer | null = null;
-    const imagePacker: image.ImagePacker = image.createImagePacker();
-    const imageSource: image.ImageSource = image.createImageSource(outputFile.fd);
-    imageBuffer = await imagePacker.packing(imageSource, { format: "image/" + extension, quality });
-    await fs.close(outputFile.fd)
-    let outputImage = fs.openSync(filePath, fs.OpenMode.READ_WRITE | fs.OpenMode.TRUNC);
-    await fs.write(outputImage.fd, imageBuffer);
-    await fs.close(outputImage.fd)
-    return filePath;
+    let outputFileClosed = false
+    try {
+      await fs.write(outputFile.fd, uint8Array.buffer);
+      const imagePacker: image.ImagePacker = image.createImagePacker();
+      const imageSource: image.ImageSource = image.createImageSource(outputFile.fd);
+      const imageBuffer: ArrayBuffer = await imagePacker.packing(imageSource, { format: "image/" + extension, quality });
+      await fs.close(outputFile.fd)
+      outputFileClosed = true
+      let outputImage = fs.openSync(filePath, fs.OpenMode.READ_WRITE | fs.OpenMode.TRUNC);
+      try {
+        await fs.write(outputImage.fd, imageBuffer);
+      } finally {
+        await fs.close(outputImage.fd)
+      }
+      return filePath;
+    } catch (err) {
+      try {
+        fs.unlinkSync(filePath)
+      } catch (e) {
+        // 忽略清理失败，保留原始异常
+      }
+      throw err;
+    } finally {
+      if (!outputFileClosed) {
+        try {
+          await fs.close(outputFile.fd)
+        } catch (e) {
+          // 忽略关闭失败，保留原始异常
+        }
+      }
+    }
   }
 }

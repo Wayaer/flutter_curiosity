@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'flutter_curiosity'
-  s.version          = '8.0.0'
+  s.version          = '8.0.2'
   s.summary          = 'Native features for Flutter apps on iOS and macOS.'
   s.description      = <<-DESC
 Integrates native features for Flutter apps, including GPS status, keyboard status,

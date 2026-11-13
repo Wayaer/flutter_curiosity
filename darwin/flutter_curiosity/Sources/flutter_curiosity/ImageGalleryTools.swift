@@ -12,8 +12,6 @@ public class ImageGalleryTools: NSObject {
 
     override private init() {}
 
-    var result: FlutterResult?
-
     public static func saveBytesImageToGallery(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
         guard hasPhotoLibraryUsageDescription else {
             result(false)
@@ -81,21 +79,27 @@ public class ImageGalleryTools: NSObject {
     }
 
     func saveImage(_ image: UIImage, _ result: @escaping FlutterResult) {
-        self.result = result
-        UIImageWriteToSavedPhotosAlbum(image, self, #selector(didFinishSavingImage(image:error:contextInfo:)), nil)
+        let context = Unmanaged.passRetained(ImageSaveResult(result)).toOpaque()
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(didFinishSavingImage(image:error:contextInfo:)), context)
     }
 
     func saveVideo(_ path: String, _ result: @escaping FlutterResult) {
-        self.result = result
-        UISaveVideoAtPathToSavedPhotosAlbum(path, self, #selector(didFinishSavingVideo(videoPath:error:contextInfo:)), nil)
+        let context = Unmanaged.passRetained(ImageSaveResult(result)).toOpaque()
+        UISaveVideoAtPathToSavedPhotosAlbum(path, self, #selector(didFinishSavingVideo(videoPath:error:contextInfo:)), context)
     }
 
     @objc func didFinishSavingImage(image: UIImage, error: NSError?, contextInfo: UnsafeMutableRawPointer?) {
-        result?(error == nil)
+        finishSaving(contextInfo, success: error == nil)
     }
 
     @objc func didFinishSavingVideo(videoPath: String, error: NSError?, contextInfo: UnsafeMutableRawPointer?) {
-        result?(error == nil)
+        finishSaving(contextInfo, success: error == nil)
+    }
+
+    private func finishSaving(_ contextInfo: UnsafeMutableRawPointer?, success: Bool) {
+        guard let contextInfo else { return }
+        let saveResult = Unmanaged<ImageSaveResult>.fromOpaque(contextInfo).takeRetainedValue()
+        saveResult.completion(success)
     }
 #elseif os(macOS)
     public static func saveBytesImageToGallery(_ call: FlutterMethodCall, _ result: @escaping FlutterResult) {
@@ -250,4 +254,13 @@ extension ImageGalleryTools {
 private enum FileType {
     case image
     case video
+}
+
+/// Keeps a single save callback alive until its system completion handler runs.
+private final class ImageSaveResult {
+    let completion: FlutterResult
+
+    init(_ completion: @escaping FlutterResult) {
+        self.completion = completion
+    }
 }

@@ -1,6 +1,6 @@
 name: flutter_curiosity
 description: Integrates native and platform features for Android, iOS, macOS, HarmonyOS, Windows, Linux and web, including GPS, keyboard, apps and image saving.
-version: 8.0.1
+version: 8.0.2
 homepage: https://github.com/Wayaer/flutter_curiosity
 repository: https://github.com/Wayaer/flutter_curiosity.git
 issue_tracker: https://github.com/Wayaer/flutter_curiosity/issues

@@ -83,9 +83,9 @@ class WebPlatform {
     final void Function(Map<String, dynamic> status)? listener = _keyboardListener;
     final web.VisualViewport? visualViewport = _visualViewport;
     if (listener == null || visualViewport == null) return;
-    final num hiddenHeight = web.window.innerHeight - visualViewport.height;
+    final num hiddenHeight = web.window.innerHeight - visualViewport.height - visualViewport.offsetTop;
     final num keyboardHeight = hiddenHeight < 0 ? 0 : hiddenHeight;
-    final bool visible = keyboardHeight > 50;
+    final bool visible = visualViewport.scale <= 1.01 && keyboardHeight > 50;
     listener(<String, dynamic>{
       'visibility': visible,
       'height': visible ? keyboardHeight : 0,

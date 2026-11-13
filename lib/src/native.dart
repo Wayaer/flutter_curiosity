@@ -76,7 +76,12 @@ class NativeTools {
     final bool needNativeCall = _keyboardStatus.isEmpty;
     _keyboardStatus.add(callback);
     if (!needNativeCall) return true;
-    final bool success = await _channel.invokeMethod<bool>('addKeyboardListener') ?? false;
+    bool success = false;
+    try {
+      success = await _channel.invokeMethod<bool>('addKeyboardListener') ?? false;
+    } on Exception catch (e) {
+      debugPrint('addKeyboardListener native error = $e');
+    }
     if (!success) _keyboardStatus.remove(callback);
     return success;
   }
@@ -95,7 +100,13 @@ class NativeTools {
     if (!_supportPlatform) return false;
     if (!_keyboardStatus.remove(callback)) return true;
     if (_keyboardStatus.isNotEmpty) return true;
-    return await _channel.invokeMethod<bool>('removeKeyboardListener') ?? false;
+    try {
+      return await _channel.invokeMethod<bool>('removeKeyboardListener') ?? false;
+    } on Exception catch (e) {
+      debugPrint('removeKeyboardListener native error = $e');
+      _keyboardStatus.add(callback);
+      return false;
+    }
   }
 
   /// Whether GPS is enabled.
